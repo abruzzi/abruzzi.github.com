@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[My Octopress Blog]]></title>
+  <title><![CDATA[Qiu Juntao on github with octopress]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2012-10-08T23:14:58+08:00</updated>
+  <updated>2012-10-08T23:41:50+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Qiu Juntao]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -18,9 +18,34 @@
     <link href="http://abruzzi.github.com/blog/2012/10/08/first-post-of-github-blog/"/>
     <updated>2012-10-08T23:13:00+08:00</updated>
     <id>http://abruzzi.github.com/blog/2012/10/08/first-post-of-github-blog</id>
-    <content type="html"><![CDATA[<h2>First post of github blog</h2>
+    <content type="html"><![CDATA[<h2>How to configure octopress</h2>
 
-<h2>I have nothing more to say</h2>
+<p>refer to the <a href="http://octopress.org/docs/deploying/github/">How to deploying to github</a></p>
+
+<h2>I found a weird issue when try to generate</h2>
+
+<h3>FIX for Lion&#8217;s posix_spawn_ext.bundle: [BUG] Segmentation fault</h3>
+
+<p>First delete the ruby</p>
+
+<pre><code>rvm remove ruby-1.9.3 --gems --archive
+</code></pre>
+
+<p>then</p>
+
+<pre><code>echo $CC
+</code></pre>
+
+<p>should return none.</p>
+
+<p>finally, reinstall all stuff</p>
+
+<pre><code>CC=/usr/bin/gcc-4.2 rvm install ruby-1.9.2
+gem install bundler
+bundle install
+</code></pre>
+
+<p>should fix the error.</p>
 ]]></content>
   </entry>
   
