@@ -1,0 +1,267 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Thoughtworks Immersion Day 2 - Qiu Juntao on github with octopress</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="日常开发中，我们经常遵循的实践是，使用用户story来划分并确认需求，每个story有一个对应的点(point)。一般来说会将story写在一张卡片上，而很多的story卡会贴到墙上，不同类型的卡可能会用不同的颜色来标注： 而一般书写用的笔会很粗，这样就导致能写在卡片上的信息不会太多， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/blog/2012/08/thoughtworks-immersion-day-2/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Qiu Juntao on github with octopress" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Qiu Juntao on github with octopress</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Thoughtworks Immersion Day 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-02T00:00:00+08:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><p>日常开发中，我们经常遵循的实践是，使用<em>用户story</em>来划分并确认需求，每个story有一个对应的点(point)。一般来说会将story写在一张卡片上，而很多的story卡会贴到墙上，不同类型的卡可能会用不同的颜色来标注：</p></p>
+
+<p><p><a href="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-17-08.47.273.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="2012-07-17 08.47.27" border="0" alt="2012-07-17 08.47.27" src="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-17-08.47.27_thumb.jpg" width="644" height="484" /></a></p></p>
+
+<p><p>而一般书写用的笔会很粗，这样就导致能写在卡片上的信息不会太多，但是又有一些关键信息。这样做的好处就是驱使开发人员尽量频繁的与客户沟通，确认需求，而又不至于在沟通是lost context。</p></p>
+
+<p><p>用户story只是一种确认需求的方式而已，如果一种形式能够做到：</p></p>
+
+<p><ol> <li>回答Why(Feature的商业价值)  </li><li>回答What(Feature做什么)  </li><li>可管理</li></ol></p>
+
+<p><p>那么需求就已经清晰了，不过实践中，我们恰好比较喜欢用户story这种形式而已。另外一个比较容易误解的是估点，比如一个点对应一对pair/天等。事实上，点是一个相对的概念，先将一个迭代(一周-两周为周期)中需要做的需求分割成小的用户story，然后找出一个比较容易估计的作为基准，然后将其他的卡片与此卡对比，如果大家都认为更难一些，那么就从候选数列中选出下一个数字来作为它的点数，反之亦然。通常我们采用的数列是斐波纳契数列(1,2,3,5,8)，但是5个点并不是说比1个点的卡难做5倍(需要投入5倍的人力，时间)，只是说这张卡比1个点的卡更难做，也比2，3个点的卡更难做，仅此而已。</p></p>
+
+<p><p>如果你愿意，完全可以在你的团队中采用其他的表示方法，比如我最近读到一篇博客讲述可以使用自行车，摩托车，小汽车，卡车等来估点。这样可以避免人们对数字长期以来建立的计算关系。</p></p>
+
+<p><p>一般会将一个业务流程绘制出来，然后根据这样的原则进行分割：</p></p>
+
+<p><ol> <li>每个story应该可以独立交付  </li><li>每个story应该具有商业价值，对用户可以带来好处  </li><li>尽可能的不要依赖其他story  </li><li>尽可能的小，这样才能被管理</li></ol></p>
+
+<p><p>我们的课堂作业是模拟网上购物的流程，绘制流程图，切分story，估点。每个小组都有10分钟的brain storm时间，然后大家一起来写卡，很有意思。</p></p>
+
+<p><p><a href="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-26-11.45.15.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="2012-07-26 11.45.15" border="0" alt="2012-07-26 11.45.15" src="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-26-11.45.15_thumb.jpg" width="644" height="484" /></a></p></p>
+
+<p><p>下午的培训是将上午讲解到的知识点巩固，但是形式非常有趣，每个组都分配一个客户，客户提出一些需求(用乐高来完成一个小怪物)，然后小组按照用户story来估点，排优先级，然后分成pair来进行开发，过程中要不断的和用户确认需求，做的过程中让客户参与进来，不断改进。在前两个迭代中，我们遇到很多问题，但是很快做出了调整。</p></p>
+
+<p><p>到第三次迭代之后，我们已经基本做出了用户接受的产品：</p></p>
+
+<p><p><a href="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-26-16.55.11.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="2012-07-26 16.55.11" border="0" alt="2012-07-26 16.55.11" src="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-26-16.55.11_thumb.jpg" width="644" height="484" /></a></p></p>
+
+<p><p>感受比较深的一点是：</p></p>
+
+<p><ol> <li>要相信自己的term，  </li><li>沟通非常重要，不论是对内还是对外  </li><li>积极与客户协商(好产品会使双方都受益)</li></ol></p>
+
+<p><p>关于这种培训，经常听到一个令人不舒服的词是“洗脑”，没有人的脑可以被别人洗掉。不过话又说回来了，如果非要称其为“洗脑”的话，这次“洗脑”非常成功(虽然我更喜欢称其为“洗礼”)，我们都很喜欢这种形式，这种高含金量的“洗脑”过程，而且大家都很享受这个过程。</p>
+</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-02T00:00:00+08:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/thoughtworks/'>thoughtworks</a>, <a class='category' href='/category/软件设计/'>软件设计</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/blog/2012/08/thoughtworks-immersion-day-2/" data-via="" data-counturl="http://abruzzi.github.com/blog/2012/08/thoughtworks-immersion-day-2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/08/thoughtworks-immersion-day-1/" title="Previous Post: Thoughtworks Immersion Day 1">&laquo; Thoughtworks Immersion Day 1</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/08/thoughtworks-immersion-day-3/" title="Next Post: Thoughtworks Immersion Day 3">Thoughtworks Immersion Day 3 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/10/first-post-of-github-blog/">First post of github blog (powered by octopress)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/%E4%B8%80%E4%B8%AA%E8%8B%B1%E8%AF%AD%E5%AD%A6%E4%B9%A0%E7%AB%99%E7%82%B9%E5%92%8C%E4%B8%80%E4%B8%AA%E5%B0%8F%E8%84%9A%E6%9C%AC/">一个英语学习站点和一个小脚本</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/thoughtworks-immersion-day-3/">Thoughtworks Immersion Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/thoughtworks-immersion-day-2/">Thoughtworks Immersion Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/thoughtworks-immersion-day-1/">Thoughtworks Immersion Day 1</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

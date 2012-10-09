@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: thoughtworks | Qiu Juntao on github with octopress]]></title>
+  <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2012-10-09T12:12:33+08:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Thoughtworks Immersion Day 3]]></title>
+    <link href="http://abruzzi.github.com/blog/2012/08/thoughtworks-immersion-day-3/"/>
+    <updated>2012-08-02T00:00:00+08:00</updated>
+    <id>http://abruzzi.github.com/blog/2012/08/thoughtworks-immersion-day-3</id>
+    <content type="html"><![CDATA[<p><p>早上的热身活动中，我们玩了这样一个游戏：6个人一组坐成一个环，每个人在卡片上写下一句话(或者诗词等)，然后交给下一个人A，A将这句话用图像表达出来，然后传递给下下一个人B，B又根据图像把文字还原出来，交给自己的下一个，依次循环，到最后，你会拿到你自己写的卡，和你的后续们翻译的结果，整个过程中不许讨论。</p> <p><a href="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-27-09.42.10.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="2012-07-27 09.42.10" border="0" alt="2012-07-27 09.42.10" src="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-27-09.42.10_thumb.jpg" width="644" height="484" /></a></p> <p>可以看出，仅仅基于“内容”的交流，很难让对方明白你要表达的意思。日常的沟通中，除了最基本的“内容”之外，我们还采用大量的诸如肢体语言，眼神，语调等等，而我们用以表意内容的仅占信息量的7%。事实上，经常有这样的体验，面对面的交流会非常的容易，即使是外语交流也是这样。另一个体验就是我们通过IM聊天的时候，总是会使用表情，标点符号等来使得意思更好的传递。</p> <p>最后一个环节是如何Feedback，<a href="http://www.thoughtworks.com/">Thoughtworks</a>长期以来形成了这样一种机制：你可以给公司的任何同事回馈，比如你的pair在和你结对的时候不注意措辞，某些同事的某些行为令你不舒服等等。这种机制鼓励大家互相促进，增加交流。很多时候，我们很难发现自己身上的问题，但是很容易发现别人的问题，这种feedback机制就可以快速使得自己发现自己的不足，并快速的消除隔阂，更加愉快的投入学习工作中。</p> <p>这里有一些应该注意的地方：</p> <ol> <li>提出Feedback时，要尽量的具体，笼统的描述对当事人没有任何的好处</li> <li>不要对别人的信仰，价值观等方面提出开发，而应局限在行为上</li> <li>Feedback也要注意方式</li></ol> <p>通常可以使用这样的模式：</p> <ol> <li>Ask for permission (Do you have any free time?)</li> <li>One to one</li> <li>I see/hear/smell(<img style="border-bottom-style: none; border-left-style: none; border-top-style: none; border-right-style: none" class="wlEmoticon wlEmoticon-smile" alt="Smile" src="http://www.icodeit.org/wp-content/uploads/2012/08/wlEmoticon-smile.png" />) something</li> <li>And I think/feel it's ……</li> <li>What do you think?</li></ol> <p>不论怎么说，feedback帮助我们快速发现问题，如果有人给feedback，请以开放的态度来对待，并感谢他/她。</p> <p>三天时间很短，但是确实学到了很多的东西。回来后跟<a href="http://www.iamhukai.com/">胡凯</a>聊的时候，他告诉我global的TWI已经取消了，虽然在工作日做这样的培训会有较大的开销，但是公司还是愿意负担这样的成本，因为公司觉得很有必要让我们新入职的社招人员进行一下不同的文化上的冲击。</p></p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Thoughtworks Immersion Day 2]]></title>
+    <link href="http://abruzzi.github.com/blog/2012/08/thoughtworks-immersion-day-2/"/>
+    <updated>2012-08-02T00:00:00+08:00</updated>
+    <id>http://abruzzi.github.com/blog/2012/08/thoughtworks-immersion-day-2</id>
+    <content type="html"><![CDATA[<p><p>日常开发中，我们经常遵循的实践是，使用<em>用户story</em>来划分并确认需求，每个story有一个对应的点(point)。一般来说会将story写在一张卡片上，而很多的story卡会贴到墙上，不同类型的卡可能会用不同的颜色来标注：</p></p>
+
+
+
+
+<p><p><a href="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-17-08.47.273.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="2012-07-17 08.47.27" border="0" alt="2012-07-17 08.47.27" src="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-17-08.47.27_thumb.jpg" width="644" height="484" /></a></p></p>
+
+
+
+
+<p><p>而一般书写用的笔会很粗，这样就导致能写在卡片上的信息不会太多，但是又有一些关键信息。这样做的好处就是驱使开发人员尽量频繁的与客户沟通，确认需求，而又不至于在沟通是lost context。</p></p>
+
+
+
+
+<p><p>用户story只是一种确认需求的方式而已，如果一种形式能够做到：</p></p>
+
+
+
+
+<p><ol> <li>回答Why(Feature的商业价值)  </li><li>回答What(Feature做什么)  </li><li>可管理</li></ol></p>
+
+
+
+
+<p><p>那么需求就已经清晰了，不过实践中，我们恰好比较喜欢用户story这种形式而已。另外一个比较容易误解的是估点，比如一个点对应一对pair/天等。事实上，点是一个相对的概念，先将一个迭代(一周-两周为周期)中需要做的需求分割成小的用户story，然后找出一个比较容易估计的作为基准，然后将其他的卡片与此卡对比，如果大家都认为更难一些，那么就从候选数列中选出下一个数字来作为它的点数，反之亦然。通常我们采用的数列是斐波纳契数列(1,2,3,5,8)，但是5个点并不是说比1个点的卡难做5倍(需要投入5倍的人力，时间)，只是说这张卡比1个点的卡更难做，也比2，3个点的卡更难做，仅此而已。</p></p>
+
+
+
+
+<p><p>如果你愿意，完全可以在你的团队中采用其他的表示方法，比如我最近读到一篇博客讲述可以使用自行车，摩托车，小汽车，卡车等来估点。这样可以避免人们对数字长期以来建立的计算关系。</p></p>
+
+
+
+
+<p><p>一般会将一个业务流程绘制出来，然后根据这样的原则进行分割：</p></p>
+
+
+
+
+<p><ol> <li>每个story应该可以独立交付  </li><li>每个story应该具有商业价值，对用户可以带来好处  </li><li>尽可能的不要依赖其他story  </li><li>尽可能的小，这样才能被管理</li></ol></p>
+
+
+
+
+<p><p>我们的课堂作业是模拟网上购物的流程，绘制流程图，切分story，估点。每个小组都有10分钟的brain storm时间，然后大家一起来写卡，很有意思。</p></p>
+
+
+
+
+<p><p><a href="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-26-11.45.15.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="2012-07-26 11.45.15" border="0" alt="2012-07-26 11.45.15" src="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-26-11.45.15_thumb.jpg" width="644" height="484" /></a></p></p>
+
+
+
+
+<p><p>下午的培训是将上午讲解到的知识点巩固，但是形式非常有趣，每个组都分配一个客户，客户提出一些需求(用乐高来完成一个小怪物)，然后小组按照用户story来估点，排优先级，然后分成pair来进行开发，过程中要不断的和用户确认需求，做的过程中让客户参与进来，不断改进。在前两个迭代中，我们遇到很多问题，但是很快做出了调整。</p></p>
+
+
+
+
+<p><p>到第三次迭代之后，我们已经基本做出了用户接受的产品：</p></p>
+
+
+
+
+<p><p><a href="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-26-16.55.11.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="2012-07-26 16.55.11" border="0" alt="2012-07-26 16.55.11" src="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-26-16.55.11_thumb.jpg" width="644" height="484" /></a></p></p>
+
+
+
+
+<p><p>感受比较深的一点是：</p></p>
+
+
+
+
+<p><ol> <li>要相信自己的term，  </li><li>沟通非常重要，不论是对内还是对外  </li><li>积极与客户协商(好产品会使双方都受益)</li></ol></p>
+
+
+
+
+<p><p>关于这种培训，经常听到一个令人不舒服的词是“洗脑”，没有人的脑可以被别人洗掉。不过话又说回来了，如果非要称其为“洗脑”的话，这次“洗脑”非常成功(虽然我更喜欢称其为“洗礼”)，我们都很喜欢这种形式，这种高含金量的“洗脑”过程，而且大家都很享受这个过程。</p>
+</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Thoughtworks Immersion Day 1]]></title>
+    <link href="http://abruzzi.github.com/blog/2012/08/thoughtworks-immersion-day-1/"/>
+    <updated>2012-08-01T00:00:00+08:00</updated>
+    <id>http://abruzzi.github.com/blog/2012/08/thoughtworks-immersion-day-1</id>
+    <content type="html"><![CDATA[<p><p>进入<a href="http://www.thoughtworks.com/">Thoughtworks</a>已经有差不多4个月了，对于TDD，敏捷开发等有了一点基本的，感性的认识，也知道了一些简单的实践，但是知识非常的不系统，很离散，很破碎。</p></p>
+
+
+
+
+<p><p><a href="http://www.thoughtworks.com/">Thoughtworks</a>为社招的，有一定经验的员工提供一种内部培训，名叫TWI(对应的，对于毕业生，有一次为期6周的TWU(ThoughtWorks University)，地点在印度)，初衷是让已经在公司工作了一段时间的同事更好的理解公司的文化(当然，也可以吸收这些在其他公司工作过的同事带进来的不同的文化)。TWI培训主要是针对敏捷开发实践的，当然也有一些公司的历史，文化等的介绍。</p></p>
+
+
+
+
+<p><p><a href="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-25-17.29.371.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="2012-07-25 17.29.37" border="0" alt="2012-07-25 17.29.37" src="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-25-17.29.37_thumb1.jpg" width="644" height="484" /></a></p></p>
+
+
+
+
+<p><p><a href="http://www.thoughtworks.com/">Thoughtworks</a>是一个非常尊重dev的公司，这一点可以追溯到公司创建之初，当时公司宣传的理念是“university but pay”，就很明确的表达出了公司的一些理念：这里的层级结构像在大学中一样平坦，大家在这里获得并分享知识，一起成长，但是又有工资。Martin Fowler有篇关于<a href="http://www.martinfowler.com/bliki/RoysSocialExperiment.html">Thoughtworks是什么</a>的文章(事实上，我最初也正是被这篇文章所吸引，而产生加入<a href="http://www.thoughtworks.com/">Thoughtworks</a>的想法的)，非常有意思。</p></p>
+
+
+
+
+<p><p>历史上，当现实与<a href="http://www.thoughtworks.com/">Thoughtworks</a>尊崇的文化有冲突时，如何平衡呢？Thoughtworks的一贯做法是：不向损害文化的现实妥协，哪怕会因此而付出很大的代价。事实上，每个公司都会在不同程度上尊重自己的开发人员(毕竟，他们是为你工作的)，但是很难见到哪个公司做的比Thoughtworks更好。当然，每个人理解的尊重的方式都可能不同的，我自己比较认可而且Thoughtworks也提供给我的方式是这样的：</p></p>
+
+
+
+
+<p><ol> <li>你可以专心致志的做开发  </li><li>你可以自由的表达自己的想法，和别人讨论设计  </li><li>公司提供了宽松，开放的环境，鼓励交流  </li><li>有很多优秀的开发人员在你周围，你可以随意与他们讨论  </li><li>软硬件都是为了支持开发团队而展开的  </li><li>虽然你是开发人员，你可以take更多的responsibility，比如QA/BA等  </li><li>有很多有意思的和不那么有意思的项目，鼓励学习更多的技能  </li><li>没有常见的“死领导”，肩膀上很轻松  </li><li>鼓励你分享自己的知识</li></ol></p>
+
+
+
+
+<p><p>事实上，对于Thoughtworks来说，员工永远是其最为宝贵的资产，办公室，计算机，玻璃墙，所有都是可以替代的，唯独这些自称为Thoughtworker的，才是最宝贵并且不可替代的。</p></p>
+
+
+
+
+<p><p>TWI的组织者也显然为这种内部培训投入了很多的精力和实践，使得我们的学习过程一直处于轻松，活跃的气氛中，可以说是我参加过最精彩的培训，做到了真正的寓教于乐。</p></p>
+
+
+
+
+<p><p><a href="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-25-15.40.121.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="2012-07-25 15.40.12" border="0" alt="2012-07-25 15.40.12" src="http://www.icodeit.org/wp-content/uploads/2012/08/2012-07-25-15.40.12_thumb.jpg" width="644" height="484" /></a></p></p>
+
+
+
+
+<p><p>言归正传，什么是敏捷呢？简而言之，就是敏捷地进行软件开发。如何做到“敏捷地”呢？有很多不同的理论支持，这些理论也并非凭空产生，是通过大量的工程实践而总结出来的经验，事实上，敏捷开发是由很多的方法论组成的集合，敏捷宣言中提到的：</p></p>
+
+
+
+
+<p><ol> <li>个体与交互 over 过程和工具  </li><li>可以工作的软件 over 面面俱到的文档  </li><li>客户合作 over 合同谈判  </li><li>响应变化 over 遵循计划</li></ol></p>
+
+
+
+
+<p><p>(虽然右边的项也有价值，但是我们认为左边的项有更大的价值)</p></p>
+
+
+
+
+<p><p>可以看到，这些都是比较common的一些原则，并没有规定注入如TDD，结对之类的实践。Thoughtworks为什么要使用这些实践呢？因为这些实践是我们在实际项目中，觉得行之有效：能保证软件质量和开发效率，能帮助团队迅速成长，对公司和个人都很有帮助。与其他所有的学习规律一样：</p></p>
+
+
+
+
+<p><ol> <li>首先follow一种实践，并身体力行  </li><li>与实际问题结合，发现实践可能的不足  </li><li>改进这种实践，并将其分享</li></ol></p>
+
+
+
+
+<p><p>外界对于<a href="http://www.thoughtworks.com/">Thoughtworks</a>有一些传言，经常会给不熟悉的人这样一种错觉：一群不会编程，只是死记硬背下一些方法论的年轻人，到处招摇撞骗。事实上，Thoughtworker们是我见过的，最具活力，也最热心于钻研技术，热爱分享的年轻人。而且我没有遇到任何一个同事是将敏捷奉为圭臬，或者将其上升到不容置疑的高度，大家都会遵守一些原则，也会采用一些实践，但是不会轻易相信那就是最佳的方式。</p></p>
+
+
+
+
+<p><p>可能最后一段看着像是在写广告，那就请将他当成广告吧。给那些曾经像我一样，热爱技术却感觉希望渺茫，每天做一些平淡而无挑战的工作，但是又渴望改变，渴望和更多优秀的同好们一起工作的人们的一个广告。她可能并非最好的选择，但是她绝对是一个值得一试的好选择。</p>
+</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Revert workflow in git]]></title>
+    <link href="http://abruzzi.github.com/blog/2012/07/revert-workflow-in-git/"/>
+    <updated>2012-07-17T00:00:00+08:00</updated>
+    <id>http://abruzzi.github.com/blog/2012/07/revert-workflow-in-git</id>
+    <content type="html"><![CDATA[<p><h2>git中Revert的基本使用流程</h2></p>
+
+
+
+
+<p><ul>
+<li>git log (找出引入bug的commit, 比如说是<em>...d4e5f6...</em>)</li>
+<li>git revert <em>...d4e5f6...</em></li>
+<li>git push</li>
+</ul></p>
+
+
+
+
+<p><p>如果不幸这个过程中有其他同事进行了push，且与你的commit有冲突，则需要</p></p>
+
+
+
+
+<p><pre><code>git pull --rebase
+</code></pre></p>
+
+
+
+
+<p><p>解决冲突之后，按照标准的提交流程操作:</p></p>
+
+
+
+
+<p><pre><code>git add &lt;changes&gt;
+</code></pre></p>
+
+
+
+
+<p><p>最后再将这个revert(也就是一个commit)push到remote上。</p></p>
+
+
+
+
+<p><p>一般来说，这时候我们需要在<em>work tree</em>里fix引入的bug，所以需要对刚才的revert做一次revert，这时候引入错误的commit应该在我们的<em>work tree</em>中，这样就可以按照正常的开发流程来做了: push(对revert的push)成功之后，会得到一个新的commit的hash，比如叫<em>...a1b2c3...</em>,则使用：</p></p>
+
+
+
+
+<p><pre><code>git revert -n ...a1b2c3...
+</code></pre></p>
+
+
+
+
+<p><p>现在我们的work tree里就是需要修改的代码了。</p>
+</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby开发中的一些工具及概念]]></title>
+    <link href="http://abruzzi.github.com/blog/2012/04/ruby%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B7%A5%E5%85%B7%E5%8F%8A%E6%A6%82%E5%BF%B5/"/>
+    <updated>2012-04-24T00:00:00+08:00</updated>
+    <id>http://abruzzi.github.com/blog/2012/04/ruby开发中的一些工具及概念</id>
+    <content type="html"><![CDATA[<p><p>加入<a href="http://www.thoughtworks.com/">新公司</a>之后，一个最明显的感受就是要学到东西非常多，以前只能在工作之余研究的各种技术现在变成了主业。人们学习新技术最常用的方法就是类比，即人们总是将新的东西和已经掌握的技术进行比较，计算出差异，从而以最小的代价，理解最多的内容。但是在这里，好像很难使用到类比，因为太多的东西都是初次接触，这样需要花很大的代价来学习，但是可以为后续的学习创造类比学习的条件。</p> <p>言归正传，之前理解中的ruby是这样的：它是一个动态弱类型的语言，支持多种范式的编程(面向对象，FP等)，这些都和python很类似，而我对于python还算熟悉，甚至还用python做过一些小工具。但是，在真正学习之后，特别是看到实际项目代码的结构之后，才发现其中有很多的内容是很难与既有的技术类比的(当然，很可能是我自己大脑中可供类比的资源太少)。</p> <p>这里列举几个对我个人比较新的概念及技术：rvm, gem, Rake, RSpec, Cucumber。</p> <p>gem是指用ruby写成的软件包(应用程序或者库)，一个gem就是一个独立的，可发布的包(有点像Java中的jar)。<a href="http://en.wikipedia.org/wiki/RubyGems">RubyGems</a>是gem的管理器，用以管理各个gem的安装，同时<a href="http://en.wikipedia.org/wiki/RubyGems">RubyGems</a>也表示一个用于发布/更新gem的服务器。多个gem可以组成一个gemset，用以将多个gem组织在一起，比如你的某个ruby项目需要用到第三方的gem，而且每个gem都有特定的版本，那么就可以将这些gem组织在一起，形成一个gemset。ruby的gem管理机制很像是linux下的包管理机制，如apt-get，yum等：有依赖计算，自动下载并安装的功能。</p> <p><a href="http://beginrescueend.com/">rvm</a>是ruby-version-manager的简写，是一个ruby的版本管理工具，它支持你在多个ruby版本之间切换，如在你的app-1中，你使用了ruby的1.8版本，而在app-2中，使用了ruby的1.7版本，都可以通过rvm来进行管理。只需要在你的app的根目录下，创建一个.rvmrc的文件，其中制定需要的ruby版本及gemset的名称即可。gemset会保存在~/.rvm目录下。</p> <p>通常来讲，你的应用目录下应该需要这样两个文件：<em>Gemfile</em>和<em>.rvmrc</em>，其中Gemfile指定你的gem从何处下载，及需要哪些gem，以及这些gem各自的版本信息，而.rvmrc则配置你的ruby解释器的版本，以及Gemfile中定义的gemset中的gem保存在何处。</p> <div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> source 'https://rubygems.org'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span> gem 'rails', '3.2.3'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span> gem 'bootstrap-sass', '2.0.0'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span> gem 'bcrypt-ruby', '3.0.1'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span> group :development, :test <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span>     gem 'sqlite3', '1.3.5'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span>     gem 'rspec-rails', '2.9.0'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum10">  10:</span> end</pre><!--CRLF--></div></div>
+<p>一个Gemfile的片段</p>
+<div id="codeSnippetWrapper">
+<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> rvm --create use <a href="mailto:ree-1.8.7@my-gem-set">ree-1.8.7@my-gem-set</a></pre><!--CRLF--></div></div>
+<p>.rvmrc的片段，my-gem-set是一个自定义的gemset。</p>
+<p><a href="http://rake.rubyforge.org/">Rake</a>类似于ruby下的<a href="http://en.wikipedia.org/wiki/Make_(software)">Makefile</a>，不过是用ruby语言自己写的，而且更方便一些，主要的功能和Makefile一样，用以计算依赖等。</p>
+<p><a href="http://rspec.info/">RSpec</a>是ruby下进行<a href="http://en.wikipedia.org/wiki/Behavior_Driven_Development">BDD</a>的工具，用以从“业务角度”描述测试的场景，然后便于TDD的进行。</p>
+<div id="codeSnippetWrapper">
+<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> require 'spec_helper'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span> describe <span style="color: #006080">"Static pages"</span> <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span>     subject { page }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span>     describe <span style="color: #006080">"Home page"</span> <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span>         before { visit root_path }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span>         it { should have_selector('h1', :text =&gt;<span style="color: #008000">; 'My application') }</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span>         it { should have_selector('title', :text =&gt;<span style="color: #008000">; "My application title") }</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum10">  10:</span>         it { should_not have_selector('title', :text =&gt;<span style="color: #008000">; '| Home') }</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum11">  11:</span>     end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum12">  12:</span> end</pre><!--CRLF--></div></div>
+<p>&nbsp;</p>
+<p><a href="http://cukes.info/">Cucumber</a>也是ruby下<a href="http://en.wikipedia.org/wiki/Behavior_Driven_Development">BDD</a>的工具，不过Cucumber面向的对象并不需要对技术有任何的了解，事实上cucumber的feature文件更像是自然语言写的文章。cucumber由feature文件(从纯业务的角度来描述应用程序应该具备的功能)，step文件(step理解feature中的描述，并试图将这些描述转换成应用程序的逻辑)，这个过程可能比较耗时，但是觉得值得一试，相信我，没有什么比完全通过测试的代码更令人放心了。</p>
+<p>这里的每个主题都需要以一整篇或者一个系列来讨论，这里只是做一个大致的介绍，我会一边学习，一边将自己的理解整理出来。rspec和cucumber都已经有一些比较有意思的例子，rake的例子也正在整理，希望不会拖太长时间。</p></p>
+
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Revert workflow in git - Qiu Juntao on github with octopress</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="git中Revert的基本使用流程 git log (找出引入bug的commit, 比如说是&#8230;d4e5f6&#8230;)
+git revert &#8230;d4e5f6&#8230;
+git push 如果不幸这个过程中有其他同事进行了push，且与你的commit有冲突，则需要 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/blog/2012/07/revert-workflow-in-git/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Qiu Juntao on github with octopress" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Qiu Juntao on github with octopress</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Revert Workflow in Git</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-17T00:00:00+08:00" pubdate data-updated="true">Jul 17<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><h2>git中Revert的基本使用流程</h2></p>
+
+<p><ul>
+<li>git log (找出引入bug的commit, 比如说是<em>&#8230;d4e5f6&#8230;</em>)</li>
+<li>git revert <em>&#8230;d4e5f6&#8230;</em></li>
+<li>git push</li>
+</ul></p>
+
+<p><p>如果不幸这个过程中有其他同事进行了push，且与你的commit有冲突，则需要</p></p>
+
+<p><pre><code>git pull --rebase
+</code></pre></p>
+
+<p><p>解决冲突之后，按照标准的提交流程操作:</p></p>
+
+<p><pre><code>git add &lt;changes&gt;
+</code></pre></p>
+
+<p><p>最后再将这个revert(也就是一个commit)push到remote上。</p></p>
+
+<p><p>一般来说，这时候我们需要在<em>work tree</em>里fix引入的bug，所以需要对刚才的revert做一次revert，这时候引入错误的commit应该在我们的<em>work tree</em>中，这样就可以按照正常的开发流程来做了: push(对revert的push)成功之后，会得到一个新的commit的hash，比如叫<em>&#8230;a1b2c3&#8230;</em>,则使用：</p></p>
+
+<p><pre><code>git revert -n ...a1b2c3...
+</code></pre></p>
+
+<p><p>现在我们的work tree里就是需要修改的代码了。</p>
+</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-17T00:00:00+08:00" pubdate data-updated="true">Jul 17<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/tools/'>Tools</a>, <a class='category' href='/category/thoughtworks/'>thoughtworks</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/blog/2012/07/revert-workflow-in-git/" data-via="" data-counturl="http://abruzzi.github.com/blog/2012/07/revert-workflow-in-git/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/07/post-from-python-vim-2/" title="Previous Post: Post from python + vim">&laquo; Post from python + vim</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/07/%E4%BB%80%E4%B9%88%E6%98%AFjsonp%E5%8F%8A%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8jsonp/" title="Next Post: 什么是JSONP及如何使用JSONP?">什么是JSONP及如何使用JSONP? &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/10/first-post-of-github-blog/">First post of github blog (powered by octopress)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/%E4%B8%80%E4%B8%AA%E8%8B%B1%E8%AF%AD%E5%AD%A6%E4%B9%A0%E7%AB%99%E7%82%B9%E5%92%8C%E4%B8%80%E4%B8%AA%E5%B0%8F%E8%84%9A%E6%9C%AC/">一个英语学习站点和一个小脚本</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/thoughtworks-immersion-day-3/">Thoughtworks Immersion Day 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/thoughtworks-immersion-day-2/">Thoughtworks Immersion Day 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/08/thoughtworks-immersion-day-1/">Thoughtworks Immersion Day 1</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
