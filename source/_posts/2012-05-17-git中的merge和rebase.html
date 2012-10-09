@@ -9,7 +9,7 @@ comments: true
 ---
 <p><p>使用git时，如果遇到分支的情况，比如两个开发人员都从commit2开始各自开发，然后分贝在本地完成了两个commit：</p></p>
 
-<p><p><a href="http://www.icodeit.org/wp-content/uploads/2012/05/branch.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="branch" border="0" alt="branch" src="http://www.icodeit.org/wp-content/uploads/2012/05/branch_thumb.png" width="196" height="361" /></a></p></p>
+<p><p><a href="http://images/2012/05/branch.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="branch" border="0" alt="branch" src="http://images/2012/05/branch_thumb.png" width="196" height="361" /></a></p></p>
 
 <p><p>此时，如果要将两个分支的代码合并起来，通常会有两种方式，一种对两个分支的代码进行merge，通常会执行的命令为:</p></p>
 
@@ -17,11 +17,11 @@ comments: true
 
 <p><p>这时的版本库历史看起来会是这样：</p></p>
 
-<p><p><a href="http://www.icodeit.org/wp-content/uploads/2012/05/merge.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="merge" border="0" alt="merge" src="http://www.icodeit.org/wp-content/uploads/2012/05/merge_thumb.png" width="197" height="460" /></a></p></p>
+<p><p><a href="http://images/2012/05/merge.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="merge" border="0" alt="merge" src="http://images/2012/05/merge_thumb.png" width="197" height="460" /></a></p></p>
 
 <p><p>不过通常我们想要的是，保持一个较为简单的历史轨迹，分支太多的话会显得比较凌乱，当引入bug或者其他问题时，可能会影响到追踪。另一种做法是先将某一个分支A上的提交保存下来，然后将分支B上的，对于commit2的修改作用到commit2上，然后将保存起来的修改作用到新的结果上：</p></p>
 
-<p><p><a href="http://www.icodeit.org/wp-content/uploads/2012/05/rebase.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="rebase" border="0" alt="rebase" src="http://www.icodeit.org/wp-content/uploads/2012/05/rebase_thumb.png" width="200" height="559" /></a></p></p>
+<p><p><a href="http://images/2012/05/rebase.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="rebase" border="0" alt="rebase" src="http://images/2012/05/rebase_thumb.png" width="200" height="559" /></a></p></p>
 
 <p><p>对应的命令为：</p></p>
 
