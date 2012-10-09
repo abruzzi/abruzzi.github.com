@@ -4,7 +4,7 @@
   <title><![CDATA[Qiu Juntao on github with octopress]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2012-10-08T23:42:01+08:00</updated>
+  <updated>2012-10-09T10:42:56+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,13 +14,19 @@
 
   
   <entry>
-    <title type="html"><![CDATA[first-post-of-github-blog]]></title>
+    <title type="html"><![CDATA[First post of github blog (powered by octopress)]]></title>
     <link href="http://abruzzi.github.com/blog/2012/10/08/first-post-of-github-blog/"/>
     <updated>2012-10-08T23:13:00+08:00</updated>
     <id>http://abruzzi.github.com/blog/2012/10/08/first-post-of-github-blog</id>
-    <content type="html"><![CDATA[<h2>How to configure octopress</h2>
+    <content type="html"><![CDATA[<h2>What is Octopress anyway</h2>
 
-<p>refer to the <a href="http://octopress.org/docs/deploying/github/">How to deploying to github</a></p>
+<p>Here is a short description from <a href="http://octopress.org/">octopress.org</a>:</p>
+
+<blockquote><p>   Octopress is a framework designed by Brandon Mathis for Jekyll, the blog aware static site generator powering Github Pages. To start blogging with Jekyll, you have to write your own HTML templates, CSS, Javascripts and set up your configuration. But with Octopress All of that is already taken care of. Simply clone or fork Octopress, install dependencies and the theme, and you’re set.</p></blockquote>
+
+<h2>How to configure octopress</h2>
+
+<p>The document presented by octopress itself is really great, you car refer <a href="http://octopress.org/docs/deploying/github/">How to deploying to github</a> for more details (as what I did).</p>
 
 <h2>I found a weird issue when try to generate</h2>
 
