@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Tools | Qiu Juntao on github with octopress]]></title>
   <link href="http://abruzzi.github.com/category/tools/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2012-10-09T14:21:22+08:00</updated>
+  <updated>2012-10-09T15:02:17+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -160,7 +160,7 @@ cool to write blog in my favorest editor.</p></p>
 
 
 
-<p><p><a href="http://images/2012/05/branch.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="branch" border="0" alt="branch" src="http://images/2012/05/branch_thumb.png" width="196" height="361" /></a></p></p>
+<p><p><a href="http://abruzzi.github.com/images/2012/05/branch.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="branch" border="0" alt="branch" src="http://abruzzi.github.com/images/2012/05/branch_thumb.png" width="196" height="361" /></a></p></p>
 
 
 
@@ -180,7 +180,7 @@ cool to write blog in my favorest editor.</p></p>
 
 
 
-<p><p><a href="http://images/2012/05/merge.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="merge" border="0" alt="merge" src="http://images/2012/05/merge_thumb.png" width="197" height="460" /></a></p></p>
+<p><p><a href="http://abruzzi.github.com/images/2012/05/merge.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="merge" border="0" alt="merge" src="http://abruzzi.github.com/images/2012/05/merge_thumb.png" width="197" height="460" /></a></p></p>
 
 
 
@@ -190,7 +190,7 @@ cool to write blog in my favorest editor.</p></p>
 
 
 
-<p><p><a href="http://images/2012/05/rebase.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="rebase" border="0" alt="rebase" src="http://images/2012/05/rebase_thumb.png" width="200" height="559" /></a></p></p>
+<p><p><a href="http://abruzzi.github.com/images/2012/05/rebase.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="rebase" border="0" alt="rebase" src="http://abruzzi.github.com/images/2012/05/rebase_thumb.png" width="200" height="559" /></a></p></p>
 
 
 
@@ -222,7 +222,7 @@ cool to write blog in my favorest editor.</p></p>
 <p>$N表示光标跳转时的顺序，$0为最终停止的地方。${N:default}这种记法则表示第N个stub处应该填写的默认值。当然，它们的模板语言可能会更复杂一些，我在<a href="https://code.google.com/p/utouch/" target="_blank">utouch</a>中的实现则相对简单一些。如我定义的for模板如下：</p>
 <div id="codeSnippetWrapper">
 <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> <span style="color: #0000ff">for</span>(<span style="color: #0000ff">int</span> ${1:i} = ${2:0}; ${1:} &lt; ${3:count}; ${1:} += ${4:1}){\n\t${0:<span style="color: #008000">/*code*/</span>}\n}\n</pre><!--CRLF--></div></div>
-<p><a href="http://images/2012/02/image.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="image" border="0" alt="image" src="http://images/2012/02/image_thumb.png" width="524" height="238" /></a></p>
+<p><a href="http://abruzzi.github.com/images/2012/02/image.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="image" border="0" alt="image" src="http://abruzzi.github.com/images/2012/02/image_thumb.png" width="524" height="238" /></a></p>
 <p>语法大致与<a href="http://www.e-texteditor.com/" target="_blank">The E Editor</a>的类似，下面来分析下实际的需求：</p>
 <ul>
 <li>每个snippet具有一个自己的模板 
@@ -263,7 +263,7 @@ cool to write blog in my favorest editor.</p></p>
 
 
 <p><p>当温度在0度以上时，输出一个加号(+)，否则输出一个减号(-),然后是温度值。运行结果如下：</p>
-<p><a href="http://images/2012/02/arduino-temperature.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="arduino-temperature" border="0" alt="arduino-temperature" src="http://images/2012/02/arduino-temperature_thumb.png" width="603" height="398" /></a></p>
+<p><a href="http://abruzzi.github.com/images/2012/02/arduino-temperature.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="arduino-temperature" border="0" alt="arduino-temperature" src="http://abruzzi.github.com/images/2012/02/arduino-temperature_thumb.png" width="603" height="398" /></a></p>
 <p>另外，arduino自带的串口查看器略显粗糙，可以参看<a href="http://www.icodeit.org/%E4%BD%BF%E7%94%A8securecrt%E8%BF%9E%E6%8E%A5%E4%B8%B2%E5%8F%A3/" target="_blank">这篇文章</a>，使用SecureCRT作为串口的查看器。</p></p>
 
 ]]></content>
