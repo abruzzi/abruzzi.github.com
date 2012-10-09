@@ -1,0 +1,37 @@
+---
+layout: post
+title: Revert workflow in git
+categories:
+- thoughtworks
+- Tools
+tags: []
+published: true
+comments: false
+---
+<p><h2>git中Revert的基本使用流程</h2></p>
+
+<p><ul>
+<li>git log (找出引入bug的commit, 比如说是<em>...d4e5f6...</em>)</li>
+<li>git revert <em>...d4e5f6...</em></li>
+<li>git push</li>
+</ul></p>
+
+<p><p>如果不幸这个过程中有其他同事进行了push，且与你的commit有冲突，则需要</p></p>
+
+<p><pre><code>git pull --rebase
+</code></pre></p>
+
+<p><p>解决冲突之后，按照标准的提交流程操作:</p></p>
+
+<p><pre><code>git add &lt;changes&gt;
+</code></pre></p>
+
+<p><p>最后再将这个revert(也就是一个commit)push到remote上。</p></p>
+
+<p><p>一般来说，这时候我们需要在<em>work tree</em>里fix引入的bug，所以需要对刚才的revert做一次revert，这时候引入错误的commit应该在我们的<em>work tree</em>中，这样就可以按照正常的开发流程来做了: push(对revert的push)成功之后，会得到一个新的commit的hash，比如叫<em>...a1b2c3...</em>,则使用：</p></p>
+
+<p><pre><code>git revert -n ...a1b2c3...
+</code></pre></p>
+
+<p><p>现在我们的work tree里就是需要修改的代码了。</p>
+</p>

@@ -1,0 +1,48 @@
+---
+layout: post
+title: Post from python + vim
+categories:
+- blog
+- Tools
+tags: []
+published: true
+comments: false
+---
+<p><h2>How to load a key-value pair config file</h2></p>
+
+<p><p>Recently, I want to parse a simple configration file in python, and I<br />
+don't like use other existing libraries, because they are all<br />
+full-functionality, just too complex for me.</p></p>
+
+<p><p>Finally I found a simple way to do that, code is following:</p></p>
+
+<p><pre><code>def loadUserInfo(fileName):
+    userinfo = {}
+    file = open(fileName, "r")
+    while file:
+        line = file.readline()
+        if len(line) == 0:
+            break
+        if line.startswith('#'):
+            continue
+        key, value = line.split("=")
+        userinfo[key.strip()] = value.strip()</code></pre></p>
+
+<p>    return userinfo
+</p>
+
+<p><p>Key features:</p></p>
+
+<p><ol>
+<li>Simple enough</li>
+<li>Comment supported</li>
+<li>Nothing much </li>
+</ol></p>
+
+<p><h2>Misc</h2></p>
+
+<p><p>Another intersting thing is this blog is post by my vim + python, it's<br />
+cool to write blog in my favorest editor.</p></p>
+
+<p><p>中文应该没有问题吧？</p>
+</p>
