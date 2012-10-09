@@ -3,9 +3,9 @@
 # ----------------------- #
 
 url: http://abruzzi.github.com
-title: My Octopress Blog
+title: Qiu Juntao on github with octopress
 subtitle: A blogging framework for hackers.
-author: Your Name
+author: Qiu Juntao
 simple_search: http://google.com/search
 description:
 
@@ -45,7 +45,14 @@ titlecase: true       # Converts page and post titles to titlecase
 
 # list each of the sidebar modules you want to include, in the order you want them to appear.
 # To add custom asides, create files in /source/_includes/custom/asides/ and add them to the list like 'custom/asides/custom_aside_name.html'
-default_asides: [asides/recent_posts.html, asides/github.html, asides/twitter.html, asides/delicious.html, asides/pinboard.html, asides/googleplus.html]
+default_asides: [asides/recent_posts.html, asides/weibo.html, asides/github.html, asides/twitter.html, asides/delicious.html, asides/pinboard.html, asides/googleplus.html]
+
+weibo_uid: 2624277973
+weibo_verifier: a98ab59c
+weibo_fansline: 0
+weibo_show: true
+weibo_pic: true
+weibo_skin: 10
 
 # Each layout uses the default asides, but they can have their own asides instead. Simply uncomment the lines below
 # and add an array with the asides you want to use.
