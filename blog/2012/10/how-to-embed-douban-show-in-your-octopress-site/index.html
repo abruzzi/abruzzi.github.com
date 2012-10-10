@@ -5,11 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: 未分类 - Qiu Juntao on github with octopress</title>
+  <title>How to embed Douban-Show in your octopress site - Qiu Juntao on github with octopress</title>
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Category: 未分类">
+  <meta name="description" content="What do you need? A valid douban account of course
+octopress site Step by step Let&#8217;s do it step by step:
+Login your douban account at first, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://abruzzi.github.comcategory/未分类/">
+  <link rel="canonical" href="http://abruzzi.github.com/blog/2012/10/how-to-embed-douban-show-in-your-octopress-site/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -63,35 +65,114 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: 未分类</h1>
+    
+      <h1 class="entry-title">How to Embed Douban-Show in Your Octopress Site</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-10T21:08:00+08:00" pubdate data-updated="true">Oct 10<span>th</span>, 2012</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><h3>What do you need?</h3>
 
-  
-  <h2>2012</h2>
-
-<article>
-  
-<h1><a href="/blog/2012/08/%E4%B8%80%E4%B8%AA%E8%8B%B1%E8%AF%AD%E5%AD%A6%E4%B9%A0%E7%AB%99%E7%82%B9%E5%92%8C%E4%B8%80%E4%B8%AA%E5%B0%8F%E8%84%9A%E6%9C%AC/">一个英语学习站点和一个小脚本</a></h1>
-<time datetime="2012-08-20T00:00:00+08:00" pubdate><span class='month'>Aug</span> <span class='day'>20</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/category/未分类/'>未分类</a></span>
-</footer>
+<ul>
+<li>A valid douban account of course</li>
+<li>octopress site</li>
+</ul>
 
 
-</article>
+<h3>Step by step</h3>
 
+<p>Let&#8217;s do it step by step:
+Login your douban account at first, and then try to access this <a href="http://www.douban.com/service/badgemakerjs">link</a>, then you&#8217;ll prabobly get a similar script like this:</p>
+
+<pre><code>&lt;script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;amp;n=8&amp;amp;columns=2" &gt;&lt;/script&gt;
+</code></pre>
+
+<p>and then simply create a new file under the following path(in octopress repo):</p>
+
+<pre><code>$ touch source/_includes/asides/douban.html
+</code></pre>
+
+<p>and then add the link you generated and fulfill it in the following structure:</p>
+
+<pre><code>&lt;section&gt;
+&lt;h2&gt;What did I read&lt;/h2&gt;
+&lt;div&gt;
+    &lt;script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;amp;n=8&amp;amp;columns=2" &gt;&lt;/script&gt;
+&lt;/div&gt;
+&lt;/section&gt;
+</code></pre>
+
+<p>finally, add the page path in <em>_config.html</em>:</p>
+
+<pre><code>default_asides: [..., asides/douban.html, ...]
+</code></pre>
+
+<p>now you are done.</p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-10T21:08:00+08:00" pubdate data-updated="true">Oct 10<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/blog/2012/10/how-to-embed-douban-show-in-your-octopress-site/" data-via="" data-counturl="http://abruzzi.github.com/blog/2012/10/how-to-embed-douban-show-in-your-octopress-site/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/10/first-post-of-github-blog/" title="Previous Post: First post of github blog (powered by octopress)">&laquo; First post of github blog (powered by octopress)</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
 </div>
