@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: thoughtworks - Qiu Juntao on github with octopress</title>
+  <title>Using gradle to setup standard java project - Qiu Juntao on github with octopress</title>
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Category: thoughtworks">
+  <meta name="description" content="Generate typical project layout If you are as lazy as I am, you may want to generate typecial project layout automatically, let&#8217;s do it by &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://abruzzi.github.comcategory/thoughtworks/">
+  <link rel="canonical" href="http://abruzzi.github.com/blog/2012/10/using-gradle-to-setup-standard-java-project/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -63,133 +63,121 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Thoughtworks</h1>
+    
+      <h1 class="entry-title">Using Gradle to Setup Standard Java Project</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-12T23:24:00+08:00" pubdate data-updated="true">Oct 12<span>th</span>, 2012</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><h2>Generate typical project layout</h2>
 
-  
-  <h2>2012</h2>
+<p>If you are as lazy as I am, you may want to generate typecial project layout automatically, let&#8217;s do it by using <a href="http://www.gradle.org/">gradle</a>.</p>
 
-<article>
-  
-<h1><a href="/blog/2012/08/thoughtworks-immersion-day-3/">Thoughtworks Immersion Day 3</a></h1>
-<time datetime="2012-08-02T00:00:00+08:00" pubdate><span class='month'>Aug</span> <span class='day'>02</span> <span class='year'>2012</span></time>
+<p>Simply add the following lines into your build.gradle:</p>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/category/thoughtworks/'>thoughtworks</a>, <a class='category' href='/category/软件设计/'>软件设计</a></span>
-</footer>
+<pre><code>apply plugin: 'java'
 
+task "create-dirs" &lt;&lt; {
+    sourceSets*.java.srcDirs*.each {it.mkdirs()}
+    sourceSets*.resources.srcDirs*.each {it.mkdirs()}
+}
+</code></pre>
 
-</article>
+<p>then using gradle to run the task defined &#8220;create-dirs&#8221;:</p>
 
+<pre><code>$ gradle create-dirs
+</code></pre>
 
+<p>you will get the directories structure like this:</p>
 
-<article>
-  
-<h1><a href="/blog/2012/08/thoughtworks-immersion-day-2/">Thoughtworks Immersion Day 2</a></h1>
-<time datetime="2012-08-02T00:00:00+08:00" pubdate><span class='month'>Aug</span> <span class='day'>02</span> <span class='year'>2012</span></time>
+<pre><code>.
+├── build.gradle
+└── src
+    ├── main
+    │   ├── java
+    │   └── resources
+    └── test
+        ├── java
+        └── resources
+</code></pre>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/category/thoughtworks/'>thoughtworks</a>, <a class='category' href='/category/软件设计/'>软件设计</a></span>
-</footer>
+<p>If you are using intellij as your default IDE, then you can apply the &#8216;idea&#8217; plugin for the project:</p>
 
+<pre><code>apply plugin: 'java'
+apply plugin: 'idea'
+</code></pre>
 
-</article>
+<p>and then:</p>
 
+<pre><code>$ gradle idea
+</code></pre>
 
-
-<article>
-  
-<h1><a href="/blog/2012/08/thoughtworks-immersion-day-1/">Thoughtworks Immersion Day 1</a></h1>
-<time datetime="2012-08-01T00:00:00+08:00" pubdate><span class='month'>Aug</span> <span class='day'>01</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/category/thoughtworks/'>thoughtworks</a>, <a class='category' href='/category/软件设计/'>软件设计</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2012/07/revert-workflow-in-git/">Revert workflow in git</a></h1>
-<time datetime="2012-07-17T00:00:00+08:00" pubdate><span class='month'>Jul</span> <span class='day'>17</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/category/tools/'>Tools</a>, <a class='category' href='/category/thoughtworks/'>thoughtworks</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2012/04/ruby%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B7%A5%E5%85%B7%E5%8F%8A%E6%A6%82%E5%BF%B5/">Ruby开发中的一些工具及概念</a></h1>
-<time datetime="2012-04-24T00:00:00+08:00" pubdate><span class='month'>Apr</span> <span class='day'>24</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/category/ruby/'>ruby</a>, <a class='category' href='/category/thoughtworks/'>thoughtworks</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2012/04/javascript%E7%9A%84bdd%E6%A1%86%E6%9E%B6jasmine%E7%AE%80%E4%BB%8B/">JavaScript的BDD框架Jasmine简介</a></h1>
-<time datetime="2012-04-06T00:00:00+08:00" pubdate><span class='month'>Apr</span> <span class='day'>06</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/category/javascript/'>JavaScript</a>, <a class='category' href='/category/thoughtworks/'>thoughtworks</a>, <a class='category' href='/category/软件设计/'>软件设计</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2012/04/2012%EF%BC%8C%E8%BD%BB%E8%A3%85%E5%89%8D%E8%A1%8C/">2012，轻装前行</a></h1>
-<time datetime="2012-04-04T00:00:00+08:00" pubdate><span class='month'>Apr</span> <span class='day'>04</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/category/thoughtworks/'>thoughtworks</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2012/03/%E8%B5%B0%E5%87%BA%E8%88%92%E9%80%82%E5%8C%BA/">走出舒适区</a></h1>
-<time datetime="2012-03-05T00:00:00+08:00" pubdate><span class='month'>Mar</span> <span class='day'>05</span> <span class='year'>2012</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/category/thoughtworks/'>thoughtworks</a></span>
-</footer>
-
-
-</article>
-
+<p>it should generate 3 files out: file.iml, file.ipr, file.iws. You can then open intellij and have fun with code inside, I would like to make a new post to talking about how to setup a java project by using intellij, and using <a href="http://en.wikipedia.org/wiki/Test-driven_development">TDD</a> for coding.</p>
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-12T23:24:00+08:00" pubdate data-updated="true">Oct 12<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/blog/2012/10/using-gradle-to-setup-standard-java-project/" data-via="" data-counturl="http://abruzzi.github.com/blog/2012/10/using-gradle-to-setup-standard-java-project/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/10/how-to-embed-douban-show-in-your-octopress-site/" title="Previous Post: How to embed Douban-Show in your octopress site">&laquo; How to embed Douban-Show in your octopress site</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
 </div>
