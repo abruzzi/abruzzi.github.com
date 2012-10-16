@@ -4,7 +4,7 @@
   <title><![CDATA[Qiu Juntao on github with octopress]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2012-10-15T21:49:24+08:00</updated>
+  <updated>2012-10-16T08:58:40+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,106 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Customize matcher by using hamcrest]]></title>
+    <link href="http://abruzzi.github.com/blog/2012/10/customize-matcher-by-using-hamcrest/"/>
+    <updated>2012-10-15T22:24:00+08:00</updated>
+    <id>http://abruzzi.github.com/blog/2012/10/customize-matcher-by-using-hamcrest</id>
+    <content type="html"><![CDATA[<p>Although we can write tests all by the default matchers that hamcrest provided, but somehow we need the code to be more readable, and maintainable, so it&#8217;s a good way to try customize our own matchers.</p>
+
+<p>We discussed how to TDD in last post, and in the book class we talked:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldGetBookInfo</span><span class="o">(){</span>
+</span><span class='line'>    <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The Ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">book</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;The Ruby programming language&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">book</span><span class="o">.</span><span class="na">getCategory</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Development&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The default <em>is</em> matcher can get the job done, but not that readable, we can simply provide a customized matcher for this case:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldGetBookInfoByMatcher</span><span class="o">(){</span>
+</span><span class='line'>    <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The Ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">book</span><span class="o">,</span> <span class="n">BookMatcher</span><span class="o">.</span><span class="na">isCorrect</span><span class="o">(</span><span class="s">&quot;The Ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Thanks for the flexibility of hamcrest, just extends the <em>BaseMatcher<T></em> like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">BookMatcher</span> <span class="kd">extends</span> <span class="n">BaseMatcher</span><span class="o">&lt;</span><span class="n">Book</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">category</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="nf">BookMatcher</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">category</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">category</span> <span class="o">=</span> <span class="n">category</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">matches</span><span class="o">(</span><span class="n">Object</span> <span class="n">item</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="o">(</span><span class="n">Book</span><span class="o">)</span><span class="n">item</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">book</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">book</span><span class="o">.</span><span class="na">getCategory</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">category</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">describeTo</span><span class="o">(</span><span class="n">Description</span> <span class="n">description</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">BookMatcher</span> <span class="nf">isCorrect</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">category</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">new</span> <span class="nf">BookMatcher</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">category</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Simplified TDD by Using Intellij]]></title>
@@ -994,29 +1094,6 @@ cool to write blog in my favorest editor.</p></p>
     <updated>2012-04-04T00:00:00+08:00</updated>
     <id>http://abruzzi.github.com/blog/2012/04/2012，轻装前行</id>
     <content type="html"><![CDATA[<p><p>一不小心，就差不多一个月没有更新博客了，上个月的事情太多了：从上一家公司离职，然后办理各种社会手续(包括社保医保之类，以及和同学们聚会)，之后回到西安，寻找住处，办理本地的各种社会手续(身份证地址更改，银行卡之类)，其中多亏一个朋友的帮助，很顺利就完成了城际的迁移，到新公司报道，与本地同学小聚等等，趁着这清明假，稍微总结一下。</p> <p>离开了学习/工作近8年的昆明，回到了阔别已久，但感情并不算深厚的“故土”。之前有个同事问我西安是一个什么样的地方，我想了想，回答他说西安是一个很有文化的地方。文化这个东西很有意思，看得见，摸不着，很难说清楚，每个地方都有自己的文化，说西安有文化是指有历史文明的浸润而产生的那种说不清的东西。比如西安的老城墙，钟鼓楼，大小雁塔，随处可见的唐宋书法，碑文，街道小巷的名字等等。</p> <p>我办完手续，还未入职的一天，骑着单车去老城区，老城墙四方四正，建于汉，盛于唐，今天看到的应该为明代的基础，民国重修，建国之后又重修的结果。</p> <p><a href="http://abruzzi.github.com/images/2012/04/image.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" border="0" alt="image" src="http://abruzzi.github.com/images/2012/04/image_thumb.png" width="644" height="390" /></a></p> <p>当然，我自己从事的行业跟历史文化的关系并不太大，公司位于城南三环附近，离老城墙的南门朱雀门尚有十几公里之遥。</p> <p>说说新公司，公司对开发人员的尊重程度是目前呆过的公司中最高的，开发环境(不论是软环境还是硬环境)也非常好，同事们也都很热心，重要的是，他们都很专业，很优秀，跟他们一起工作，开发效率非常高，而且可以学习到更多的东西。当然，压力还是有的，陌生的操作系统，陌生的开发环境，陌生的开发模式，不过这些压力我觉得非常好，它们可以帮助我更快的提升，毕竟，当乐趣变成工作，工作变成乐趣的时候，人们都会乐在其中而感觉不到其他了。</p> <p>在结对的时候，我的buddy和我一起做一个功能，虽然需求很清晰，也很简单，但是在做的过程中，我们可能需要对既有代码进行重构，当到达其中的某个阶段时，我觉得代码已经足够清晰了，但是我的buddy仍然建议进一步的重构。刚开始我觉得这个步骤有点多余，但是重构后的代码真的更加简短，而且代码片段的位置也更容易理解。这只是一个小例子，在结对的过程中，其实就是知识共享的过程，而且这种直接交流的方式可以更好的被接受，并将其消化为自己的知识。</p> <p>在昆明工作期间，由于云南的IT环境较其他城市略显落后，身在其中，未免有夜郎自大的感觉，进入新的环境，很多的东西需要学习，理解。其中肯定会有一些比较难受的时候，但是这个过程对成长来说是必要的，也是珍贵的，2012，轻装前行。</p></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[oracle查询树形关系]]></title>
-    <link href="http://abruzzi.github.com/blog/2012/03/oracle%E6%9F%A5%E8%AF%A2%E6%A0%91%E5%BD%A2%E5%85%B3%E7%B3%BB/"/>
-    <updated>2012-03-08T00:00:00+08:00</updated>
-    <id>http://abruzzi.github.com/blog/2012/03/oracle查询树形关系</id>
-    <content type="html"><![CDATA[<p><p>在日常开发中，经常会处理树形的关系，比如目录树，层次关系等。在关系数据库中，可以为每条记录添加(id, parent_id)这样的对来实现，parent_id标记为空的节点为根。比如，一个最简单的树形表的定义如下：</p> <div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> <span style="color: #0000ff">create</span> <span style="color: #0000ff">table</span> tree(</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>     item_id varchar2(32),</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span>     item_pid varchar2(32),</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span>     item_desc varchar2(256)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span> );</pre><!--CRLF--></div></div>
-<p>&nbsp;</p>
-<p>我们定义一棵简单的树，包含7个节点：</p>
-<p><a href="http://abruzzi.github.com/images/2012/03/image1.png"><img style="background-image: none; border-right-width: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="image" border="0" alt="image" src="http://abruzzi.github.com/images/2012/03/image_thumb1.png" width="137" height="120" /></a></p>
-<p>对于前端展现来讲，最好可以知道每个层次下多少个节点，逐级展开，这样当树很大的时候也不会有效率上的影响。可以使用oracle提供的方式来做到这一点：</p>
-<div id="codeSnippetWrapper">
-<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> <span style="color: #0000ff">select</span> item_id, item_desc, <span style="color: #0000ff">level</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>   <span style="color: #0000ff">from</span> tree t</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span>  <span style="color: #0000ff">start</span> <span style="color: #0000ff">with</span> item_id = <span style="color: #006080">'A'</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span> <span style="color: #0000ff">connect</span> <span style="color: #0000ff">by</span> <span style="color: #0000ff">prior</span> item_id = item_pid</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span>  <span style="color: #0000ff">order</span> <span style="color: #0000ff">by</span> <span style="color: #0000ff">level</span>;</pre><!--CRLF--></div></div>
-<p>&nbsp;</p>
-<p>查询以节点A(根节点)开始的所有节点，并获得其层次：</p>
-<p><a href="http://abruzzi.github.com/images/2012/03/tree_level.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="tree_level" border="0" alt="tree_level" src="http://abruzzi.github.com/images/2012/03/tree_level_thumb.png" width="342" height="155" /></a></p>
-<p>另外，很多时候我们需要获得树上节点的路径，如F节点的路径应为/A/B/F。这个可以通过oracle提供的sys_connect_by_path来实现：</p>
-<div id="codeSnippetWrapper">
-<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> <span style="color: #0000ff">select</span> item_id, item_desc, <span style="color: #0000ff">level</span>, sys_connect_by_path(item_id, <span style="color: #006080">'/'</span>) <span style="color: #0000ff">as</span> <span style="color: #0000ff">path</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>   <span style="color: #0000ff">from</span> tree t</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span>  <span style="color: #0000ff">start</span> <span style="color: #0000ff">with</span> item_id = <span style="color: #006080">'A'</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span> <span style="color: #0000ff">connect</span> <span style="color: #0000ff">by</span> <span style="color: #0000ff">prior</span> item_id = item_pid</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span>  <span style="color: #0000ff">order</span> <span style="color: #0000ff">by</span> <span style="color: #0000ff">level</span>;</pre><!--CRLF--></div></div>
-<p>这样除了层次之外，还可以获得节点的tree-path:</p>
-<p><a href="http://abruzzi.github.com/images/2012/03/tree_level_path.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="tree_level_path" border="0" alt="tree_level_path" src="http://abruzzi.github.com/images/2012/03/tree_level_path_thumb.png" width="417" height="155" /></a></p></p>
 ]]></content>
   </entry>
   
