@@ -4,7 +4,7 @@
   <title><![CDATA[Qiu Juntao on github with octopress]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2012-10-16T08:58:40+08:00</updated>
+  <updated>2012-10-25T23:20:04+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,62 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Using ssh forward to get out of stupid wall]]></title>
+    <link href="http://abruzzi.github.com/blog/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/"/>
+    <updated>2012-10-25T22:59:00+08:00</updated>
+    <id>http://abruzzi.github.com/blog/2012/10/using-ssh-forward-to-get-out-of-stupid-wall</id>
+    <content type="html"><![CDATA[<h2>Generate the public and private key pair</h2>
+
+<p>This step is quite strightforward, just generate the keys by using ssh-keygen:</p>
+
+<pre><code>$ ssh-keygen #specify the key file name (I use the id_ plus remote site hostname)
+</code></pre>
+
+<p>then you&#8217;ll get 2 keys locally, you can do this step in any place, but people do it
+on their home-dir/.ssh, after the creation, you need to change the mask of the key file:</p>
+
+<pre><code>$ chmod 600 id_site
+</code></pre>
+
+<h2>Put the public key remotely</h2>
+
+<p>Okay, once the key is generated, we can simply put the publick key to remote site, and we
+don&#8217;t need to type password any more:</p>
+
+<pre><code>$ scp id_site.pub user@remote:
+</code></pre>
+
+<p>Note the colon at the end of the command above, login to remote server</p>
+
+<pre><code># cat id_site.pub &gt;&gt; .ssh/authorized_keys
+# rm id_site.pub
+</code></pre>
+
+<p>Then go back local machine, and we&#8217;re done</p>
+
+<h2>SSH forward</h2>
+
+<p>Now we can simply login the remote server by using the private key just generated:</p>
+
+<pre><code>$ ssh -i id_site user@remote
+</code></pre>
+
+<p>You then probably be noticed to add the key to system key chain, it is on Mac. And we now don&#8217;t
+need to type the password manually. So let&#8217;s go a little bit further:</p>
+
+<pre><code>$ ssh -N -i id_site -l 15100:localhost:15100 user@remote
+</code></pre>
+
+<p>Then you can access the localhost:1500 port on remote machine BY using the local port, that&#8217;s why it
+called ssh forward I think.</p>
+
+<p>You may note that I&#8217;m using the port 15100, that&#8217;s the mailcatcher web mananger port, I cannot access
+the mailcatcher running on another machine, but somehow, I can ssh it through ssh port(22), so I asked
+one of my <em>smart</em> colleagues, and got this solution.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Customize matcher by using hamcrest]]></title>
@@ -1085,15 +1141,6 @@ cool to write blog in my favorest editor.</p></p>
 <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> it(<span style="color: #006080">'should face to East'</span>, <span style="color: #0000ff">function</span>(){</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>     robot.turn(<span style="color: #006080">'Right'</span>);</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span>     expect(robot).toBeFaceToEast(robot);</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span> });</pre><!--CRLF--></div></div>
 <p>&nbsp;</p>
 <p>当然，这个过程对<a href="http://en.wikipedia.org/wiki/Behavior_Driven_Development">BDD</a>和<a href="http://en.wikipedia.org/wiki/Test-driven_development">TDD</a>都仅仅做了很简单的演示，不过可以看出，这种开发方式确实很有意思，而且一方面可以使得开发和QA分离，另一方面使得开发人员更关注业务需要，而不是根据自己的想法实现很多不必要的功能出来(这个应该是开发人员经常会犯的错误)，从而&#8221;提高&#8221;开发效率。 </p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[2012，轻装前行]]></title>
-    <link href="http://abruzzi.github.com/blog/2012/04/2012%EF%BC%8C%E8%BD%BB%E8%A3%85%E5%89%8D%E8%A1%8C/"/>
-    <updated>2012-04-04T00:00:00+08:00</updated>
-    <id>http://abruzzi.github.com/blog/2012/04/2012，轻装前行</id>
-    <content type="html"><![CDATA[<p><p>一不小心，就差不多一个月没有更新博客了，上个月的事情太多了：从上一家公司离职，然后办理各种社会手续(包括社保医保之类，以及和同学们聚会)，之后回到西安，寻找住处，办理本地的各种社会手续(身份证地址更改，银行卡之类)，其中多亏一个朋友的帮助，很顺利就完成了城际的迁移，到新公司报道，与本地同学小聚等等，趁着这清明假，稍微总结一下。</p> <p>离开了学习/工作近8年的昆明，回到了阔别已久，但感情并不算深厚的“故土”。之前有个同事问我西安是一个什么样的地方，我想了想，回答他说西安是一个很有文化的地方。文化这个东西很有意思，看得见，摸不着，很难说清楚，每个地方都有自己的文化，说西安有文化是指有历史文明的浸润而产生的那种说不清的东西。比如西安的老城墙，钟鼓楼，大小雁塔，随处可见的唐宋书法，碑文，街道小巷的名字等等。</p> <p>我办完手续，还未入职的一天，骑着单车去老城区，老城墙四方四正，建于汉，盛于唐，今天看到的应该为明代的基础，民国重修，建国之后又重修的结果。</p> <p><a href="http://abruzzi.github.com/images/2012/04/image.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" border="0" alt="image" src="http://abruzzi.github.com/images/2012/04/image_thumb.png" width="644" height="390" /></a></p> <p>当然，我自己从事的行业跟历史文化的关系并不太大，公司位于城南三环附近，离老城墙的南门朱雀门尚有十几公里之遥。</p> <p>说说新公司，公司对开发人员的尊重程度是目前呆过的公司中最高的，开发环境(不论是软环境还是硬环境)也非常好，同事们也都很热心，重要的是，他们都很专业，很优秀，跟他们一起工作，开发效率非常高，而且可以学习到更多的东西。当然，压力还是有的，陌生的操作系统，陌生的开发环境，陌生的开发模式，不过这些压力我觉得非常好，它们可以帮助我更快的提升，毕竟，当乐趣变成工作，工作变成乐趣的时候，人们都会乐在其中而感觉不到其他了。</p> <p>在结对的时候，我的buddy和我一起做一个功能，虽然需求很清晰，也很简单，但是在做的过程中，我们可能需要对既有代码进行重构，当到达其中的某个阶段时，我觉得代码已经足够清晰了，但是我的buddy仍然建议进一步的重构。刚开始我觉得这个步骤有点多余，但是重构后的代码真的更加简短，而且代码片段的位置也更容易理解。这只是一个小例子，在结对的过程中，其实就是知识共享的过程，而且这种直接交流的方式可以更好的被接受，并将其消化为自己的知识。</p> <p>在昆明工作期间，由于云南的IT环境较其他城市略显落后，身在其中，未免有夜郎自大的感觉，进入新的环境，很多的东西需要学习，理解。其中肯定会有一些比较难受的时候，但是这个过程对成长来说是必要的，也是珍贵的，2012，轻装前行。</p></p>
 ]]></content>
   </entry>
   
