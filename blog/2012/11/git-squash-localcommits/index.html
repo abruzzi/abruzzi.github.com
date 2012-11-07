@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Using ssh forward to get out of stupid wall - Qiu Juntao on github with octopress</title>
+  <title>Git squash localcommits - Qiu Juntao on github with octopress</title>
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Generate the public and private key pair This step is quite strightforward, just generate the keys by using ssh-keygen: $ ssh-keygen #specify the key &hellip;">
+  <meta name="description" content="There is a common scenario: we have lots of local commits related with a certain feature or a big
+bug, after all the works done, we want to combine &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://abruzzi.github.com/blog/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/">
+  <link rel="canonical" href="http://abruzzi.github.com/blog/2012/11/git-squash-localcommits/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -67,7 +68,7 @@
   
   <header>
     
-      <h1 class="entry-title">Using Ssh Forward to Get Out of Stupid Wall</h1>
+      <h1 class="entry-title">Git Squash Localcommits</h1>
     
     
       <p class="meta">
@@ -83,61 +84,104 @@
   
 
 
-<time datetime="2012-10-25T22:59:00+08:00" pubdate data-updated="true">Oct 25<span>th</span>, 2012</time>
+<time datetime="2012-11-07T10:54:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>Generate the public and private key pair</h2>
+<div class="entry-content"><p>There is a common scenario: we have lots of local commits related with a certain feature or a big
+bug, after all the works done, we want to combine them together. The git provides a handy way to do
+this job: <em>git rebase</em></p>
 
-<p>This step is quite strightforward, just generate the keys by using ssh-keygen:</p>
+<p>I&#8217;ll take the following case as an example, say, I&#8217;ve got 3 commits locally and they are all about
+a restyling of some page.</p>
 
-<pre><code>$ ssh-keygen #specify the key file name (I use the id_ plus remote site hostname)
+<p><code>$ git st</code></p>
+
+<pre><code># On branch master
+# Your branch is ahead of 'origin/master' by 3 commits.
+#
+nothing to commit (working directory clean)
 </code></pre>
 
-<p>then you&#8217;ll get 2 keys locally, you can do this step in any place, but people do it
-on their home-dir/.ssh, after the creation, you need to change the mask of the key file:</p>
+<p>Details:</p>
 
-<pre><code>$ chmod 600 id_site
+<p><code>$ git log</code></p>
+
+<pre><code>commit 4e7e1ac7e7e77ae4404843ed96b9f881f969b836
+Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
+Date:   Tue Nov 6 16:49:59 2012 +0800
+
+    RCA-410 new search form style only apply to search result page.
+
+commit 385cec1f22f432c03ea96b5c927f89b3747e82fb
+Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
+Date:   Tue Nov 6 14:21:50 2012 +0800
+
+    RCA-410 re-style search form area.
+
+commit b9694db0b0fb100bfa5f967480188bf05ad538b4
+Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
+Date:   Tue Nov 6 10:33:07 2012 +0800
+
+    RCA-410 restyling search form.
+
+commit 866375c7d805e19f963319fb558f1b16f7daf15b
+Author: John abruzzi &lt;juntao.qiu@gmail.com&gt;
+Date:   Mon Nov 5 14:06:16 2012 +0800
+
+    RCA-625. Add the embeded video feature toggle into casa feature-config file.
 </code></pre>
 
-<h2>Put the public key remotely</h2>
+<p>I have 3 commits after the very commit <em>866375c7d805e19f963319fb558f1b16f7daf15b</em>, and then I&#8217;ll use
+rebase in interactive mode, by the option <em>-i</em> appended.</p>
 
-<p>Okay, once the key is generated, we can simply put the publick key to remote site, and we
-don&#8217;t need to type password any more:</p>
+<p><code>$ git rebase -i HEAD~3</code></p>
 
-<pre><code>$ scp id_site.pub user@remote:
+<pre><code>pick b9694db0b RCA-410 restyling search form. Pair: Yameng &amp; Juntao
+pick 385cec1f2 RCA-410 re-style search form area. pair:juntao
+pick 4e7e1ac7e RCA-410 new search form style only apply to search result page. pair:Juntao
 </code></pre>
 
-<p>Note the colon at the end of the command above, login to remote server</p>
+<p>There are a few command provided, I&#8217;ll use <em>squash</em> by now, since I want to squash the following 2 commits
+into the first one, so simply change the <em>pick</em> into <em>squash</em></p>
 
-<pre><code># cat id_site.pub &gt;&gt; .ssh/authorized_keys
-# rm id_site.pub
+<pre><code>pick b9694db0b RCA-410 restyling search form. Pair: Yameng &amp; Juntao
+squash 385cec1f2 RCA-410 re-style search form area. pair:juntao
+squash 4e7e1ac7e RCA-410 new search form style only apply to search result page. pair:Juntao
 </code></pre>
 
-<p>Then go back local machine, and we&#8217;re done</p>
+<p>After that, save the popuped editor(vi in my local machinel), and change the generated comments message into</p>
 
-<h2>SSH forward</h2>
-
-<p>Now we can simply login the remote server by using the private key just generated:</p>
-
-<pre><code>$ ssh -i id_site user@remote
+<pre><code>RCA-410 restyling search form, applied to search results and pdp. Pair: Yameng &amp; Juntao
 </code></pre>
 
-<p>You then probably be noticed to add the key to system key chain, it is on Mac. And we now don&#8217;t
-need to type the password manually. So let&#8217;s go a little bit further:</p>
+<p>and then save and quit the editor, we&#8217;ll see the following message:</p>
 
-<pre><code>$ ssh -N -i id_site -l 15100:localhost:15100 user@remote
+<p><code>$ git st</code></p>
+
+<pre><code># On branch master
+# Your branch is ahead of 'origin/master' by 1 commit.
+#
+nothing to commit (working directory clean)
 </code></pre>
 
-<p>Then you can access the localhost:1500 port on remote machine BY using the local port, that&#8217;s why it
-called ssh forward I think.</p>
+<p>And the history is more clear like this:
+<code>$ git log</code></p>
 
-<p>You may note that I&#8217;m using the port 15100, that&#8217;s the mailcatcher web mananger port, I cannot access
-the mailcatcher running on another machine, but somehow, I can ssh it through ssh port(22), so I asked
-one of my <em>smart</em> colleagues, and got this solution.</p>
+<pre><code>commit 8ff8a0e015b6ebe7bcd5434f25ed789dee2d5f1e
+Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
+Date:   Tue Nov 6 10:33:07 2012 +0800
+
+    RCA-410 restyling search form, applied to search results and pdp.
+
+commit 866375c7d805e19f963319fb558f1b16f7daf15b
+Author: John abruzzi &lt;juntao.qiu@gmail.com&gt;
+Date:   Mon Nov 5 14:06:16 2012 +0800
+    RCA-625. Add the embeded video feature toggle into casa feature-config file.
+</code></pre>
 </div>
 
 
@@ -160,7 +204,7 @@ one of my <em>smart</em> colleagues, and got this solution.</p>
   
 
 
-<time datetime="2012-10-25T22:59:00+08:00" pubdate data-updated="true">Oct 25<span>th</span>, 2012</time>
+<time datetime="2012-11-07T10:54:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2012</time>
       
 
 
@@ -168,7 +212,7 @@ one of my <em>smart</em> colleagues, and got this solution.</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/blog/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/" data-via="" data-counturl="http://abruzzi.github.com/blog/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/blog/2012/11/git-squash-localcommits/" data-via="" data-counturl="http://abruzzi.github.com/blog/2012/11/git-squash-localcommits/" >Tweet</a>
   
   
   
@@ -177,10 +221,8 @@ one of my <em>smart</em> colleagues, and got this solution.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/10/customize-matcher-by-using-hamcrest/" title="Previous Post: Customize matcher by using hamcrest">&laquo; Customize matcher by using hamcrest</a>
+        <a class="basic-alignment left" href="/blog/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/" title="Previous Post: Using ssh forward to get out of stupid wall">&laquo; Using ssh forward to get out of stupid wall</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/11/git-squash-localcommits/" title="Next Post: Git squash localcommits">Git squash localcommits &raquo;</a>
       
     </p>
   </footer>
