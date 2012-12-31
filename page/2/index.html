@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="进入Thoughtworks已经有差不多4个月了，对于TDD，敏捷开发等有了一点基本的，感性的认识，也知道了一些简单的实践，但是知识非常的不系统，很离散，很破碎。 Thoughtworks为社招的，有一定经验的员工提供一种内部培训，名叫TWI(对应的，对于毕业生，有一次为期6周的TWU( &hellip;">
+  <meta name="description" content="">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,57 +18,84 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://abruzzi.github.com/page/2/">
+  <link rel="canonical" href="http://abruzzi.github.com/page/2">
   <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
+  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    body {
+      padding-bottom: 40px;
+    }
+    h1 {
+      margin-bottom: 15px;
+    }
+    img {
+      max-width: 100%;
+    }
+    .sharing, .meta, .pager {
+      margin: 20px 0px 20px 0px;
+    }
+    .page-footer p {
+      text-align: center;
+    }
+  </style>
+  <script src="/javascripts/libs/jquery.js"></script>
+  <script src="/javascripts/libs/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/bootstrap.js"></script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Qiu Juntao on github with octopress" type="application/atom+xml">
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-
+  
   
 
 </head>
 
 <body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">Qiu Juntao on github with octopress</a></h1>
-  
-    <h2>A blogging framework for hackers.</h2>
-  
-</hgroup>
+  <nav role="navigation"><div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
 
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:abruzzi.github.com" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
+      <a class="brand" href="/">Qiu Juntao on github with octopress</a>
+
+      <div class="nav-collapse">
+        <ul class="nav">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
 </ul>
 
+
+        <ul class="nav pull-right" data-subscription="rss">
+          <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+          
+        </ul>
+
+        
+          <form class="pull-right navbar-search" action="http://google.com/search" method="get">
+            <fieldset role="search">
+              <input type="hidden" name="q" value="site:abruzzi.github.com" />
+              <input class="search-query" type="text" name="q" results="0" placeholder="Search"/>
+            </fieldset>
+          </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
 </nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
+  <div class="container">
+    <div class="row-fluid">
+      <div class="span9">
   
   
   
     <article>
       
-  <header>
+  <header class="page-header">
     
       <h1 class="entry-title"><a href="/blog/2012/08/thoughtworks-immersion-day-1/">Thoughtworks Immersion Day 1</a></h1>
     
@@ -135,7 +162,7 @@
   
     <article>
       
-  <header>
+  <header class="page-header">
     
       <h1 class="entry-title"><a href="/blog/2012/07/%E4%BB%80%E4%B9%88%E6%98%AFjsonp%E5%8F%8A%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8jsonp/">什么是JSONP及如何使用JSONP?</a></h1>
     
@@ -236,7 +263,7 @@ handler(datamodel);
   
     <article>
       
-  <header>
+  <header class="page-header">
     
       <h1 class="entry-title"><a href="/blog/2012/07/revert-workflow-in-git/">Revert Workflow in Git</a></h1>
     
@@ -298,7 +325,7 @@ handler(datamodel);
   
     <article>
       
-  <header>
+  <header class="page-header">
     
       <h1 class="entry-title"><a href="/blog/2012/07/post-from-python-vim-2/">Post From Python + Vim</a></h1>
     
@@ -371,7 +398,7 @@ cool to write blog in my favorest editor.</p></p>
   
     <article>
       
-  <header>
+  <header class="page-header">
     
       <h1 class="entry-title"><a href="/blog/2012/05/git%E4%B8%AD%E7%9A%84merge%E5%92%8Crebase/">Git中的merge和rebase</a></h1>
     
@@ -429,7 +456,7 @@ cool to write blog in my favorest editor.</p></p>
   
     <article>
       
-  <header>
+  <header class="page-header">
     
       <h1 class="entry-title"><a href="/blog/2012/05/spring%E7%9A%84%E6%B3%A8%E5%85%A5%E7%A4%BA%E4%BE%8B/">Spring的注入示例</a></h1>
     
@@ -510,7 +537,7 @@ cool to write blog in my favorest editor.</p></p>
   
     <article>
       
-  <header>
+  <header class="page-header">
     
       <h1 class="entry-title"><a href="/blog/2012/05/spring%E7%9A%84web%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B/">Spring的web应用示例</a></h1>
     
@@ -581,7 +608,7 @@ cool to write blog in my favorest editor.</p></p>
   
     <article>
       
-  <header>
+  <header class="page-header">
     
       <h1 class="entry-title"><a href="/blog/2012/05/cucumber%E7%AE%80%E4%BB%8B/">Cucumber简介</a></h1>
     
@@ -677,7 +704,7 @@ cool to write blog in my favorest editor.</p></p>
   
     <article>
       
-  <header>
+  <header class="page-header">
     
       <h1 class="entry-title"><a href="/blog/2012/04/%E7%A5%9E%E5%A5%87%E7%9A%84capybara/">神奇的capybara</a></h1>
     
@@ -725,7 +752,7 @@ cool to write blog in my favorest editor.</p></p>
   
     <article>
       
-  <header>
+  <header class="page-header">
     
       <h1 class="entry-title"><a href="/blog/2012/04/ruby%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B7%A5%E5%85%B7%E5%8F%8A%E6%A6%82%E5%BF%B5/">Ruby开发中的一些工具及概念</a></h1>
     
@@ -769,21 +796,21 @@ cool to write blog in my favorest editor.</p></p>
 
     </article>
   
-  <div class="pagination">
+  <ul class="pager">
     
-      <a class="prev" href="/page/3/">&larr; Older</a>
+    <li class="previous"><a href="/page/3/">&larr; Older</a></li>
     
-    <a href="/blog/archives">Blog Archives</a>
+    <li><a href="/blog/archives">Blog Archives</a></li>
     
-    <a class="next" href="/">Newer &rarr;</a>
+    <li class="next"><a href="/">Newer &rarr;</a></li>
     
-  </div>
+  </ul>
 </div>
-<aside class="sidebar">
+<aside class="sidebar-nav span3">
   
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
+    <section class="well">
+  <ul id="recent_posts" class="nav nav-list">
+    <li class="nav-header">Recent Posts</li>
     
       <li class="post">
         <a href="/blog/2012/11/git-squash-localcommits/">Git squash localcommits</a>
@@ -841,7 +868,8 @@ cool to write blog in my favorest editor.</p></p>
 
     </div>
   </div>
-  <footer role="contentinfo"><p>
+  <footer role="contentinfo" class="page-footer"><hr>
+<p>
   Copyright &copy; 2012 - Qiu Juntao -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
