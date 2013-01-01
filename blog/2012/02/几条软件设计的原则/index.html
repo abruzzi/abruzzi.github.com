@@ -1,135 +1,84 @@
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<!DOCTYPE HTML>
+<html>
 <head>
-  <meta charset="utf-8">
-  <title>几条软件设计的原则 - Qiu Juntao on github with octopress</title>
-  <meta name="author" content="Qiu Juntao">
+	<meta charset="utf-8">
+	<title>几条软件设计的原则 - Qiu Juntao on github with octopress</title>
+	<meta name="author" content="Qiu Juntao">
 
-  
-  <meta name="description" content="">
-  
+	
+	<meta name="description" content="其实，这里列举的大部分原则都是我读《Head First设计模式》的笔记，不过实际编码中也会常常用到，就总结一下： 封装变化 将易变的代码控制在一个类中，可以降低维护成本，同时也提高了封装性，这一点应该属于OO的基本原则，也是开发高质量代码的基本原则(只不过过程式语言是将变化封装到一个函数， &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://abruzzi.github.com/blog/2012/02/%E5%87%A0%E6%9D%A1%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%8E%9F%E5%88%99">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <style type="text/css">
-    body {
-      padding-bottom: 40px;
-    }
-    h1 {
-      margin-bottom: 15px;
-    }
-    img {
-      max-width: 100%;
-    }
-    .sharing, .meta, .pager {
-      margin: 20px 0px 20px 0px;
-    }
-    .page-footer p {
-      text-align: center;
-    }
-  </style>
-  <script src="/javascripts/libs/jquery.js"></script>
-  <script src="/javascripts/libs/modernizr-2.0.js"></script>
-  <script src="/javascripts/libs/bootstrap.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="Qiu Juntao on github with octopress" type="application/atom+xml">
-  
-  
-
+	<link href="/atom.xml" rel="alternate" title="Qiu Juntao on github with octopress" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
 </head>
 
-<body   >
-  <nav role="navigation"><div class="navbar">
-  <div class="navbar-inner">
-    <div class="container">
-      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </a>
-
-      <a class="brand" href="/">Qiu Juntao on github with octopress</a>
-
-      <div class="nav-collapse">
-        <ul class="nav">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
+<body>
+	<header id="header" class="inner"><h1><a href="/">Qiu Juntao on github with octopress</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
 </ul>
-
-
-        <ul class="nav pull-right" data-subscription="rss">
-          <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-          
-        </ul>
-
-        
-          <form class="pull-right navbar-search" action="http://google.com/search" method="get">
-            <fieldset role="search">
-              <input type="hidden" name="q" value="site:abruzzi.github.com" />
-              <input class="search-query" type="text" name="q" results="0" placeholder="Search"/>
-            </fieldset>
-          </form>
-        
-      </div>
-    </div>
-  </div>
-</div>
 </nav>
-  <div class="container">
-    <div class="row-fluid">
-      
-<article class="hentry span9" role="article">
-
-  
-  <header class="page-header">
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:abruzzi.github.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
     
-      <h1 class="entry-title">几条软件设计的原则</h1>
-    
-    
-      <p class="meta">
-        
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:abruzzi.github.com">
+	</form>
+</nav>
 
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-02-21T00:00:00+08:00" pubdate data-updated="true">Feb 21<span>st</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-<div class="entry-content"><p><p>其实，这里列举的大部分原则都是我读《Head First设计模式》的笔记，不过实际编码中也会常常用到，就总结一下：</p> <h3>封装变化</h3> <p>将易变的代码控制在一个类中，可以降低维护成本，同时也提高了封装性，这一点应该属于OO的基本原则，也是开发高质量代码的基本原则(只不过过程式语言是将变化封装到一个函数，或者一组函数中)。这样做的好处显而易见：代码可以更好的复用，如果有需求变更，也可以快速的定位并修改。另外一个好处是，将那些不那么易变的模块更好的独立出来，从而提供另一个层次的复用。</p> <h3>针对接口编程</h3> <p>面向接口编程，可以使得模块间更好的解耦合，解耦合的好处是让开发人员过得舒服一点，尽量避免“牵一发而动全身”的情况发生。相对于实现，接口是很不容易修改的抽象层，应尽可能的简化接口。如果接口变得庞大，尝试分解为多个接口，类可以实现多个接口(在Java中，不能继承多个类，但是可以实现多个接口)。有了多个接口，各个类就可以尝试自己决定实现那些接口，从而提供不同的职能。</p> <p>使用接口的另一个好处是可以很好的利用OO语言的多态性，减少代码中的if-else数量，多态机制会如你所预期的那样将请求分发到实际的实现者上。</p> <h3>多用组合，少用继承</h3> <p>组合，是让对象“拥有”另一个对象，这样可以将实际需要做的事情分离到另一个类中，各个对象各司其职，通过方法调用(传递消息)而协作完成一个大的任务。通过组合及面向接口，可以很容易的在运行时改变对象的行为，如策略模式/状态模式，都依赖于此原则。</p> <h3>加入额外的层次</h3> <p>如果两个模块间太过于耦合，可以考虑加入一个额外的层来分离。事实上，软件开发中，我们总能找到一个额外的层次来解决紧密耦合模块。事实上，层次的划分从来都不是一件容易的事情(当然，糟糕的划分很容易见到)，如果额外的层次引入的复杂度超过了可理解的范围，那你应该毫不犹豫的拿掉它，而相反，修改一个模块常常会引发另一个模块很大的变化，那么就是时候来考虑加入额外的层次了。</p> <p>当然，基本的原则并不是要求开发人员生搬硬套的，使用这些模式会带来好处，但是也可能引入额外的复杂性。一个总体的原则是：当有新的变化时，最好的形式是，对已有的结构进行扩展，而不修改既有代码，如果很难做到这一点，或者做到这一点时会花费更大的精力和时间，就尽量控制涉及修改的类的数量。毕竟，我们从实际中得来的经验是为了让我们自己过得舒服一些，<img style="border-bottom-style: none; border-left-style: none; border-top-style: none; border-right-style: none" class="wlEmoticon wlEmoticon-smile" alt="微笑" src="http://abruzzi.github.com/images/2012/02/wlEmoticon-smile.png" /></p></p>
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">几条软件设计的原则</h2>
+	<div class="entry-content"><p><p>其实，这里列举的大部分原则都是我读《Head First设计模式》的笔记，不过实际编码中也会常常用到，就总结一下：</p> <h3>封装变化</h3> <p>将易变的代码控制在一个类中，可以降低维护成本，同时也提高了封装性，这一点应该属于OO的基本原则，也是开发高质量代码的基本原则(只不过过程式语言是将变化封装到一个函数，或者一组函数中)。这样做的好处显而易见：代码可以更好的复用，如果有需求变更，也可以快速的定位并修改。另外一个好处是，将那些不那么易变的模块更好的独立出来，从而提供另一个层次的复用。</p> <h3>针对接口编程</h3> <p>面向接口编程，可以使得模块间更好的解耦合，解耦合的好处是让开发人员过得舒服一点，尽量避免“牵一发而动全身”的情况发生。相对于实现，接口是很不容易修改的抽象层，应尽可能的简化接口。如果接口变得庞大，尝试分解为多个接口，类可以实现多个接口(在Java中，不能继承多个类，但是可以实现多个接口)。有了多个接口，各个类就可以尝试自己决定实现那些接口，从而提供不同的职能。</p> <p>使用接口的另一个好处是可以很好的利用OO语言的多态性，减少代码中的if-else数量，多态机制会如你所预期的那样将请求分发到实际的实现者上。</p> <h3>多用组合，少用继承</h3> <p>组合，是让对象“拥有”另一个对象，这样可以将实际需要做的事情分离到另一个类中，各个对象各司其职，通过方法调用(传递消息)而协作完成一个大的任务。通过组合及面向接口，可以很容易的在运行时改变对象的行为，如策略模式/状态模式，都依赖于此原则。</p> <h3>加入额外的层次</h3> <p>如果两个模块间太过于耦合，可以考虑加入一个额外的层来分离。事实上，软件开发中，我们总能找到一个额外的层次来解决紧密耦合模块。事实上，层次的划分从来都不是一件容易的事情(当然，糟糕的划分很容易见到)，如果额外的层次引入的复杂度超过了可理解的范围，那你应该毫不犹豫的拿掉它，而相反，修改一个模块常常会引发另一个模块很大的变化，那么就是时候来考虑加入额外的层次了。</p> <p>当然，基本的原则并不是要求开发人员生搬硬套的，使用这些模式会带来好处，但是也可能引入额外的复杂性。一个总体的原则是：当有新的变化时，最好的形式是，对已有的结构进行扩展，而不修改既有代码，如果很难做到这一点，或者做到这一点时会花费更大的精力和时间，就尽量控制涉及修改的类的数量。毕竟，我们从实际中得来的经验是为了让我们自己过得舒服一些，<img style="border-bottom-style: none; border-left-style: none; border-top-style: none; border-right-style: none" class="wlEmoticon wlEmoticon-smile" alt="微笑" src="http://abruzzi.github.com/images/2012/02/wlEmoticon-smile.png" /></p></p>
 </div>
 
 
-  <footer>
-    <p class="meta">
-      
-  
-
-<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
-
-      
+<div class="meta">
+	<div class="date">
 
 
 
@@ -141,133 +90,80 @@
   
 
 
-<time datetime="2012-02-21T00:00:00+08:00" pubdate data-updated="true">Feb 21<span>st</span>, 2012</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/category/软件设计/'>软件设计</a>
-  
-</span>
+<time datetime="2012-02-21T00:00:00+08:00" pubdate data-updated="true">Feb 21<span>st</span>, 2012</time></div>
+	<div class="tags">
 
 
-    </p>
-    
-      <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/blog/2012/02/%E5%87%A0%E6%9D%A1%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%8E%9F%E5%88%99/" data-via="" data-counturl="http://abruzzi.github.com/blog/2012/02/%E5%87%A0%E6%9D%A1%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%8E%9F%E5%88%99/" >Tweet</a>
-  
-  
-  
+	<a class='category' href='/category/软件设计/'>软件设计</a>
+
+
+</div>
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
 </div>
 
-    
-    
-    <ul class="pager">
-      
-      <li class="previous"><a class="basic-alignment left"
-        href="/blog/2012/02/javascript%E5%86%85%E6%A0%B8%E7%B3%BB%E5%88%97v0-9-9beta%E7%89%88%E6%9C%AC%E4%B8%8B%E8%BD%BD/" title="Previous Post:
-        JavaScript内核系列V0.9.9Beta版本下载">&laquo; JavaScript内核系列V0.9.9Beta版本下载</a></li>
-      
-      <li><a href="/blog/archives">Blog Archives</a></li>
-      
-      <li class="next"><a class="basic-alignment right" href="/blog/2012/03/%E9%95%BF%E8%83%B6%EF%BC%81%E9%95%BF%E8%83%B6%EF%BC%81/"
-        title="Next Post: 长胶！长胶！">长胶！长胶！
-        &raquo;</a></li>
-      
-    </ul>
-  </footer>
-</article>
-
-<aside class="sidebar-nav span3">
-  
-    <section class="well">
-  <ul id="recent_posts" class="nav nav-list">
-    <li class="nav-header">Recent Posts</li>
-    
-      <li class="post">
-        <a href="/blog/2012/11/git-squash-localcommits/">Git squash localcommits</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/">Using ssh forward to get out of stupid wall</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/customize-matcher-by-using-hamcrest/">Customize matcher by using hamcrest</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/simplified-tdd-by-using-interllij/">Simplified TDD by Using Intellij</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/using-gradle-to-setup-standard-java-project/">Using gradle to setup standard java project</a>
-      </li>
-    
-  </ul>
-</section>
-<section>
-  <h1>新浪微博</h1>
-  <ul id="weibo">
-    <li>
-    <iframe 
-        width="100%" 
-        height="550" 
-        class="share_self"  
-        frameborder="0" 
-        scrolling="no" 
-        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
-    </li>
-  </ul>
-  </section>
 
 
-<section>
-<h2>What did I read</h2>
-<div>
-    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+<section id="comment">
+    <h2 class="title">Comments</h2>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
 </section>
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
 
-
-
-
-
-
-
-  
-</aside>
-
-
-    </div>
-  </div>
-  <footer role="contentinfo" class="page-footer"><hr>
-<p>
-  Copyright &copy; 2012 - Qiu Juntao -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
+    Qiu Juntao
 
 </footer>
-  
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/blog/2012/02/%E5%87%A0%E6%9D%A1%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%8E%9F%E5%88%99/';
+        var disqus_url = 'http://abruzzi.github.com/blog/2012/02/%E5%87%A0%E6%9D%A1%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%8E%9F%E5%88%99/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
 
 
 
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-37350472-1']);
+		_gaq.push(['_trackPageview']);
 
-
-
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
 
 
 

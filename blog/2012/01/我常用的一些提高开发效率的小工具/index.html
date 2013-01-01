@@ -1,124 +1,79 @@
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<!DOCTYPE HTML>
+<html>
 <head>
-  <meta charset="utf-8">
-  <title>我常用的一些提高开发效率的小工具 - Qiu Juntao on github with octopress</title>
-  <meta name="author" content="Qiu Juntao">
+	<meta charset="utf-8">
+	<title>我常用的一些提高开发效率的小工具 - Qiu Juntao on github with octopress</title>
+	<meta name="author" content="Qiu Juntao">
 
-  
-  <meta name="description" content="">
-  
+	
+	<meta name="description" content="前言 日常开发中，除了基本的编辑器，调试器外，我们还会有各种各样的计算机操作，比如查找一个路径很深的文件，快速启动shell，记录一些网页上看到的优秀代码片段/文字等等。在摸索了很长时间之后，相信每个开发人员都有属于自己的一套工具集了，反正我自己已经搜集了一套可以很大程度提高开发效率的小软件。 &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://abruzzi.github.com/blog/2012/01/%E6%88%91%E5%B8%B8%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E6%8F%90%E9%AB%98%E5%BC%80%E5%8F%91%E6%95%88%E7%8E%87%E7%9A%84%E5%B0%8F%E5%B7%A5%E5%85%B7">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <style type="text/css">
-    body {
-      padding-bottom: 40px;
-    }
-    h1 {
-      margin-bottom: 15px;
-    }
-    img {
-      max-width: 100%;
-    }
-    .sharing, .meta, .pager {
-      margin: 20px 0px 20px 0px;
-    }
-    .page-footer p {
-      text-align: center;
-    }
-  </style>
-  <script src="/javascripts/libs/jquery.js"></script>
-  <script src="/javascripts/libs/modernizr-2.0.js"></script>
-  <script src="/javascripts/libs/bootstrap.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="Qiu Juntao on github with octopress" type="application/atom+xml">
-  
-  
-
+	<link href="/atom.xml" rel="alternate" title="Qiu Juntao on github with octopress" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
 </head>
 
-<body   >
-  <nav role="navigation"><div class="navbar">
-  <div class="navbar-inner">
-    <div class="container">
-      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </a>
-
-      <a class="brand" href="/">Qiu Juntao on github with octopress</a>
-
-      <div class="nav-collapse">
-        <ul class="nav">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
+<body>
+	<header id="header" class="inner"><h1><a href="/">Qiu Juntao on github with octopress</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
 </ul>
-
-
-        <ul class="nav pull-right" data-subscription="rss">
-          <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-          
-        </ul>
-
-        
-          <form class="pull-right navbar-search" action="http://google.com/search" method="get">
-            <fieldset role="search">
-              <input type="hidden" name="q" value="site:abruzzi.github.com" />
-              <input class="search-query" type="text" name="q" results="0" placeholder="Search"/>
-            </fieldset>
-          </form>
-        
-      </div>
-    </div>
-  </div>
-</div>
 </nav>
-  <div class="container">
-    <div class="row-fluid">
-      
-<article class="hentry span9" role="article">
-
-  
-  <header class="page-header">
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:abruzzi.github.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
     
-      <h1 class="entry-title">我常用的一些提高开发效率的小工具</h1>
-    
-    
-      <p class="meta">
-        
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:abruzzi.github.com">
+	</form>
+</nav>
 
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-01-13T00:00:00+08:00" pubdate data-updated="true">Jan 13<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-<div class="entry-content"><p><h2>前言</h2> <p>日常开发中，除了基本的编辑器，调试器外，我们还会有各种各样的计算机操作，比如查找一个路径很深的文件，快速启动shell，记录一些网页上看到的优秀代码片段/文字等等。在摸索了很长时间之后，相信每个开发人员都有属于自己的一套工具集了，反正我自己已经搜集了一套可以很大程度提高开发效率的小软件。所谓小，只是说这些软件的体积较为小巧，但是功能方面却极为强大，下面是一个列表，列表之后是各个软件的详细介绍。当然，每个工具可能都有其更复杂的配置及使用方法，也不可能在一篇文章中完全覆盖，列位可以自行google。</p> <ol> <li>Google拼音(输入法)  </li><li>ClipX(系统剪贴板扩展) </li><li>Launchy(快速启动)  </li><li>Everything Search(搜索)  </li><li>Evernote(笔记记录)  </li><li>Vim(编辑器)  </li><li>Unxutils(unix下的常用工具的移植版)</li></ol> <p>这里列出的软件基本具备以下特性：</p> <ol> <li>体积小巧，运行速度快  </li><li>免费/免费+开源  </li><li>专注且功能强大  </li><li>运行在windows平台上(Linux本身已经提供了足够多的好工具)</li></ol> <h2>一 Google拼音</h2> <p>每当你需要输入点什么的时候，一个好的输入法总是可以让你事半功倍。智能联想，输入记忆等常规功能就不做讨论了，这些功能其他输入法也会提供。<a href="http://www.google.com/intl/zh-CN/ime/pinyin/index.html" target="_blank">Google拼音</a>提供更多的高级更能，如用户词典同步，网络词典同步，U模式输入，可扩展性(这个对于hacker型技术人员，简直太贴心了，这才是我推荐她的原因)等。</p> <p>U模式</p> <p>当遇到一个生僻字，又不知道其读音的话，可以使用U模式很容易的拼出来， 比如效率的“效”字，由“交”+“文”组成，则可以用“ujiaowen”来查找出其读音：</p> <p><a href="http://abruzzi.github.com/images/2012/01/uxiao.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="uxiao" border="0" alt="uxiao" src="http://abruzzi.github.com/images/2012/01/uxiao_thumb.png" width="208" height="56" /></a></p> <p>可扩展性(I模式)</p> <p>一个良好的软件，可扩展性是必须提供的，Google使用<a href="http://www.lua.org/" target="_blank">lua</a>作为脚本，并提供一些公开的API，这样你就可以很轻易的定义自己的缩写补全功能。比如我想要在输入mz(名字)的时候，输入法返回我的名字；而输入qm(签名)的时候，输入法返回名字+当前日期。可以定义一个脚本：</p> <div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> function FullName()</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>     <span style="color: #0000ff">return</span> <span style="color: #006080">"邱俊涛"</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span> end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span> function GetDate()</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span>     <span style="color: #0000ff">return</span> os.date(<span style="color: #006080">"%Y-%m-%d"</span>)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span> end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span> function Sign()</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum10">  10:</span>     <span style="color: #0000ff">return</span> <span style="color: #006080">"作者："</span> .. FullName() .. <span style="color: #006080">"，时间："</span> .. GetDate()</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum11">  11:</span> end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum12">  12:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum13">  13:</span> ime.register_command(<span style="color: #006080">"mz"</span>, <span style="color: #006080">"FullName"</span>, <span style="color: #006080">"姓名"</span>)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum14">  14:</span> ime.register_command(<span style="color: #006080">"qm"</span>, <span style="color: #006080">"Sign"</span>, <span style="color: #006080">"签名"</span>)</pre><!--CRLF--></div></div>
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">我常用的一些提高开发效率的小工具</h2>
+	<div class="entry-content"><p><h2>前言</h2> <p>日常开发中，除了基本的编辑器，调试器外，我们还会有各种各样的计算机操作，比如查找一个路径很深的文件，快速启动shell，记录一些网页上看到的优秀代码片段/文字等等。在摸索了很长时间之后，相信每个开发人员都有属于自己的一套工具集了，反正我自己已经搜集了一套可以很大程度提高开发效率的小软件。所谓小，只是说这些软件的体积较为小巧，但是功能方面却极为强大，下面是一个列表，列表之后是各个软件的详细介绍。当然，每个工具可能都有其更复杂的配置及使用方法，也不可能在一篇文章中完全覆盖，列位可以自行google。</p> <ol> <li>Google拼音(输入法)  </li><li>ClipX(系统剪贴板扩展) </li><li>Launchy(快速启动)  </li><li>Everything Search(搜索)  </li><li>Evernote(笔记记录)  </li><li>Vim(编辑器)  </li><li>Unxutils(unix下的常用工具的移植版)</li></ol> <p>这里列出的软件基本具备以下特性：</p> <ol> <li>体积小巧，运行速度快  </li><li>免费/免费+开源  </li><li>专注且功能强大  </li><li>运行在windows平台上(Linux本身已经提供了足够多的好工具)</li></ol> <h2>一 Google拼音</h2> <p>每当你需要输入点什么的时候，一个好的输入法总是可以让你事半功倍。智能联想，输入记忆等常规功能就不做讨论了，这些功能其他输入法也会提供。<a href="http://www.google.com/intl/zh-CN/ime/pinyin/index.html" target="_blank">Google拼音</a>提供更多的高级更能，如用户词典同步，网络词典同步，U模式输入，可扩展性(这个对于hacker型技术人员，简直太贴心了，这才是我推荐她的原因)等。</p> <p>U模式</p> <p>当遇到一个生僻字，又不知道其读音的话，可以使用U模式很容易的拼出来， 比如效率的“效”字，由“交”+“文”组成，则可以用“ujiaowen”来查找出其读音：</p> <p><a href="http://abruzzi.github.com/images/2012/01/uxiao.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="uxiao" border="0" alt="uxiao" src="http://abruzzi.github.com/images/2012/01/uxiao_thumb.png" width="208" height="56" /></a></p> <p>可扩展性(I模式)</p> <p>一个良好的软件，可扩展性是必须提供的，Google使用<a href="http://www.lua.org/" target="_blank">lua</a>作为脚本，并提供一些公开的API，这样你就可以很轻易的定义自己的缩写补全功能。比如我想要在输入mz(名字)的时候，输入法返回我的名字；而输入qm(签名)的时候，输入法返回名字+当前日期。可以定义一个脚本：</p> <div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> function FullName()</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>     <span style="color: #0000ff">return</span> <span style="color: #006080">"邱俊涛"</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span> end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span> function GetDate()</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span>     <span style="color: #0000ff">return</span> os.date(<span style="color: #006080">"%Y-%m-%d"</span>)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span> end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span> function Sign()</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum10">  10:</span>     <span style="color: #0000ff">return</span> <span style="color: #006080">"作者："</span> .. FullName() .. <span style="color: #006080">"，时间："</span> .. GetDate()</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum11">  11:</span> end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum12">  12:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum13">  13:</span> ime.register_command(<span style="color: #006080">"mz"</span>, <span style="color: #006080">"FullName"</span>, <span style="color: #006080">"姓名"</span>)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum14">  14:</span> ime.register_command(<span style="color: #006080">"qm"</span>, <span style="color: #006080">"Sign"</span>, <span style="color: #006080">"签名"</span>)</pre><!--CRLF--></div></div>
 <p>其中，ime.register_command为Google拼音提供的API，用以将命令与需要调用的函数绑定并注册到Google输入法引擎。输入时，先输入“i”进入命令模式，然后输入注册的命令名“mz”:</p>
 <p><a href="http://abruzzi.github.com/images/2012/01/imz.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="imz" border="0" alt="imz" src="http://abruzzi.github.com/images/2012/01/imz_thumb.png" width="114" height="43" /></a></p>
 <p>或者</p>
@@ -160,14 +115,8 @@
 </div>
 
 
-  <footer>
-    <p class="meta">
-      
-  
-
-<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
-
-      
+<div class="meta">
+	<div class="date">
 
 
 
@@ -179,133 +128,80 @@
   
 
 
-<time datetime="2012-01-13T00:00:00+08:00" pubdate data-updated="true">Jan 13<span>th</span>, 2012</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/category/tools/'>Tools</a>
-  
-</span>
+<time datetime="2012-01-13T00:00:00+08:00" pubdate data-updated="true">Jan 13<span>th</span>, 2012</time></div>
+	<div class="tags">
 
 
-    </p>
-    
-      <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/blog/2012/01/%E6%88%91%E5%B8%B8%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E6%8F%90%E9%AB%98%E5%BC%80%E5%8F%91%E6%95%88%E7%8E%87%E7%9A%84%E5%B0%8F%E5%B7%A5%E5%85%B7/" data-via="" data-counturl="http://abruzzi.github.com/blog/2012/01/%E6%88%91%E5%B8%B8%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E6%8F%90%E9%AB%98%E5%BC%80%E5%8F%91%E6%95%88%E7%8E%87%E7%9A%84%E5%B0%8F%E5%B7%A5%E5%85%B7/" >Tweet</a>
-  
-  
-  
+	<a class='category' href='/category/tools/'>Tools</a>
+
+
+</div>
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
 </div>
 
-    
-    
-    <ul class="pager">
-      
-      <li class="previous"><a class="basic-alignment left"
-        href="/blog/2012/01/%E4%BD%BF%E7%94%A8securecrt%E8%BF%9E%E6%8E%A5%E4%B8%B2%E5%8F%A3/" title="Previous Post:
-        使用SecureCRT连接串口">&laquo; 使用SecureCRT连接串口</a></li>
-      
-      <li><a href="/blog/archives">Blog Archives</a></li>
-      
-      <li class="next"><a class="basic-alignment right" href="/blog/2012/01/cx_oracle%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/"
-        title="Next Post: cx_oracle的一些使用技巧">cx_oracle的一些使用技巧
-        &raquo;</a></li>
-      
-    </ul>
-  </footer>
-</article>
-
-<aside class="sidebar-nav span3">
-  
-    <section class="well">
-  <ul id="recent_posts" class="nav nav-list">
-    <li class="nav-header">Recent Posts</li>
-    
-      <li class="post">
-        <a href="/blog/2012/11/git-squash-localcommits/">Git squash localcommits</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/">Using ssh forward to get out of stupid wall</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/customize-matcher-by-using-hamcrest/">Customize matcher by using hamcrest</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/simplified-tdd-by-using-interllij/">Simplified TDD by Using Intellij</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/using-gradle-to-setup-standard-java-project/">Using gradle to setup standard java project</a>
-      </li>
-    
-  </ul>
-</section>
-<section>
-  <h1>新浪微博</h1>
-  <ul id="weibo">
-    <li>
-    <iframe 
-        width="100%" 
-        height="550" 
-        class="share_self"  
-        frameborder="0" 
-        scrolling="no" 
-        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
-    </li>
-  </ul>
-  </section>
 
 
-<section>
-<h2>What did I read</h2>
-<div>
-    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+<section id="comment">
+    <h2 class="title">Comments</h2>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
 </section>
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
 
-
-
-
-
-
-
-  
-</aside>
-
-
-    </div>
-  </div>
-  <footer role="contentinfo" class="page-footer"><hr>
-<p>
-  Copyright &copy; 2012 - Qiu Juntao -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
+    Qiu Juntao
 
 </footer>
-  
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/blog/2012/01/%E6%88%91%E5%B8%B8%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E6%8F%90%E9%AB%98%E5%BC%80%E5%8F%91%E6%95%88%E7%8E%87%E7%9A%84%E5%B0%8F%E5%B7%A5%E5%85%B7/';
+        var disqus_url = 'http://abruzzi.github.com/blog/2012/01/%E6%88%91%E5%B8%B8%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E6%8F%90%E9%AB%98%E5%BC%80%E5%8F%91%E6%95%88%E7%8E%87%E7%9A%84%E5%B0%8F%E5%B7%A5%E5%85%B7/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
 
 
 
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-37350472-1']);
+		_gaq.push(['_trackPageview']);
 
-
-
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
 
 
 

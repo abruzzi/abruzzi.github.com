@@ -1,135 +1,84 @@
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<!DOCTYPE HTML>
+<html>
 <head>
-  <meta charset="utf-8">
-  <title>Emacs可以做什么？ - Qiu Juntao on github with octopress</title>
-  <meta name="author" content="Qiu Juntao">
+	<meta charset="utf-8">
+	<title>Emacs可以做什么？ - Qiu Juntao on github with octopress</title>
+	<meta name="author" content="Qiu Juntao">
 
-  
-  <meta name="description" content="">
-  
+	
+	<meta name="description" content="&nbsp; 这篇关于Emacs的介绍是我在2011年部门内部分享的，当时有些刚进入后台组的同事抱怨没有一款顺手的开发工具，于是我整理了vim的使用手册，但是部门另一位大牛(emacser)建议我再顺便整理一下Emacs的文档。我对Emacs的水平非常一般，但是既然是给别人推荐， &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://abruzzi.github.com/blog/2012/02/emacs%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88%EF%BC%9F">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/bootstrap/bootstrap.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/stylesheets/bootstrap/responsive.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/stylesheets/syntax/syntax.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <style type="text/css">
-    body {
-      padding-bottom: 40px;
-    }
-    h1 {
-      margin-bottom: 15px;
-    }
-    img {
-      max-width: 100%;
-    }
-    .sharing, .meta, .pager {
-      margin: 20px 0px 20px 0px;
-    }
-    .page-footer p {
-      text-align: center;
-    }
-  </style>
-  <script src="/javascripts/libs/jquery.js"></script>
-  <script src="/javascripts/libs/modernizr-2.0.js"></script>
-  <script src="/javascripts/libs/bootstrap.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="Qiu Juntao on github with octopress" type="application/atom+xml">
-  
-  
-
+	<link href="/atom.xml" rel="alternate" title="Qiu Juntao on github with octopress" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
 </head>
 
-<body   >
-  <nav role="navigation"><div class="navbar">
-  <div class="navbar-inner">
-    <div class="container">
-      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </a>
-
-      <a class="brand" href="/">Qiu Juntao on github with octopress</a>
-
-      <div class="nav-collapse">
-        <ul class="nav">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
+<body>
+	<header id="header" class="inner"><h1><a href="/">Qiu Juntao on github with octopress</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
 </ul>
-
-
-        <ul class="nav pull-right" data-subscription="rss">
-          <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-          
-        </ul>
-
-        
-          <form class="pull-right navbar-search" action="http://google.com/search" method="get">
-            <fieldset role="search">
-              <input type="hidden" name="q" value="site:abruzzi.github.com" />
-              <input class="search-query" type="text" name="q" results="0" placeholder="Search"/>
-            </fieldset>
-          </form>
-        
-      </div>
-    </div>
-  </div>
-</div>
 </nav>
-  <div class="container">
-    <div class="row-fluid">
-      
-<article class="hentry span9" role="article">
-
-  
-  <header class="page-header">
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:abruzzi.github.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		
     
-      <h1 class="entry-title">Emacs可以做什么？</h1>
-    
-    
-      <p class="meta">
-        
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:abruzzi.github.com">
+	</form>
+</nav>
 
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-02-06T00:00:00+08:00" pubdate data-updated="true">Feb 6<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-<div class="entry-content"><p><p>&nbsp; <p>这篇关于Emacs的介绍是我在2011年部门内部分享的，当时有些刚进入后台组的同事抱怨没有一款顺手的开发工具，于是我整理了vim的使用手册，但是部门另一位大牛(emacser)建议我再顺便整理一下Emacs的文档。我对Emacs的水平非常一般，但是既然是给别人推荐，自己不研究一下实在说不过去，在认真研究了1周之后，就整理出了这份文档。当然，想要在1周内就完全掌握这些技巧是不可能的，工具需要不断的使用，直到手指对那些命令产生记忆为止，才能算是入门。 <p>Emacs是一个神奇的编辑环境，下面仅举一些简单示例，介绍一下Emacs可以做什么。但是不涉及更详细的如何做，如何做到这些请参阅其他教程文档。 <h4>〇 shell环境</h4> <p>Emacs中可以很方便的进入shell模式(M-x shell)，而不用于shell来回切换，将shell搬进Emacs环境之中，运行命令，查看文件列表，操作svn，执行外部脚本等等。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image002.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image002" border="0" alt="clip_image002" src="http://abruzzi.github.com/images/2012/02/clip_image002_thumb.jpg" width="557" height="404" /></a> <p>图 Emacs中的shell环境 <h4>一 文件浏览器</h4> <p>相当于windows中的资源管理器，(M-x dired)，此时的Emacs是一个文件浏览器，如果光标所在的项是目录，此时回车会进入该目录，如果是文件，则打开该文件。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image004.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image004" border="0" alt="clip_image004" src="http://abruzzi.github.com/images/2012/02/clip_image004_thumb.jpg" width="557" height="351" /></a> <p>图 文件浏览器 <h4>二 编写代码</h4> <p>当然，我们使用Emacs的核心功能为代码编写功能。语法高亮，注释淡出等基本的自然支持，其他高级的功能在Emacs下则更为好用。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image006.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image006" border="0" alt="clip_image006" src="http://abruzzi.github.com/images/2012/02/clip_image006_thumb.jpg" width="557" height="404" /></a> <h4>三 调试代码</h4> <p>这个是日常工作中最为常用的功能之一，(M-x gdb)调用gdb，并与gdb交互，此时可以看到指令运行位置，可以设置/取消断点，查看变量地址/值等等。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image008.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image008" border="0" alt="clip_image008" src="http://abruzzi.github.com/images/2012/02/clip_image008_thumb.jpg" width="558" height="406" /></a> <p>图 调用gdb调试程序 <h4>四 比较文件</h4> <p>使用版本控制之后，最常用的功能为文件对比，(M-x ediff)可以对比两个文件(工作拷贝与版本库，或者版本库中的两个修订版之间) <p><a href="http://abruzzi.github.com/images/2012/02/clip_image010.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image010" border="0" alt="clip_image010" src="http://abruzzi.github.com/images/2012/02/clip_image010_thumb.jpg" width="558" height="414" /></a> <p>图 文件对比 <h4>五 增量搜索</h4> <p>与vim的编辑功能类似，Emacs具有增量搜索功能，(C-s/C-r)，被搜索词会高亮起来，便于查看。当然，查找/替换这些必备功能也非常好用。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image012.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image012" border="0" alt="clip_image012" src="http://abruzzi.github.com/images/2012/02/clip_image012_thumb.jpg" width="557" height="457" /></a> <p>图 关键字搜索 <h4>六 查看手册</h4> <p>开发中，遇到命令用法模糊，系统调用的参数顺序不明确，参数类型不确定，返回值意义等问题，都可以在Emacs中查看man手册来解决(M-x man) <p><a href="http://abruzzi.github.com/images/2012/02/clip_image014.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image014" border="0" alt="clip_image014" src="http://abruzzi.github.com/images/2012/02/clip_image014_thumb.jpg" width="557" height="431" /></a> <p>图 查看man手册 <h4>七 日历功能</h4> <p>事实上，Emacs有众多的小工具，如计算器，日历，心理医生等等。如过有兴趣，可以尝试自己开发一个小工具出来，要知道Emacs的可扩展性是无以伦比的。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image016.jpg" name="OLE_LINK1"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image016" border="0" alt="clip_image016" src="http://abruzzi.github.com/images/2012/02/clip_image016_thumb.jpg" width="558" height="166" /></a> <p>图 日历功能 <h4>八 待办事项</h4> <p><a href="http://abruzzi.github.com/images/2012/02/clip_image018.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image018" border="0" alt="clip_image018" src="http://abruzzi.github.com/images/2012/02/clip_image018_thumb.jpg" width="557" height="108" /></a> <p>图 待办事项 <h4>九 邮件客户端</h4> <p><a href="http://abruzzi.github.com/images/2012/02/clip_image020.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image020" border="0" alt="clip_image020" src="http://abruzzi.github.com/images/2012/02/clip_image020_thumb.jpg" width="558" height="423" /></a> <p>图 邮件客户端 <h4>十 娱乐功能</h4> <p>工作之余，可以在Emacs中启动一些小游戏。如俄罗斯方块，五子棋，贪吃蛇，泡泡等，可以调节一下紧绷的神经。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image022.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image022" border="0" alt="clip_image022" src="http://abruzzi.github.com/images/2012/02/clip_image022_thumb.gif" width="558" height="377" /></a> <p>图 Emacs中的俄罗斯方块 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image024.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image024" border="0" alt="clip_image024" src="http://abruzzi.github.com/images/2012/02/clip_image024_thumb.jpg" width="557" height="395" /></a> <p>图 Emacs中的泡泡游戏</p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p>
+</header>
+	
+		
+	
+	<div id="content" class="inner"><article class="post">
+	<h2 class="title">Emacs可以做什么？</h2>
+	<div class="entry-content"><p><p>&nbsp; <p>这篇关于Emacs的介绍是我在2011年部门内部分享的，当时有些刚进入后台组的同事抱怨没有一款顺手的开发工具，于是我整理了vim的使用手册，但是部门另一位大牛(emacser)建议我再顺便整理一下Emacs的文档。我对Emacs的水平非常一般，但是既然是给别人推荐，自己不研究一下实在说不过去，在认真研究了1周之后，就整理出了这份文档。当然，想要在1周内就完全掌握这些技巧是不可能的，工具需要不断的使用，直到手指对那些命令产生记忆为止，才能算是入门。 <p>Emacs是一个神奇的编辑环境，下面仅举一些简单示例，介绍一下Emacs可以做什么。但是不涉及更详细的如何做，如何做到这些请参阅其他教程文档。 <h4>〇 shell环境</h4> <p>Emacs中可以很方便的进入shell模式(M-x shell)，而不用于shell来回切换，将shell搬进Emacs环境之中，运行命令，查看文件列表，操作svn，执行外部脚本等等。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image002.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image002" border="0" alt="clip_image002" src="http://abruzzi.github.com/images/2012/02/clip_image002_thumb.jpg" width="557" height="404" /></a> <p>图 Emacs中的shell环境 <h4>一 文件浏览器</h4> <p>相当于windows中的资源管理器，(M-x dired)，此时的Emacs是一个文件浏览器，如果光标所在的项是目录，此时回车会进入该目录，如果是文件，则打开该文件。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image004.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image004" border="0" alt="clip_image004" src="http://abruzzi.github.com/images/2012/02/clip_image004_thumb.jpg" width="557" height="351" /></a> <p>图 文件浏览器 <h4>二 编写代码</h4> <p>当然，我们使用Emacs的核心功能为代码编写功能。语法高亮，注释淡出等基本的自然支持，其他高级的功能在Emacs下则更为好用。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image006.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image006" border="0" alt="clip_image006" src="http://abruzzi.github.com/images/2012/02/clip_image006_thumb.jpg" width="557" height="404" /></a> <h4>三 调试代码</h4> <p>这个是日常工作中最为常用的功能之一，(M-x gdb)调用gdb，并与gdb交互，此时可以看到指令运行位置，可以设置/取消断点，查看变量地址/值等等。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image008.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image008" border="0" alt="clip_image008" src="http://abruzzi.github.com/images/2012/02/clip_image008_thumb.jpg" width="558" height="406" /></a> <p>图 调用gdb调试程序 <h4>四 比较文件</h4> <p>使用版本控制之后，最常用的功能为文件对比，(M-x ediff)可以对比两个文件(工作拷贝与版本库，或者版本库中的两个修订版之间) <p><a href="http://abruzzi.github.com/images/2012/02/clip_image010.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image010" border="0" alt="clip_image010" src="http://abruzzi.github.com/images/2012/02/clip_image010_thumb.jpg" width="558" height="414" /></a> <p>图 文件对比 <h4>五 增量搜索</h4> <p>与vim的编辑功能类似，Emacs具有增量搜索功能，(C-s/C-r)，被搜索词会高亮起来，便于查看。当然，查找/替换这些必备功能也非常好用。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image012.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image012" border="0" alt="clip_image012" src="http://abruzzi.github.com/images/2012/02/clip_image012_thumb.jpg" width="557" height="457" /></a> <p>图 关键字搜索 <h4>六 查看手册</h4> <p>开发中，遇到命令用法模糊，系统调用的参数顺序不明确，参数类型不确定，返回值意义等问题，都可以在Emacs中查看man手册来解决(M-x man) <p><a href="http://abruzzi.github.com/images/2012/02/clip_image014.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image014" border="0" alt="clip_image014" src="http://abruzzi.github.com/images/2012/02/clip_image014_thumb.jpg" width="557" height="431" /></a> <p>图 查看man手册 <h4>七 日历功能</h4> <p>事实上，Emacs有众多的小工具，如计算器，日历，心理医生等等。如过有兴趣，可以尝试自己开发一个小工具出来，要知道Emacs的可扩展性是无以伦比的。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image016.jpg" name="OLE_LINK1"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image016" border="0" alt="clip_image016" src="http://abruzzi.github.com/images/2012/02/clip_image016_thumb.jpg" width="558" height="166" /></a> <p>图 日历功能 <h4>八 待办事项</h4> <p><a href="http://abruzzi.github.com/images/2012/02/clip_image018.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image018" border="0" alt="clip_image018" src="http://abruzzi.github.com/images/2012/02/clip_image018_thumb.jpg" width="557" height="108" /></a> <p>图 待办事项 <h4>九 邮件客户端</h4> <p><a href="http://abruzzi.github.com/images/2012/02/clip_image020.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image020" border="0" alt="clip_image020" src="http://abruzzi.github.com/images/2012/02/clip_image020_thumb.jpg" width="558" height="423" /></a> <p>图 邮件客户端 <h4>十 娱乐功能</h4> <p>工作之余，可以在Emacs中启动一些小游戏。如俄罗斯方块，五子棋，贪吃蛇，泡泡等，可以调节一下紧绷的神经。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image022.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image022" border="0" alt="clip_image022" src="http://abruzzi.github.com/images/2012/02/clip_image022_thumb.gif" width="558" height="377" /></a> <p>图 Emacs中的俄罗斯方块 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image024.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image024" border="0" alt="clip_image024" src="http://abruzzi.github.com/images/2012/02/clip_image024_thumb.jpg" width="557" height="395" /></a> <p>图 Emacs中的泡泡游戏</p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p>
 </div>
 
 
-  <footer>
-    <p class="meta">
-      
-  
-
-<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
-
-      
+<div class="meta">
+	<div class="date">
 
 
 
@@ -141,133 +90,80 @@
   
 
 
-<time datetime="2012-02-06T00:00:00+08:00" pubdate data-updated="true">Feb 6<span>th</span>, 2012</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/category/linux-unix/'>Linux/UNIX</a>, <a class='category' href='/category/tools/'>Tools</a>
-  
-</span>
+<time datetime="2012-02-06T00:00:00+08:00" pubdate data-updated="true">Feb 6<span>th</span>, 2012</time></div>
+	<div class="tags">
 
 
-    </p>
-    
-      <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/blog/2012/02/emacs%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88%EF%BC%9F/" data-via="" data-counturl="http://abruzzi.github.com/blog/2012/02/emacs%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88%EF%BC%9F/" >Tweet</a>
-  
-  
-  
+	<a class='category' href='/category/linux-unix/'>Linux/UNIX</a>, <a class='category' href='/category/tools/'>Tools</a>
+
+
+</div>
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
 </div>
 
-    
-    
-    <ul class="pager">
-      
-      <li class="previous"><a class="basic-alignment left"
-        href="/blog/2012/02/diff%E5%92%8Cpatch%E7%9A%84%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/" title="Previous Post:
-        diff和patch的使用介绍">&laquo; diff和patch的使用介绍</a></li>
-      
-      <li><a href="/blog/archives">Blog Archives</a></li>
-      
-      <li class="next"><a class="basic-alignment right" href="/blog/2012/02/arduino-urm37-%E6%B8%A9%E5%BA%A6%E6%8E%A2%E6%B5%8B/"
-        title="Next Post: Arduino URM37 温度探测">Arduino URM37 温度探测
-        &raquo;</a></li>
-      
-    </ul>
-  </footer>
-</article>
-
-<aside class="sidebar-nav span3">
-  
-    <section class="well">
-  <ul id="recent_posts" class="nav nav-list">
-    <li class="nav-header">Recent Posts</li>
-    
-      <li class="post">
-        <a href="/blog/2012/11/git-squash-localcommits/">Git squash localcommits</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/">Using ssh forward to get out of stupid wall</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/customize-matcher-by-using-hamcrest/">Customize matcher by using hamcrest</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/simplified-tdd-by-using-interllij/">Simplified TDD by Using Intellij</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/using-gradle-to-setup-standard-java-project/">Using gradle to setup standard java project</a>
-      </li>
-    
-  </ul>
-</section>
-<section>
-  <h1>新浪微博</h1>
-  <ul id="weibo">
-    <li>
-    <iframe 
-        width="100%" 
-        height="550" 
-        class="share_self"  
-        frameborder="0" 
-        scrolling="no" 
-        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
-    </li>
-  </ul>
-  </section>
 
 
-<section>
-<h2>What did I read</h2>
-<div>
-    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+<section id="comment">
+    <h2 class="title">Comments</h2>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
 </section>
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
 
-
-
-
-
-
-
-  
-</aside>
-
-
-    </div>
-  </div>
-  <footer role="contentinfo" class="page-footer"><hr>
-<p>
-  Copyright &copy; 2012 - Qiu Juntao -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
+    Qiu Juntao
 
 </footer>
-  
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/blog/2012/02/emacs%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88%EF%BC%9F/';
+        var disqus_url = 'http://abruzzi.github.com/blog/2012/02/emacs%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88%EF%BC%9F/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
 
 
 
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-37350472-1']);
+		_gaq.push(['_trackPageview']);
 
-
-
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
 
 
 
