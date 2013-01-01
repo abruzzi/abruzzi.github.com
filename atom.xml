@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Qiu Juntao Blog]]></title>
+  <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-01-01T23:40:10+08:00</updated>
+  <updated>2013-01-02T00:25:32+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -53,7 +53,7 @@
 3. Sublime Text 2
 </code></pre>
 
-<p><img src="http://abruzzi.github.com/images/2013/01/vim-mac-dev-resized.png" alt="image" /></p>
+<p><a href="http://abruzzi.github.com/images/2013/01/vim-mac-dev.png"><img src="http://abruzzi.github.com/images/2013/01/vim-mac-dev-resized.png" alt="image" /></a></p>
 
 <h4>IDE</h4>
 
