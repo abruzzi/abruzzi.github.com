@@ -10,11 +10,11 @@ comments: true
 ---
 <p><p>spring在3.0之后分离成了差不多20个分离的jar包，又对JDBC/JMS等的支持，对AOP的支持，WEB开发的支持，以及核心的依赖注入部分(几乎所有的spring应用都或多或少的会涉及到spring的依赖注入特性)。下图是一个3.0的依赖注入子模块需要的包结构：</p></p>
 
-<p><p><a href="http://abruzzi.github.com/images/2012/05/spring-core.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="spring-core" border="0" alt="spring-core" src="http://abruzzi.github.com/images/2012/05/spring-core_thumb.png" width="595" height="108" /></a></p></p>
+<p><p><a href="http://www.icodeit.org/wp-content/uploads/2012/05/spring-core.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="spring-core" border="0" alt="spring-core" src="http://www.icodeit.org/wp-content/uploads/2012/05/spring-core_thumb.png" width="595" height="108" /></a></p></p>
 
 <p><p>这篇文章中，我将介绍使用spring的DI来完成一个简单的示例：</p></p>
 
-<p><p><a href="http://abruzzi.github.com/images/2012/05/exporter.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="exporter" border="0" alt="exporter" src="http://abruzzi.github.com/images/2012/05/exporter_thumb.png" width="359" height="271" /></a></p></p>
+<p><p><a href="http://www.icodeit.org/wp-content/uploads/2012/05/exporter.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="exporter" border="0" alt="exporter" src="http://www.icodeit.org/wp-content/uploads/2012/05/exporter_thumb.png" width="359" height="271" /></a></p></p>
 
 <p><p>对于Exporter来说，它面向Component这个接口，而不关注其实际的实现，比如Componet的一个实现为Label：</p></p>
 
