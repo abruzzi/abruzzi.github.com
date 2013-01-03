@@ -1,81 +1,120 @@
 
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
-	<meta charset="utf-8">
-	<title>第15章 服务器端的JavaScript(下) - I code it</title>
-	<meta name="author" content="Qiu Juntao">
+  <meta charset="utf-8">
+  <title>第15章 服务器端的JavaScript(下) - I code it</title>
+  <meta name="author" content="Qiu Juntao">
 
-	
-	<meta name="description" content="15.2 CouchDB
+  
+  <meta name="description" content="15.2 CouchDB
 15.2.1 CouchDB简介
 CouchDB是一个Apache的开源项目，它是一个面向文档的数据库系统。CouchDB提供REST形式的API的访问，并以JSON作为数据交换格式。这一点使得CouchDB很容易被使用。事实上， &hellip;">
-	
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
 
-	<link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
-	<link rel="canonical" href="">
-	<link href="/favicon.png" rel="shortcut icon">
-	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-	
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/blog/2012/02/%E7%AC%AC15%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E7%9A%84javascript%E4%B8%8B/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37350472-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
 </head>
 
-<body>
-	<header id="header" class="inner"><h1><a href="/">I code it</a></h1>
-<nav id="main-nav"><ul class="main">
-	<li><a href="/">Blog</a></li>
-	<li><a href="/blog/archives">Archives</a></li>
-</ul>
-</nav>
-<nav id="mobile-nav">
-	<div class="alignleft menu">
-		<a class="button">Menu</a>
-		<div class="container"><ul class="main">
-	<li><a href="/">Blog</a></li>
-	<li><a href="/blog/archives">Archives</a></li>
-</ul>
-</div>
-	</div>
-	<div class="alignright search">
-		<a class="button"></a>
-		<div class="container">
-			<form action="http://google.com/search" method="get">
-				<input type="text" name="q" results="0">
-				<input type="hidden" name="q" value="site:abruzzi.github.com">
-			</form>
-		</div>
-	</div>
-</nav>
-<nav id="sub-nav" class="alignright">
-	<div class="social">
-		
-		
-		
-		
-    
-		
-		
-		
-		
-		
-		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
-		
-	</div>
-	<form class="search" action="http://google.com/search" method="get">
-		<input class="alignright" type="text" name="q" results="0">
-		<input type="hidden" name="q" value="site:abruzzi.github.com">
-	</form>
-</nav>
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">geek</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+  <div class="clear"></div>
+</hgroup>
 
 </header>
-	
-		
-	
-	<div id="content" class="inner"><article class="post">
-	<h2 class="title">第15章 服务器端的JavaScript(下)</h2>
-	<div class="entry-content"><p><h2><a name="_Toc316051172"></a>15.2 CouchDB</h2>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">第15章 服务器端的JavaScript(下)</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-12T00:00:00+08:00" pubdate data-updated="true">Feb 12<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><h2><a name="_Toc316051172"></a>15.2 CouchDB</h2>
 <h3><a name="_Toc316051173"></a>15.2.1 CouchDB简介</h3>
 CouchDB是一个Apache的开源项目，它是一个面向文档的数据库系统。CouchDB提供REST形式的API的访问，并以JSON作为数据交换格式。这一点使得CouchDB很容易被使用。事实上，支持HTTP的编程语言都可以作为CouchDB的客户端。它使用MapReduce方式来进行数据的访问和索引，在这一点上，函数式编程无疑更加合适：因为map/reduce本身就是函数式编程中的概念。</p>
 
@@ -507,8 +546,14 @@ CouchDB是一个Apache的开源项目，它是一个面向文档的数据库系�
 </div>
 
 
-<div class="meta">
-	<div class="date">
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
 
 
 
@@ -520,50 +565,116 @@ CouchDB是一个Apache的开源项目，它是一个面向文档的数据库系�
   
 
 
-<time datetime="2012-02-12T00:00:00+08:00" pubdate data-updated="true">Feb 12<span>th</span>, 2012</time></div>
-	<div class="tags">
+<time datetime="2012-02-12T00:00:00+08:00" pubdate data-updated="true">Feb 12<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/javascript/'>JavaScript</a>
+  
+</span>
 
 
-	<a class='category' href='/category/javascript/'>JavaScript</a>
-
-
-</div>
-	
-</div></article>
-
-	<div class="share">
-	<div class="addthis_toolbox addthis_default_style ">
-	
-	
-	<a class="addthis_button_tweet"></a>
-	
-	
-	<a class="addthis_counter addthis_pill_style"></a>
-	</div>
-  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/blog/2012/02/%E7%AC%AC15%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E7%9A%84javascript%E4%B8%8B/" data-via="" data-counturl="http://abruzzi.github.com/blog/2012/02/%E7%AC%AC15%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E7%9A%84javascript%E4%B8%8B/" >Tweet</a>
+  
+  
+  
 </div>
 
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2012/02/%E7%AC%AC15%E7%AB%A0-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E7%9A%84javascript%E4%B8%8A/" title="Previous Post: 第15章 服务器端的JavaScript(上)">&laquo; 第15章 服务器端的JavaScript(上)</a>
+      
+      
+        <a class="basic-alignment right articlenav" href="/blog/2012/02/javascript%E5%86%85%E6%A0%B8%E7%B3%BB%E5%88%97v0-9-9beta%E7%89%88%E6%9C%AC%E4%B8%8B%E8%BD%BD/" title="Next Post: JavaScript内核系列V0.9.9Beta版本下载">JavaScript内核系列V0.9.9Beta版本下载 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
 
-
-<section id="comment">
-    <h2 class="title">Comments</h2>
+  <section>
+    <h1>Comments</h1>
     <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-</section>
-</div>
-	<footer id="footer" class="inner">Copyright &copy; 2013
+  </section>
 
-    Qiu Juntao
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/01/k-nearest-neighbour/">k-nearest-neighbour算法简介及示例</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/why-every-dev-should-try-mac-os/">为什么每个开发人员都应该使用Mac系统</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/%E6%88%91%E7%9A%842012/">我的2012</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/git-squash-localcommits/">Git squash localcommits</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/">Using ssh forward to get out of stupid wall</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>What did I read</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
 
 </footer>
-	<script src="/javascripts/slash.js"></script>
-<script src="/javascripts/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-(function($){
-	$('.fancybox').fancybox();
-})(jQuery);
-</script> <!-- Delete or comment this line to disable Fancybox -->
-
+  
 
 <script type="text/javascript">
       var disqus_shortname = 'icodeit';
@@ -583,17 +694,21 @@ CouchDB是一个Apache的开源项目，它是一个面向文档的数据库系�
 
 
 
-	<script type="text/javascript">
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', 'UA-37350472-1']);
-		_gaq.push(['_trackPageview']);
 
-		(function() {
-			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		})();
-	</script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
 
 
 
