@@ -273,15 +273,23 @@
         <lastmod>2013-01-03T16:11:27+08:00</lastmod>
     </url>
     <url>
+        <loc>http://abruzzi.github.com/blog/2013/01/add-new-page-to-octopress/</loc>
+        <lastmod>2013-01-03T18:26:09+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://abruzzi.github.com/about-me/</loc>
-        <lastmod>2013-01-03T16:11:27+08:00</lastmod>
+        <lastmod>2013-01-03T17:11:01+08:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/blog/archives/</loc>
-        <lastmod>2013-01-03T16:11:27+08:00</lastmod>
+        <lastmod>2013-01-03T18:26:09+08:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/</loc>
-        <lastmod>2013-01-03T16:11:27+08:00</lastmod>
+        <lastmod>2013-01-03T18:26:09+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://abruzzi.github.com/jsccp/</loc>
+        <lastmod>2013-01-03T17:51:33+08:00</lastmod>
     </url>
 </urlset>

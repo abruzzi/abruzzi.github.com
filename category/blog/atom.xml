@@ -4,7 +4,7 @@
   <title><![CDATA[Category: blog | I code it]]></title>
   <link href="http://abruzzi.github.com/category/blog/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-01-03T16:15:00+08:00</updated>
+  <updated>2013-01-03T18:27:01+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,83 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[add-new-page-to-octopress]]></title>
+    <link href="http://abruzzi.github.com/blog/2013/01/add-new-page-to-octopress/"/>
+    <updated>2013-01-03T17:38:00+08:00</updated>
+    <id>http://abruzzi.github.com/blog/2013/01/add-new-page-to-octopress</id>
+    <content type="html"><![CDATA[<p>我之前在wordpress中有一些页面(page)，在迁移到octopress之后都不见了，早就想把这些页面show出来了，最终都被我以各种理由拖到了今天。</p>
+
+<h3>布局</h3>
+
+<p>一个典型的octopress博客的source目录布局大概是这样：</p>
+
+<p>```
+source/
+├── <em>attachments
+├── </em>includes
+│   ├── asides
+│   ├── custom
+│   │   └── asides
+│   └── post
+├── <em>layouts
+├── </em>nav_menu_items
+├── <em>pages
+├── </em>posts
+├── blog
+│   └── archives
+├── font
+├── images
+│   ├── 2012
+│   │   ├── 01
+│   │   ├── 02
+│   ├── 2013
+│   │   └── 01
+│   ├── fancybox
+│   └── social
+├── javascripts
+│   ├── asides
+│   └── libs
+├── jsccp
+└── stylesheets</p>
+
+<pre><code>├── bootstrap
+└── syntax
+</code></pre>
+
+<p>```</p>
+
+<p>对应的，当执行</p>
+
+<p><code>
+$ rake generate
+</code></p>
+
+<p>时，source下面的markdown会被编译为html，并拷贝到public下，public目录下的结构跟source下一致，里边的内容为最终的静态页面。因此我们需要修改souce中的内容，然后generate/deploy即可。</p>
+
+<h3>添加页面(page)</h3>
+
+<p>在octopress中，已经有两个默认page，即blog/archives，我们可以参考它来完成自己的页面，首先在source中创建一个目录，比如叫做<strong>jsccp</strong>(<a href="http://abruzzi.github.com/jsccp">JavaScript Core Concepts and Practices</a>)，然后在这个目录中放入一个名叫index.markdown的文件即可。</p>
+
+<p>将需要的内容放入这个文件即可完成页面(page)的编辑。但是我们还需要在首页上将这个页面的链接暴露出来，这一步需要编辑<code>source/_includes/custom/navigation.html</code></p>
+
+<pre><code>&lt;ul class="main-navigation"&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Blog&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/blog/archives"&gt;Archives&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/jsccp"&gt;JavaScript内核系列&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<p>我为这个文件添加了一个新行，指向新创建的目录(此处不需要指定到index.markdown或者index.html)，这样就设置完成了。</p>
+
+<p>尝试<code>rake generate</code>然后<code>rake preview</code>，如果一起正常，就可以<code>rake deploy</code>部署到github上了。</p>
+
+<h3>效果图</h3>
+
+<p><img src="http://abruzzi.github.com/images/2013/01/navigation.png" alt="image" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Post from python + vim]]></title>
