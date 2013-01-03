@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "add-new-page-to-octopress"
+title: "为octopress添加新的页面(page)"
 date: 2013-01-03 17:38
 comments: true
 categories: 
