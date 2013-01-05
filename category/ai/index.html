@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Using gradle to setup standard java project - I code it</title>
+  <title>Category: AI - I code it</title>
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Generate typical project layout If you are as lazy as I am, you may want to generate typecial project layout automatically, let&#8217;s do it by &hellip;">
+  <meta name="description" content="Category: AI">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://abruzzi.github.com/blog/2012/10/using-gradle-to-setup-standard-java-project/">
+  <link rel="canonical" href="http://abruzzi.github.comcategory/ai/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -85,132 +85,36 @@
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      
-        <h1 class="entry-title">Using Gradle to Setup Standard Java Project</h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-12T23:24:00+08:00" pubdate data-updated="true">Oct 12<span>th</span>, 2012</time>
-        
-      </p>
+    <h1 class="entry-title">Category: AI</h1>
     
   </header>
-
-
-<div class="entry-content"><h2>Generate typical project layout</h2>
-
-<p>If you are as lazy as I am, you may want to generate typecial project layout automatically, let&#8217;s do it by using <a href="http://www.gradle.org/">gradle</a>.</p>
-
-<p>Simply add the following lines into your build.gradle:</p>
-
-<pre><code>apply plugin: 'java'
-
-task "create-dirs" &lt;&lt; {
-    sourceSets*.java.srcDirs*.each {it.mkdirs()}
-    sourceSets*.resources.srcDirs*.each {it.mkdirs()}
-}
-</code></pre>
-
-<p>then using gradle to run the task defined &#8220;create-dirs&#8221;:</p>
-
-<pre><code>$ gradle create-dirs
-</code></pre>
-
-<p>you will get the directories structure like this:</p>
-
-<pre><code>.
-├── build.gradle
-└── src
-    ├── main
-    │   ├── java
-    │   └── resources
-    └── test
-        ├── java
-        └── resources
-</code></pre>
-
-<p>If you are using intellij as your default IDE, then you can apply the &#8216;idea&#8217; plugin for the project:</p>
-
-<pre><code>apply plugin: 'java'
-apply plugin: 'idea'
-</code></pre>
-
-<p>and then:</p>
-
-<pre><code>$ gradle idea
-</code></pre>
-
-<p>it should generate 3 files out: file.iml, file.ipr, file.iws. You can then open intellij and have fun with code inside, I would like to make a new post to talking about how to setup a java project by using intellij, and using <a href="http://en.wikipedia.org/wiki/Test-driven_development">TDD</a> for coding.</p>
-</div>
-
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
-
-      
-
-
-
-
-
+  <div id="blog-archives" class="category">
 
 
 
   
+  <h2>2013</h2>
 
-
-<time datetime="2012-10-12T23:24:00+08:00" pubdate data-updated="true">Oct 12<span>th</span>, 2012</time>
-      
-
-
-    </p>
-    
-      <div class="sharing">
+<article>
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/blog/2012/10/using-gradle-to-setup-standard-java-project/" data-via="" data-counturl="http://abruzzi.github.com/blog/2012/10/using-gradle-to-setup-standard-java-project/" >Tweet</a>
-  
-  
-  
-</div>
+<h1><a href="/blog/2013/01/basic-digits-recognization/">使用opencv进行数字识别</a></h1>
+<time datetime="2013-01-05T22:51:00+08:00" pubdate><span class='month'>Jan</span> <span class='day'>05</span> <span class='year'>2013</span></time>
 
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left articlenav" href="/blog/2012/10/how-to-embed-douban-show-in-your-octopress-site/" title="Previous Post: How to embed Douban-Show in your octopress site">&laquo; How to embed Douban-Show in your octopress site</a>
-      
-      
-        <a class="basic-alignment right articlenav" href="/blog/2012/10/simplified-tdd-by-using-interllij/" title="Next Post: Simplified TDD by Using Intellij">Simplified TDD by Using Intellij &raquo;</a>
-      
-    </p>
-  </footer>
+<footer>
+  <span class="categories">posted in <a class='category' href='/category/ai/'>AI</a>, <a class='category' href='/category/thoughtworks/'>ThoughtWorks</a></span>
+</footer>
+
+
 </article>
 
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-  </section>
+
+  
+</article>
 
 </div>
 
@@ -310,10 +214,7 @@ Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_i
       var disqus_shortname = 'icodeit';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://abruzzi.github.com/blog/2012/10/using-gradle-to-setup-standard-java-project/';
-        var disqus_url = 'http://abruzzi.github.com/blog/2012/10/using-gradle-to-setup-standard-java-project/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
