@@ -4,7 +4,7 @@
   <title><![CDATA[Category: AI | I code it]]></title>
   <link href="http://abruzzi.github.com/category/ai/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-01-06T00:06:09+08:00</updated>
+  <updated>2013-01-06T00:16:04+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -18,8 +18,9 @@
     <link href="http://abruzzi.github.com/blog/2013/01/basic-digits-recognization/"/>
     <updated>2013-01-05T22:51:00+08:00</updated>
     <id>http://abruzzi.github.com/blog/2013/01/basic-digits-recognization</id>
-    <content type="html"><![CDATA[<p>最终的效果图是这样的：
-<img src="http://abruzzi.github.com/images/2013/01/result.resized.png" alt="识别效果" /></p>
+    <content type="html"><![CDATA[<p>最终的效果图是这样的：</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/01/result.resized.png" alt="识别效果" /></p>
 
 <p>图中的一个小的窗口中为resize之后的所有找到的图片的列表，在这个case中，有三个数字。</p>
 
