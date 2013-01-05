@@ -11,6 +11,7 @@ tags: [AI, ThoughtWorks]
 ---
 
 最终的效果图是这样的：
+
 ![识别效果](http://abruzzi.github.com/images/2013/01/result.resized.png)
 
 图中的一个小的窗口中为resize之后的所有找到的图片的列表，在这个case中，有三个数字。
