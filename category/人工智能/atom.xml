@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 人工智能 | I code it]]></title>
   <link href="http://abruzzi.github.com/category/人工智能/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-01-06T12:11:22+08:00</updated>
+  <updated>2013-01-07T23:09:35+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[k-nearest-neighbour算法简介及示例]]></title>
-    <link href="http://abruzzi.github.com/blog/2013/01/k-nearest-neighbour/"/>
+    <link href="http://abruzzi.github.com/2013/01/k-nearest-neighbour/"/>
     <updated>2013-01-03T15:46:00+08:00</updated>
-    <id>http://abruzzi.github.com/blog/2013/01/k-nearest-neighbour</id>
+    <id>http://abruzzi.github.com/2013/01/k-nearest-neighbour</id>
     <content type="html"><![CDATA[<h3>background</h3>
 
 <p>元旦放假前，team的同事们想要一起学习一些技术，然后一起做些小东西，有人提到将物理墙上的卡，通过手机拍照，识别出其中的卡号，然后与电子墙同步状态。这是一个非常有意思的主题，会涉及到很多方面的知识，其实有好几个topic，只不过我对人工智能/机器学习等比较有兴趣而已，所以就先自己研究下。</p>

@@ -1,0 +1,462 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>k-nearest-neighbour算法简介及示例 - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="background 元旦放假前，team的同事们想要一起学习一些技术，然后一起做些小东西，有人提到将物理墙上的卡，通过手机拍照，识别出其中的卡号，然后与电子墙同步状态。这是一个非常有意思的主题，会涉及到很多方面的知识，其实有好几个topic，只不过我对人工智能/机器学习等比较有兴趣而已， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2013/01/k-nearest-neighbour/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">lambda</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about-me">About Me</a></li>
+  <li><a href="/jsccp">JavaScript内核系列</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">K-nearest-neighbour算法简介及示例</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-03T15:46:00+08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>background</h3>
+
+<p>元旦放假前，team的同事们想要一起学习一些技术，然后一起做些小东西，有人提到将物理墙上的卡，通过手机拍照，识别出其中的卡号，然后与电子墙同步状态。这是一个非常有意思的主题，会涉及到很多方面的知识，其实有好几个topic，只不过我对人工智能/机器学习等比较有兴趣而已，所以就先自己研究下。</p>
+
+<p>几天下来，关于数字识别的基本的流程已经清晰了，关于图片的预处理及边界标定等都差不多就绪了，剩下比较重要的是<strong>识别</strong>本身了。在这个过程中，遇到了一些很有意思的算法，我自己也花费了好几天才弄明白，所以整理了一下，这一篇先介绍下第一个，也是最简单最好用的KNN算法。</p>
+
+<h3>K-nearest-neighbour简介</h3>
+
+<p>KNN是机器学习中<strong>最简单</strong>的一种无值守的学习方法，但是在实际场景中，效果却经常<strong>非常好</strong>。一般来说，在样本较多，分布均匀的空间中，KNN会收到很好的效果。但是由于KNN会计算空间中的每个点与需要标定的点的距离(甚至需要计算额外的权重信息)，所以计算量会较大。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>假设所有的点都均匀的分布在一个平面内，此时的平面密度(单位范围内的点的个数)非常大，而每个子平面内的点的分布与所有点在整个平面内的分布相当。在子平面S中，有一个点Y，则离点X(to be classified)最近的Y很可能与Y同在子平面S中。</span></code></pre></td></tr></table></div></figure>
+
+
+<p>比如取出空间中与X距离最近的有5个点(K=5)，其中3个属于C1类，2个属于C2类，则根据少数服从多数原则，X点被归类为C1.这样的一个缺点就是如果空间内的点分布不均匀，那么会有一些误差，如果上面这个场景经常出现，那么分类会越来越偏离(有一个偏心的硬币，投掷100,000次，有90,000次正面)。这样就有引入了对KNN的另一个扩展方式，加入权重的KNN：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>当然这种形式的KNN不是很精确，由此引申出了带权重的KNN：可以为每个点都赋予一个权值，每个权值与新的点X的距离有关，通常会取距离的倒数，这样与X最近的点有较高的权重，而较远的点具有较低的权重，这样在投票(voting)阶段可以相对的提高精确度</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>KNN的一个python版本示例</h3>
+
+<h4>背景(高斯分布)</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import random
+</span><span class='line'>
+</span><span class='line'>def gauss_list(mu, sigma, count=100):
+</span><span class='line'>    return [random.gauss(mu, sigma) for _ in range(count)]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>生成一个随机数数组，数组中的元素符合高斯分布，如</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ran = gauss_list(-2, 1, 10)
+</span><span class='line'>print ran</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行结果如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[-1.3277188634970218, -2.1034487392146817, -0.5924407591392826, -0.30376289085064045, -2.191337071105794, -1.9781081550478732, -3.7937155472105673, -2.538102349796847, -1.3728510997834549, -2.766669661625006]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>更进一步，我们可以用这种方式生成平面中的一些点，这些点可以根据分布情况分为两组，一组是以(-4,0)为重心的500个点，另一组是以(4,0)为重心的500个点：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def gauss_cluster(center, stdDev, count=500):
+</span><span class='line'>    return [(random.gauss(center[0], stdDev),
+</span><span class='line'>             random.gauss(center[1], stdDev)) for _ in range(count)]
+</span><span class='line'>
+</span><span class='line'>def make_random_data():
+</span><span class='line'>    return gauss_cluster((-4, 0), 1) + gauss_cluster((4, 0), 1)
+</span><span class='line'>
+</span><span class='line'>data = make_random_data()
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>绘制高斯分布</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>data = make_random_data()
+</span><span class='line'>
+</span><span class='line'>x = map(lambda x: x[0], data)
+</span><span class='line'>y = map(lambda x: x[1], data)
+</span><span class='line'>
+</span><span class='line'>plt.clf()
+</span><span class='line'>
+</span><span class='line'>plt.scatter(x, y, c=x, vmin=0, vmax=20, s=35, alpha=0.75)
+</span><span class='line'>plt.colorbar()
+</span><span class='line'>plt.grid(True)
+</span><span class='line'>
+</span><span class='line'>plt.show()</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过使用matplotlib的绘图功能，将make_random_data生成的点通过图形的方式展现，效果更加直观，图中的两个点集分别表示两个不同的类别。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/01/gauss-distribution-resized.png" alt="image" /></p>
+
+<h4>KNN</h4>
+
+<p>我们定义KNN分类器，其中两点间的距离按照欧氏公式来求，先计算点集中离x点最近的k个点，然后取得对应的k个label，再按照label个数球max。</p>
+
+<p>比如k=5时，求的的label集合为[&#8216;O&#8217;, &#8216;O&#8217;, &#8216;A&#8217;, &#8216;A&#8217;, &#8216;A&#8217;]，则我们认为这个点应该被分类为A(少数服从多数)。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def euclidean_distance(x, y):
+</span><span class='line'>    return math.sqrt(sum([(a-b)**2 for (a,b) in zip(x,y)]))
+</span><span class='line'>
+</span><span class='line'>def makeKNNClassifier(data, labels, k, distance):
+</span><span class='line'>    def classify(x):
+</span><span class='line'>        closestPoints = heapq.nsmallest(k, enumerate(data),
+</span><span class='line'>                                        key=lambda y: distance(x, y[1]))
+</span><span class='line'>        closestLabels = [labels[i] for (i, pt) in closestPoints]
+</span><span class='line'>        return max(set(closestLabels), key=closestLabels.count)
+</span><span class='line'>
+</span><span class='line'>    return classify</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>测试一下</h4>
+
+<p>创建1000个随机点，前500个分类为A(Apple)，后500个分类为O(Orange)，k值为3。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>data = make_random_data()
+</span><span class='line'>labels = ['A'] * 500 + ['O'] * 500
+</span><span class='line'>
+</span><span class='line'>fitter = makeKNNClassifier(data, labels, 3, euclidean_distance)
+</span><span class='line'>
+</span><span class='line'>print fitter((-3, 1))
+</span><span class='line'>print fitter((4, 2))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>图中的两个红色的点分别为P1(-3, 1)和P2(4, 2)。它们都已经被正确的分类。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/01/knn-plant-resized.png" alt="image" /></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-03T15:46:00+08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/thoughtworks/'>thoughtworks</a>, <a class='category' href='/category/人工智能/'>人工智能</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/01/k-nearest-neighbour/" data-via="" data-counturl="http://abruzzi.github.com/2013/01/k-nearest-neighbour/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/2013/01/why-every-dev-should-try-mac-os/" title="Previous Post: 为什么每个开发人员都应该使用Mac系统">&laquo; 为什么每个开发人员都应该使用Mac系统</a>
+      
+      
+        <a class="basic-alignment right articlenav" href="/2013/01/add-new-page-to-octopress/" title="Next Post: 为octopress添加新的页面(page)">为octopress添加新的页面(page) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/01/basic-digits-recognization/">使用opencv进行数字识别</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/01/add-new-page-to-octopress/">为octopress添加新的页面(page)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/01/k-nearest-neighbour/">k-nearest-neighbour算法简介及示例</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/01/why-every-dev-should-try-mac-os/">为什么每个开发人员都应该使用Mac系统</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/12/%E6%88%91%E7%9A%842012/">我的2012</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>What did I read</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2013/01/k-nearest-neighbour/';
+        var disqus_url = 'http://abruzzi.github.com/2013/01/k-nearest-neighbour/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

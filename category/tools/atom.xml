@@ -4,7 +4,7 @@
   <title><![CDATA[Category: tools | I code it]]></title>
   <link href="http://abruzzi.github.com/category/tools/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-01-06T12:11:22+08:00</updated>
+  <updated>2013-01-07T23:09:35+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[为什么每个开发人员都应该使用Mac系统]]></title>
-    <link href="http://abruzzi.github.com/blog/2013/01/why-every-dev-should-try-mac-os/"/>
+    <link href="http://abruzzi.github.com/2013/01/why-every-dev-should-try-mac-os/"/>
     <updated>2013-01-01T22:41:00+08:00</updated>
-    <id>http://abruzzi.github.com/blog/2013/01/why-every-dev-should-try-mac-os</id>
+    <id>http://abruzzi.github.com/2013/01/why-every-dev-should-try-mac-os</id>
     <content type="html"><![CDATA[<h2>为什么每个开发人员都应该使用Mac系统</h2>
 
 <p>在使用了Mac系统大概10个月之后，我已经深深的喜欢上了在其上做开发的体验，精美的界面，人性化的设计，强大的硬件系统，安全而稳定的软件系统，下面我将会用Mac系统和Windows做一个简单的对比，最后会有一些推荐的工具列表。</p>
