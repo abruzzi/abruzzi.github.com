@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-01-07T23:09:35+08:00</updated>
+  <updated>2013-01-12T11:57:54+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,33 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[是时候慢下来了]]></title>
+    <link href="http://abruzzi.github.com/2013/01/where-am-i/"/>
+    <updated>2013-01-09T20:56:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/01/where-am-i</id>
+    <content type="html"><![CDATA[<p>某个晚上，我在网上为自己挑选一个适合出差的行李箱，两个小时之后，我突然发现我停留在了一个瑞士军刀的淘宝店里；本来计划晚上看看AppleScript的资料，结果一个小时之后，我在用python写一个opencv的小程序，又过了一个小时，我停留在Alfred的powerpack的支付页面，面对着15英镑的价格陷入沉思。</p>
+
+<p>而且周围好像每个人都有这样类似的经历。我咨询其他同事遇到类似的情况怎么处理，有人推荐使用Todo列表，而且Todo最好列在纸上。当列表中的Todo被消灭时，会激发你去写下更多的task。这当然是个好办法，我很早的时候就写过一个软件来完成Todo管理：<a href="http://code.google.com/p/stodo/">sTodo</a>。但是当打开电脑之后，时间就完全不受控制了，网络上总是有各种各样好玩的东西，新的框架，新的语言，某种颠覆式的CSS框架，新奇而好用的软件，可以大大提高用户体验的UI库，太多了……。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/01/stodo_edit.png" alt="sTodo" /></p>
+
+<p>上周三的晚上，回家之后打开电脑，开始了“学习”，事实上是很盲目的在网络上游荡，当我意识到又要重蹈覆辙的时候，我毅然的合起了电脑，然后拿起一本纸质的《JavaScript: The good parts》。最后当我要睡觉时才发现，读了大概30多页，而且以前的一些概念也更加清楚了。而且事实上我并未因为没有打开计算机而有什么实质性的损失。</p>
+
+<p>然后我突然意识到我之前的所谓的学习的方式有很大的问题，网络当然可以为你提供大量的信息，但是很多时候，这些呈碎片装的信息的作用并不如预期般的大。它会帮你解决手头的小问题，但是阻挡了你的视线，你本可以走的更远！</p>
+
+<p>在网络上看资料，总是有一种紧迫感：这么多的东西都不会，落后于时代好多年。打开电脑，一个晚上过去了，你可能读了很多的东西，但是记下来的非常少，因为总是会被各种链接，图片等干扰，这个看似在学习的过程事实上完全是在浪费实践，一天之后，你前一个晚上看到的东西几乎被完全遗忘，然后周而复始。</p>
+
+<p>所以，是时候慢下来，你不会因为没有浏览几个网页，或者少读几篇文章而落后于时代几十年的，你需要好多年才能积累起来的知识，别人同样需要好多年。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/01/todos.png" alt="image" /></p>
+
+<p>合上电脑，捧起纸质的书籍，世界突然慢了下来，但是却会充盈很多。事实上，放慢脚步，消除网络带来的<strong><em>虚假的紧迫感</em></strong>，反而可以以更快的速度掌握一项技术，一个框架，也可以让印象更加深刻。晚上回家尽量不带电脑，我用trainng经费购买的10本书，现在才读完2.5本，去年5月买的书还有两本没有读完，这些亏欠都需要在脱离电脑的舒服之后才能想起来，也才有可能完成。</p>
+
+<p>慢下来。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用opencv进行数字识别]]></title>
@@ -1487,37 +1514,6 @@ full-functionality, just too complex for me.</p></p>
 cool to write blog in my favorest editor.</p></p>
 
 <p><p>中文应该没有问题吧？</p>
-</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[git中的merge和rebase]]></title>
-    <link href="http://abruzzi.github.com/2012/05/git%E4%B8%AD%E7%9A%84merge%E5%92%8Crebase/"/>
-    <updated>2012-05-17T00:00:00+08:00</updated>
-    <id>http://abruzzi.github.com/2012/05/git中的merge和rebase</id>
-    <content type="html"><![CDATA[<p><p>使用git时，如果遇到分支的情况，比如两个开发人员都从commit2开始各自开发，然后分贝在本地完成了两个commit：</p></p>
-
-<p><p><a href="http://abruzzi.github.com/images/2012/05/branch.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="branch" border="0" alt="branch" src="http://abruzzi.github.com/images/2012/05/branch_thumb.png" width="196" height="361" /></a></p></p>
-
-<p><p>此时，如果要将两个分支的代码合并起来，通常会有两种方式，一种对两个分支的代码进行merge，通常会执行的命令为:</p></p>
-
-<p><div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> git pull</pre><!--CRLF--></div></div></p>
-
-<p><p>这时的版本库历史看起来会是这样：</p></p>
-
-<p><p><a href="http://abruzzi.github.com/images/2012/05/merge.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="merge" border="0" alt="merge" src="http://abruzzi.github.com/images/2012/05/merge_thumb.png" width="197" height="460" /></a></p></p>
-
-<p><p>不过通常我们想要的是，保持一个较为简单的历史轨迹，分支太多的话会显得比较凌乱，当引入bug或者其他问题时，可能会影响到追踪。另一种做法是先将某一个分支A上的提交保存下来，然后将分支B上的，对于commit2的修改作用到commit2上，然后将保存起来的修改作用到新的结果上：</p></p>
-
-<p><p><a href="http://abruzzi.github.com/images/2012/05/rebase.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="rebase" border="0" alt="rebase" src="http://abruzzi.github.com/images/2012/05/rebase_thumb.png" width="200" height="559" /></a></p></p>
-
-<p><p>对应的命令为：</p></p>
-
-<p><div id="codeSnippetWrapper">
-<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> git pull --rebase</pre><!--CRLF--></div></div></p>
-
-<p><p>这个过程并非必要，但是是一种良好的实践，当本地有commit，而需要和别人的commit合并时，建议使用rebase来保证修改历史的轨迹的简洁。</p>
 </p>
 ]]></content>
   </entry>
