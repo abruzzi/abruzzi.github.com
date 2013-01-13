@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>First post of github blog (powered by octopress) - I code it</title>
+  <title>将Google Code上的项目迁移到Github - I code it</title>
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="What is Octopress anyway Here is a short description from octopress.org: Octopress is a framework designed by Brandon Mathis for Jekyll, the blog &hellip;">
+  <meta name="description" content="一些闲话 虽然对开源社区没有任何杰出的贡献，但是我自己在业余时间开发的很多小东西都是开源的，有部分放在google code上，可是除了一个sTodo有几个用户外，其他的工具几乎都纯属自娱自乐。虽然当时做的时候自己非常投入，会各种YY，假设用户会需要这个功能，会需要那个功能，用户会需要脚本化， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://abruzzi.github.com/2012/10/first-post-of-github-blog/">
+  <link rel="canonical" href="http://abruzzi.github.com/2013/01/migrate-google-code-to-github/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -90,7 +90,7 @@
   <header>
     
       
-        <h1 class="entry-title">First Post of Github Blog (Powered by Octopress)</h1>
+        <h1 class="entry-title">将Google Code上的项目迁移到Github</h1>
       
     
     
@@ -107,47 +107,83 @@
   
 
 
-<time datetime="2012-10-08T23:13:00+08:00" pubdate data-updated="true">Oct 8<span>th</span>, 2012</time>
+<time datetime="2013-01-13T23:28:00+08:00" pubdate data-updated="true">Jan 13<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>What is Octopress anyway</h2>
+<div class="entry-content"><h3>一些闲话</h3>
 
-<p>Here is a short description from <a href="http://octopress.org/">octopress.org</a>:</p>
+<p>虽然对开源社区没有任何杰出的贡献，但是我自己在业余时间开发的很多小东西都是开源的，有部分放在google code上，可是除了一个<a href="http://code.google.com/p/stodo/">sTodo</a>有几个用户外，其他的工具几乎都纯属自娱自乐。虽然当时做的时候自己非常投入，会各种YY，假设用户会需要这个功能，会需要那个功能，用户会需要脚本化，自定义插件等等，但是到最后发现只有自己在使用，而再过一段时间，连自己也不会使用了。</p>
 
-<blockquote><p>   Octopress is a framework designed by Brandon Mathis for Jekyll, the blog aware static site generator powering Github Pages. To start blogging with Jekyll, you have to write your own HTML templates, CSS, Javascripts and set up your configuration. But with Octopress All of that is already taken care of. Simply clone or fork Octopress, install dependencies and the theme, and you’re set.</p></blockquote>
+<p>我自己托管在google code上的，还算有点用处的项目有三个：</p>
 
-<h2>How to configure octopress</h2>
+<ul>
+<li><a href="http://code.google.com/p/stodo/">sTodo</a> 一个简单的todo管理器</li>
+<li><a href="http://code.google.com/p/phoc/">phoc</a> 一个可以用JavaScript脚本化的计算器</li>
+<li><a href="http://code.google.com/p/utouch">utouch</a> 一个使用styledTextCtrl的编辑器</li>
+</ul>
 
-<p>The document presented by octopress itself is really great, you car refer <a href="http://octopress.org/docs/deploying/github/">How to deploying to github</a> for more details (as what I did).</p>
 
-<h2>I found a weird issue when try to generate</h2>
+<p>虽然这种事情发生在几乎每一个喜欢写程序的家伙身上，但是整个过程对自我修炼来说，还是非常有现实意义的，首先专业技能得到了锻炼，而最重要的一点是：需求不是想象出来的！在没有和用户真正仔细的讨论之前，我们的假设和推断往往是错的。</p>
 
-<h3>FIX for Lion&#8217;s posix_spawn_ext.bundle: [BUG] Segmentation fault</h3>
+<p>Idea到处都是，有很多很酷且很有挑战的idea，但是它们不一定真的在解决人们的问题。这是一个很值得思考的问题，我最近在尝试组织一个活动，主题以及目标已经确定，上周找胡凯帮我把关，结果发现我又一次的进入了“帮助用户想需求”的老路上了。</p>
 
-<p>First delete the ruby</p>
+<h3>迁移</h3>
 
-<pre><code>rvm remove ruby-1.9.3 --gems --archive
-</code></pre>
+<h4>使用svn同步到本地</h4>
 
-<p>then</p>
+<p>根据google code的提示，将code从svn中的checkout到本地：</p>
 
-<pre><code>echo $CC
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>svn checkout http://phoc.googlecode.com/svn phoc-read-only</span></code></pre></td></tr></table></div></figure>
 
-<p>should return none.</p>
 
-<p>finally, reinstall all stuff</p>
+<h4>去除掉.svn隐藏目录</h4>
 
-<pre><code>CC=/usr/bin/gcc-4.2 rvm install ruby-1.9.2
-gem install bundler
-bundle install
-</code></pre>
+<p>现使用<code>find</code>在当前目录下找到名称为.svn的目录，然后将其删除，这个过程是递归的，即可以清除掉当前目录及所有子目录中的.svn目录:</p>
 
-<p>should fix the error.</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>find . -name ".svn" -type d -exec rm -rf {} \;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>初始化git的repo</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git init
+</span><span class='line'>git add .
+</span><span class='line'>git ci -m "migrate of project xxx to github"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后对应的在github上创建repo，创建之后，需要将本地的remote指向github上的repo:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git remote add origin git@github.com:project/project.git</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果本地的master分支没有配置，可以在<code>.git/config</code>中进行配置：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[branch "master"]
+</span><span class='line'>  remote = origin
+</span><span class='line'>  merge = refs/heads/master</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后将新的commit push到新的repo上即可：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git pull --rebase
+</span><span class='line'>git push</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我已经把这个工具迁移到了github上<a href="https://github.com/abruzzi">abruzzi</a>，正式告别了google code。</p>
 </div>
 
 
@@ -170,15 +206,21 @@ bundle install
   
 
 
-<time datetime="2012-10-08T23:13:00+08:00" pubdate data-updated="true">Oct 8<span>th</span>, 2012</time>
+<time datetime="2013-01-13T23:28:00+08:00" pubdate data-updated="true">Jan 13<span>th</span>, 2013</time>
       
+
+<span class="categories">
+  
+    <a class='category' href='/category/opensource/'>opensource</a>, <a class='category' href='/category/tools/'>tools</a>
+  
+</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2012/10/first-post-of-github-blog/" data-via="" data-counturl="http://abruzzi.github.com/2012/10/first-post-of-github-blog/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/01/migrate-google-code-to-github/" data-via="" data-counturl="http://abruzzi.github.com/2013/01/migrate-google-code-to-github/" >Tweet</a>
   
   
   
@@ -187,10 +229,8 @@ bundle install
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/2012/08/%E4%B8%80%E4%B8%AA%E8%8B%B1%E8%AF%AD%E5%AD%A6%E4%B9%A0%E7%AB%99%E7%82%B9%E5%92%8C%E4%B8%80%E4%B8%AA%E5%B0%8F%E8%84%9A%E6%9C%AC/" title="Previous Post: 一个英语学习站点和一个小脚本">&laquo; 一个英语学习站点和一个小脚本</a>
+        <a class="basic-alignment left articlenav" href="/2013/01/where-am-i/" title="Previous Post: 是时候慢下来了">&laquo; 是时候慢下来了</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/2012/10/how-to-embed-douban-show-in-your-octopress-site/" title="Next Post: How to embed Douban-Show in your octopress site">How to embed Douban-Show in your octopress site &raquo;</a>
       
     </p>
   </footer>
@@ -301,8 +341,8 @@ Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_i
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://abruzzi.github.com/2012/10/first-post-of-github-blog/';
-        var disqus_url = 'http://abruzzi.github.com/2012/10/first-post-of-github-blog/';
+        var disqus_identifier = 'http://abruzzi.github.com/2013/01/migrate-google-code-to-github/';
+        var disqus_url = 'http://abruzzi.github.com/2013/01/migrate-google-code-to-github/';
         var disqus_script = 'embed.js';
       
     (function () {
