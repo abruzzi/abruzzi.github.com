@@ -5,24 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>为octopress添加新的页面(page) - I code it</title>
+  <title>将应用程序部署到heroku - I code it</title>
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="我之前在wordpress中有一些页面(page)，在迁移到octopress之后都不见了，早就想把这些页面show出来了，最终都被我以各种理由拖到了今天。 布局 一个典型的octopress博客的source目录布局大概是这样： 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14 &hellip;">
+  <meta name="description" content="heroku 使用heroku，开发人员可以很容易的将自己的应用程序公开给世界上的其他用户使用，heroku会为你提供一个url，一些预设的空间如数据库（postgresql）等。这对于需要频繁远程showcase的场景提供了非常好的方式， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -31,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://abruzzi.github.com/2013/01/add-new-page-to-octopress/">
+  <link rel="canonical" href="http://abruzzi.github.com/2013/01/developing-with-heroku/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -103,7 +90,7 @@
   <header>
     
       
-        <h1 class="entry-title">为octopress添加新的页面(page)</h1>
+        <h1 class="entry-title">将应用程序部署到heroku</h1>
       
     
     
@@ -120,18 +107,28 @@
   
 
 
-<time datetime="2013-01-03T17:38:00+08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2013</time>
+<time datetime="2013-01-26T19:02:00+08:00" pubdate data-updated="true">Jan 26<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>我之前在wordpress中有一些页面(page)，在迁移到octopress之后都不见了，早就想把这些页面show出来了，最终都被我以各种理由拖到了今天。</p>
+<div class="entry-content"><h3>heroku</h3>
 
-<h3>布局</h3>
+<p>使用heroku，开发人员可以很容易的将自己的应用程序公开给世界上的其他用户使用，heroku会为你提供一个url，一些预设的空间如数据库（postgresql）等。这对于需要频繁远程showcase的场景提供了非常好的方式，当然对于开发人员向其他的开发人员或者最终用户展现自己的框架的外观/行为等场景也会非常有用。</p>
 
-<p>一个典型的octopress博客的source目录布局大概是这样：</p>
+<h3>在heroku上注册用户</h3>
+
+<p>首先，当然是在heroku上<a href="https://api.heroku.com/signup/devcenter">注册一个开发账户</a>，如果你已经注册过，就请接着第二步</p>
+
+<h3>下载heroku的本地Toolbox</h3>
+
+<p>heroku提供了一个很好用的<a href="https://toolbelt.heroku.com/">工具包</a>，通过这个工具包，开发人员可以很容易的对部署在heroku上的应用程序做操作。</p>
+
+<h3>在本地登陆heroku</h3>
+
+<p>如果没有上传过key的话，heroku会提醒你创建一个新的ssh公钥，然后上传到heroku（这个过程与使用github非常类似）</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -141,88 +138,77 @@
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>source/
-</span><span class='line'>├── _attachments
-</span><span class='line'>├── _includes
-</span><span class='line'>│   ├── asides
-</span><span class='line'>│   ├── custom
-</span><span class='line'>│   │   └── asides
-</span><span class='line'>│   └── post
-</span><span class='line'>├── _layouts
-</span><span class='line'>├── _nav_menu_items
-</span><span class='line'>├── _pages
-</span><span class='line'>├── _posts
-</span><span class='line'>├── blog
-</span><span class='line'>│   └── archives
-</span><span class='line'>├── font
-</span><span class='line'>├── images
-</span><span class='line'>│   ├── 2012
-</span><span class='line'>│   │   ├── 01
-</span><span class='line'>│   │   ├── 02
-</span><span class='line'>│   ├── 2013
-</span><span class='line'>│   │   └── 01
-</span><span class='line'>│   ├── fancybox
-</span><span class='line'>│   └── social
-</span><span class='line'>├── javascripts
-</span><span class='line'>│   ├── asides
-</span><span class='line'>│   └── libs
-</span><span class='line'>├── jsccp
-</span><span class='line'>└── stylesheets
-</span><span class='line'>    ├── bootstrap
-</span><span class='line'>    └── syntax</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku login
+</span><span class='line'>Enter your Heroku credentials.
+</span><span class='line'>Email: adam@example.com
+</span><span class='line'>Password: 
+</span><span class='line'>Could not find an existing public key.
+</span><span class='line'>Would you like to generate one? [Yn] 
+</span><span class='line'>Generating new SSH public key.
+</span><span class='line'>Uploading ssh public key /Users/adam/.ssh/id_rsa.pub</span></code></pre></td></tr></table></div></figure>
 
 
-<p></p>
+<p>如果已经上传过key，则可以直接登陆</p>
 
-<p>对应的，当执行</p>
+<h3>准备工作</h3>
+
+<p>在本地生成一个应用程序的基本结构，如：<code>Gemfile</code>，目录结构等。然后在本地配置好git环境，比如：</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ rake generate</span></code></pre></td></tr></table></div></figure>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git init
+</span><span class='line'>$ git add .
+</span><span class='line'>$ git commit -m "init"</span></code></pre></td></tr></table></div></figure>
 
 
-<p>时，source下面的markdown会被编译为html，并拷贝到public下，public目录下的结构跟source下一致，里边的内容为最终的静态页面。因此我们需要修改souce中的内容，然后generate/deploy即可。</p>
+<p>准备Procfile：</p>
 
-<h3>添加页面(page)</h3>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>web: bundle exec ruby app.rb -p $PORT -E production</span></code></pre></td></tr></table></div></figure>
 
-<p>在octopress中，已经有两个默认page，即blog/archives，我们可以参考它来完成自己的页面，首先在source中创建一个目录，比如叫做<strong>jsccp</strong>(<a href="http://abruzzi.github.com/jsccp">JavaScript Core Concepts and Practices</a>)，然后在这个目录中放入一个名叫index.markdown的文件即可。</p>
 
-<p>将需要的内容放入这个文件即可完成页面(page)的编辑。但是我们还需要在首页上将这个页面的链接暴露出来，这一步需要编辑<code>source/_includes/custom/navigation.html</code></p>
+<p><code>app.rb</code>相当于你的应用程序的主入口(main)，<code>-E</code>指定运行环境（此处指定为production），你的应用程序可能会根据次设置来进行一些资源的选择（数据库指向，资源文件位置等）</p>
 
-<pre><code>&lt;ul class="main-navigation"&gt;
-    &lt;li&gt;&lt;a href="/"&gt;Blog&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href="/blog/archives"&gt;Archives&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href="/jsccp"&gt;JavaScript内核系列&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</code></pre>
+<p>在上传之前，需要确保自己的应用程序可以在本地正常运行：</p>
 
-<p>我为这个文件添加了一个新行，指向新创建的目录(此处不需要指定到index.markdown或者index.html)，这样就设置完成了。</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>foreman start</span></code></pre></td></tr></table></div></figure>
 
-<p>尝试<code>rake generate</code>然后<code>rake preview</code>，如果一起正常，就可以<code>rake deploy</code>部署到github上了。</p>
 
-<h3>效果图</h3>
+<p>应用程序将在本地的5000端口上运行，此时可以做一些简单的验证，保证应用程序运行正常。</p>
 
-<p><img src="http://abruzzi.github.com/images/2013/01/navigation.png" alt="image" /></p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git add .
+</span><span class='line'>$ git commit -m "ready for deploy app to heroku"</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>上传你的App</h3>
+
+<p>这时，可以很轻易的将App上传到heroku了：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku create
+</span><span class='line'>$ git push heroku master</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然，第一次上传可能会比较慢（取决于你应用程序的大小），如果一切正常，heroku将会尝试根据你的Gemfile来安装依赖，安装完成之后，会尝试根据Procfile中的配置启动你的应用程序。</p>
+
+<p>如果你的应用程序会访问数据库（非postgresql的数据库），那么建议在Gemfile中指定当测试时使用该数据库，而在production环境中使用postgresql，因为heroku使用的正是postgresql：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>configure :test do
+</span><span class='line'>    DataMapper.setup(:default, ENV['DATABASE_URL'] || "local-db-url")
+</span><span class='line'>    DataMapper.finalize.auto_upgrade!
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我的应用在本地使用sqlite，而在heroku中使用其提供的postgresql。</p>
 </div>
 
 
@@ -245,12 +231,12 @@
   
 
 
-<time datetime="2013-01-03T17:38:00+08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2013</time>
+<time datetime="2013-01-26T19:02:00+08:00" pubdate data-updated="true">Jan 26<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/category/blog/'>blog</a>
+    <a class='category' href='/category/thoughtworks/'>ThoughtWorks</a>, <a class='category' href='/category/open-source/'>open source</a>
   
 </span>
 
@@ -259,7 +245,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/01/add-new-page-to-octopress/" data-via="" data-counturl="http://abruzzi.github.com/2013/01/add-new-page-to-octopress/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/01/developing-with-heroku/" data-via="" data-counturl="http://abruzzi.github.com/2013/01/developing-with-heroku/" >Tweet</a>
   
   
   
@@ -268,10 +254,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/2013/01/k-nearest-neighbour/" title="Previous Post: k-nearest-neighbour算法简介及示例">&laquo; k-nearest-neighbour算法简介及示例</a>
+        <a class="basic-alignment left articlenav" href="/2013/01/migrate-google-code-to-github/" title="Previous Post: 将Google Code上的项目迁移到Github">&laquo; 将Google Code上的项目迁移到Github</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/2013/01/basic-digits-recognization/" title="Next Post: 使用opencv进行数字识别">使用opencv进行数字识别 &raquo;</a>
       
     </p>
   </footer>
@@ -382,8 +366,8 @@ Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_i
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://abruzzi.github.com/2013/01/add-new-page-to-octopress/';
-        var disqus_url = 'http://abruzzi.github.com/2013/01/add-new-page-to-octopress/';
+        var disqus_identifier = 'http://abruzzi.github.com/2013/01/developing-with-heroku/';
+        var disqus_url = 'http://abruzzi.github.com/2013/01/developing-with-heroku/';
         var disqus_script = 'embed.js';
       
     (function () {
