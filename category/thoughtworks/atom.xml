@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ThoughtWorks | I code it]]></title>
   <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-02-14T16:01:14+08:00</updated>
+  <updated>2013-02-14T16:08:32+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -235,7 +235,7 @@ def predict(self, samples):
 
 <h4>数字的顺序</h4>
 
-<p>另外一个有意思的事情是轮廓检测的时候，算法并不一定按照从左到右，从上到下的方向进行，我开始只是简单的按照迭代的顺序将结果插入到一个list中，但是这样list中的结果是乱的，下午得到了team中有图像处理背景的杨眉同学的支持：搜索到轮廓的时候，将此时的position信息与轮廓一起记录下来，然后在搜索完成之后，将整个列表按照x坐标排序(卡上的数字是按照从左向右书写)：</p>
+<p>另外一个有意思的事情是轮廓检测的时候，算法并不一定按照从左到右，从上到下的方向进行，我开始只是简单的按照迭代的顺序将结果插入到一个list中，但是这样list中的结果是乱的，下午得到了team中有图像处理背景的<a href="http://muggleyoung.info/">杨眉同学</a>的支持：搜索到轮廓的时候，将此时的position信息与轮廓一起记录下来，然后在搜索完成之后，将整个列表按照x坐标排序(卡上的数字是按照从左向右书写)：</p>
 
 <p>```
 class PosImage(object):</p>
