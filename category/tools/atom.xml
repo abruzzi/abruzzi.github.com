@@ -4,7 +4,7 @@
   <title><![CDATA[Category: tools | I code it]]></title>
   <link href="http://abruzzi.github.com/category/tools/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-02-14T22:29:10+08:00</updated>
+  <updated>2013-02-19T11:48:19+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,67 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Install powerline (fancy status line) for vim in Mac OS]]></title>
+    <link href="http://abruzzi.github.com/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os/"/>
+    <updated>2013-02-19T10:53:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os</id>
+    <content type="html"><![CDATA[<h3>Powerline</h3>
+
+<p><a href="https://github.com/Lokaltog/powerline">powerline</a>会将vim的status line变的非常漂亮，看起来像一个“主流”的编辑器那样，而又不会引入额外的“重量”。基本原理是使用字体将特殊字符展现成特殊形状（如三角形），额外的有一些漂亮的配色。</p>
+
+<h4>效果</h4>
+
+<p><img src="http://abruzzi.github.com/images/2013/02/vim-power-line-resized.png" alt="image" /></p>
+
+<h4>安装</h4>
+
+<p>有几个额外的点需要确保：</p>
+
+<h5>保证你的vim包含了对python的支持</h5>
+
+<p><code>vim --version | grep python</code>的结果应该包含<code>+python</code>，如：</p>
+
+<p><code>
++path_extra -perl +persistent_undo +postscript +printer -profile +python/dyn
+</code>
+如果没有的话，需要将vim重新编译，比如在Mac OS下：</p>
+
+<p><code>
+brew install macvim --env-std --override-system-vim
+</code></p>
+
+<h5>安装powerline</h5>
+
+<p>最简单的方式是直接clone到本地，比如：</p>
+
+<p><code>
+git clone git://github.com/Lokaltog/powerline.git ~/PowerLine/
+</code></p>
+
+<h5>配置.vimrc</h5>
+
+<p>为你的vimrc添加下面的配置：</p>
+
+<p><code>
+set rtp+={path_to_powerline}/powerline/bindings/vim
+set laststatus=2
+set noshowmode
+</code></p>
+
+<p>这时，如果你启动vim，应该已经可以看到powerline了，但是有可能有“乱码”的问题，幸运的是，已经有很多的预定义字体。</p>
+
+<h3>Fonts</h3>
+
+<p><a href="https://github.com/Lokaltog/powerline-fonts">这里</a>有许多额外的预定义fonts。选中需要的字体，安装到本地即可（双击字体文件或者拷贝到<code>~/Library/Fonts</code>下）。然后在.vimrc中使用这个字体，比如：</p>
+
+<p><code>
+set encoding=utf-8
+set guifont=Menlo\ for\ Powerline:h14
+</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[将Google Code上的项目迁移到Github]]></title>

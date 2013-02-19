@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-02-14T22:29:10+08:00</updated>
+  <updated>2013-02-19T11:48:19+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,71 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Install powerline (fancy status line) for vim in Mac OS]]></title>
+    <link href="http://abruzzi.github.com/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os/"/>
+    <updated>2013-02-19T10:53:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os</id>
+    <content type="html"><![CDATA[<h3>Powerline</h3>
+
+<p><a href="https://github.com/Lokaltog/powerline">powerline</a>会将vim的status line变的非常漂亮，看起来像一个“主流”的编辑器那样，而又不会引入额外的“重量”。基本原理是使用字体将特殊字符展现成特殊形状（如三角形），额外的有一些漂亮的配色。</p>
+
+<h4>效果</h4>
+
+<p><img src="http://abruzzi.github.com/images/2013/02/vim-power-line-resized.png" alt="image" /></p>
+
+<h4>安装</h4>
+
+<p>有几个额外的点需要确保：</p>
+
+<h5>保证你的vim包含了对python的支持</h5>
+
+<p><code>vim --version | grep python</code>的结果应该包含<code>+python</code>，如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>+path_extra -perl +persistent_undo +postscript +printer -profile +python/dyn </span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果没有的话，需要将vim重新编译，比如在Mac OS下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install macvim --env-std --override-system-vim</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>安装powerline</h5>
+
+<p>最简单的方式是直接clone到本地，比如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git clone git://github.com/Lokaltog/powerline.git ~/PowerLine/</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>配置.vimrc</h5>
+
+<p>为你的vimrc添加下面的配置：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>set rtp+={path_to_powerline}/powerline/bindings/vim
+</span><span class='line'>set laststatus=2
+</span><span class='line'>set noshowmode</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这时，如果你启动vim，应该已经可以看到powerline了，但是有可能有“乱码”的问题，幸运的是，已经有很多的预定义字体。</p>
+
+<h3>Fonts</h3>
+
+<p><a href="https://github.com/Lokaltog/powerline-fonts">这里</a>有许多额外的预定义fonts。选中需要的字体，安装到本地即可（双击字体文件或者拷贝到<code>~/Library/Fonts</code>下）。然后在.vimrc中使用这个字体，比如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>set encoding=utf-8
+</span><span class='line'>set guifont=Menlo\ for\ Powerline:h14</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Get started with jQuery Mobile]]></title>
@@ -1613,46 +1678,6 @@ bundle install
 <p><ol> <li>要相信自己的term，  </li><li>沟通非常重要，不论是对内还是对外  </li><li>积极与客户协商(好产品会使双方都受益)</li></ol></p>
 
 <p><p>关于这种培训，经常听到一个令人不舒服的词是“洗脑”，没有人的脑可以被别人洗掉。不过话又说回来了，如果非要称其为“洗脑”的话，这次“洗脑”非常成功(虽然我更喜欢称其为“洗礼”)，我们都很喜欢这种形式，这种高含金量的“洗脑”过程，而且大家都很享受这个过程。</p>
-</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Thoughtworks Immersion Day 1]]></title>
-    <link href="http://abruzzi.github.com/2012/08/thoughtworks-immersion-day-1/"/>
-    <updated>2012-08-01T00:00:00+08:00</updated>
-    <id>http://abruzzi.github.com/2012/08/thoughtworks-immersion-day-1</id>
-    <content type="html"><![CDATA[<p><p>进入<a href="http://www.thoughtworks.com/">Thoughtworks</a>已经有差不多4个月了，对于TDD，敏捷开发等有了一点基本的，感性的认识，也知道了一些简单的实践，但是知识非常的不系统，很离散，很破碎。</p></p>
-
-<p><p><a href="http://www.thoughtworks.com/">Thoughtworks</a>为社招的，有一定经验的员工提供一种内部培训，名叫TWI(对应的，对于毕业生，有一次为期6周的TWU(ThoughtWorks University)，地点在印度)，初衷是让已经在公司工作了一段时间的同事更好的理解公司的文化(当然，也可以吸收这些在其他公司工作过的同事带进来的不同的文化)。TWI培训主要是针对敏捷开发实践的，当然也有一些公司的历史，文化等的介绍。</p></p>
-
-<p><p><a href="http://abruzzi.github.com/images/2012/08/2012-07-25-17.29.371.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="2012-07-25 17.29.37" border="0" alt="2012-07-25 17.29.37" src="http://abruzzi.github.com/images/2012/08/2012-07-25-17.29.37_thumb1.jpg" width="644" height="484" /></a></p></p>
-
-<p><p><a href="http://www.thoughtworks.com/">Thoughtworks</a>是一个非常尊重dev的公司，这一点可以追溯到公司创建之初，当时公司宣传的理念是“university but pay”，就很明确的表达出了公司的一些理念：这里的层级结构像在大学中一样平坦，大家在这里获得并分享知识，一起成长，但是又有工资。Martin Fowler有篇关于<a href="http://www.martinfowler.com/bliki/RoysSocialExperiment.html">Thoughtworks是什么</a>的文章(事实上，我最初也正是被这篇文章所吸引，而产生加入<a href="http://www.thoughtworks.com/">Thoughtworks</a>的想法的)，非常有意思。</p></p>
-
-<p><p>历史上，当现实与<a href="http://www.thoughtworks.com/">Thoughtworks</a>尊崇的文化有冲突时，如何平衡呢？Thoughtworks的一贯做法是：不向损害文化的现实妥协，哪怕会因此而付出很大的代价。事实上，每个公司都会在不同程度上尊重自己的开发人员(毕竟，他们是为你工作的)，但是很难见到哪个公司做的比Thoughtworks更好。当然，每个人理解的尊重的方式都可能不同的，我自己比较认可而且Thoughtworks也提供给我的方式是这样的：</p></p>
-
-<p><ol> <li>你可以专心致志的做开发  </li><li>你可以自由的表达自己的想法，和别人讨论设计  </li><li>公司提供了宽松，开放的环境，鼓励交流  </li><li>有很多优秀的开发人员在你周围，你可以随意与他们讨论  </li><li>软硬件都是为了支持开发团队而展开的  </li><li>虽然你是开发人员，你可以take更多的responsibility，比如QA/BA等  </li><li>有很多有意思的和不那么有意思的项目，鼓励学习更多的技能  </li><li>没有常见的“死领导”，肩膀上很轻松  </li><li>鼓励你分享自己的知识</li></ol></p>
-
-<p><p>事实上，对于Thoughtworks来说，员工永远是其最为宝贵的资产，办公室，计算机，玻璃墙，所有都是可以替代的，唯独这些自称为Thoughtworker的，才是最宝贵并且不可替代的。</p></p>
-
-<p><p>TWI的组织者也显然为这种内部培训投入了很多的精力和实践，使得我们的学习过程一直处于轻松，活跃的气氛中，可以说是我参加过最精彩的培训，做到了真正的寓教于乐。</p></p>
-
-<p><p><a href="http://abruzzi.github.com/images/2012/08/2012-07-25-15.40.121.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="2012-07-25 15.40.12" border="0" alt="2012-07-25 15.40.12" src="http://abruzzi.github.com/images/2012/08/2012-07-25-15.40.12_thumb.jpg" width="644" height="484" /></a></p></p>
-
-<p><p>言归正传，什么是敏捷呢？简而言之，就是敏捷地进行软件开发。如何做到“敏捷地”呢？有很多不同的理论支持，这些理论也并非凭空产生，是通过大量的工程实践而总结出来的经验，事实上，敏捷开发是由很多的方法论组成的集合，敏捷宣言中提到的：</p></p>
-
-<p><ol> <li>个体与交互 over 过程和工具  </li><li>可以工作的软件 over 面面俱到的文档  </li><li>客户合作 over 合同谈判  </li><li>响应变化 over 遵循计划</li></ol></p>
-
-<p><p>(虽然右边的项也有价值，但是我们认为左边的项有更大的价值)</p></p>
-
-<p><p>可以看到，这些都是比较common的一些原则，并没有规定注入如TDD，结对之类的实践。Thoughtworks为什么要使用这些实践呢？因为这些实践是我们在实际项目中，觉得行之有效：能保证软件质量和开发效率，能帮助团队迅速成长，对公司和个人都很有帮助。与其他所有的学习规律一样：</p></p>
-
-<p><ol> <li>首先follow一种实践，并身体力行  </li><li>与实际问题结合，发现实践可能的不足  </li><li>改进这种实践，并将其分享</li></ol></p>
-
-<p><p>外界对于<a href="http://www.thoughtworks.com/">Thoughtworks</a>有一些传言，经常会给不熟悉的人这样一种错觉：一群不会编程，只是死记硬背下一些方法论的年轻人，到处招摇撞骗。事实上，Thoughtworker们是我见过的，最具活力，也最热心于钻研技术，热爱分享的年轻人。而且我没有遇到任何一个同事是将敏捷奉为圭臬，或者将其上升到不容置疑的高度，大家都会遵守一些原则，也会采用一些实践，但是不会轻易相信那就是最佳的方式。</p></p>
-
-<p><p>可能最后一段看着像是在写广告，那就请将他当成广告吧。给那些曾经像我一样，热爱技术却感觉希望渺茫，每天做一些平淡而无挑战的工作，但是又渴望改变，渴望和更多优秀的同好们一起工作的人们的一个广告。她可能并非最好的选择，但是她绝对是一个值得一试的好选择。</p>
 </p>
 ]]></content>
   </entry>

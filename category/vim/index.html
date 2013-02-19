@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>几条软件设计的原则 - I code it</title>
+  <title>Category: vim - I code it</title>
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="其实，这里列举的大部分原则都是我读《Head First设计模式》的笔记，不过实际编码中也会常常用到，就总结一下： 封装变化 将易变的代码控制在一个类中，可以降低维护成本，同时也提高了封装性，这一点应该属于OO的基本原则，也是开发高质量代码的基本原则(只不过过程式语言是将变化封装到一个函数， &hellip;">
+  <meta name="description" content="Category: vim">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://abruzzi.github.com/2012/02/%E5%87%A0%E6%9D%A1%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%8E%9F%E5%88%99/">
+  <link rel="canonical" href="http://abruzzi.github.comcategory/vim/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -85,95 +85,36 @@
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      
-        <h1 class="entry-title">几条软件设计的原则</h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-02-21T00:00:00+08:00" pubdate data-updated="true">Feb 21<span>st</span>, 2012</time>
-        
-      </p>
+    <h1 class="entry-title">Category: Vim</h1>
     
   </header>
-
-
-<div class="entry-content"><p><p>其实，这里列举的大部分原则都是我读《Head First设计模式》的笔记，不过实际编码中也会常常用到，就总结一下：</p> <h3>封装变化</h3> <p>将易变的代码控制在一个类中，可以降低维护成本，同时也提高了封装性，这一点应该属于OO的基本原则，也是开发高质量代码的基本原则(只不过过程式语言是将变化封装到一个函数，或者一组函数中)。这样做的好处显而易见：代码可以更好的复用，如果有需求变更，也可以快速的定位并修改。另外一个好处是，将那些不那么易变的模块更好的独立出来，从而提供另一个层次的复用。</p> <h3>针对接口编程</h3> <p>面向接口编程，可以使得模块间更好的解耦合，解耦合的好处是让开发人员过得舒服一点，尽量避免“牵一发而动全身”的情况发生。相对于实现，接口是很不容易修改的抽象层，应尽可能的简化接口。如果接口变得庞大，尝试分解为多个接口，类可以实现多个接口(在Java中，不能继承多个类，但是可以实现多个接口)。有了多个接口，各个类就可以尝试自己决定实现那些接口，从而提供不同的职能。</p> <p>使用接口的另一个好处是可以很好的利用OO语言的多态性，减少代码中的if-else数量，多态机制会如你所预期的那样将请求分发到实际的实现者上。</p> <h3>多用组合，少用继承</h3> <p>组合，是让对象“拥有”另一个对象，这样可以将实际需要做的事情分离到另一个类中，各个对象各司其职，通过方法调用(传递消息)而协作完成一个大的任务。通过组合及面向接口，可以很容易的在运行时改变对象的行为，如策略模式/状态模式，都依赖于此原则。</p> <h3>加入额外的层次</h3> <p>如果两个模块间太过于耦合，可以考虑加入一个额外的层来分离。事实上，软件开发中，我们总能找到一个额外的层次来解决紧密耦合模块。事实上，层次的划分从来都不是一件容易的事情(当然，糟糕的划分很容易见到)，如果额外的层次引入的复杂度超过了可理解的范围，那你应该毫不犹豫的拿掉它，而相反，修改一个模块常常会引发另一个模块很大的变化，那么就是时候来考虑加入额外的层次了。</p> <p>当然，基本的原则并不是要求开发人员生搬硬套的，使用这些模式会带来好处，但是也可能引入额外的复杂性。一个总体的原则是：当有新的变化时，最好的形式是，对已有的结构进行扩展，而不修改既有代码，如果很难做到这一点，或者做到这一点时会花费更大的精力和时间，就尽量控制涉及修改的类的数量。毕竟，我们从实际中得来的经验是为了让我们自己过得舒服一些，<img style="border-bottom-style: none; border-left-style: none; border-top-style: none; border-right-style: none" class="wlEmoticon wlEmoticon-smile" alt="微笑" src="http://abruzzi.github.com/images/2012/02/wlEmoticon-smile.png" /></p></p>
-</div>
-
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
-
-      
-
-
-
-
-
+  <div id="blog-archives" class="category">
 
 
 
   
+  <h2>2013</h2>
+
+<article>
+  
+<h1><a href="/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os/">Install powerline (fancy status line) for vim in Mac OS</a></h1>
+<time datetime="2013-02-19T10:53:00+08:00" pubdate><span class='month'>Feb</span> <span class='day'>19</span> <span class='year'>2013</span></time>
+
+<footer>
+  <span class="categories">posted in <a class='category' href='/category/opensource/'>opensource</a>, <a class='category' href='/category/tools/'>tools</a>, <a class='category' href='/category/vim/'>vim</a></span>
+</footer>
 
 
-<time datetime="2012-02-21T00:00:00+08:00" pubdate data-updated="true">Feb 21<span>st</span>, 2012</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/category/软件设计/'>软件设计</a>
-  
-</span>
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2012/02/%E5%87%A0%E6%9D%A1%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%8E%9F%E5%88%99/" data-via="" data-counturl="http://abruzzi.github.com/2012/02/%E5%87%A0%E6%9D%A1%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%8E%9F%E5%88%99/" >Tweet</a>
-  
-  
-  
-</div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left articlenav" href="/2012/02/javascript%E5%86%85%E6%A0%B8%E7%B3%BB%E5%88%97v0-9-9beta%E7%89%88%E6%9C%AC%E4%B8%8B%E8%BD%BD/" title="Previous Post: JavaScript内核系列V0.9.9Beta版本下载">&laquo; JavaScript内核系列V0.9.9Beta版本下载</a>
-      
-      
-        <a class="basic-alignment right articlenav" href="/2012/03/%E9%95%BF%E8%83%B6%EF%BC%81%E9%95%BF%E8%83%B6%EF%BC%81/" title="Next Post: 长胶！长胶！">长胶！长胶！ &raquo;</a>
-      
-    </p>
-  </footer>
 </article>
 
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-  </section>
+
+  
+</article>
 
 </div>
 
@@ -273,10 +214,7 @@ Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_i
       var disqus_shortname = 'icodeit';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://abruzzi.github.com/2012/02/%E5%87%A0%E6%9D%A1%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%8E%9F%E5%88%99/';
-        var disqus_url = 'http://abruzzi.github.com/2012/02/%E5%87%A0%E6%9D%A1%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%8E%9F%E5%88%99/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
