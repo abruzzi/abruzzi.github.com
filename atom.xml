@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-03-24T15:58:27+08:00</updated>
+  <updated>2013-03-27T18:10:41+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,62 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Turning to a designer]]></title>
+    <link href="http://abruzzi.github.com/2013/03/turning-to-a-designer/"/>
+    <updated>2013-03-26T22:46:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/03/turning-to-a-designer</id>
+    <content type="html"><![CDATA[<h4>Hack design的建议</h4>
+
+<p>首先，design无处不在，它的目的是提高产品使用者的效率和易用性的。它不是一个“运用之妙，存乎一心”的东西，它是一个实实在在可以通过学习来获得的能力（正如编程或者写作或者厨艺一样，当然，如果一个人把精力和心血放在编程上，同样可以将编程做成一个“运用之妙，存乎一心”的东西。）</p>
+
+<p>什么是一个好的设计？下面是设计师Dieter Rams给出的10条原则：</p>
+
+<ol>
+<li>创新性</li>
+<li>使产品有用</li>
+<li>美学</li>
+<li>使产品可以被理解</li>
+<li>不那么引人注目</li>
+<li>诚实的设计</li>
+<li>可持久的</li>
+<li>彻底，纯粹</li>
+<li>尽量做小的设计</li>
+<li>环境友好</li>
+</ol>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/03/design-10-commandments.resized.png" alt="image" /></p>
+
+<p>这里有<a href="http://startupsthisishowdesignworks.com/">原文的链接</a>，总而言之，设计不仅仅是一个web页面，一个海报，所有的产品都会有不同程度的设计包含在其中。</p>
+
+<h4>Alex的建议</h4>
+
+<p>想想你觉得“好看”的页面为什么好看，是字体，配色，背景色，布局还是其他？把这些记录下来，并在自己后续的设计中尝试使用。</p>
+
+<p>多看一些优秀的设计，比如web页面，如果你发现上边有一些很感兴趣的特性，或者细节，比如这个菜单看着很漂亮，后者标签功能很炫，你可以用chrome的inspect来查看别人使用了什么样的HTML，又apply了那些CSS，做出了这样的效果。</p>
+
+<p>如果在这个过程中，遇到一些没有见过的标签，或者标签的属性，那么去<a href="http://www.w3schools.com/">w3school</a>上查看一下这些标签/属性的含义，尽量使用这些Tag原始的意义（设计时的初衷）。</p>
+
+<p>比如div，它是divider的缩写，本来是用来分割块的，那么就用它来做分割，比如p(paragraph)标签，用来分段，可以将文字放入其中。这些都是HTML标签的设计初衷，我们应该尽量遵循，在实现的时候，如果使用原始的标签很难实现，那么可以尝试一些比较trick的方式来绕过，但是毕竟并非正途。</p>
+
+<p>最后，design和编程类似，你需要不断的练习，自己动手多尝试，在研究了别人的实现之后，自己最好做一个示例出来。</p>
+
+<h4>其他人的建议</h4>
+
+<p>最近读到的一篇写的<a href="http://somerandomdude.com/2012/01/10/transition-from-development-to-design/">非常好的文章</a>，作者也是一个有开发背景的设计师，因此有很多地方可以借鉴：</p>
+
+<ol>
+<li>在转向designer的同时，不要丢掉编程</li>
+<li>按照一定的顺序来学习design（可用优先，性能优先）</li>
+<li>设计一切见得到的东西</li>
+<li>和其他人一起讨论设计，并聆听别人</li>
+<li>尝试分享，尝试将自己的设计讲给别人</li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[关于Hack day]]></title>
@@ -1731,20 +1787,6 @@ bundle install
 </code></pre>
 
 <p>should fix the error.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[一个英语学习站点和一个小脚本]]></title>
-    <link href="http://abruzzi.github.com/2012/08/%E4%B8%80%E4%B8%AA%E8%8B%B1%E8%AF%AD%E5%AD%A6%E4%B9%A0%E7%AB%99%E7%82%B9%E5%92%8C%E4%B8%80%E4%B8%AA%E5%B0%8F%E8%84%9A%E6%9C%AC/"/>
-    <updated>2012-08-20T00:00:00+08:00</updated>
-    <id>http://abruzzi.github.com/2012/08/一个英语学习站点和一个小脚本</id>
-    <content type="html"><![CDATA[<p><p>英语事实上已经成为了一个优秀程序员的必须掌握的工具，如同编辑器，调试工具等一样，甚至更重要。因为我们的新知识的很多都是通过阅读，收听其他优秀的资源而获得，而英文是一个计算机界通用的语言，其重要性毋庸赘言。</p> <p>我的英文水平大约在CET4级，而读写能力可能稍微好一点，听说则一塌糊涂。但是我意识到这是个问题的时候，就需要采取一些actions来解决这个问题。目前在的这个项目，客户是澳洲的，所以就从澳大利亚英语开始(澳洲英语与我们从中学到大学学习的美式英语还是有一些差异的，发音，惯用语等等)。</p> <p>这里推荐一个比较好的资源，<a href="http://australianetwork.com/learningenglish/default.htm">australianetwork</a>,其中有很多之前的资源可供下载。你可以根据自己的需求下载不同的资源，比如BusinessEnglish，Passport等。<a href="http://australianetwork.com/learningenglish/vodcast.htm">下载链接在这里</a>。</p> <p>可能你已经注意到了，下载到的是xml格式的文件(rss)，我用python写了一个小脚本，用来抽取xml中的真是url，并调用wget下载到本地，脚本很简单：</p> <div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> <span style="color: #0000ff">import</span> os</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span> <span style="color: #0000ff">import</span> sys </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span> <span style="color: #0000ff">import</span> threading</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span> from elementtree.ElementTree <span style="color: #0000ff">import</span> parse</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span> <span style="color: #0000ff">class</span> ViedoDownloader(threading.Thread):</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span>     def __init__(self, url):</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span>         threading.Thread.__init__(self)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum10">  10:</span>         self.url = url </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum11">  11:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum12">  12:</span>     def run(self):</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum13">  13:</span>         os.system(<span style="color: #006080">'wget '</span> + self.url)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum14">  14:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum15">  15:</span> <span style="color: #0000ff">if</span> __name__ == <span style="color: #006080">"__main__"</span>:</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum16">  16:</span>     <span style="color: #0000ff">if</span> not len(sys.argv) == 2:</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum17">  17:</span>         sys.exit(-1)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum18">  18:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum19">  19:</span>     rssfile = sys.argv[1]</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum20">  20:</span>     print <span style="color: #006080">"extract urls from "</span> + rssfile</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum21">  21:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum22">  22:</span>     rss = parse(rssfile)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum23">  23:</span>     <span style="color: #0000ff">for</span> element in rss.findall(<span style="color: #006080">'channel/item/enclosure'</span>):</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum24">  24:</span>         th = ViedoDownloader(element.get(<span style="color: #006080">'url'</span>))</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum25">  25:</span>         th.start()</pre><!--CRLF--></div></div>
-<p>&nbsp;</p>
-<p>当一个xml中资源非常多的时候，我想使用多个线程，每个线程启动一个wget来分别下载，但是它并没有像我预期的那样工作。</p>
-<p>如果你发现了什么问题，请告诉我，但是这个脚本确实是一个可以工作的脚本：</p>
-<div id="codeSnippetWrapper">
-<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> python extract.py resourse.xml</pre><!--CRLF--></div></div></p>
 ]]></content>
   </entry>
   
