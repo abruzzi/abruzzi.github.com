@@ -19,7 +19,7 @@ categories:
 
 杜虎符为1973年在西安南郊出土的，年代大约为战国时期，但是应在秦朝统一六国之前。
 
-![image](http://abruzzi.github.com/images/2013/04/jscp-cover.jpg)
+![image](http://abruzzi.github.com/images/2013/04/jscp-conver.jpg)
 
 铭文为：
 
