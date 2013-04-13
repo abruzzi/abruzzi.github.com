@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-04-12T14:20:25+08:00</updated>
+  <updated>2013-04-13T18:58:03+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,47 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[图书封面故事]]></title>
+    <link href="http://abruzzi.github.com/2013/04/book-cover-story/"/>
+    <updated>2013-04-13T15:57:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/04/book-cover-story</id>
+    <content type="html"><![CDATA[<h2>虎符</h2>
+
+<p>虎符本是春秋战国时期，用以中央政权和地方军事力量之间的一种凭证，信物。一般分剖为两半，一半留在京师（右半边，古代以右为尊），另一半留在军队驻地。对方上要有军事行动，必须向中央申请，中央同意后，会派遣专人前往，为了防止有人冒充中央，假传圣旨，需要有一种凭证。</p>
+
+<p>当然，仅仅虎符本身并不足以调动军队，同虎符一起的，还要有诏书，及中央排除的特使。虎符作为凭证，而诏书中有详细的其他信息，比如官员的任命，军队部署之类。</p>
+
+<h3>杜虎符</h3>
+
+<p>杜虎符为1973年在西安南郊出土的，年代大约为战国时期，但是应在秦朝统一六国之前。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/04/jscp-cover.jpg" alt="image" /></p>
+
+<p>铭文为：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>兵甲之符，右在君，左在杜，凡兴兵披甲，用五十人以上，必会君符，乃敢行之。燔燧之事，虽毋会符，行。</span></code></pre></td></tr></table></div></figure>
+
+
+<p>虎符本身为铜铸，铭文的制作非常特殊：先刻以阴文，然后将金丝嵌入文字，再打磨光滑，因此虽历时久远，但是仍金光熠熠。</p>
+
+<h3>阳陵虎符</h3>
+
+<p>阳陵虎符相传在山东临城出土，由于铭文中有“皇帝”字样，时代当为秦统一六国之后。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/04/yangling-tiger-seal.resized.jpg" alt="image" /></p>
+
+<p>铭文为：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>甲兵之符，右在皇帝，左在阳陵</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Turning to a designer]]></title>
@@ -1745,48 +1786,6 @@ Login your douban account at first, and then try to access this <a href="http://
 </code></pre>
 
 <p>now you are done.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[First post of github blog (powered by octopress)]]></title>
-    <link href="http://abruzzi.github.com/2012/10/first-post-of-github-blog/"/>
-    <updated>2012-10-08T23:13:00+08:00</updated>
-    <id>http://abruzzi.github.com/2012/10/first-post-of-github-blog</id>
-    <content type="html"><![CDATA[<h2>What is Octopress anyway</h2>
-
-<p>Here is a short description from <a href="http://octopress.org/">octopress.org</a>:</p>
-
-<blockquote><p>   Octopress is a framework designed by Brandon Mathis for Jekyll, the blog aware static site generator powering Github Pages. To start blogging with Jekyll, you have to write your own HTML templates, CSS, Javascripts and set up your configuration. But with Octopress All of that is already taken care of. Simply clone or fork Octopress, install dependencies and the theme, and you’re set.</p></blockquote>
-
-<h2>How to configure octopress</h2>
-
-<p>The document presented by octopress itself is really great, you car refer <a href="http://octopress.org/docs/deploying/github/">How to deploying to github</a> for more details (as what I did).</p>
-
-<h2>I found a weird issue when try to generate</h2>
-
-<h3>FIX for Lion&#8217;s posix_spawn_ext.bundle: [BUG] Segmentation fault</h3>
-
-<p>First delete the ruby</p>
-
-<pre><code>rvm remove ruby-1.9.3 --gems --archive
-</code></pre>
-
-<p>then</p>
-
-<pre><code>echo $CC
-</code></pre>
-
-<p>should return none.</p>
-
-<p>finally, reinstall all stuff</p>
-
-<pre><code>CC=/usr/bin/gcc-4.2 rvm install ruby-1.9.2
-gem install bundler
-bundle install
-</code></pre>
-
-<p>should fix the error.</p>
 ]]></content>
   </entry>
   
