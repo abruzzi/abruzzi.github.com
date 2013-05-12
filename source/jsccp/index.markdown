@@ -5,13 +5,31 @@ date: 2013-01-03 13:13
 comments: true
 sharing: true
 footer: true
+
 ---
+目前，JavaScript核心概念及实践已经由人民邮电出版社正式出版，并在各个网上书店出售：
 
-这个页面记录**JavaScript核心概念及实践**(原*JavaScript内核系列*)的一些日志，这个系列最早在[我的iteye博客](http://abruzzi.iteye.com/)(javaeye)上以连载的形式发表。最早的一章大概是在2010年元月发表，一致的计划是将这个系列作为一个Always on beta的电子书。
+-	[亚马逊](http://www.amazon.cn/JavaScript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B00COG3YVU/ref=sr_1_1?ie=UTF8&qid=1368345948&sr=8-1&keywords=javascript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5)
+-	[当当网](http://product.dangdang.com/product.aspx?product_id=23246702)
+-	[China-pub](http://product.china-pub.com/3767398)
+-	[豆瓣](http://book.douban.com/subject/24165880/)
 
-如果您觉得**JavaScript核心概念及实践**对你有所帮助，可以考虑进行捐赠：[捐赠页面](https://me.alipay.com/jscore)
+如果你在阅读的过程中发现有任何的错误或者不清楚的地方，可以在此页后边进行回复。
+- - -
+`2012年12月`-`2013年3月`，经张凯峰推荐，人民邮电的陈冀康编辑认为此书有出版的意义，并和我讨论此书的出版事宜。根据陈编辑的意见，我对书本的结构做了相对较大的调整，并进一步校对文字，给图例编号等。在陈编辑的帮助下，这个版本变的更加的专业。
 
-下载页面：下载[JavaScript核心概念及实践V0.9.9Beta版本](http://abruzzi.github.com/jsccp/JavaScript-Core-and-Practice-V0.9.9b.pdf)
+`2012年10月`-`2012年12月`，在和同事们去游泳馆的路上，胡凯建议我把这个系列整理成册，并推荐给了有专业编辑背景（前InfoQ编辑）的同事张凯峰。在得到张凯峰的专业的反馈之后，我将原稿的结构做了一些调整，删去了一些“过时”的内容，去掉了JavaScript并无关系的graphviz一章，加入了测试框架的使用，客户端MVC框架的使用等内容，又对该稿的文字做了一些润色。
+
+这个**“正式版”**，相比之前的V0.0.9b版（即可公开下载的版本），有了一些变化：删除了三个章节（两章删除，一章移为附录），增加了三个新的章节，另外对一些章节做了补充（如服务器端的JavaScript中，加入的mongodb的介绍，以及node.js的测试等）。
+
+另外在整理中，发现有一些章节中的概念是错误的，而有些概念的解释比较模糊，这些问题在编辑通读的时候指出并进行了更新。有部分示例代码也做了更加详细的描述，尽量是的文字更容易被理解，很多貌似“精炼”的文字，也尽量用平实且短句的组合来替换。
+
+- - - 
+
+这个页面记录**JavaScript核心概念及实践**(原*JavaScript内核系列*)的一些日志，这个系列最早在[我的iteye博客](http://abruzzi.iteye.com/)(javaeye)上以连载的形式发表。
+
+
+下载地址：下载[JavaScript核心概念及实践V0.9.9Beta版本](http://abruzzi.github.com/jsccp/JavaScript-Core-and-Practice-V0.9.9b.pdf)
 
 - - - 
 
