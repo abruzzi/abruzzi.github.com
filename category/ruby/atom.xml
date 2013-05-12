@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby | I code it]]></title>
   <link href="http://abruzzi.github.com/category/ruby/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-05-12T18:41:03+08:00</updated>
+  <updated>2013-05-12T19:15:09+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -18,7 +18,84 @@
     <link href="http://abruzzi.github.com/2013/05/proc-in-ruby/"/>
     <updated>2013-05-12T16:01:00+08:00</updated>
     <id>http://abruzzi.github.com/2013/05/proc-in-ruby</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<h2>block in ruby</h2>
+
+<p>block在ruby中，相当于JavaScript中的匿名函数，可以用来实现诸如高阶函数等。高阶函数最好用的一个特点就是它很好的将“动作”（action）本身抽象成了一个对象来传递。</p>
+
+<p>block本身不是对象，但是可以被转换成Proc类的实例，然后以一种特别的方式执行。</p>
+
+<p>```</p>
+
+<blockquote><p>proc = lambda {puts "hello, world"}
+ => #&lt;Proc:0x007ff11284d068@(irb):8 (lambda)>
+```</p></blockquote>
+
+<p>或者</p>
+
+<p>```</p>
+
+<blockquote><p>proc = lambda do
+  puts "hello, world"
+end
+```</p></blockquote>
+
+<p>从irb打印的信息可以看出，<code>&lt;Proc:0x007ff11284d068@(irb):8 (lambda)&gt;</code>是一个Proc类的实例用lambda生成的block对象，看起来像一个ruby中定义的函数/方法一样，但是执行的时候需要特别的调用方式：</p>
+
+<p>```</p>
+
+<blockquote><p>proc.call
+hello, world
+ => nil
+```</p></blockquote>
+
+<p>如果需要参数，可以这样指定：</p>
+
+<p>```</p>
+
+<blockquote><p>proc = lambda {|a, b| a + b}
+ => #&lt;Proc:0x007ff114843d40@(irb):14 (lambda)>
+proc.call(1,2)
+ => 3
+proc.call("hello, ","world")
+ => "hello, world"
+```</p></blockquote>
+
+<h2>proc自身</h2>
+
+<p>ruby中大名鼎鼎的rack应用程序，本质上就只是负责调用一个block来获得结果：</p>
+
+<p><code>
+rack_proc = lambda {|env| [200, {}, ["&lt;h1&gt;Hello, world&lt;/h1&gt;"]]}
+rack_proc.call({})
+</code></p>
+
+<p>也可以使用proc来创建一个Proc：</p>
+
+<p>```</p>
+
+<blockquote><p>x = proc {puts "hello, world"}
+ => #&lt;Proc:0x007ff114851698@(irb):18>
+x.call
+hello, world
+ => nil
+```</p></blockquote>
+
+<p>也可以将proc实例返回出来，然后提供给其他函数使用，需要注意的是那个call方法：</p>
+
+<p>```
+def adder(number)</p>
+
+<pre><code>proc {|x| x + number}
+</code></pre>
+
+<p>end</p>
+
+<p>add15 = adder(15)
+add15.call(10) == 25</p>
+
+<p>add10 = adder(10)
+add10.call(10) == 20
+```</p>
 ]]></content>
   </entry>
   

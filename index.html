@@ -9,8 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="
-">
+  <meta name="description" content="block in ruby block在ruby中，相当于JavaScript中的匿名函数，可以用来实现诸如高阶函数等。高阶函数最好用的一个特点就是它很好的将“动作”（action）本身抽象成了一个对象来传递。 block本身不是对象，但是可以被转换成Proc类的实例，然后以一种特别的方式执行。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -118,7 +117,99 @@
   </header>
 
 
-  <div class="entry-content">
+  <div class="entry-content"><h2>block in ruby</h2>
+
+<p>block在ruby中，相当于JavaScript中的匿名函数，可以用来实现诸如高阶函数等。高阶函数最好用的一个特点就是它很好的将“动作”（action）本身抽象成了一个对象来传递。</p>
+
+<p>block本身不是对象，但是可以被转换成Proc类的实例，然后以一种特别的方式执行。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> &gt; proc = lambda {puts "hello, world"}
+</span><span class='line'> =&gt; #&lt;Proc:0x007ff11284d068@(irb):8 (lambda)&gt; </span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc = lambda do
+</span><span class='line'>&gt;  puts "hello, world"
+</span><span class='line'>&gt; end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从irb打印的信息可以看出，<code>&lt;Proc:0x007ff11284d068@(irb):8 (lambda)&gt;</code>是一个Proc类的实例用lambda生成的block对象，看起来像一个ruby中定义的函数/方法一样，但是执行的时候需要特别的调用方式：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc.call
+</span><span class='line'>hello, world
+</span><span class='line'> =&gt; nil</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果需要参数，可以这样指定：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc = lambda {|a, b| a + b}
+</span><span class='line'> =&gt; #&lt;Proc:0x007ff114843d40@(irb):14 (lambda)&gt; 
+</span><span class='line'>&gt; proc.call(1,2)
+</span><span class='line'> =&gt; 3 
+</span><span class='line'>&gt; proc.call("hello, ","world")
+</span><span class='line'> =&gt; "hello, world" </span></code></pre></td></tr></table></div></figure>
+
+
+<h2>proc自身</h2>
+
+<p>ruby中大名鼎鼎的rack应用程序，本质上就只是负责调用一个block来获得结果：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rack_proc = lambda {|env| [200, {}, ["&lt;h1&gt;Hello, world&lt;/h1&gt;"]]}
+</span><span class='line'>rack_proc.call({})</span></code></pre></td></tr></table></div></figure>
+
+
+<p>也可以使用proc来创建一个Proc：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; x = proc {puts "hello, world"}
+</span><span class='line'> =&gt; #&lt;Proc:0x007ff114851698@(irb):18&gt; 
+</span><span class='line'>&gt; x.call
+</span><span class='line'>hello, world
+</span><span class='line'> =&gt; nil </span></code></pre></td></tr></table></div></figure>
+
+
+<p>也可以将proc实例返回出来，然后提供给其他函数使用，需要注意的是那个call方法：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def adder(number)
+</span><span class='line'>  proc {|x| x + number}
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>add15 = adder(15)
+</span><span class='line'>add15.call(10) == 25
+</span><span class='line'>
+</span><span class='line'>add10 = adder(10)
+</span><span class='line'>add10.call(10) == 20</span></code></pre></td></tr></table></div></figure>
+
 </div>
   
   
@@ -1037,7 +1128,7 @@
         <li>
             <a href="http://icodeit.org/jsccp/">
                 <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
-                <div>JavaScript核心概念及实践(即将出版)</div>
+                <div>JavaScript核心概念及实践</div>
             </a> 
         </li>
         <li>
