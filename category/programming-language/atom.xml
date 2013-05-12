@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: programming language | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/programming-language/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2013-05-12T16:13:29+08:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[proc in ruby]]></title>
+    <link href="http://abruzzi.github.com/2013/05/proc-in-ruby/"/>
+    <updated>2013-05-12T16:01:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/05/proc-in-ruby</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+</feed>

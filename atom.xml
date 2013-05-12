@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-04-13T19:03:39+08:00</updated>
+  <updated>2013-05-12T16:13:29+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,28 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[proc in ruby]]></title>
+    <link href="http://abruzzi.github.com/2013/05/proc-in-ruby/"/>
+    <updated>2013-05-12T16:01:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/05/proc-in-ruby</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[重阳宫奇遇记]]></title>
+    <link href="http://abruzzi.github.com/2013/04/chongyang-palase/"/>
+    <updated>2013-04-28T10:32:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/04/chongyang-palase</id>
+    <content type="html"><![CDATA[<p>重阳宫为道教三大祖庭之一，位于陕西户县祖庵镇，是全真祖师王重阳修道之地。重阳宫本由王重阳的弟子（全真七子，详见《射雕英雄传》）修建，始于金代，名为“灵虚观”，元初改名“重阳宫”。后山碑林存有众多用以记录全真教祖师及全真七子生平事迹的石碑，如《全真教祖碑》，《重阳祖师仙迹碑》，也有全真教其他掌教如孙德彧等的撰文碑。除了金元的碑以外，宫中还有明清时代的刻字，如《重阳子王真人全真教祖碑》碑阴的“天下祖庭”四字，为明朝正统二年所刻。</p>
+
+<p>历史上由于年久失修，众多石碑层长散弃于露天，六、七十年代之后重修重阳宫，这些石碑被存入展厅，展厅有题名“重阳圣地”，其中大约有三十多通巨型金元石碑。</p>
+
+<p>四月末的长安，已经很热。由于我去的这天是周末，而且是给五一调休的周末，因此宫中游人很少。除了我之外还有几个附近学校的学生，虽然殿外天气非常好，水绿山青，鸟语花香，但是在殿内，古朴的石碑传出的若隐若无的气息，众多的由赑屃们驮着的近一丈的大石碑使得展厅的气氛稍显压抑，所以很快整个展厅就剩下我一个人了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[图书封面故事]]></title>
@@ -1689,103 +1711,6 @@ one of my <em>smart</em> colleagues, and got this solution.</p>
 -   Refactoring</p>
 
 <p>The benefit is obverisly: there is no isolated code any more. Actually, the shorter of the code, the cleaner it will be.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Using gradle to setup standard java project]]></title>
-    <link href="http://abruzzi.github.com/2012/10/using-gradle-to-setup-standard-java-project/"/>
-    <updated>2012-10-12T23:24:00+08:00</updated>
-    <id>http://abruzzi.github.com/2012/10/using-gradle-to-setup-standard-java-project</id>
-    <content type="html"><![CDATA[<h2>Generate typical project layout</h2>
-
-<p>If you are as lazy as I am, you may want to generate typecial project layout automatically, let&#8217;s do it by using <a href="http://www.gradle.org/">gradle</a>.</p>
-
-<p>Simply add the following lines into your build.gradle:</p>
-
-<pre><code>apply plugin: 'java'
-
-task "create-dirs" &lt;&lt; {
-    sourceSets*.java.srcDirs*.each {it.mkdirs()}
-    sourceSets*.resources.srcDirs*.each {it.mkdirs()}
-}
-</code></pre>
-
-<p>then using gradle to run the task defined &#8220;create-dirs&#8221;:</p>
-
-<pre><code>$ gradle create-dirs
-</code></pre>
-
-<p>you will get the directories structure like this:</p>
-
-<pre><code>.
-├── build.gradle
-└── src
-    ├── main
-    │   ├── java
-    │   └── resources
-    └── test
-        ├── java
-        └── resources
-</code></pre>
-
-<p>If you are using intellij as your default IDE, then you can apply the &#8216;idea&#8217; plugin for the project:</p>
-
-<pre><code>apply plugin: 'java'
-apply plugin: 'idea'
-</code></pre>
-
-<p>and then:</p>
-
-<pre><code>$ gradle idea
-</code></pre>
-
-<p>it should generate 3 files out: file.iml, file.ipr, file.iws. You can then open intellij and have fun with code inside, I would like to make a new post to talking about how to setup a java project by using intellij, and using <a href="http://en.wikipedia.org/wiki/Test-driven_development">TDD</a> for coding.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[How to embed Douban-Show in your octopress site]]></title>
-    <link href="http://abruzzi.github.com/2012/10/how-to-embed-douban-show-in-your-octopress-site/"/>
-    <updated>2012-10-10T21:08:00+08:00</updated>
-    <id>http://abruzzi.github.com/2012/10/how-to-embed-douban-show-in-your-octopress-site</id>
-    <content type="html"><![CDATA[<h3>What do you need?</h3>
-
-<ul>
-<li>A valid douban account of course</li>
-<li>octopress site</li>
-</ul>
-
-
-<h3>Step by step</h3>
-
-<p>Let&#8217;s do it step by step:
-Login your douban account at first, and then try to access this <a href="http://www.douban.com/service/badgemakerjs">link</a>, then you&#8217;ll prabobly get a similar script like this:</p>
-
-<pre><code>&lt;script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;amp;n=8&amp;amp;columns=2" &gt;&lt;/script&gt;
-</code></pre>
-
-<p>and then simply create a new file under the following path(in octopress repo):</p>
-
-<pre><code>$ touch source/_includes/asides/douban.html
-</code></pre>
-
-<p>and then add the link you generated and fulfill it in the following structure:</p>
-
-<pre><code>&lt;section&gt;
-&lt;h2&gt;What did I read&lt;/h2&gt;
-&lt;div&gt;
-    &lt;script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;amp;n=8&amp;amp;columns=2" &gt;&lt;/script&gt;
-&lt;/div&gt;
-&lt;/section&gt;
-</code></pre>
-
-<p>finally, add the page path in <em>_config.html</em>:</p>
-
-<pre><code>default_asides: [..., asides/douban.html, ...]
-</code></pre>
-
-<p>now you are done.</p>
 ]]></content>
   </entry>
   
