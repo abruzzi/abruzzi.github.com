@@ -1,0 +1,460 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JavaScript核心概念及实践 - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="JavaScript核心概念及实践 Jan 3rd, 2013 目前，JavaScript核心概念及实践已经由人民邮电出版社正式出版，并在各个网上书店出售： 亚马逊
+当当网
+China-pub
+豆瓣 如果你在阅读的过程中发现有任何的错误或者不清楚的地方，可以在此页后边进行回复。 2012年12月 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/jsccp/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">lambda</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about-me">About Me</a></li>
+  <li><a href="/jsccp">JavaScript内核系列</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article role="article">
+  
+  <header>
+    <h1 class="entry-title">JavaScript核心概念及实践</h1>
+    <p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-03T13:13:00+08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2013</time></p>
+  </header>
+  
+  <p>目前，JavaScript核心概念及实践已经由人民邮电出版社正式出版，并在各个网上书店出售：</p>
+
+<ul>
+<li><a href="http://www.amazon.cn/JavaScript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B00COG3YVU/ref=sr_1_1?ie=UTF8&amp;qid=1368345948&amp;sr=8-1&amp;keywords=javascript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5">亚马逊</a></li>
+<li><a href="http://product.dangdang.com/product.aspx?product_id=23246702">当当网</a></li>
+<li><a href="http://product.china-pub.com/3767398">China-pub</a></li>
+<li><a href="http://book.douban.com/subject/24165880/">豆瓣</a></li>
+</ul>
+
+
+<p>如果你在阅读的过程中发现有任何的错误或者不清楚的地方，可以在此页后边进行回复。</p>
+
+<hr />
+
+<p><code>2012年12月</code>-<code>2013年3月</code>，经张凯峰推荐，人民邮电的陈冀康编辑认为此书有出版的意义，并和我讨论此书的出版事宜。根据陈编辑的意见，我对书本的结构做了相对较大的调整，并进一步校对文字，给图例编号等。在陈编辑的帮助下，这个版本变的更加的专业。</p>
+
+<p><code>2012年10月</code>-<code>2012年12月</code>，在和同事们去游泳馆的路上，胡凯建议我把这个系列整理成册，并推荐给了有专业编辑背景（前InfoQ编辑）的同事张凯峰。在得到张凯峰的专业的反馈之后，我将原稿的结构做了一些调整，删去了一些“过时”的内容，去掉了JavaScript并无关系的graphviz一章，加入了测试框架的使用，客户端MVC框架的使用等内容，又对该稿的文字做了一些润色。</p>
+
+<p>这个<strong>“正式版”</strong>，相比之前的V0.0.9b版（即可公开下载的版本），有了一些变化：删除了三个章节（两章删除，一章移为附录），增加了三个新的章节，另外对一些章节做了补充（如服务器端的JavaScript中，加入的mongodb的介绍，以及node.js的测试等）。</p>
+
+<p>另外在整理中，发现有一些章节中的概念是错误的，而有些概念的解释比较模糊，这些问题在编辑通读的时候指出并进行了更新。有部分示例代码也做了更加详细的描述，尽量是的文字更容易被理解，很多貌似“精炼”的文字，也尽量用平实且短句的组合来替换。</p>
+
+<hr />
+
+<p>这个页面记录<strong>JavaScript核心概念及实践</strong>(原<em>JavaScript内核系列</em>)的一些日志，这个系列最早在<a href="http://abruzzi.iteye.com/">我的iteye博客</a>(javaeye)上以连载的形式发表。</p>
+
+<p>下载地址：下载<a href="http://abruzzi.github.com/jsccp/JavaScript-Core-and-Practice-V0.9.9b.pdf">JavaScript核心概念及实践V0.9.9Beta版本</a></p>
+
+<hr />
+
+<p><code>2013年1月27日</code>
+新添加了MongoDB一节，讨论了MongoDB中shell（基于JavaScript）的基本操作和map/reduce的一个示例</p>
+
+<hr />
+
+<p><code>2013年1月26日</code>
+为第一章添加了一个新的小节（面向对象）并加入了两个小的示例，以便更好的展现javascript的FP特性
+更新了第三章的对象字面量部分的示例。为第三章加入新的小节（JSON）</p>
+
+<hr />
+
+<p><code>2013年1月25日</code>
+将整本书根据编辑的意见，完整的过了一遍，后半部分相对过的较为快（因为后半部分的内容大多经过比较
+长时间的实践和总结，而且示例较多，比较客观），而前半部分是在整理之处完成，因此有一些概念的理解
+是错误了，做了改动。另，为了为枯燥的整稿带来一些振奋人心的消息，版本号升级为了V1.1.0alpha版。</p>
+
+<hr />
+
+<p><code>2013年1月24日</code>
+根据人民邮电出版社的陈编辑(Jacky Chen)的意见，重新整理的书本的结构(如去掉了基础部分和高级部分的划分，语句的通俗化，示例的精简/加强等等)。</p>
+
+<hr />
+
+<p><code>2013年1月2日</code>
+初步完成第十二章《backbone》的实例及原理部分，并与master合并。目前版本为1.0.2。书名更新为
+《JavaScript核心概念及实践》。</p>
+
+<hr />
+
+<p><code>2012年12月23日</code>
+初步完成第十三章《测试》的初稿并与master合并，目前的版本为1.0.1。</p>
+
+<hr />
+
+<p><code>2012年12月20日</code>
+根据同事的反馈，将附录graphviz一章删除，将附录3的EXTJS一章删除。将jquery一章移动到附录，并
+完成backbone.js及javascript测试相关的一些草稿。将书本的后半部分内容做了调整，加入了新的
+两章的outline。</p>
+
+<hr />
+
+<p><code>2012年2月3日</code>
+添加couchdb，替换原计划的ejscript一节，添加couchdb中的实例及map/reduce部分原理等。
+此时，这个系列差不多已经接近尾声了，之前的计划已经基本完成，章节也不会做重大的
+变动。此为v0.9.9alpha版本。
+由于多次有人质疑这个系列的名称，因此决定将名称修改为《JavaScript核心及实践》。并
+修改页脚部分的abruzzi为真实姓名。</p>
+
+<hr />
+
+<p><code>2012年2月2日</code>
+添加第12章jQuery的一个实例:jqtodo。添加node.js的一个实例：字符串转换器。</p>
+
+<hr />
+
+<p><code>2012年1月28日</code>
+修正了第8章中关于引用概念的一个bug。完成了第12章jQuery的剩余部分(事件处理
+及实用函数)。完成了第15章node.js中的实例及node的介绍部分，重构了内容简介部分
+整理了部分章节的字句。由于此时已经接近完成，此版本为v0.9alpha.当整体重构完成
+之后，将升级为v0.9beta并公开在社区。</p>
+
+<p>检查并修正了整体的排版及字体等，修改了关于类型的bug。整理了自本系列的所有已发布
+的文档的用户回复，并整理为一个列表。</p>
+
+<hr />
+
+<p><code>2012年1月27日</code>
+移动第13章EXTJS至附录三中，完成第12章jQuery内容(选择器，CSS操作等)。</p>
+
+<hr />
+
+<p><code>2012年1月26日</code>
+为第14章添加SpiderMonkey引擎的使用，及SpiderMonkey引擎
+的实现的部分内容。添加附录三：使用graphviz绘图。至此，JavaScript-Core
+剩余第12章(jquery),第13章(extjs),第16章(node.js).其他章节均基本完成。
+此为v0.4alpha。</p>
+
+<hr />
+
+<p><code>2011年5月4日</code>
+完成第14章V8引擎中使用C++类的示例；第14章中V8的基本概念完善；完成第11章，客户端
+JavaScript中的Ajax示例。</p>
+
+<hr />
+
+<p><code>2011年5月3日</code>
+通过实验，完成第14章-JavaScript引擎的V8引擎示例部分，重新更改第14章的目录结构。</p>
+
+<hr />
+
+<p><code>2011年5月2日</code>
+完善第11章-客户端JavaScript中的chrome调试章节，mvc插图。完善第12章中jquery使用函数
+的示例部分。截至今日为止，前半部分基本定型，后半部分仍余第12章-jquery,第13章-extjs
+第14章引擎剖析，第16章服务端的JavaScript的大部分内容。由于时间原因，一直没有开放bata
+版本，因此此版本为V0.3alpha版，仅为内部版本，仍可能有较大的改动。</p>
+
+<hr />
+
+<p><code>2011年2月19日</code>
+完成V0.2alpha版的第10章“核心概念深入”及第15章“Java应用中的JavaScript”两章的初稿
+由于Java应用中的JS之前写过大量的文章和例子，因此进展比较顺利，而第10章编撰期间，参考
+了众多资料，且graphviz的使用正在研习，因此花费了较长的时间。但是个人仍然不是很满意，
+感觉有些概念仍然没有讨论清晰。</p>
+
+<hr />
+
+<p><code>2011年2月18日</code>
+将2010年5月整理的后半部分未完成稿与2011年2月16日的规划做了合并，目前共计16章，前半部分
+有9章，后半部分7章。用于结构调整较大，并补充了较多的内容，因此称为V0.2的alpha版。</p>
+
+<hr />
+
+<p><code>2011年2月16日</code>
+对文字进行了部分校正，为第三章加入了原型链示意图和一个示例，对后续的章节做了规划并
+加入第10-第14章的提纲，加入了附录2。是为V0.1alpha版。</p>
+
+<hr />
+
+<p><code>2011年1月25日</code>
+整理之前的文档，去除了部分未完成的内容，加入了版权信息及前言致谢，后记部分的内容。
+这个版本为V0整理稿。</p>
+
+<hr />
+
+<p><code>2010年5月</code>
+依次在javaeye上发表此系列，并根据网友们的回馈完善文档，从当时开始关注js在后台及其他
+应用程序中的使用，并初步打算将核心概念讨论清楚之后，加入服务器端js的实践。</p>
+
+<hr />
+
+<p><code>2010年1月</code>
+开始本系列的撰写，目标主要是实际开发中容易引起误解的问题</p>
+
+  
+    <footer>
+      <p class="meta">
+        
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-03T13:13:00+08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2013</time>
+        
+      </p>
+      
+        <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/jsccp/index.html" data-via="" data-counturl="http://abruzzi.github.com/jsccp/index.html" >Tweet</a>
+  
+  
+  
+</div>
+
+      
+    </footer>
+  
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/05/proc-in-ruby/">proc in ruby</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/04/chongyang-palase/">重阳宫奇遇记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/04/book-cover-story/">图书封面故事</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/turning-to-a-designer/">Turning to a designer</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/guan-yu-hack-day/">关于Hack day</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中...)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/jsccp/index.html';
+        var disqus_url = 'http://abruzzi.github.com/jsccp/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

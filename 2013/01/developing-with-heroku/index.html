@@ -1,0 +1,420 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>将应用程序部署到heroku - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="heroku 使用heroku，开发人员可以很容易的将自己的应用程序公开给世界上的其他用户使用，heroku会为你提供一个url，一些预设的空间如数据库（postgresql）等。这对于需要频繁远程showcase的场景提供了非常好的方式， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2013/01/developing-with-heroku/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">lambda</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about-me">About Me</a></li>
+  <li><a href="/jsccp">JavaScript内核系列</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">将应用程序部署到heroku</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-26T19:02:00+08:00" pubdate data-updated="true">Jan 26<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>heroku</h3>
+
+<p>使用heroku，开发人员可以很容易的将自己的应用程序公开给世界上的其他用户使用，heroku会为你提供一个url，一些预设的空间如数据库（postgresql）等。这对于需要频繁远程showcase的场景提供了非常好的方式，当然对于开发人员向其他的开发人员或者最终用户展现自己的框架的外观/行为等场景也会非常有用。</p>
+
+<h3>在heroku上注册用户</h3>
+
+<p>首先，当然是在heroku上<a href="https://api.heroku.com/signup/devcenter">注册一个开发账户</a>，如果你已经注册过，就请接着第二步</p>
+
+<h3>下载heroku的本地Toolbox</h3>
+
+<p>heroku提供了一个很好用的<a href="https://toolbelt.heroku.com/">工具包</a>，通过这个工具包，开发人员可以很容易的对部署在heroku上的应用程序做操作。</p>
+
+<h3>在本地登陆heroku</h3>
+
+<p>如果没有上传过key的话，heroku会提醒你创建一个新的ssh公钥，然后上传到heroku（这个过程与使用github非常类似）</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku login
+</span><span class='line'>Enter your Heroku credentials.
+</span><span class='line'>Email: adam@example.com
+</span><span class='line'>Password: 
+</span><span class='line'>Could not find an existing public key.
+</span><span class='line'>Would you like to generate one? [Yn] 
+</span><span class='line'>Generating new SSH public key.
+</span><span class='line'>Uploading ssh public key /Users/adam/.ssh/id_rsa.pub</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果已经上传过key，则可以直接登陆</p>
+
+<h3>准备工作</h3>
+
+<p>在本地生成一个应用程序的基本结构，如：<code>Gemfile</code>，目录结构等。然后在本地配置好git环境，比如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git init
+</span><span class='line'>$ git add .
+</span><span class='line'>$ git commit -m "init"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>准备Procfile：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>web: bundle exec ruby app.rb -p $PORT -E production</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>app.rb</code>相当于你的应用程序的主入口(main)，<code>-E</code>指定运行环境（此处指定为production），你的应用程序可能会根据次设置来进行一些资源的选择（数据库指向，资源文件位置等）</p>
+
+<p>在上传之前，需要确保自己的应用程序可以在本地正常运行：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>foreman start</span></code></pre></td></tr></table></div></figure>
+
+
+<p>应用程序将在本地的5000端口上运行，此时可以做一些简单的验证，保证应用程序运行正常。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git add .
+</span><span class='line'>$ git commit -m "ready for deploy app to heroku"</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>上传你的App</h3>
+
+<p>这时，可以很轻易的将App上传到heroku了：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku create
+</span><span class='line'>$ git push heroku master</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然，第一次上传可能会比较慢（取决于你应用程序的大小），如果一切正常，heroku将会尝试根据你的Gemfile来安装依赖，安装完成之后，会尝试根据Procfile中的配置启动你的应用程序。</p>
+
+<p>如果你的应用程序会访问数据库（非postgresql的数据库），那么建议在Gemfile中指定当测试时使用该数据库，而在production环境中使用postgresql，因为heroku使用的正是postgresql：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>configure :test do
+</span><span class='line'>    DataMapper.setup(:default, ENV['DATABASE_URL'] || "local-db-url")
+</span><span class='line'>    DataMapper.finalize.auto_upgrade!
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我的应用在本地使用sqlite，而在heroku中使用其提供的postgresql。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-26T19:02:00+08:00" pubdate data-updated="true">Jan 26<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/thoughtworks/'>ThoughtWorks</a>, <a class='category' href='/category/open-source/'>open source</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/01/developing-with-heroku/" data-via="" data-counturl="http://abruzzi.github.com/2013/01/developing-with-heroku/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/2013/01/migrate-google-code-to-github/" title="Previous Post: 将Google Code上的项目迁移到Github">&laquo; 将Google Code上的项目迁移到Github</a>
+      
+      
+        <a class="basic-alignment right articlenav" href="/2013/02/get-started-with-jquery-mobile/" title="Next Post: Get started with jQuery Mobile">Get started with jQuery Mobile &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/05/proc-in-ruby/">proc in ruby</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/04/chongyang-palase/">重阳宫奇遇记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/04/book-cover-story/">图书封面故事</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/turning-to-a-designer/">Turning to a designer</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/guan-yu-hack-day/">关于Hack day</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中...)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2013/01/developing-with-heroku/';
+        var disqus_url = 'http://abruzzi.github.com/2013/01/developing-with-heroku/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

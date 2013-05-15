@@ -1,0 +1,395 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>将Google Code上的项目迁移到Github - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="一些闲话 虽然对开源社区没有任何杰出的贡献，但是我自己在业余时间开发的很多小东西都是开源的，有部分放在google code上，可是除了一个sTodo有几个用户外，其他的工具几乎都纯属自娱自乐。虽然当时做的时候自己非常投入，会各种YY，假设用户会需要这个功能，会需要那个功能，用户会需要脚本化， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2013/01/migrate-google-code-to-github/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">lambda</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about-me">About Me</a></li>
+  <li><a href="/jsccp">JavaScript内核系列</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">将Google Code上的项目迁移到Github</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-13T23:28:00+08:00" pubdate data-updated="true">Jan 13<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>一些闲话</h3>
+
+<p>虽然对开源社区没有任何杰出的贡献，但是我自己在业余时间开发的很多小东西都是开源的，有部分放在google code上，可是除了一个<a href="http://code.google.com/p/stodo/">sTodo</a>有几个用户外，其他的工具几乎都纯属自娱自乐。虽然当时做的时候自己非常投入，会各种YY，假设用户会需要这个功能，会需要那个功能，用户会需要脚本化，自定义插件等等，但是到最后发现只有自己在使用，而再过一段时间，连自己也不会使用了。</p>
+
+<p>我自己托管在google code上的，还算有点用处的项目有三个：</p>
+
+<ul>
+<li><a href="http://code.google.com/p/stodo/">sTodo</a> 一个简单的todo管理器</li>
+<li><a href="http://code.google.com/p/phoc/">phoc</a> 一个可以用JavaScript脚本化的计算器</li>
+<li><a href="http://code.google.com/p/utouch">utouch</a> 一个使用styledTextCtrl的编辑器</li>
+</ul>
+
+
+<p>虽然这种事情发生在几乎每一个喜欢写程序的家伙身上，但是整个过程对自我修炼来说，还是非常有现实意义的，首先专业技能得到了锻炼，而最重要的一点是：需求不是想象出来的！在没有和用户真正仔细的讨论之前，我们的假设和推断往往是错的。</p>
+
+<p>Idea到处都是，有很多很酷且很有挑战的idea，但是它们不一定真的在解决人们的问题。这是一个很值得思考的问题，我最近在尝试组织一个活动，主题以及目标已经确定，上周找胡凯帮我把关，结果发现我又一次的进入了“帮助用户想需求”的老路上了。</p>
+
+<h3>迁移</h3>
+
+<h4>使用svn同步到本地</h4>
+
+<p>根据google code的提示，将code从svn中的checkout到本地：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>svn checkout http://phoc.googlecode.com/svn phoc-read-only</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>去除掉.svn隐藏目录</h4>
+
+<p>现使用<code>find</code>在当前目录下找到名称为.svn的目录，然后将其删除，这个过程是递归的，即可以清除掉当前目录及所有子目录中的.svn目录:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>find . -name ".svn" -type d -exec rm -rf {} \;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>初始化git的repo</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git init
+</span><span class='line'>git add .
+</span><span class='line'>git ci -m "migrate of project xxx to github"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后对应的在github上创建repo，创建之后，需要将本地的remote指向github上的repo:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git remote add origin git@github.com:project/project.git</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果本地的master分支没有配置，可以在<code>.git/config</code>中进行配置：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[branch "master"]
+</span><span class='line'>  remote = origin
+</span><span class='line'>  merge = refs/heads/master</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后将新的commit push到新的repo上即可：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git pull --rebase
+</span><span class='line'>git push</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我已经把这个工具迁移到了github上<a href="https://github.com/abruzzi">abruzzi</a>，正式告别了google code。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-13T23:28:00+08:00" pubdate data-updated="true">Jan 13<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/opensource/'>opensource</a>, <a class='category' href='/category/tools/'>tools</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/01/migrate-google-code-to-github/" data-via="" data-counturl="http://abruzzi.github.com/2013/01/migrate-google-code-to-github/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/2013/01/where-am-i/" title="Previous Post: 是时候慢下来了">&laquo; 是时候慢下来了</a>
+      
+      
+        <a class="basic-alignment right articlenav" href="/2013/01/developing-with-heroku/" title="Next Post: 将应用程序部署到heroku">将应用程序部署到heroku &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/05/proc-in-ruby/">proc in ruby</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/04/chongyang-palase/">重阳宫奇遇记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/04/book-cover-story/">图书封面故事</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/turning-to-a-designer/">Turning to a designer</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/guan-yu-hack-day/">关于Hack day</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中...)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2013/01/migrate-google-code-to-github/';
+        var disqus_url = 'http://abruzzi.github.com/2013/01/migrate-google-code-to-github/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

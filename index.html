@@ -1,0 +1,1239 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="block in ruby block在ruby中，相当于JavaScript中的匿名函数，可以用来实现诸如高阶函数等。高阶函数最好用的一个特点就是它很好的将“动作”（action）本身抽象成了一个对象来传递。 block本身不是对象，但是可以被转换成Proc类的实例，然后以一种特别的方式执行。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">lambda</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about-me">About Me</a></li>
+  <li><a href="/jsccp">JavaScript内核系列</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2013/05/proc-in-ruby/">Proc in Ruby</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-12T16:01:00+08:00" pubdate data-updated="true">May 12<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>block in ruby</h2>
+
+<p>block在ruby中，相当于JavaScript中的匿名函数，可以用来实现诸如高阶函数等。高阶函数最好用的一个特点就是它很好的将“动作”（action）本身抽象成了一个对象来传递。</p>
+
+<p>block本身不是对象，但是可以被转换成Proc类的实例，然后以一种特别的方式执行。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> &gt; proc = lambda {puts "hello, world"}
+</span><span class='line'> =&gt; #&lt;Proc:0x007ff11284d068@(irb):8 (lambda)&gt; </span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc = lambda do
+</span><span class='line'>&gt;  puts "hello, world"
+</span><span class='line'>&gt; end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从irb打印的信息可以看出，<code>&lt;Proc:0x007ff11284d068@(irb):8 (lambda)&gt;</code>是一个Proc类的实例用lambda生成的block对象，看起来像一个ruby中定义的函数/方法一样，但是执行的时候需要特别的调用方式：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc.call
+</span><span class='line'>hello, world
+</span><span class='line'> =&gt; nil</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果需要参数，可以这样指定：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc = lambda {|a, b| a + b}
+</span><span class='line'> =&gt; #&lt;Proc:0x007ff114843d40@(irb):14 (lambda)&gt; 
+</span><span class='line'>&gt; proc.call(1,2)
+</span><span class='line'> =&gt; 3 
+</span><span class='line'>&gt; proc.call("hello, ","world")
+</span><span class='line'> =&gt; "hello, world" </span></code></pre></td></tr></table></div></figure>
+
+
+<h2>proc自身</h2>
+
+<p>ruby中大名鼎鼎的rack应用程序，本质上就只是负责调用一个block来获得结果：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rack_proc = lambda {|env| [200, {}, ["&lt;h1&gt;Hello, world&lt;/h1&gt;"]]}
+</span><span class='line'>rack_proc.call({})</span></code></pre></td></tr></table></div></figure>
+
+
+<p>也可以使用proc来创建一个Proc：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; x = proc {puts "hello, world"}
+</span><span class='line'> =&gt; #&lt;Proc:0x007ff114851698@(irb):18&gt; 
+</span><span class='line'>&gt; x.call
+</span><span class='line'>hello, world
+</span><span class='line'> =&gt; nil </span></code></pre></td></tr></table></div></figure>
+
+
+<p>也可以将proc实例返回出来，然后提供给其他函数使用，需要注意的是那个call方法：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def adder(number)
+</span><span class='line'>  proc {|x| x + number}
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>add15 = adder(15)
+</span><span class='line'>add15.call(10) == 25
+</span><span class='line'>
+</span><span class='line'>add10 = adder(10)
+</span><span class='line'>add10.call(10) == 20</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2013/04/chongyang-palase/">重阳宫奇遇记</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-28T10:32:00+08:00" pubdate data-updated="true">Apr 28<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>重阳宫简介</h3>
+
+<p>重阳宫为道教三大祖庭之一，位于陕西户县祖庵镇，是全真祖师王重阳修道之地。重阳宫本由王重阳的弟子（全真七子，详见《射雕英雄传》）修建，始于金代，名为“灵虚观”，元初改名“重阳宫”。后山碑林存有众多用以记录全真教祖师及全真七子生平事迹的石碑，如《全真教祖碑》，《重阳祖师仙迹碑》，也有全真教其他掌教如孙德彧等的撰文碑。除了金元的碑以外，宫中还有明清时代的刻字，如《重阳子王真人全真教祖碑》碑阴的“天下祖庭”四字，为明朝正统二年所刻。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/04/chongyang-01.resized.jpg" alt="全真祖庭" /></p>
+
+<p>历史上由于年久失修，众多石碑层长散弃于露天，六、七十年代之后重修重阳宫，这些石碑被存入展厅，展厅有题名“重阳圣地”，其中大约有三十多通巨型金元石碑。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/04/outside.resized.jpg" alt="年久失修" /></p>
+
+<h3>甘河镇遇仙</h3>
+
+<p>四月末的长安，已经很热。由于我去的这天是周末，而且是给五一调休的周末，因此宫中游人很少。除了我之外还有几个附近学校的学生，虽然殿外天气非常好，水绿山青，鸟语花香，但是在殿内，古朴的石碑传出的若隐若无的古老的气息，众多的由赑屃驮着的近一丈的大石碑使得展厅的气氛稍显压抑，所以很快整个展厅就剩下我一个人了。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/04/bixis.resized.jpg" alt="碑林展厅" /></p>
+
+<p>虽然殿外阳光明媚，但是触摸着这些实实在在的文物，让人彷佛有些穿越千年，回到宋末元初的感觉，这种感觉让人有种莫名的阴森。而碑文中不时闪现的诸如王重阳，丘处机，尹志平等人的名字更是和金庸笔下的众多人物相交错，穿越的感觉愈发强烈。</p>
+
+<p>我信步走到一通石碑前，顺口默诵，看着王重阳在<strong>甘河镇遇仙</strong>一段，还在心中暗笑其故意装神弄鬼，但是当我转身到碑阴面，读到“天之道，损有余而补不足，是故虚胜实，不足胜有余”之时，不由得心头大震，接着向下看到“心死则神活，阳盛而阴消”之时，更是惊骇莫名。这通碑上分明记着宋末元初的武学秘籍《九阴真经》（详见《射雕英雄传》）。</p>
+
+<p>我正待取出纸笔将这些内容抄录，忽觉殿内似乎多出一人来，我心头一震，以我的功力，竟然有人走到我身周三丈之内而不自知。我转过头去，只见一个道士站在重阳祖师画像碑旁，呆呆的出神。只听那老道口中喃喃有声：此碑为四绝碑之首，无梦令碑有不及也。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/04/wumengling.resized.jpg" alt="无梦令碑" /></p>
+
+<p>我连忙走上前去，问道：“上仙，这厢有礼，刚才听到上仙谈及四绝碑，敢问何为四绝碑？”，道士略微沉吟，说道：“所谓四绝，乃重阳祖师画像碑，祖师亲笔《无梦令》碑，以及赵孟頫大小照碑，是也”。说罢，袖手而去，我略一迟疑，道士已仙踪不见。</p>
+
+<p>我又走回遇仙碑后，将《九阴真经》默默铭记，出殿时已经是一个时辰之后了，刚到殿门口，忽见之前遇见的那位道士正在门口徘徊，似乎在找什么东西。我恭敬的询问，道士一脸疑惑，操着一口地道的关中腔说道：“我的手机咋莫见啦？我记得我拿出来了么，可放到办公室里了？”</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2013/04/book-cover-story/">图书封面故事</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-13T15:57:00+08:00" pubdate data-updated="true">Apr 13<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>虎符</h2>
+
+<p>虎符本是春秋战国时期，用以中央政权和地方军事力量之间的一种凭证，信物。一般分剖为两半，一半留在京师（右半边，古代以右为尊），另一半留在军队驻地。对方上要有军事行动，必须向中央申请，中央同意后，会派遣专人前往，为了防止有人冒充中央，假传圣旨，需要有一种凭证。</p>
+
+<p>当然，仅仅虎符本身并不足以调动军队，同虎符一起的，还要有诏书，及中央排除的特使。虎符作为凭证，而诏书中有详细的其他信息，比如官员的任命，军队部署之类。</p>
+
+<h3>杜虎符</h3>
+
+<p>杜虎符为1973年在西安南郊出土的，年代大约为战国时期，但是应在秦朝统一六国之前。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/04/jscp-conver.jpg" alt="image" /></p>
+
+<p>铭文为：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>兵甲之符，右在君，左在杜，凡兴兵披甲，用五十人以上，必会君符，乃敢行之。燔燧之事，虽毋会符，行。</span></code></pre></td></tr></table></div></figure>
+
+
+<p>虎符本身为铜铸，铭文的制作非常特殊：先刻以阴文，然后将金丝嵌入文字，再打磨光滑，因此虽历时久远，但是仍金光熠熠。</p>
+
+<h3>阳陵虎符</h3>
+
+<p>阳陵虎符相传在山东临城出土，由于铭文中有“皇帝”字样，时代当为秦统一六国之后。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/04/yangling-tiger-seal.resized.jpg" alt="image" /></p>
+
+<p>铭文为：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>甲兵之符，右在皇帝，左在阳陵</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2013/03/turning-to-a-designer/">Turning to a Designer</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-26T22:46:00+08:00" pubdate data-updated="true">Mar 26<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>Hack design的建议</h4>
+
+<p>首先，design无处不在，它的目的是提高产品使用者的效率和易用性的。它不是一个“运用之妙，存乎一心”的东西，它是一个实实在在可以通过学习来获得的能力（正如编程或者写作或者厨艺一样，当然，如果一个人把精力和心血放在编程上，同样可以将编程做成一个“运用之妙，存乎一心”的东西。）</p>
+
+<p>什么是一个好的设计？下面是设计师Dieter Rams给出的10条原则：</p>
+
+<ol>
+<li>创新性</li>
+<li>使产品有用</li>
+<li>美学</li>
+<li>使产品可以被理解</li>
+<li>不那么引人注目</li>
+<li>诚实的设计</li>
+<li>可持久的</li>
+<li>彻底，纯粹</li>
+<li>尽量做小的设计</li>
+<li>环境友好</li>
+</ol>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/03/design-10-commandments.resized.png" alt="image" /></p>
+
+<p>这里有<a href="http://startupsthisishowdesignworks.com/">原文的链接</a>，总而言之，设计不仅仅是一个web页面，一个海报，所有的产品都会有不同程度的设计包含在其中。</p>
+
+<h4>Alex的建议</h4>
+
+<p>想想你觉得“好看”的页面为什么好看，是字体，配色，背景色，布局还是其他？把这些记录下来，并在自己后续的设计中尝试使用。</p>
+
+<p>多看一些优秀的设计，比如web页面，如果你发现上边有一些很感兴趣的特性，或者细节，比如这个菜单看着很漂亮，后者标签功能很炫，你可以用chrome的inspect来查看别人使用了什么样的HTML，又apply了那些CSS，做出了这样的效果。</p>
+
+<p>如果在这个过程中，遇到一些没有见过的标签，或者标签的属性，那么去<a href="http://www.w3schools.com/">w3school</a>上查看一下这些标签/属性的含义，尽量使用这些Tag原始的意义（设计时的初衷）。</p>
+
+<p>比如div，它是divider的缩写，本来是用来分割块的，那么就用它来做分割，比如p(paragraph)标签，用来分段，可以将文字放入其中。这些都是HTML标签的设计初衷，我们应该尽量遵循，在实现的时候，如果使用原始的标签很难实现，那么可以尝试一些比较trick的方式来绕过，但是毕竟并非正途。</p>
+
+<p>最后，design和编程类似，你需要不断的练习，自己动手多尝试，在研究了别人的实现之后，自己最好做一个示例出来。</p>
+
+<h4>其他人的建议</h4>
+
+<p>最近读到的一篇写的<a href="http://somerandomdude.com/2012/01/10/transition-from-development-to-design/">非常好的文章</a>，作者也是一个有开发背景的设计师，因此有很多地方可以借鉴：</p>
+
+<ol>
+<li>在转向designer的同时，不要丢掉编程</li>
+<li>按照一定的顺序来学习design（可用优先，性能优先）</li>
+<li>设计一切见得到的东西</li>
+<li>和其他人一起讨论设计，并聆听别人</li>
+<li>尝试分享，尝试将自己的设计讲给别人</li>
+</ol>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2013/03/guan-yu-hack-day/">关于Hack Day</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-22T20:55:00+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>关于Hackday</h4>
+
+<p>Hackday是一个技术活动，每三个月举行一次，每次正式时间为两天，每次的hackday都有一个主题，比如对某个业务模块的数据挖掘，关于某个模块的功能/执行效率的改进。</p>
+
+<p>Hackday中的idea多是工作中接触到的痛点，但是又有一些挑战，很难在工作的时候将其完成，或者是一些有意思的主题，平时想做又不太合适（比如一些没有经过确认创新的点子）。</p>
+
+<h4>Hackday 1st</h4>
+
+<p>第一次Hackday是跟<a href="http://adams.co.tt/blog">Adam</a>一起做一个数据展现的idea，Adam是墨尔本Office里一个相当senior的咨询师，我们当时做的idea是根据系统中已有的数据信息，来做一些简单的数据分析，如：</p>
+
+<ol>
+<li>找出一个地区内的所有中介，看看哪些中介持有最多的房产资料</li>
+<li>找出一个地区中，可以最快卖掉手中房产的中介</li>
+</ol>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/03/hackday-agent-info.resized.png" alt="image" /></p>
+
+<p>我们的应用使用sinatra作为服务器；由于数据库系统已经存在，所以ORM需要做的是将对象和已存在的数据表关联，因此功能强大且可以独立使用的ActiveRecord就成了首选；模板使用haml；UI框架风格使用了BootStrap。</p>
+
+<p>搭建环境大概只用了1到1.5个小时，在整个开发过程中，我学习到了一个专业的敏捷开发的流程：</p>
+
+<ol>
+<li>划分大的目标，使之称为小的task</li>
+<li>小步前进，做完一个功能之后，进行快速的review（首先有一个可以工作的版本）</li>
+<li>如果发现有潜在的问题，进行重构，以方便下一个小的task</li>
+</ol>
+
+
+<p>两天之后，当一个可以工作，并且很容易扩展的应用程序真实的放在我们面前的时候，我觉得十分有意思，这当然不是因为build something本身的乐趣，而是我看到一种理论在实际的生活中可以工作（而且是以一种非常有意思的方式），这个过程让我对这种开发方式产生了很多新的认识。</p>
+
+<h4>Hackday 2nd</h4>
+
+<p>第二次的idea是一个基于google map的应用，比如某人的公司在A地，老婆的公司在B地，他们最喜欢的超市在C地，然后他们想找一个离这三个地方距离都很近的房子。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/03/hackday-neighborhood.resized.png" alt="image" /></p>
+
+<p>同样也使用了Sinatra+haml+javascript。由于idea本身就是西安团队想出来的，所以这次的参与者都是西安office的，这样可以省去交流的成本，做起来肯快，但是问题也很严重，就是没有人做演示，别的团队也不清楚我们在干什么。</p>
+
+<h4>Hackday 3rd</h4>
+
+<p>经历了前两次，第三次的就非常official了，有story wall，有producer，有站会，有showcase，正好这段时间我们的一个客户designer在西安office出差，所以还设计了一些海报。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/03/hackday-rango-stories.resized.png" alt="image" /></p>
+
+<p>有了专业的designer参与，应用程序的外观立马得到了改善，看起来非常有产品的感觉：</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/03/hackday-rango-homepage.resized.png" alt="image" /></p>
+
+<p>这次本来计划开发离线版本，使用浏览器的localStorage，但是静态网页在iPad上无法工作。team快速的做出了调整，使用sinatra（又一次）搭建了服务器，然后将应用部署在cloud上。</p>
+
+<h4>总结</h4>
+
+<p>虽然每次的“成果”都不大，但是整个hack的过程都非常有意思，每次都可以使用前几次活动中好的工作方式，而前几次中做的不好的则可以进行改进，技术仅仅是其中的一个方面，与团队成员的协作，对自己信心的加强，通过创新来给客户带来价值，这一系列的，不那么明显的“成果”才是更重要的。</p>
+
+<p>另一个“成果”是，我对轻量级的框架如<a href="http://www.sinatrarb.com/">sinatra</a>，引擎<a href="http://haml.info/">haml</a>等有了非常浓厚的兴趣，用这些工具可以快速的搭建用于showcase的应用程序，而且非常容易改进，非常适合小步迭代的开发方式。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2013/03/cycling/">Cycling</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-10T15:34:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>昆明骑行</h3>
+
+<h4>首次骑行</h4>
+
+<p>从城西出发，骑到城北长虫山，到龙凤公墓集合，然后沿着小哨，大哨，最后从金殿后山返回。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-1st.resized.jpg" alt="image" /></p>
+
+<p>整个路线大概80公里，山中时而风雨大作，时而阳光遍地，依稀记得中午休息时，山里某个农家乐里的带皮羊肉火锅滋味鲜美无比。</p>
+
+<h4>东大花椒鸡</h4>
+
+<p>云青青兮欲雨，水澹澹兮生烟。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-dongda-2.resized.jpg" alt="image" /></p>
+
+<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-dongda-chicken.resized.jpg" alt="image" /></p>
+
+<h4>夜骑宝珠寺</h4>
+
+<p>宝珠寺在昆明城西，寺在山脚下，整个骑行路线全是上坡，而且有好几公里的坡度巨大，算是一个骑行初级班和进阶班的分水岭。事实上，和同事骑行宝珠寺，从来没有去看过“宝珠寺”本身。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-baozhu.resized.jpg" alt="image" /></p>
+
+<p>宝珠寺山顶附近有了泉，有很多人开车去山上打泉水。我们曾用脉动的瓶子装了些，但是终于没有敢喝。在夜间骑行感觉非常诡异，山中非常黑，只有一条灰白色的公路，偶尔有车子开过，会有一点光闪过，由于坡度非常陡峭，可以听到头顶上有下坡朋友在单车上高声呼啸而过。骑到高处，俯瞰城市，山坳里的昆明城尽收眼底。</p>
+
+<p>从山上起下来之后，去城西的烧烤摊上点一些酒肉，和朋友们扯扯淡，然后再沿着空旷的街道返回。</p>
+
+<h4>卧云山</h4>
+
+<p>从宝珠寺顶一直往西北，过了筇竹寺，然后一路往西，骑到卧云山下吃午饭，貌似每个地方的花椒鸡都各有特色，这种蘸着花椒蘸水的吃饭比东大的好吃一些：</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-woyun-chicken.resized.jpg" alt="image" /></p>
+
+<p>到达卧云山顶，小转盘附近：</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-woyun.resized.jpg" alt="image" /></p>
+
+<h3>西安骑行</h3>
+
+<h4>沣峪口</h4>
+
+<p>毫无疑问，西安骑行的经历是最糟糕的了：第一次是从南三环，沿太白南路往北，骑到老城墙，穿城而过，然后到北二环，再从城北骑回来；第二次路线和第一次差不多，不过是跟孙曼思一起，而且是和不过骑得更远，到了草滩附近；第三次是往南，跟孙曼思，还有三个同事，骑行沣峪口，恰遇极为严重的沙尘暴，当时PM2.5已经过千。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/03/xian-cycling-3rd.resized.jpg" alt="image" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os/">Install Powerline (Fancy Status Line) for Vim in Mac OS</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-19T10:53:00+08:00" pubdate data-updated="true">Feb 19<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Powerline</h3>
+
+<p><a href="https://github.com/Lokaltog/powerline">powerline</a>会将vim的status line变的非常漂亮，看起来像一个“主流”的编辑器那样，而又不会引入额外的“重量”。基本原理是使用字体将特殊字符展现成特殊形状（如三角形），额外的有一些漂亮的配色。</p>
+
+<h4>效果</h4>
+
+<p><img src="http://abruzzi.github.com/images/2013/02/vim-power-line-resized.png" alt="image" /></p>
+
+<h4>安装</h4>
+
+<p>有几个额外的点需要确保：</p>
+
+<h5>保证你的vim包含了对python的支持</h5>
+
+<p><code>vim --version | grep python</code>的结果应该包含<code>+python</code>，如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>+path_extra -perl +persistent_undo +postscript +printer -profile +python/dyn </span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果没有的话，需要将vim重新编译，比如在Mac OS下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install macvim --env-std --override-system-vim</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>安装powerline</h5>
+
+<p>最简单的方式是直接clone到本地，比如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git clone git://github.com/Lokaltog/powerline.git ~/PowerLine/</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>配置.vimrc</h5>
+
+<p>为你的vimrc添加下面的配置：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>set rtp+={path_to_powerline}/powerline/bindings/vim
+</span><span class='line'>set laststatus=2
+</span><span class='line'>set noshowmode</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这时，如果你启动vim，应该已经可以看到powerline了，但是有可能有“乱码”的问题，幸运的是，已经有很多的预定义字体。</p>
+
+<h3>Fonts</h3>
+
+<p><a href="https://github.com/Lokaltog/powerline-fonts">这里</a>有许多额外的预定义fonts。选中需要的字体，安装到本地即可（双击字体文件或者拷贝到<code>~/Library/Fonts</code>下）。然后在.vimrc中使用这个字体，比如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>set encoding=utf-8
+</span><span class='line'>set guifont=Menlo\ for\ Powerline:h14</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2013/02/get-started-with-jquery-mobile/">Get Started With jQuery Mobile</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-14T13:50:00+08:00" pubdate data-updated="true">Feb 14<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>jQuery mobile</h3>
+
+<p><a href="http://jquerymobile.com/">jQuery Mobile</a>是一个基于jQuery/jQuery-ui的UI库，用于构建基于HTML5的应用程序，当然它主要针对移动设备平台，开发者使用它可以很容易的开发出运行在ios/android/windows phone上的应用，这些应用（尽管运行在不同的硬件/软件系统上）在界面上看起来几乎一致。</p>
+
+<h3>基本元素</h3>
+
+<h4>页面布局</h4>
+
+<p>在移动设备上，一个页面一般由三部分组成（header区域，content区域，footer区域），当然，有的页面可能会缺失一部分（最常见的如：没有footer的长列表），jQuery Mobile通过在DOM元素上定义data-role来指定元素的归属：</p>
+
+<ul>
+<li>page 整个页面</li>
+<li>header header区域</li>
+<li>content content区域</li>
+<li>footer footer区域</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;div data-role='page'&gt;
+</span><span class='line'>    &lt;div data-role='header'&gt;
+</span><span class='line'>        &lt;h1&gt;This is header&lt;/h1&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>    &lt;div data-role='content'&gt;
+</span><span class='line'>        &lt;p&gt;This is content&lt;/p&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>    &lt;div data-role='footer'&gt;
+</span><span class='line'>        &lt;h1&gt;This is footer&lt;/h1&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>&lt;/div&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/02/jquery-mobile-page.png" alt="image" /></p>
+
+<h4>多个页面</h4>
+
+<p>通常一个应用程序会有多个“页面”，在jQuery Mobile中，所有的“页面”都放在同一个html文件中，通过data-role为page的元素的id来指定一个页面：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;div data-role='page' id='edit-page'&gt;
+</span><span class='line'>    &lt;div data-role='header'&gt;
+</span><span class='line'>        &lt;h1&gt;Edit page&lt;/h1&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>    &lt;div data-role='content'&gt;
+</span><span class='line'>        &lt;form&gt;
+</span><span class='line'>          &lt;label for='desc'&gt;Description: &lt;/label&gt;
+</span><span class='line'>          &lt;input type='text' value='' /&gt;
+</span><span class='line'>        &lt;/form&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>&lt;/div&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在另一个页面中，可以通过link的href来引用这个id：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;a href="#edit-page"&gt;Go to edit page&lt;/a&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/02/jquery-mobile-multi-page.png" alt="image" /></p>
+
+<h4>列表元素</h4>
+
+<p>列表可能是最常见的一种jQuery Mobile元素了，列表由HTML的ul-li组成：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;ul data-role='listview' data-inset='true'&gt;
+</span><span class='line'>  &lt;li&gt; &lt;a href="#"&gt;Tomorrow is another day&lt;/a&gt; &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt; &lt;a href="#"&gt;Michael is leaving&lt;/a&gt; &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt; &lt;a href="#"&gt;Tutorial of jQuery mobile&lt;/a&gt; &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt; &lt;a href="#"&gt;So, if you want something,...&lt;/a&gt; &lt;/li&gt;
+</span><span class='line'>&lt;/ul&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/02/jquery-mobile-list.png" alt="image" /></p>
+
+<h3>一个小例子</h3>
+
+<p>我在最近的一个开源项目<a href="https://github.com/abruzzi/feather">feather</a>中使用了jQuery Mobile来完成ios上的展现。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/02/feather-mobile.png" alt="image" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2013/01/developing-with-heroku/">将应用程序部署到heroku</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-26T19:02:00+08:00" pubdate data-updated="true">Jan 26<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>heroku</h3>
+
+<p>使用heroku，开发人员可以很容易的将自己的应用程序公开给世界上的其他用户使用，heroku会为你提供一个url，一些预设的空间如数据库（postgresql）等。这对于需要频繁远程showcase的场景提供了非常好的方式，当然对于开发人员向其他的开发人员或者最终用户展现自己的框架的外观/行为等场景也会非常有用。</p>
+
+<h3>在heroku上注册用户</h3>
+
+<p>首先，当然是在heroku上<a href="https://api.heroku.com/signup/devcenter">注册一个开发账户</a>，如果你已经注册过，就请接着第二步</p>
+
+<h3>下载heroku的本地Toolbox</h3>
+
+<p>heroku提供了一个很好用的<a href="https://toolbelt.heroku.com/">工具包</a>，通过这个工具包，开发人员可以很容易的对部署在heroku上的应用程序做操作。</p>
+
+<h3>在本地登陆heroku</h3>
+
+<p>如果没有上传过key的话，heroku会提醒你创建一个新的ssh公钥，然后上传到heroku（这个过程与使用github非常类似）</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku login
+</span><span class='line'>Enter your Heroku credentials.
+</span><span class='line'>Email: adam@example.com
+</span><span class='line'>Password: 
+</span><span class='line'>Could not find an existing public key.
+</span><span class='line'>Would you like to generate one? [Yn] 
+</span><span class='line'>Generating new SSH public key.
+</span><span class='line'>Uploading ssh public key /Users/adam/.ssh/id_rsa.pub</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果已经上传过key，则可以直接登陆</p>
+
+<h3>准备工作</h3>
+
+<p>在本地生成一个应用程序的基本结构，如：<code>Gemfile</code>，目录结构等。然后在本地配置好git环境，比如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git init
+</span><span class='line'>$ git add .
+</span><span class='line'>$ git commit -m "init"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>准备Procfile：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>web: bundle exec ruby app.rb -p $PORT -E production</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>app.rb</code>相当于你的应用程序的主入口(main)，<code>-E</code>指定运行环境（此处指定为production），你的应用程序可能会根据次设置来进行一些资源的选择（数据库指向，资源文件位置等）</p>
+
+<p>在上传之前，需要确保自己的应用程序可以在本地正常运行：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>foreman start</span></code></pre></td></tr></table></div></figure>
+
+
+<p>应用程序将在本地的5000端口上运行，此时可以做一些简单的验证，保证应用程序运行正常。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ git add .
+</span><span class='line'>$ git commit -m "ready for deploy app to heroku"</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>上传你的App</h3>
+
+<p>这时，可以很轻易的将App上传到heroku了：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku create
+</span><span class='line'>$ git push heroku master</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然，第一次上传可能会比较慢（取决于你应用程序的大小），如果一切正常，heroku将会尝试根据你的Gemfile来安装依赖，安装完成之后，会尝试根据Procfile中的配置启动你的应用程序。</p>
+
+<p>如果你的应用程序会访问数据库（非postgresql的数据库），那么建议在Gemfile中指定当测试时使用该数据库，而在production环境中使用postgresql，因为heroku使用的正是postgresql：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>configure :test do
+</span><span class='line'>    DataMapper.setup(:default, ENV['DATABASE_URL'] || "local-db-url")
+</span><span class='line'>    DataMapper.finalize.auto_upgrade!
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我的应用在本地使用sqlite，而在heroku中使用其提供的postgresql。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2013/01/migrate-google-code-to-github/">将Google Code上的项目迁移到Github</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-13T23:28:00+08:00" pubdate data-updated="true">Jan 13<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>一些闲话</h3>
+
+<p>虽然对开源社区没有任何杰出的贡献，但是我自己在业余时间开发的很多小东西都是开源的，有部分放在google code上，可是除了一个<a href="http://code.google.com/p/stodo/">sTodo</a>有几个用户外，其他的工具几乎都纯属自娱自乐。虽然当时做的时候自己非常投入，会各种YY，假设用户会需要这个功能，会需要那个功能，用户会需要脚本化，自定义插件等等，但是到最后发现只有自己在使用，而再过一段时间，连自己也不会使用了。</p>
+
+<p>我自己托管在google code上的，还算有点用处的项目有三个：</p>
+
+<ul>
+<li><a href="http://code.google.com/p/stodo/">sTodo</a> 一个简单的todo管理器</li>
+<li><a href="http://code.google.com/p/phoc/">phoc</a> 一个可以用JavaScript脚本化的计算器</li>
+<li><a href="http://code.google.com/p/utouch">utouch</a> 一个使用styledTextCtrl的编辑器</li>
+</ul>
+
+
+<p>虽然这种事情发生在几乎每一个喜欢写程序的家伙身上，但是整个过程对自我修炼来说，还是非常有现实意义的，首先专业技能得到了锻炼，而最重要的一点是：需求不是想象出来的！在没有和用户真正仔细的讨论之前，我们的假设和推断往往是错的。</p>
+
+<p>Idea到处都是，有很多很酷且很有挑战的idea，但是它们不一定真的在解决人们的问题。这是一个很值得思考的问题，我最近在尝试组织一个活动，主题以及目标已经确定，上周找胡凯帮我把关，结果发现我又一次的进入了“帮助用户想需求”的老路上了。</p>
+
+<h3>迁移</h3>
+
+<h4>使用svn同步到本地</h4>
+
+<p>根据google code的提示，将code从svn中的checkout到本地：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>svn checkout http://phoc.googlecode.com/svn phoc-read-only</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>去除掉.svn隐藏目录</h4>
+
+<p>现使用<code>find</code>在当前目录下找到名称为.svn的目录，然后将其删除，这个过程是递归的，即可以清除掉当前目录及所有子目录中的.svn目录:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>find . -name ".svn" -type d -exec rm -rf {} \;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>初始化git的repo</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git init
+</span><span class='line'>git add .
+</span><span class='line'>git ci -m "migrate of project xxx to github"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后对应的在github上创建repo，创建之后，需要将本地的remote指向github上的repo:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git remote add origin git@github.com:project/project.git</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果本地的master分支没有配置，可以在<code>.git/config</code>中进行配置：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[branch "master"]
+</span><span class='line'>  remote = origin
+</span><span class='line'>  merge = refs/heads/master</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后将新的commit push到新的repo上即可：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git pull --rebase
+</span><span class='line'>git push</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我已经把这个工具迁移到了github上<a href="https://github.com/abruzzi">abruzzi</a>，正式告别了google code。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/page/2/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/05/proc-in-ruby/">proc in ruby</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/04/chongyang-palase/">重阳宫奇遇记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/04/book-cover-story/">图书封面故事</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/turning-to-a-designer/">Turning to a designer</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/guan-yu-hack-day/">关于Hack day</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中&#8230;)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed &#8220;flickr_badge_image&#8221; with ids &#8220;flickr_badge_imageX&#8221; where &#8220;X&#8221; is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

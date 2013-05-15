@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: blog | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/blog/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2013-05-14T20:21:28+08:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[为octopress添加新的页面(page)]]></title>
+    <link href="http://abruzzi.github.com/2013/01/add-new-page-to-octopress/"/>
+    <updated>2013-01-03T17:38:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/01/add-new-page-to-octopress</id>
+    <content type="html"><![CDATA[<p>我之前在wordpress中有一些页面(page)，在迁移到octopress之后都不见了，早就想把这些页面show出来了，最终都被我以各种理由拖到了今天。</p>
+
+<h3>布局</h3>
+
+<p>一个典型的octopress博客的source目录布局大概是这样：</p>
+
+<p>```
+source/
+├── <em>attachments
+├── </em>includes
+│   ├── asides
+│   ├── custom
+│   │   └── asides
+│   └── post
+├── <em>layouts
+├── </em>nav_menu_items
+├── <em>pages
+├── </em>posts
+├── blog
+│   └── archives
+├── font
+├── images
+│   ├── 2012
+│   │   ├── 01
+│   │   ├── 02
+│   ├── 2013
+│   │   └── 01
+│   ├── fancybox
+│   └── social
+├── javascripts
+│   ├── asides
+│   └── libs
+├── jsccp
+└── stylesheets</p>
+
+<pre><code>├── bootstrap
+└── syntax
+</code></pre>
+
+<p>```</p>
+
+<p>对应的，当执行</p>
+
+<p><code>
+$ rake generate
+</code></p>
+
+<p>时，source下面的markdown会被编译为html，并拷贝到public下，public目录下的结构跟source下一致，里边的内容为最终的静态页面。因此我们需要修改souce中的内容，然后generate/deploy即可。</p>
+
+<h3>添加页面(page)</h3>
+
+<p>在octopress中，已经有两个默认page，即blog/archives，我们可以参考它来完成自己的页面，首先在source中创建一个目录，比如叫做<strong>jsccp</strong>(<a href="http://abruzzi.github.com/jsccp">JavaScript Core Concepts and Practices</a>)，然后在这个目录中放入一个名叫index.markdown的文件即可。</p>
+
+<p>将需要的内容放入这个文件即可完成页面(page)的编辑。但是我们还需要在首页上将这个页面的链接暴露出来，这一步需要编辑<code>source/_includes/custom/navigation.html</code></p>
+
+<pre><code>&lt;ul class="main-navigation"&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Blog&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/blog/archives"&gt;Archives&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/jsccp"&gt;JavaScript内核系列&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<p>我为这个文件添加了一个新行，指向新创建的目录(此处不需要指定到index.markdown或者index.html)，这样就设置完成了。</p>
+
+<p>尝试<code>rake generate</code>然后<code>rake preview</code>，如果一起正常，就可以<code>rake deploy</code>部署到github上了。</p>
+
+<h3>效果图</h3>
+
+<p><img src="http://abruzzi.github.com/images/2013/01/navigation.png" alt="image" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Post from python + vim]]></title>
+    <link href="http://abruzzi.github.com/2012/07/post-from-python-vim-2/"/>
+    <updated>2012-07-13T00:00:00+08:00</updated>
+    <id>http://abruzzi.github.com/2012/07/post-from-python-vim-2</id>
+    <content type="html"><![CDATA[<p><h2>How to load a key-value pair config file</h2></p>
+
+
+
+
+<p><p>Recently, I want to parse a simple configration file in python, and I<br />
+don't like use other existing libraries, because they are all<br />
+full-functionality, just too complex for me.</p></p>
+
+
+
+
+<p><p>Finally I found a simple way to do that, code is following:</p></p>
+
+
+
+
+<p><pre><code>def loadUserInfo(fileName):
+    userinfo = {}
+    file = open(fileName, "r")
+    while file:
+        line = file.readline()
+        if len(line) == 0:
+            break
+        if line.startswith('#'):
+            continue
+        key, value = line.split("=")
+        userinfo[key.strip()] = value.strip()</code></pre></p>
+
+
+
+
+<p>    return userinfo
+</p>
+
+
+
+
+<p><p>Key features:</p></p>
+
+
+
+
+<p><ol>
+<li>Simple enough</li>
+<li>Comment supported</li>
+<li>Nothing much </li>
+</ol></p>
+
+
+
+
+<p><h2>Misc</h2></p>
+
+
+
+
+<p><p>Another intersting thing is this blog is post by my vim + python, it's<br />
+cool to write blog in my favorest editor.</p></p>
+
+
+
+
+<p><p>中文应该没有问题吧？</p>
+</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[wordpress设置摘要输出(主题twentyten)]]></title>
+    <link href="http://abruzzi.github.com/2012/02/wordpress%E8%AE%BE%E7%BD%AE%E6%91%98%E8%A6%81%E8%BE%93%E5%87%BA%E4%B8%BB%E9%A2%98twentyten/"/>
+    <updated>2012-02-09T00:00:00+08:00</updated>
+    <id>http://abruzzi.github.com/2012/02/wordpress设置摘要输出主题twentyten</id>
+    <content type="html"><![CDATA[<p><p>当博文写的比较长，特别是每篇都比较长的时候，要查看其中的一篇还是比较费劲的，因此需要让文章仅输出一部分，这样用户浏览的时候会很方便，也不会错过好的文章：</p> <p>网上很多文章都要求改动主题目录下的index.php，但是twentyten中的index.php中根本没有the_content()语句：</p> <div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> &lt;div id=<span style="color: #006080">"container"</span>&gt;</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>     &lt;div id=<span style="color: #006080">"content"</span> role=<span style="color: #006080">"main"</span>&gt;</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span>     &lt;?php</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span>     <span style="color: #008000">/* Run the loop to output the posts.</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span> <span style="color: #008000">     * If you want to overload this in a child theme then include a file</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span> <span style="color: #008000">     * called loop-index.php and that will be used instead.</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span> <span style="color: #008000">     */</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span>      get_template_part( <span style="color: #006080">'loop'</span>, <span style="color: #006080">'index'</span> );</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum10">  10:</span>     ?&gt;</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum11">  11:</span>     &lt;/div&gt;&lt;!-- <span style="color: #008000">#content --&gt;</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum12">  12:</span> &lt;/div&gt;&lt;!-- #container --&gt;</pre><!--CRLF--></div></div>
+<p>&nbsp;</p>
+<p>需要修改的内容隐藏在loop.php中，我们需要将</p>
+<div id="codeSnippetWrapper">
+<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> &lt;div <span style="color: #0000ff">class</span>=<span style="color: #006080">"entry-content"</span>&gt;</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span> &lt;?php <span style="color: #0000ff">if</span> ( post_password_required() ) : ?&gt;</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span>                 &lt;?php the_content(); ?&gt;</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span> &lt;?php <span style="color: #0000ff">else</span> : ?&gt;</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span> ...</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span> &lt;/div&gt;</pre><!--CRLF--></div></div>
+<p>修改为：</p>
+<div id="codeSnippetWrapper">
+<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> &lt;div <span style="color: #0000ff">class</span>=<span style="color: #006080">"entry-content"</span>&gt;</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>     &lt;?php <span style="color: #0000ff">if</span> ( post_password_required() ) : ?&gt;</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span>                     &lt;?php      </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span>             <span style="color: #0000ff">if</span> (is_single() <span style="color: #0000ff">or</span> is_page()) {</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span>                 the_content();</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span>             } <span style="color: #0000ff">else</span> {</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span>                 the_excerpt();</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span>             } ?&gt;</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span>     &lt;?php <span style="color: #0000ff">else</span> : ?&gt;</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum10">  10:</span>     ...</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum11">  11:</span> &lt;/div&gt;</pre><!--CRLF--></div></div></p>
+
+
+
+
+<p><p>保存更新即可。</p></p>
+
+]]></content>
+  </entry>
+  
+</feed>
