@@ -5,13 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Revert workflow in git - I code it</title>
+  <title>JavaScript核心概念及实践勘误表 - I code it</title>
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="git中Revert的基本使用流程 git log (找出引入bug的commit, 比如说是&#8230;d4e5f6&#8230;)
-git revert &#8230;d4e5f6&#8230;
-git push 如果不幸这个过程中有其他同事进行了push，且与你的commit有冲突，则需要 &hellip;">
+  <meta name="description" content="《JavaScript核心概念及实践》勘误表 JavaScript核心概念及实践一书已经于2013年5月出版，由于时间原因以及作者的疏于检查，导致书中出现了一些错别字词等错误，现在将错误及更正列于此页，作者为对读者朋友带来的不便表示深深的歉意。 第一章第12页 “则向控制台打印：goodbay” &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +18,7 @@ git push 如果不幸这个过程中有其他同事进行了push，且与你的c
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://abruzzi.github.com/2012/07/revert-workflow-in-git/">
+  <link rel="canonical" href="http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -93,7 +91,7 @@ git push 如果不幸这个过程中有其他同事进行了push，且与你的c
   <header>
     
       
-        <h1 class="entry-title">Revert Workflow in Git</h1>
+        <h1 class="entry-title">JavaScript核心概念及实践勘误表</h1>
       
     
     
@@ -110,40 +108,37 @@ git push 如果不幸这个过程中有其他同事进行了push，且与你的c
   
 
 
-<time datetime="2012-07-17T00:00:00+08:00" pubdate data-updated="true">Jul 17<span>th</span>, 2012</time>
+<time datetime="2013-05-16T11:29:00+08:00" pubdate data-updated="true">May 16<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p><h2>git中Revert的基本使用流程</h2></p>
+<div class="entry-content"><h3>《JavaScript核心概念及实践》勘误表</h3>
 
-<p><ul>
-<li>git log (找出引入bug的commit, 比如说是<em>&#8230;d4e5f6&#8230;</em>)</li>
-<li>git revert <em>&#8230;d4e5f6&#8230;</em></li>
-<li>git push</li>
-</ul></p>
+<p><a href="http://icodeit.org/jsccp/">JavaScript核心概念及实践</a>一书已经于2013年5月出版，由于时间原因以及作者的疏于检查，导致书中出现了一些错别字词等错误，现在将错误及更正列于此页，作者为对读者朋友带来的不便表示深深的歉意。</p>
 
-<p><p>如果不幸这个过程中有其他同事进行了push，且与你的commit有冲突，则需要</p></p>
+<hr />
 
-<p><pre><code>git pull --rebase
-</code></pre></p>
+<p>第一章第12页</p>
 
-<p><p>解决冲突之后，按照标准的提交流程操作:</p></p>
+<p>“则向控制台打印：goodbay” 应为 “则向控制台打印：<strong>goodbye</strong>”</p>
 
-<p><pre><code>git add &lt;changes&gt;
-</code></pre></p>
+<hr />
 
-<p><p>最后再将这个revert(也就是一个commit)push到remote上。</p></p>
+<p>第二章第19页</p>
 
-<p><p>一般来说，这时候我们需要在<em>work tree</em>里fix引入的bug，所以需要对刚才的revert做一次revert，这时候引入错误的commit应该在我们的<em>work tree</em>中，这样就可以按照正常的开发流程来做了: push(对revert的push)成功之后，会得到一个新的commit的hash，比如叫<em>&#8230;a1b2c3&#8230;</em>,则使用：</p></p>
+<p>“var y = x + &#8220;2&#8221;;// => 32” 注释中的数字32应为字符串类型 “var y = x + &#8220;2&#8221;;// => <strong>&#8220;32&#8221;</strong>”</p>
 
-<p><pre><code>git revert -n ...a1b2c3...
-</code></pre></p>
+<hr />
 
-<p><p>现在我们的work tree里就是需要修改的代码了。</p>
-</p>
+<p>第三章第36页</p>
+
+<p>“对函数customize(options)的调用 constomize” 应为 “<strong>customize</strong>”。</p>
+
+<p>同一页，3.4小节
+“反回给前端的仍然是 JSON 对象” 应为 “<strong>返回</strong>给前端的仍然是 JSON 对象”</p>
 </div>
 
 
@@ -166,12 +161,12 @@ git push 如果不幸这个过程中有其他同事进行了push，且与你的c
   
 
 
-<time datetime="2012-07-17T00:00:00+08:00" pubdate data-updated="true">Jul 17<span>th</span>, 2012</time>
+<time datetime="2013-05-16T11:29:00+08:00" pubdate data-updated="true">May 16<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/category/tools/'>Tools</a>, <a class='category' href='/category/thoughtworks/'>thoughtworks</a>
+    <a class='category' href='/category/javascript/'>JavaScript</a>, <a class='category' href='/category/book/'>book</a>
   
 </span>
 
@@ -180,7 +175,7 @@ git push 如果不幸这个过程中有其他同事进行了push，且与你的c
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2012/07/revert-workflow-in-git/" data-via="" data-counturl="http://abruzzi.github.com/2012/07/revert-workflow-in-git/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao/" data-via="" data-counturl="http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao/" >Tweet</a>
   
   
   
@@ -189,14 +184,18 @@ git push 如果不幸这个过程中有其他同事进行了push，且与你的c
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/2012/07/post-from-python-vim-2/" title="Previous Post: Post from python + vim">&laquo; Post from python + vim</a>
+        <a class="basic-alignment left articlenav" href="/2013/05/proc-in-ruby/" title="Previous Post: proc in ruby">&laquo; proc in ruby</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/2012/07/%E4%BB%80%E4%B9%88%E6%98%AFjsonp%E5%8F%8A%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8jsonp/" title="Next Post: 什么是JSONP及如何使用JSONP?">什么是JSONP及如何使用JSONP? &raquo;</a>
       
     </p>
   </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -308,6 +307,22 @@ Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_i
 
 </footer>
   
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao/';
+        var disqus_url = 'http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
 
 
 

@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-05-15T13:25:13+08:00</updated>
+  <updated>2013-05-16T12:03:15+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,38 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[JavaScript核心概念及实践勘误表]]></title>
+    <link href="http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao/"/>
+    <updated>2013-05-16T11:29:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao</id>
+    <content type="html"><![CDATA[<h3>《JavaScript核心概念及实践》勘误表</h3>
+
+<p><a href="http://icodeit.org/jsccp/">JavaScript核心概念及实践</a>一书已经于2013年5月出版，由于时间原因以及作者的疏于检查，导致书中出现了一些错别字词等错误，现在将错误及更正列于此页，作者为对读者朋友带来的不便表示深深的歉意。</p>
+
+<hr />
+
+<p>第一章第12页</p>
+
+<p>“则向控制台打印：goodbay” 应为 “则向控制台打印：<strong>goodbye</strong>”</p>
+
+<hr />
+
+<p>第二章第19页</p>
+
+<p>“var y = x + &#8220;2&#8221;;// => 32” 注释中的数字32应为字符串类型 “var y = x + &#8220;2&#8221;;// => <strong>&#8220;32&#8221;</strong>”</p>
+
+<hr />
+
+<p>第三章第36页</p>
+
+<p>“对函数customize(options)的调用 constomize” 应为 “<strong>customize</strong>”。</p>
+
+<p>同一页，3.4小节
+“反回给前端的仍然是 JSON 对象” 应为 “<strong>返回</strong>给前端的仍然是 JSON 对象”</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[proc in ruby]]></title>
@@ -1528,303 +1560,6 @@ one of my <em>smart</em> colleagues, and got this solution.</p>
 
 
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Simplified TDD by Using Intellij]]></title>
-    <link href="http://abruzzi.github.com/2012/10/simplified-tdd-by-using-interllij/"/>
-    <updated>2012-10-15T20:42:00+08:00</updated>
-    <id>http://abruzzi.github.com/2012/10/simplified-tdd-by-using-interllij</id>
-    <content type="html"><![CDATA[<p>In my last <a href="">post</a>, I mentioned to how to setup a intellij project by using gradle. and today we are going to talk about how to using intellij to write a demo java project from scratch(right after the <em>gradle idea</em> command).</p>
-
-<p>To begin with TDD in java, we need some packages for that:
--   junit
--   hamcrest</p>
-
-<p>Let&#8217;s all of those dependencies in build.gradle:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">repositories</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">mavenCentral</span><span class="o">()</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">dependencies</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">testCompile</span> <span class="s1">&#39;junit:junit:4.8.2&#39;</span>
-</span><span class='line'>    <span class="n">testCompile</span> <span class="s1">&#39;org.hamcrest:hamcrest-core:1.2.1&#39;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and rerun the <em>gradle idea</em> command.</p>
-
-<p>After intellij .ipr file generated, we can open it by intellij, and then create a project, let&#8217;s say the basic structure of the project is like this:</p>
-
-<pre><code>└── src
-    ├── main
-    │   ├── java
-    │   │   └── org
-    │   │       └── icodeit
-    │   │           └── library
-    │   │               ├── Book.java
-    │   │               └── Library.java
-    │   └── resources
-    └── test
-        ├── java
-        │   └── org
-        │       └── icodeit
-        │           └── library
-        │               ├── BookTest.java
-        │               └── LibraryTest.java
-        └── resources
-</code></pre>
-
-<p>Basically, we are going to build a simple library which allow user to add/borrow/return books to/from.</p>
-
-<p>We simply devide it to the following tasks:</p>
-
-<ul>
-<li>User can add book to library</li>
-<li>User can get all books in a specific category</li>
-<li>User can know how many books left in library</li>
-<li>User can borrow book from library</li>
-<li>User can return book when he/she finished</li>
-<li>User can be told whether there are books he/she want left in library</li>
-</ul>
-
-
-<p>Let&#8217;s do it step by step, by following the TDD way. Of course, we need to add tests at vert first:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldAddBookToLibrary</span><span class="o">(){</span>
-</span><span class='line'>    <span class="n">Library</span> <span class="n">library</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Library</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">library</span><span class="o">.</span><span class="na">addBook</span><span class="o">(</span><span class="n">book</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">library</span><span class="o">.</span><span class="na">getTotalBookNumber</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This is a test used for test add book functionality, after the addition, we can tell by invoke <em>getTotalBookNumber</em> method (Of course, we need to make sure the project can be compiled, just add a new class Book.java and some fake methods in the Library.java). So, first we run the test (<em>Ctrl-Shift-F10</em>), and the test will fail.</p>
-
-<p>Then we add the implementation of those functionalities:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Library</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Book</span><span class="o">&gt;</span> <span class="n">books</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">Library</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="n">books</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">Book</span><span class="o">&gt;();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="c1">//...</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addBook</span><span class="o">(</span><span class="n">Book</span> <span class="n">book</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">books</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">book</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">getTotalBookNumber</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">books</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now we can get a green test. TDD is in a form of &#8220;Red-Green-Refactor&#8221;, so far we&#8217;ve got nothing to refactor, let&#8217;s add one more test:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldGetBooksByCategory</span><span class="o">(){</span>
-</span><span class='line'>    <span class="n">Library</span> <span class="n">library</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Library</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">Book</span> <span class="n">book1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">Book</span> <span class="n">book2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The python programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">Book</span> <span class="n">book3</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The lean startup&quot;</span><span class="o">,</span> <span class="s">&quot;Business&quot;</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">library</span><span class="o">.</span><span class="na">addBook</span><span class="o">(</span><span class="n">book1</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">library</span><span class="o">.</span><span class="na">addBook</span><span class="o">(</span><span class="n">book2</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">library</span><span class="o">.</span><span class="na">addBook</span><span class="o">(</span><span class="n">book3</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">library</span><span class="o">.</span><span class="na">getBookByCategory</span><span class="o">(</span><span class="s">&quot;Development&quot;</span><span class="o">).</span><span class="na">size</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Then the implementation:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Book</span><span class="o">&gt;</span> <span class="n">getBookByCategory</span><span class="o">(</span><span class="n">String</span> <span class="n">category</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">List</span><span class="o">&lt;</span><span class="n">Book</span><span class="o">&gt;</span> <span class="n">grouped</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">Book</span><span class="o">&gt;();</span>
-</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="n">Book</span> <span class="n">book</span> <span class="o">:</span> <span class="n">books</span><span class="o">){</span>
-</span><span class='line'>        <span class="k">if</span><span class="o">(</span><span class="n">book</span><span class="o">.</span><span class="na">getCategory</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">category</span><span class="o">)){</span>
-</span><span class='line'>            <span class="n">grouped</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">book</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">grouped</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And what if the logic cames more complex, say:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldCanReturnBookToLibrary</span><span class="o">(){</span>
-</span><span class='line'>    <span class="n">Library</span> <span class="n">library</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Library</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">Book</span> <span class="n">originBook</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">library</span><span class="o">.</span><span class="na">addBook</span><span class="o">(</span><span class="n">originBook</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">library</span><span class="o">.</span><span class="na">getBookCount</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">Book</span> <span class="n">borrowed</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="na">borrowBook</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">library</span><span class="o">.</span><span class="na">getBookCount</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="mi">0</span><span class="o">));</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">library</span><span class="o">.</span><span class="na">returnBook</span><span class="o">(</span><span class="n">borrowed</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">library</span><span class="o">.</span><span class="na">getBookCount</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>When user borrowed a book from library, others can not borrow it any more of course, until the previous user return it back.</p>
-
-<p>We can tell the specification by reading the test itself, and we don&#8217;t care about the code in this prespective. On the other hand, when we try to implement the logic, we can focus on the small piece of code and get it done:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">getBookCount</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kt">int</span> <span class="n">bookCount</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="n">Book</span> <span class="n">book</span> <span class="o">:</span> <span class="n">books</span><span class="o">){</span>
-</span><span class='line'>        <span class="k">if</span><span class="o">(</span><span class="n">book</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">)){</span>
-</span><span class='line'>            <span class="n">bookCount</span><span class="o">++;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">bookCount</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="n">Book</span> <span class="nf">borrowBook</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">getBookCount</span><span class="o">(</span><span class="n">name</span><span class="o">)</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">books</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">books</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>            <span class="n">book</span> <span class="o">=</span> <span class="n">books</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
-</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="n">book</span><span class="o">;</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">returnBook</span><span class="o">(</span><span class="n">Book</span> <span class="n">book</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">books</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">book</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As you can see, the princple is really easy to follow:
--   Tasking (spearate the goal to some smaller parts)
--   Testing
--   Coding
--   Refactoring</p>
-
-<p>The benefit is obverisly: there is no isolated code any more. Actually, the shorter of the code, the cleaner it will be.</p>
 ]]></content>
   </entry>
   

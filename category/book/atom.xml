@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: book | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/book/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2013-05-16T12:03:15+08:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[JavaScript核心概念及实践勘误表]]></title>
+    <link href="http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao/"/>
+    <updated>2013-05-16T11:29:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao</id>
+    <content type="html"><![CDATA[<h3>《JavaScript核心概念及实践》勘误表</h3>
+
+<p><a href="http://icodeit.org/jsccp/">JavaScript核心概念及实践</a>一书已经于2013年5月出版，由于时间原因以及作者的疏于检查，导致书中出现了一些错别字词等错误，现在将错误及更正列于此页，作者为对读者朋友带来的不便表示深深的歉意。</p>
+
+<hr />
+
+<p>第一章第12页</p>
+
+<p>“则向控制台打印：goodbay” 应为 “则向控制台打印：<strong>goodbye</strong>”</p>
+
+<hr />
+
+<p>第二章第19页</p>
+
+<p>“var y = x + "2";// => 32” 注释中的数字32应为字符串类型 “var y = x + "2";// => <strong>"32"</strong>”</p>
+
+<hr />
+
+<p>第三章第36页</p>
+
+<p>“对函数customize(options)的调用 constomize” 应为 “<strong>customize</strong>”。</p>
+
+<p>同一页，3.4小节
+“反回给前端的仍然是 JSON 对象” 应为 “<strong>返回</strong>给前端的仍然是 JSON 对象”</p>
+]]></content>
+  </entry>
+  
+</feed>
