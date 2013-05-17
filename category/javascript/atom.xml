@@ -4,7 +4,7 @@
   <title><![CDATA[Category: JavaScript | I code it]]></title>
   <link href="http://abruzzi.github.com/category/javascript/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-05-16T12:03:15+08:00</updated>
+  <updated>2013-05-17T20:42:49+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -42,6 +42,14 @@
 
 <p>同一页，3.4小节
 “反回给前端的仍然是 JSON 对象” 应为 “<strong>返回</strong>给前端的仍然是 JSON 对象”</p>
+
+<hr />
+
+<p><a href="http://book.douban.com/review/5960403/">这里有</a>一个非常仔细，质量很高的勘误表，由网友 @RednaxelaFX 整理。</p>
+
+<hr />
+
+<p>这个页面将维持更新，如果有新的错误被发现，我会第一时间更新书籍的电子版本，并在此页面上更新。</p>
 ]]></content>
   </entry>
   
