@@ -1,0 +1,549 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>在既有数据库中使用ActiveRecord - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="ActiveRecord 作为rails中的ORM(object relation-db mapping)框架，ActiveRecord在初次出现之时带给了人们以无限的惊喜和热情，也使得很多不堪忍受其他语言中粗糙的ORM框架的开发者转而投入rials的怀抱。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">lambda</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <!-- <input type="hidden" name="q" value="site:abruzzi.github.com" /> -->
+    <input type="hidden" name="q" value="site:icodeit.org" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about-me">About Me</a></li>
+  <li><a href="/jsccp">JavaScript内核系列</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">在既有数据库中使用ActiveRecord</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-18T14:56:00+08:00" pubdate data-updated="true">May 18<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>ActiveRecord</h3>
+
+<p>作为rails中的ORM(object relation-db mapping)框架，ActiveRecord在初次出现之时带给了人们以无限的惊喜和热情，也使得很多不堪忍受其他语言中粗糙的ORM框架的开发者转而投入rials的怀抱。而有很多的其他语言也在不断尝试模仿ActiveRecord，比如著名的php框架<a href="http://codeigniter.org.cn/">codeigniter</a>。</p>
+
+<p>在rails的后期版本中，ActiveRecord可以作为一个独立的库来在rails之外使用，这对使用ruby进行其他数据库应用开发的用户来说非常方便。</p>
+
+<h4>在新的项目中使用ActiveRecord</h4>
+
+<p>如果在一个全新的rails应用程序中使用ActiveRecord，那么关于数据库方面的一切都可以托管给它，开发者在初期可能连一行代码都不需要编写就可以让程序“像模像样”的运行起来。</p>
+
+<h4>在已有的数据库上使用ActiveRecord</h4>
+
+<p>现实世界中，最可能遇到的问题是数据库已经存在了（毕竟，对于关系型数据库而言，修改schema的影响太大）。这时候，我们仍然可以使用ActiveRecord来方便的访问数据库，得到ruby对象，而跳过冗长且容易出错的数据库访问层。</p>
+
+<h3>一个例子</h3>
+
+<h4>数据库结构</h4>
+
+<p>数据库中有一个访客表(visitor)：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>+-----------------------+--------------+-----+
+</span><span class='line'>| Field                 | Type         | Key |
+</span><span class='line'>+-----------------------+--------------+-----+
+</span><span class='line'>| visitor_uid           | varchar(32)  | PRI |
+</span><span class='line'>| visitor_login_id      | varchar(128) | MUL |
+</span><span class='line'>| visitor_password      | varchar(32)  |     |
+</span><span class='line'>| visitor_name          | varchar(100) |     |
+</span><span class='line'>| created_timestamp     | timestamp    |     |
+</span><span class='line'>| password_expiration   | timestamp    |     |
+</span><span class='line'>| last_used_timestamp   | timestamp    | MUL |
+</span><span class='line'>| visitor_alias         | varchar(128) | MUL |
+</span><span class='line'>| visitor_password_hash | binary(64)   |     |
+</span><span class='line'>+-----------------------+--------------+-----+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有一个访客浏览过的<code>分组</code>表(list_group)：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>+------------------+---------------------+-----+
+</span><span class='line'>| Field            | Type                | Key |
+</span><span class='line'>+------------------+---------------------+-----+
+</span><span class='line'>| list_group_id    | bigint(20) unsigned | PRI |
+</span><span class='line'>| list_type        | varchar(32)         | MUL |
+</span><span class='line'>| visitor_uid      | varchar(32)         | MUL |
+</span><span class='line'>| list_name        | varchar(128)        |     |
+</span><span class='line'>| create_timestamp | timestamp           |     |
+</span><span class='line'>+------------------+---------------------+-----+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>每个<code>分组</code>中，都有一些条目，具体到每个条目(list_group_item)：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>+----------------------+---------------------+-----+
+</span><span class='line'>| Field                | Type                | Key |
+</span><span class='line'>+----------------------+---------------------+-----+
+</span><span class='line'>| list_group_item_id   | bigint(20) unsigned | PRI |
+</span><span class='line'>| list_group_id        | bigint(20) unsigned | MUL |
+</span><span class='line'>| item_id              | varchar(128)        | MUL |
+</span><span class='line'>| create_timestamp     | timestamp           |     |
+</span><span class='line'>| last_use_timestamp   | timestamp           |     |
+</span><span class='line'>| note                 | varchar(4000)       |     |
+</span><span class='line'>+----------------------+---------------------+-----+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>三张表的关系如下：</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/05/active_record.png" alt="image" /></p>
+
+<h4>示例程序的目录结构</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>├── Gemfile
+</span><span class='line'>├── Gemfile.lock
+</span><span class='line'>├── app.rb
+</span><span class='line'>├── config
+</span><span class='line'>│   └── database.yml
+</span><span class='line'>├── debug.log
+</span><span class='line'>└── model
+</span><span class='line'>    ├── list_group.rb
+</span><span class='line'>    ├── list_group_item.rb
+</span><span class='line'>    └── visitor.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>models</h4>
+
+<p>使用ActiveRecord，只需要简单的在模块上声明模块见的关系即可：</p>
+
+<p>visitor类的定义，读起来非常自然：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'active_record'
+</span><span class='line'>
+</span><span class='line'>class Visitor &lt; ActiveRecord::Base
+</span><span class='line'>    has_many :groups, 
+</span><span class='line'>        :class_name =&gt; 'ListGroup', 
+</span><span class='line'>        :foreign_key =&gt; 'visitor_uid'
+</span><span class='line'>
+</span><span class='line'>    self.table_name  = 'visitor'
+</span><span class='line'>    self.primary_key = 'visitor_uid'
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ListGroup类的定义：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class ListGroup &lt; ActiveRecord::Base
+</span><span class='line'>    self.table_name  = 'list_group'
+</span><span class='line'>    self.primary_key  = 'list_group_id'
+</span><span class='line'>
+</span><span class='line'>    has_many :items, 
+</span><span class='line'>        :class_name =&gt; 'ListGroupItem', 
+</span><span class='line'>        :foreign_key =&gt; 'list_group_id'
+</span><span class='line'>
+</span><span class='line'>    belongs_to :visitor, 
+</span><span class='line'>        :class_name =&gt; 'Visitor', 
+</span><span class='line'>        :foreign_key =&gt; 'visitor_uid'
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后是ListGroupItem的定义：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class ListGroupItem &lt; ActiveRecord::Base
+</span><span class='line'>    self.table_name = 'list_group_item'
+</span><span class='line'>    self.primary_key = 'list_group_item_id'
+</span><span class='line'>
+</span><span class='line'>    belongs_to :list_group, 
+</span><span class='line'>        :class_name =&gt; 'ListGroup', :foreign_key =&gt; 'list_group_id'
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这种比较复杂的层级关系在现实中经常见到，而大部分HelloWorld型的介绍又touch不到，因此就将代码全部列于此处，以便索引。</p>
+
+<h4>使用这些model</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def main
+</span><span class='line'>    attr = visitor_attr('juntao.qiu#thoughtworks.com')
+</span><span class='line'>    visitor = Visitor.new attr
+</span><span class='line'>    visitor.visitor_uid = attr[:visitor_uid]
+</span><span class='line'>    visitor.save
+</span><span class='line'>
+</span><span class='line'>    visitors = Visitor.find(:all)
+</span><span class='line'>    visitors.each do |visitor|
+</span><span class='line'>        p visitor[:visitor_login_id]
+</span><span class='line'>    end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里即可任意的使用诸如new/save,find等ActiveRecord为我们包装起来的方法了。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-18T14:56:00+08:00" pubdate data-updated="true">May 18<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/activerecord/'>ActiveRecord</a>, <a class='category' href='/category/orm/'>ORM</a>, <a class='category' href='/category/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm/" data-via="" data-counturl="http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/2013/05/before-and-after-selector-in-css/" title="Previous Post: CSS中的before和after伪元素及其应用">&laquo; CSS中的before和after伪元素及其应用</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/05/using-active-record-as-a-standalone-orm/">在既有数据库中使用ActiveRecord</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/05/before-and-after-selector-in-css/">CSS中的before和after伪元素及其应用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao/">JavaScript核心概念及实践勘误表</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/05/proc-in-ruby/">proc in ruby</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/04/chongyang-palase/">重阳宫奇遇记</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中...)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm/';
+        var disqus_url = 'http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
