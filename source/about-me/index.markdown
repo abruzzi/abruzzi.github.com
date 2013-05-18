@@ -8,7 +8,10 @@ footer: true
 ---
 
 ##关于我
-我是邱俊涛，是一名软件工程师，热爱生活，热爱编程，也热爱开源软件。喜欢旅行，喜欢摄影，更喜欢骑着山地车在云南的红山绿水之间骑行。有一些Java开发经验，也有Linux下C语言开发经验，喜欢各种动态语言，如python/javascript等，目前就职于thoughtworks。 
+我是邱俊涛，是一名软件工程师，热爱生活，热爱编程，也热爱开源软件。喜欢旅行，喜欢摄影，更喜欢骑着山地车在云南的红山绿水之间骑行。有一些Java开发经验，也有Linux下C语言开发经验，喜欢各种动态语言，如python/javascript/ruby等。
+
+2012年3月加入**thoughtworks**西安，开始了新的生活方式。崇尚简单、轻量的设计和开发模式。2013年5月，我的第一本书[《JavaScript核心概念及实践》](http://book.douban.com/subject/24165880/)在很多同事的帮助下终于出版。而第二本书《轻量级Web应用程序开发》也在计划中。
+
 
 ###我发起并维护的开源项目
 -    [BBMS](https://code.google.com/p/bbms/), 一个小型的，基于总线的消息系统(bus-based-message-system)
