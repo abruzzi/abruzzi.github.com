@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: productivity | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/productivity/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2013-05-19T09:09:27+08:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Alfred简介及Alfred扩展编写]]></title>
+    <link href="http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project/"/>
+    <updated>2013-05-18T20:04:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project</id>
+    <content type="html"><![CDATA[<h3>Alfred简介</h3>
+
+<p><a href="http://www.alfredapp.com/">Alfred</a>是Mac下的一个小工具，可以极大的提高使用计算机的效率。Alfred提供非常丰富的功能集，比如：</p>
+
+<ol>
+<li>基本的文件/目录查找功能</li>
+<li>应用程序加载器</li>
+<li>快速的搜索（google，wikipedia）</li>
+</ol>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/05/alfred-find.png" alt="使用Alfred搜索" /></p>
+
+<h4>powerpack</h4>
+
+<p>Alfred本身是免费的，但是一些高级的功能，如：</p>
+
+<ol>
+<li>自定义扩展（<strong>非常有用</strong>）</li>
+<li>剪贴板栈/代码片段管理（<strong>非常有用</strong>）</li>
+<li>iTunes控制</li>
+<li>近期访过的文档</li>
+</ol>
+
+
+<p>提供在<a href="http://www.alfredapp.com/powerpack/">powerpack</a>中，这个功能是要收费的，不过个人觉得绝对的物超所值。这些功能可以极大的提高我对计算机的使用效率，而且剪贴板栈功能可以节省我很多的时间。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/05/alfred-clipboard.png" alt="image" /></p>
+
+<h3>扩展编写</h3>
+
+<p>经常会使用<a href="http://www.sinatrarb.com/">sinatra</a>编写一些简单的Web应用程序，以用作一些showcase和应用程序的原型搭建。但是由于sinatra并不是一个框架，并不会像rails那样自动生成目录结构等，而每个sinatra应用的目录结构和文件依赖都非常相似，因此完全可以考虑将这个过程自动化。</p>
+
+<p>基本思路是：</p>
+
+<ol>
+<li>定义一个目录结构的模板</li>
+<li>每次开始一个sinatra工程时，将个模板目录拷贝到新的工程下</li>
+<li>一些库依赖的下载（bundle install以及JavaScript库的下载）</li>
+<li>在编辑器中打开这个新的目录</li>
+</ol>
+
+
+<h4>一个sinatra工程的原型</h4>
+
+<p>```
+$ pwd
+/Users/twer/develop/templates/sinatra</p>
+
+<p>$ tree -a
+.
+├── .rvmrc
+├── Gemfile
+├── app.rb
+├── config.ru
+├── public
+│   ├── css
+│   └── scripts
+│       ├── app.js
+│       └── libs
+└── views
+```</p>
+
+<h4>Extension shell script</h4>
+
+<p>```</p>
+
+<h1>create the project folder</h1>
+
+<p>cd ~/develop/ruby &amp;&amp; mkdir -p {query} &amp;&amp; cd {query}</p>
+
+<h1>cp info to folder</h1>
+
+<p>cp -R ~/develop/templates/sinatra/ .</p>
+
+<h1>grab jquery</h1>
+
+<p>curl http://code.jquery.com/jquery.js > public/scripts/libs/jquery.js</p>
+
+<h1>open the project</h1>
+
+<p>/Applications/MacVim.app/Contents/MacOS/Vim -g .
+```</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/05/sinatra-ext-result.png" alt="image" /></p>
+]]></content>
+  </entry>
+  
+</feed>

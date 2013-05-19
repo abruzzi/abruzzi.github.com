@@ -376,19 +376,25 @@
     </url>
     <url>
         <loc>http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm/</loc>
-        <lastmod>2013-05-18T15:50:45+08:00</lastmod>
+        <lastmod>2013-05-18T16:00:03+08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project/
+        </loc>
+        <lastmod>2013-05-19T09:08:55+08:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/about-me/</loc>
-        <lastmod>2013-01-06T00:14:39+08:00</lastmod>
+        <lastmod>2013-05-18T22:18:54+08:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/blog/archives/</loc>
-        <lastmod>2013-05-18T15:50:45+08:00</lastmod>
+        <lastmod>2013-05-19T09:08:55+08:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/</loc>
-        <lastmod>2013-05-18T15:50:45+08:00</lastmod>
+        <lastmod>2013-05-19T09:08:55+08:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/jsccp/</loc>

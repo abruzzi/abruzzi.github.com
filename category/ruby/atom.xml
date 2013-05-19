@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby | I code it]]></title>
   <link href="http://abruzzi.github.com/category/ruby/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-05-18T15:54:30+08:00</updated>
+  <updated>2013-05-19T09:09:27+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,99 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Alfred简介及Alfred扩展编写]]></title>
+    <link href="http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project/"/>
+    <updated>2013-05-18T20:04:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project</id>
+    <content type="html"><![CDATA[<h3>Alfred简介</h3>
+
+<p><a href="http://www.alfredapp.com/">Alfred</a>是Mac下的一个小工具，可以极大的提高使用计算机的效率。Alfred提供非常丰富的功能集，比如：</p>
+
+<ol>
+<li>基本的文件/目录查找功能</li>
+<li>应用程序加载器</li>
+<li>快速的搜索（google，wikipedia）</li>
+</ol>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/05/alfred-find.png" alt="使用Alfred搜索" /></p>
+
+<h4>powerpack</h4>
+
+<p>Alfred本身是免费的，但是一些高级的功能，如：</p>
+
+<ol>
+<li>自定义扩展（<strong>非常有用</strong>）</li>
+<li>剪贴板栈/代码片段管理（<strong>非常有用</strong>）</li>
+<li>iTunes控制</li>
+<li>近期访过的文档</li>
+</ol>
+
+
+<p>提供在<a href="http://www.alfredapp.com/powerpack/">powerpack</a>中，这个功能是要收费的，不过个人觉得绝对的物超所值。这些功能可以极大的提高我对计算机的使用效率，而且剪贴板栈功能可以节省我很多的时间。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/05/alfred-clipboard.png" alt="image" /></p>
+
+<h3>扩展编写</h3>
+
+<p>经常会使用<a href="http://www.sinatrarb.com/">sinatra</a>编写一些简单的Web应用程序，以用作一些showcase和应用程序的原型搭建。但是由于sinatra并不是一个框架，并不会像rails那样自动生成目录结构等，而每个sinatra应用的目录结构和文件依赖都非常相似，因此完全可以考虑将这个过程自动化。</p>
+
+<p>基本思路是：</p>
+
+<ol>
+<li>定义一个目录结构的模板</li>
+<li>每次开始一个sinatra工程时，将个模板目录拷贝到新的工程下</li>
+<li>一些库依赖的下载（bundle install以及JavaScript库的下载）</li>
+<li>在编辑器中打开这个新的目录</li>
+</ol>
+
+
+<h4>一个sinatra工程的原型</h4>
+
+<p>```
+$ pwd
+/Users/twer/develop/templates/sinatra</p>
+
+<p>$ tree -a
+.
+├── .rvmrc
+├── Gemfile
+├── app.rb
+├── config.ru
+├── public
+│   ├── css
+│   └── scripts
+│       ├── app.js
+│       └── libs
+└── views
+```</p>
+
+<h4>Extension shell script</h4>
+
+<p>```</p>
+
+<h1>create the project folder</h1>
+
+<p>cd ~/develop/ruby &amp;&amp; mkdir -p {query} &amp;&amp; cd {query}</p>
+
+<h1>cp info to folder</h1>
+
+<p>cp -R ~/develop/templates/sinatra/ .</p>
+
+<h1>grab jquery</h1>
+
+<p>curl http://code.jquery.com/jquery.js > public/scripts/libs/jquery.js</p>
+
+<h1>open the project</h1>
+
+<p>/Applications/MacVim.app/Contents/MacOS/Vim -g .
+```</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/05/sinatra-ext-result.png" alt="image" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[在既有数据库中使用ActiveRecord]]></title>
@@ -450,27 +543,6 @@ add10.call(10) == 20
 <p><p>先访问‘/admin_pages/admin’,然后点击该页面上的链接，则预期应该跳转到另一个页面：‘/admin_pages/list’。</p>
 <p><a href="https://github.com/jnicklas/capybara">capybara</a>的driver是可配置的，driver是指使用哪种模拟器来运行页面，默认的是:rack_test，:rack_test不支持javascript，但是速度会比 <a href="http://seleniumhq.org/">:selenium</a>快很多。很多情况下，可以对那些不需要javascript的页面使用:rack_test来跑，而其他的使用:selenium。</p>
 <p>我打算在下一篇关于cucumber的介绍中，讨论一个更有意思的例子。</p></p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Ruby开发中的一些工具及概念]]></title>
-    <link href="http://abruzzi.github.com/2012/04/ruby%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B7%A5%E5%85%B7%E5%8F%8A%E6%A6%82%E5%BF%B5/"/>
-    <updated>2012-04-24T00:00:00+08:00</updated>
-    <id>http://abruzzi.github.com/2012/04/ruby开发中的一些工具及概念</id>
-    <content type="html"><![CDATA[<p><p>加入<a href="http://www.thoughtworks.com/">新公司</a>之后，一个最明显的感受就是要学到东西非常多，以前只能在工作之余研究的各种技术现在变成了主业。人们学习新技术最常用的方法就是类比，即人们总是将新的东西和已经掌握的技术进行比较，计算出差异，从而以最小的代价，理解最多的内容。但是在这里，好像很难使用到类比，因为太多的东西都是初次接触，这样需要花很大的代价来学习，但是可以为后续的学习创造类比学习的条件。</p> <p>言归正传，之前理解中的ruby是这样的：它是一个动态弱类型的语言，支持多种范式的编程(面向对象，FP等)，这些都和python很类似，而我对于python还算熟悉，甚至还用python做过一些小工具。但是，在真正学习之后，特别是看到实际项目代码的结构之后，才发现其中有很多的内容是很难与既有的技术类比的(当然，很可能是我自己大脑中可供类比的资源太少)。</p> <p>这里列举几个对我个人比较新的概念及技术：rvm, gem, Rake, RSpec, Cucumber。</p> <p>gem是指用ruby写成的软件包(应用程序或者库)，一个gem就是一个独立的，可发布的包(有点像Java中的jar)。<a href="http://en.wikipedia.org/wiki/RubyGems">RubyGems</a>是gem的管理器，用以管理各个gem的安装，同时<a href="http://en.wikipedia.org/wiki/RubyGems">RubyGems</a>也表示一个用于发布/更新gem的服务器。多个gem可以组成一个gemset，用以将多个gem组织在一起，比如你的某个ruby项目需要用到第三方的gem，而且每个gem都有特定的版本，那么就可以将这些gem组织在一起，形成一个gemset。ruby的gem管理机制很像是linux下的包管理机制，如apt-get，yum等：有依赖计算，自动下载并安装的功能。</p> <p><a href="http://beginrescueend.com/">rvm</a>是ruby-version-manager的简写，是一个ruby的版本管理工具，它支持你在多个ruby版本之间切换，如在你的app-1中，你使用了ruby的1.8版本，而在app-2中，使用了ruby的1.7版本，都可以通过rvm来进行管理。只需要在你的app的根目录下，创建一个.rvmrc的文件，其中制定需要的ruby版本及gemset的名称即可。gemset会保存在~/.rvm目录下。</p> <p>通常来讲，你的应用目录下应该需要这样两个文件：<em>Gemfile</em>和<em>.rvmrc</em>，其中Gemfile指定你的gem从何处下载，及需要哪些gem，以及这些gem各自的版本信息，而.rvmrc则配置你的ruby解释器的版本，以及Gemfile中定义的gemset中的gem保存在何处。</p> <div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> source 'https://rubygems.org'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span> gem 'rails', '3.2.3'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span> gem 'bootstrap-sass', '2.0.0'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span> gem 'bcrypt-ruby', '3.0.1'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span> group :development, :test <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span>     gem 'sqlite3', '1.3.5'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span>     gem 'rspec-rails', '2.9.0'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum10">  10:</span> end</pre><!--CRLF--></div></div>
-<p>一个Gemfile的片段</p>
-<div id="codeSnippetWrapper">
-<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> rvm --create use <a href="mailto:ree-1.8.7@my-gem-set">ree-1.8.7@my-gem-set</a></pre><!--CRLF--></div></div>
-<p>.rvmrc的片段，my-gem-set是一个自定义的gemset。</p>
-<p><a href="http://rake.rubyforge.org/">Rake</a>类似于ruby下的<a href="http://en.wikipedia.org/wiki/Make_(software)">Makefile</a>，不过是用ruby语言自己写的，而且更方便一些，主要的功能和Makefile一样，用以计算依赖等。</p>
-<p><a href="http://rspec.info/">RSpec</a>是ruby下进行<a href="http://en.wikipedia.org/wiki/Behavior_Driven_Development">BDD</a>的工具，用以从“业务角度”描述测试的场景，然后便于TDD的进行。</p>
-<div id="codeSnippetWrapper">
-<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> require 'spec_helper'</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span> describe <span style="color: #006080">"Static pages"</span> <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span>     subject { page }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span>     describe <span style="color: #006080">"Home page"</span> <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span>         before { visit root_path }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span>         it { should have_selector('h1', :text =&gt;<span style="color: #008000">; 'My application') }</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span>         it { should have_selector('title', :text =&gt;<span style="color: #008000">; "My application title") }</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum10">  10:</span>         it { should_not have_selector('title', :text =&gt;<span style="color: #008000">; '| Home') }</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum11">  11:</span>     end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum12">  12:</span> end</pre><!--CRLF--></div></div>
-<p>&nbsp;</p>
-<p><a href="http://cukes.info/">Cucumber</a>也是ruby下<a href="http://en.wikipedia.org/wiki/Behavior_Driven_Development">BDD</a>的工具，不过Cucumber面向的对象并不需要对技术有任何的了解，事实上cucumber的feature文件更像是自然语言写的文章。cucumber由feature文件(从纯业务的角度来描述应用程序应该具备的功能)，step文件(step理解feature中的描述，并试图将这些描述转换成应用程序的逻辑)，这个过程可能比较耗时，但是觉得值得一试，相信我，没有什么比完全通过测试的代码更令人放心了。</p>
-<p>这里的每个主题都需要以一整篇或者一个系列来讨论，这里只是做一个大致的介绍，我会一边学习，一边将自己的理解整理出来。rspec和cucumber都已经有一些比较有意思的例子，rake的例子也正在整理，希望不会拖太长时间。</p></p>
 
 ]]></content>
   </entry>

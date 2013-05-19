@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-05-18T15:54:30+08:00</updated>
+  <updated>2013-05-19T09:09:27+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,118 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Alfred简介及Alfred扩展编写]]></title>
+    <link href="http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project/"/>
+    <updated>2013-05-18T20:04:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project</id>
+    <content type="html"><![CDATA[<h3>Alfred简介</h3>
+
+<p><a href="http://www.alfredapp.com/">Alfred</a>是Mac下的一个小工具，可以极大的提高使用计算机的效率。Alfred提供非常丰富的功能集，比如：</p>
+
+<ol>
+<li>基本的文件/目录查找功能</li>
+<li>应用程序加载器</li>
+<li>快速的搜索（google，wikipedia）</li>
+</ol>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/05/alfred-find.png" alt="使用Alfred搜索" /></p>
+
+<h4>powerpack</h4>
+
+<p>Alfred本身是免费的，但是一些高级的功能，如：</p>
+
+<ol>
+<li>自定义扩展（<strong>非常有用</strong>）</li>
+<li>剪贴板栈/代码片段管理（<strong>非常有用</strong>）</li>
+<li>iTunes控制</li>
+<li>近期访过的文档</li>
+</ol>
+
+
+<p>提供在<a href="http://www.alfredapp.com/powerpack/">powerpack</a>中，这个功能是要收费的，不过个人觉得绝对的物超所值。这些功能可以极大的提高我对计算机的使用效率，而且剪贴板栈功能可以节省我很多的时间。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/05/alfred-clipboard.png" alt="image" /></p>
+
+<h3>扩展编写</h3>
+
+<p>经常会使用<a href="http://www.sinatrarb.com/">sinatra</a>编写一些简单的Web应用程序，以用作一些showcase和应用程序的原型搭建。但是由于sinatra并不是一个框架，并不会像rails那样自动生成目录结构等，而每个sinatra应用的目录结构和文件依赖都非常相似，因此完全可以考虑将这个过程自动化。</p>
+
+<p>基本思路是：</p>
+
+<ol>
+<li>定义一个目录结构的模板</li>
+<li>每次开始一个sinatra工程时，将个模板目录拷贝到新的工程下</li>
+<li>一些库依赖的下载（bundle install以及JavaScript库的下载）</li>
+<li>在编辑器中打开这个新的目录</li>
+</ol>
+
+
+<h4>一个sinatra工程的原型</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pwd
+</span><span class='line'>/Users/twer/develop/templates/sinatra
+</span><span class='line'>
+</span><span class='line'>$ tree -a
+</span><span class='line'>.
+</span><span class='line'>├── .rvmrc
+</span><span class='line'>├── Gemfile
+</span><span class='line'>├── app.rb
+</span><span class='line'>├── config.ru
+</span><span class='line'>├── public
+</span><span class='line'>│   ├── css
+</span><span class='line'>│   └── scripts
+</span><span class='line'>│       ├── app.js
+</span><span class='line'>│       └── libs
+</span><span class='line'>└── views</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Extension shell script</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># create the project folder
+</span><span class='line'>cd ~/develop/ruby && mkdir -p {query} && cd {query}
+</span><span class='line'>
+</span><span class='line'># cp info to folder
+</span><span class='line'>cp -R ~/develop/templates/sinatra/ .
+</span><span class='line'>
+</span><span class='line'># grab jquery
+</span><span class='line'>curl http://code.jquery.com/jquery.js &gt; public/scripts/libs/jquery.js
+</span><span class='line'>
+</span><span class='line'># open the project
+</span><span class='line'>/Applications/MacVim.app/Contents/MacOS/Vim -g .</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/05/sinatra-ext-result.png" alt="image" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[在既有数据库中使用ActiveRecord]]></title>
@@ -1727,105 +1839,6 @@
     <updated>2012-12-30T00:00:00+08:00</updated>
     <id>http://abruzzi.github.com/2012/12/我的2012</id>
     <content type="html"><![CDATA[<p><p>毫无疑问，2012年是自我工作以来过的最为充实的一年。我学会了新的编程语言ruby，然后学会了与之相关的两个框架：<a href="http://rubyonrails.org/">rails</a>和<a href="http://www.sinatrarb.com/">sinatra</a>。以及很多DevOps的工具，如<a href="http://www.opscode.com/chef/">chef</a>, <a href="http://vagrantup.com/">vagrant</a> 之类。</p> <p><a href="http://abruzzi.github.com/images/2012/12/Screen-Shot-2012-12-13-at-11.05.58-PM4.png"><img style="background-image: none; display: inline" title="Screen Shot 2012-12-13 at 11.05.58 PM" border="0" alt="Screen Shot 2012-12-13 at 11.05.58 PM" src="http://abruzzi.github.com/images/2012/12/Screen-Shot-2012-12-13-at-11.05.58-PM_thumb.png" width="644" height="458" /></a></p> <p>学习并实践了在年初还觉得很神秘而不可思议的TDD，学习了3种测试框架(<a href="http://rspec.info/">rspec</a>, <a href="http://pivotal.github.com/jasmine/">jasmine</a>, junit)以及一些基本的测试方法。但是在积极分享这一点上做得并不好，虽然也有几篇博客在记录学习的心得，但是秋冬两季在icodeit上一篇博客都没有，仅仅在github上有<a href="http://abruzzi.github.com">几篇零散的草稿</a>。</p> <p>在新的环境中，有太多的东西要学习，在刚开始的时候，很难理解每个工具背后的原理或者更深层次的技术等，经过差不多半年的使用之后，才慢慢领会。理解工具，框架的背后的机制和原理后，实际工作的压力才略微减小了些。</p> <p>在ThoughtWorks西安office开办了将近1个月的乒乓球训练课(和何大师一起)，每周两节课，每节课大概有6+个同事参加，后来还想举办个ThoughtWorks首届男女混双，一直没有实施。西安office的球桌/乒乓球室已经相当专业。</p> <p><a href="http://abruzzi.github.com/images/2012/12/2012-07-22-20.20.19.jpg"><img style="background-image: none; display: inline" title="2012-07-22 20.20.19" border="0" alt="2012-07-22 20.20.19" src="http://abruzzi.github.com/images/2012/12/2012-07-22-20.20.19_thumb.jpg" width="644" height="483" /></a></p> <p>我在7月和10月分享过两个session(说文解字，高效编辑-vim). 下图是说文解字那个session的一张照片。session是对内的presentation，主要目的是分享知识，很多同事会选择技术作为主体，当然不局限于此。我之前很少在公共场合说话，但是通过自己push自己去讲session，一来可以将学习的东西巩固(由于是要讲给别人，所以必然会精心准备，这样印象会更深刻)，二来可以锻炼自己的交流能力。而且从听众的feedback可以知道哪些地方可以改进等。</p> <p><a href="http://abruzzi.github.com/images/2012/12/2012-07-05-13.53.22.jpg"><img style="background-image: none; display: inline" title="2012-07-05 13.53.22" border="0" alt="2012-07-05 13.53.22" src="http://abruzzi.github.com/images/2012/12/2012-07-05-13.53.22_thumb.jpg" width="644" height="484" /></a></p> <p>11月到12去墨尔本出差了3周，在客户现场用英文做过一个关于西安team日常工作方式的的presentation。这是我第一次出国，也是第一次用英文做presentation，虽然比较简短，但是我很高兴：我在3月底在上项目的时候，我们的BA给我介绍项目情况的时候，我还需要别人翻译。</p> <p><a href="http://abruzzi.github.com/images/2012/12/2012-11-18-11.09.15-2.jpg"><img style="background-image: none; display: inline" title="2012-11-18 11.09.15-2" border="0" alt="2012-11-18 11.09.15-2" src="http://abruzzi.github.com/images/2012/12/2012-11-18-11.09.15-2_thumb.jpg" width="644" height="484" /></a></p> <p>11月之后，终于有一点自己的时间来整理项目中学到的新的JavaScript经验和知识，为我的<a href="http://www.icodeit.org/javascript%E5%86%85%E6%A0%B8/">《JavaScript核心概念及实践》</a>添加了两章的内容(前端MVC和测试)。</p> <p>生活方面，运动量明显减少，整个2012，爬过三次山，第一次是和田彦强夫妇去沣峪口，第二次是和胡凯，王欢，孙曼思等去太平峪，第三次是和team一起去九龙潭。在10月左右给孙曼思买了一张捷安特的山地车，一起出去骑过两次，一次是从绿地到大雁塔，另一次是绿地到草滩，当我们计划骑行秦岭的时候，气温已经冷到不适宜骑行了。平时的话，虽然会和同事们打打乒乓球或者羽毛球，但是运动量都太小。</p> <p><a href="http://abruzzi.github.com/images/2012/12/2012-11-03-11.35.08.jpg"><img style="background-image: none; display: inline" title="2012-11-03 11.35.08" border="0" alt="2012-11-03 11.35.08" src="http://abruzzi.github.com/images/2012/12/2012-11-03-11.35.08_thumb.jpg" width="364" height="484" /></a></p> <p>另一方面，2012年的大部分时间都坚持吃素，下图是孙曼思和我做的豆腐：</p> <p><a href="http://abruzzi.github.com/images/2012/12/Screen-Shot-2012-10-15-at-9.17.41-PM.png"><img style="background-image: none; display: inline" title="Screen Shot 2012-10-15 at 9.17.41 PM" border="0" alt="Screen Shot 2012-10-15 at 9.17.41 PM" src="http://abruzzi.github.com/images/2012/12/Screen-Shot-2012-10-15-at-9.17.41-PM_thumb.png" width="644" height="434" /></a></p> <p>书读了差不多20本，有余华，贾平凹，戴厚英的小说，有些技术相关的，另外一些是历史/政治方面的。因为就我目前所接触到的和所能想到的，技术很难由读书来提升，我更多的是花一些时间去读一些blog或者相对较为简短的文章来学习技术，然后进行一些实践来巩固。</p> <p><a href="http://abruzzi.github.com/images/2012/12/card2-contours.jpg"><img style="background-image: none; display: inline" title="card2-contours" border="0" alt="card2-contours" src="http://abruzzi.github.com/images/2012/12/card2-contours_thumb.jpg" width="644" height="484" /></a></p> <p>最后这张图是上周末我们team的一个idea的初步实现：将墙上的卡用手机扫描，然后将卡号分析出来并同步到服务器，然后向jira查询卡的状态等。我用opencv，花了大概两天，终于可以将数字找到并从卡上抠出，但是当涉及到KNN去识别图片中的数字时，遇到了一点难题，很可能会拖到明年才能完成……</p></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Git squash localcommits]]></title>
-    <link href="http://abruzzi.github.com/2012/11/git-squash-localcommits/"/>
-    <updated>2012-11-07T10:54:00+08:00</updated>
-    <id>http://abruzzi.github.com/2012/11/git-squash-localcommits</id>
-    <content type="html"><![CDATA[<p>There is a common scenario: we have lots of local commits related with a certain feature or a big
-bug, after all the works done, we want to combine them together. The git provides a handy way to do
-this job: <em>git rebase</em></p>
-
-<p>I&#8217;ll take the following case as an example, say, I&#8217;ve got 3 commits locally and they are all about
-a restyling of some page.</p>
-
-<p><code>$ git st</code></p>
-
-<pre><code># On branch master
-# Your branch is ahead of 'origin/master' by 3 commits.
-#
-nothing to commit (working directory clean)
-</code></pre>
-
-<p>Details:</p>
-
-<p><code>$ git log</code></p>
-
-<pre><code>commit 4e7e1ac7e7e77ae4404843ed96b9f881f969b836
-Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
-Date:   Tue Nov 6 16:49:59 2012 +0800
-
-    RCA-410 new search form style only apply to search result page.
-
-commit 385cec1f22f432c03ea96b5c927f89b3747e82fb
-Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
-Date:   Tue Nov 6 14:21:50 2012 +0800
-
-    RCA-410 re-style search form area.
-
-commit b9694db0b0fb100bfa5f967480188bf05ad538b4
-Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
-Date:   Tue Nov 6 10:33:07 2012 +0800
-
-    RCA-410 restyling search form.
-
-commit 866375c7d805e19f963319fb558f1b16f7daf15b
-Author: John abruzzi &lt;juntao.qiu@gmail.com&gt;
-Date:   Mon Nov 5 14:06:16 2012 +0800
-
-    RCA-625. Add the embeded video feature toggle into casa feature-config file.
-</code></pre>
-
-<p>I have 3 commits after the very commit <em>866375c7d805e19f963319fb558f1b16f7daf15b</em>, and then I&#8217;ll use
-rebase in interactive mode, by the option <em>-i</em> appended.</p>
-
-<p><code>$ git rebase -i HEAD~3</code></p>
-
-<pre><code>pick b9694db0b RCA-410 restyling search form. Pair: Yameng &amp; Juntao
-pick 385cec1f2 RCA-410 re-style search form area. pair:juntao
-pick 4e7e1ac7e RCA-410 new search form style only apply to search result page. pair:Juntao
-</code></pre>
-
-<p>There are a few command provided, I&#8217;ll use <em>squash</em> by now, since I want to squash the following 2 commits
-into the first one, so simply change the <em>pick</em> into <em>squash</em></p>
-
-<pre><code>pick b9694db0b RCA-410 restyling search form. Pair: Yameng &amp; Juntao
-squash 385cec1f2 RCA-410 re-style search form area. pair:juntao
-squash 4e7e1ac7e RCA-410 new search form style only apply to search result page. pair:Juntao
-</code></pre>
-
-<p>After that, save the popuped editor(vi in my local machinel), and change the generated comments message into</p>
-
-<pre><code>RCA-410 restyling search form, applied to search results and pdp. Pair: Yameng &amp; Juntao
-</code></pre>
-
-<p>and then save and quit the editor, we&#8217;ll see the following message:</p>
-
-<p><code>$ git st</code></p>
-
-<pre><code># On branch master
-# Your branch is ahead of 'origin/master' by 1 commit.
-#
-nothing to commit (working directory clean)
-</code></pre>
-
-<p>And the history is more clear like this:
-<code>$ git log</code></p>
-
-<pre><code>commit 8ff8a0e015b6ebe7bcd5434f25ed789dee2d5f1e
-Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
-Date:   Tue Nov 6 10:33:07 2012 +0800
-
-    RCA-410 restyling search form, applied to search results and pdp.
-
-commit 866375c7d805e19f963319fb558f1b16f7daf15b
-Author: John abruzzi &lt;juntao.qiu@gmail.com&gt;
-Date:   Mon Nov 5 14:06:16 2012 +0800
-    RCA-625. Add the embeded video feature toggle into casa feature-config file.
-</code></pre>
 ]]></content>
   </entry>
   
