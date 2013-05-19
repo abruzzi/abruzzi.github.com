@@ -4,7 +4,7 @@
   <title><![CDATA[Category: productivity | I code it]]></title>
   <link href="http://abruzzi.github.com/category/productivity/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-05-19T09:09:27+08:00</updated>
+  <updated>2013-05-19T09:15:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -103,6 +103,8 @@ $ pwd
 ```</p>
 
 <p><img src="http://abruzzi.github.com/images/2013/05/sinatra-ext-result.png" alt="image" /></p>
+
+<p>执行完之后，<code>~/develop/ruby</code>下会生成一个新的目录，即<code>note</code>，这个目录中即为一个可以直接开始开发sinatra应用的工作目录了。</p>
 ]]></content>
   </entry>
   
