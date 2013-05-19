@@ -21,6 +21,7 @@ categories:
 ![使用Alfred搜索](http://abruzzi.github.com/images/2013/05/alfred-find.png)
 
 ####powerpack
+
 Alfred本身是免费的，但是一些高级的功能，如：
 
 1.	自定义扩展（**非常有用**）
@@ -81,3 +82,4 @@ curl http://code.jquery.com/jquery.js > public/scripts/libs/jquery.js
 
 ![image](http://abruzzi.github.com/images/2013/05/sinatra-ext-result.png)
 
+执行完之后，`~/develop/ruby`下会生成一个新的目录，即`note`，这个目录中即为一个可以直接开始开发sinatra应用的工作目录了。
