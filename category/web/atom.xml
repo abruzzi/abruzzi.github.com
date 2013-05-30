@@ -4,7 +4,7 @@
   <title><![CDATA[Category: web | I code it]]></title>
   <link href="http://abruzzi.github.com/category/web/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-05-19T09:15:10+08:00</updated>
+  <updated>2013-05-30T12:49:26+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -160,6 +160,23 @@ margin-left: -10px;
 
 <p>}
 ```</p>
+
+<p><strong>UPDATE:</strong></p>
+
+<hr />
+
+<p>```
+.container .chat-box:after {</p>
+
+<pre><code>border-width: 9px;
+border-top-color: white;
+margin-left: -9px;
+</code></pre>
+
+<p>}
+```</p>
+
+<hr />
 
 <p>但是一个实心的灰色三角形比较难看，我们需要再改进一下，即通过在这个伪元素之上，再绘制一个白色（与消息框颜色相同）的伪元素，但是尺寸又小一个单位（单位与消息框本身的尺寸相同，这里为<code>1px</code>）。</p>
 
