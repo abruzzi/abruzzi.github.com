@@ -121,8 +121,20 @@ HTML代码：
 }
 ```
 
+**UPDATE:**
+- - -
+
+```
+.container .chat-box:after {
+	border-width: 9px;
+	border-top-color: white;
+	margin-left: -9px;
+}
+```
+
+- - -
+
 但是一个实心的灰色三角形比较难看，我们需要再改进一下，即通过在这个伪元素之上，再绘制一个白色（与消息框颜色相同）的伪元素，但是尺寸又小一个单位（单位与消息框本身的尺寸相同，这里为`1px`）。
 
 ![image](http://abruzzi.github.com/images/2013/05/box-triggle-both.png)
-
 
