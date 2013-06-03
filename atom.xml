@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-05-30T12:57:07+08:00</updated>
+  <updated>2013-06-03T17:12:59+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,109 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[在Mac下搭建Common Lisp开发环境(Emacs)]]></title>
+    <link href="http://abruzzi.github.com/2013/06/setup-lisp-development-env-on-mac/"/>
+    <updated>2013-06-03T16:22:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/06/setup-lisp-development-env-on-mac</id>
+    <content type="html"><![CDATA[<h4>Lisp编译器（解释器）</h4>
+
+<p>首先需要一个Lisp的编译器，<a href="http://www.sbcl.org/platform-table.html">SBCL</a>是一个开源的实现，支持所有POSIX平台。你可以选择从源码编译，也可以下载二进制包。而由于使用mac，可以用强大的homebrew来安装：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ brew install sbcl</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>简单使用</h5>
+
+<p>使用<code>sbcl</code>启动交互环境，如果用lisp的术语来说，这是一个REPL(read–eval–print loop )。这个环境中就可以尝试Common Lisp编程了。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sbcl
+</span><span class='line'>
+</span><span class='line'>This is SBCL 1.1.7.0-aeb9307, an implementation of ANSI Common Lisp.
+</span><span class='line'>More information about SBCL is available at &lt;http://www.sbcl.org/&gt;.
+</span><span class='line'>
+</span><span class='line'>SBCL is free software, provided as is, with absolutely no warranty.
+</span><span class='line'>It is mostly in the public domain; some portions are provided under
+</span><span class='line'>BSD-style licenses.  See the CREDITS and COPYING files in the
+</span><span class='line'>distribution for more information.
+</span><span class='line'>
+</span><span class='line'>* (+ 1 2 3 4 5 6)
+</span><span class='line'>**21**
+</span><span class='line'>
+</span><span class='line'>* (quit)
+</span><span class='line'>
+</span><span class='line'>$</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是这个环境对开发者不是非常友好，比如不支持上下键导航，不支持左右键，非常原始，可以使用Emacs来作为开发环境，当然如果你更喜欢vim（像我一样），也没有任何问题。不过这是一个很好的学习Emacs编辑环境的机会，可以尝试一下。</p>
+
+<h4>Emacs + Slime</h4>
+
+<p><a href="http://common-lisp.net/project/slime/">Slime</a>是一个Emacs下开发Common Lisp程序的一个插件，它本身就是由lisp写成的，下载之后是一个压缩包，将其解压缩到<code>~/.eamcs.d/</code>目录中即可。
+然后在<code>~/.emacs</code>文件中添加下面的配置：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>; slime setup
+</span><span class='line'>(setq inferior-lisp-program "/usr/local/bin/sbcl")
+</span><span class='line'>(add-to-list 'load-path "~/.emacs.d/slime/")
+</span><span class='line'>(require 'slime)
+</span><span class='line'>(slime-setup)</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Emacs的“开发者”配置</h5>
+
+<p>默认的eamcs界面比较简陋，我的vim使用的solarized主题，觉得配色非常合理，结果在github上发现了其对应的<a href="https://github.com/sellout/emacs-color-theme-solarized">emacs主题</a>。现在之后，同样解压在<code>~/.emacs.d/</code>目录中，然后在<code>~/.emacs</code>加上一下配置即可。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>; color theme setup 
+</span><span class='line'>(add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized/")
+</span><span class='line'>(load-theme 'solarized-dark t)
+</span><span class='line'>
+</span><span class='line'>; hide the tool bar
+</span><span class='line'>(tool-bar-mode -1)
+</span><span class='line'>
+</span><span class='line'>; set the font
+</span><span class='line'>(set-face-attribute 'default nil :font "Monaco")
+</span><span class='line'>(set-face-attribute 'default nil :height 170)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>效果图</h4>
+
+<p><img src="http://abruzzi.github.com/images/2013/06/emacs.resized.png" alt="image" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Alfred简介及Alfred扩展编写]]></title>
@@ -1850,15 +1953,6 @@
 </code></pre>
 
 <p>本来我还打算写一篇比如《将Mac搭建为一个开发环境》之类的文章，然后列提纲的时候发现无物可写，人家本来就是一个高效的开发环境。比如Terminal/Spotlight/Finder，再加上一个编辑器就完全可以启动了。所以就简单的整理了下我常用的软件列表，以供参考。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[我的2012]]></title>
-    <link href="http://abruzzi.github.com/2012/12/%E6%88%91%E7%9A%842012/"/>
-    <updated>2012-12-30T00:00:00+08:00</updated>
-    <id>http://abruzzi.github.com/2012/12/我的2012</id>
-    <content type="html"><![CDATA[<p><p>毫无疑问，2012年是自我工作以来过的最为充实的一年。我学会了新的编程语言ruby，然后学会了与之相关的两个框架：<a href="http://rubyonrails.org/">rails</a>和<a href="http://www.sinatrarb.com/">sinatra</a>。以及很多DevOps的工具，如<a href="http://www.opscode.com/chef/">chef</a>, <a href="http://vagrantup.com/">vagrant</a> 之类。</p> <p><a href="http://abruzzi.github.com/images/2012/12/Screen-Shot-2012-12-13-at-11.05.58-PM4.png"><img style="background-image: none; display: inline" title="Screen Shot 2012-12-13 at 11.05.58 PM" border="0" alt="Screen Shot 2012-12-13 at 11.05.58 PM" src="http://abruzzi.github.com/images/2012/12/Screen-Shot-2012-12-13-at-11.05.58-PM_thumb.png" width="644" height="458" /></a></p> <p>学习并实践了在年初还觉得很神秘而不可思议的TDD，学习了3种测试框架(<a href="http://rspec.info/">rspec</a>, <a href="http://pivotal.github.com/jasmine/">jasmine</a>, junit)以及一些基本的测试方法。但是在积极分享这一点上做得并不好，虽然也有几篇博客在记录学习的心得，但是秋冬两季在icodeit上一篇博客都没有，仅仅在github上有<a href="http://abruzzi.github.com">几篇零散的草稿</a>。</p> <p>在新的环境中，有太多的东西要学习，在刚开始的时候，很难理解每个工具背后的原理或者更深层次的技术等，经过差不多半年的使用之后，才慢慢领会。理解工具，框架的背后的机制和原理后，实际工作的压力才略微减小了些。</p> <p>在ThoughtWorks西安office开办了将近1个月的乒乓球训练课(和何大师一起)，每周两节课，每节课大概有6+个同事参加，后来还想举办个ThoughtWorks首届男女混双，一直没有实施。西安office的球桌/乒乓球室已经相当专业。</p> <p><a href="http://abruzzi.github.com/images/2012/12/2012-07-22-20.20.19.jpg"><img style="background-image: none; display: inline" title="2012-07-22 20.20.19" border="0" alt="2012-07-22 20.20.19" src="http://abruzzi.github.com/images/2012/12/2012-07-22-20.20.19_thumb.jpg" width="644" height="483" /></a></p> <p>我在7月和10月分享过两个session(说文解字，高效编辑-vim). 下图是说文解字那个session的一张照片。session是对内的presentation，主要目的是分享知识，很多同事会选择技术作为主体，当然不局限于此。我之前很少在公共场合说话，但是通过自己push自己去讲session，一来可以将学习的东西巩固(由于是要讲给别人，所以必然会精心准备，这样印象会更深刻)，二来可以锻炼自己的交流能力。而且从听众的feedback可以知道哪些地方可以改进等。</p> <p><a href="http://abruzzi.github.com/images/2012/12/2012-07-05-13.53.22.jpg"><img style="background-image: none; display: inline" title="2012-07-05 13.53.22" border="0" alt="2012-07-05 13.53.22" src="http://abruzzi.github.com/images/2012/12/2012-07-05-13.53.22_thumb.jpg" width="644" height="484" /></a></p> <p>11月到12去墨尔本出差了3周，在客户现场用英文做过一个关于西安team日常工作方式的的presentation。这是我第一次出国，也是第一次用英文做presentation，虽然比较简短，但是我很高兴：我在3月底在上项目的时候，我们的BA给我介绍项目情况的时候，我还需要别人翻译。</p> <p><a href="http://abruzzi.github.com/images/2012/12/2012-11-18-11.09.15-2.jpg"><img style="background-image: none; display: inline" title="2012-11-18 11.09.15-2" border="0" alt="2012-11-18 11.09.15-2" src="http://abruzzi.github.com/images/2012/12/2012-11-18-11.09.15-2_thumb.jpg" width="644" height="484" /></a></p> <p>11月之后，终于有一点自己的时间来整理项目中学到的新的JavaScript经验和知识，为我的<a href="http://www.icodeit.org/javascript%E5%86%85%E6%A0%B8/">《JavaScript核心概念及实践》</a>添加了两章的内容(前端MVC和测试)。</p> <p>生活方面，运动量明显减少，整个2012，爬过三次山，第一次是和田彦强夫妇去沣峪口，第二次是和胡凯，王欢，孙曼思等去太平峪，第三次是和team一起去九龙潭。在10月左右给孙曼思买了一张捷安特的山地车，一起出去骑过两次，一次是从绿地到大雁塔，另一次是绿地到草滩，当我们计划骑行秦岭的时候，气温已经冷到不适宜骑行了。平时的话，虽然会和同事们打打乒乓球或者羽毛球，但是运动量都太小。</p> <p><a href="http://abruzzi.github.com/images/2012/12/2012-11-03-11.35.08.jpg"><img style="background-image: none; display: inline" title="2012-11-03 11.35.08" border="0" alt="2012-11-03 11.35.08" src="http://abruzzi.github.com/images/2012/12/2012-11-03-11.35.08_thumb.jpg" width="364" height="484" /></a></p> <p>另一方面，2012年的大部分时间都坚持吃素，下图是孙曼思和我做的豆腐：</p> <p><a href="http://abruzzi.github.com/images/2012/12/Screen-Shot-2012-10-15-at-9.17.41-PM.png"><img style="background-image: none; display: inline" title="Screen Shot 2012-10-15 at 9.17.41 PM" border="0" alt="Screen Shot 2012-10-15 at 9.17.41 PM" src="http://abruzzi.github.com/images/2012/12/Screen-Shot-2012-10-15-at-9.17.41-PM_thumb.png" width="644" height="434" /></a></p> <p>书读了差不多20本，有余华，贾平凹，戴厚英的小说，有些技术相关的，另外一些是历史/政治方面的。因为就我目前所接触到的和所能想到的，技术很难由读书来提升，我更多的是花一些时间去读一些blog或者相对较为简短的文章来学习技术，然后进行一些实践来巩固。</p> <p><a href="http://abruzzi.github.com/images/2012/12/card2-contours.jpg"><img style="background-image: none; display: inline" title="card2-contours" border="0" alt="card2-contours" src="http://abruzzi.github.com/images/2012/12/card2-contours_thumb.jpg" width="644" height="484" /></a></p> <p>最后这张图是上周末我们team的一个idea的初步实现：将墙上的卡用手机扫描，然后将卡号分析出来并同步到服务器，然后向jira查询卡的状态等。我用opencv，花了大概两天，终于可以将数字找到并从卡上抠出，但是当涉及到KNN去识别图片中的数字时，遇到了一点难题，很可能会拖到明年才能完成……</p></p>
 ]]></content>
   </entry>
   

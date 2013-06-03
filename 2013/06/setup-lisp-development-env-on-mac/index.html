@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Using ssh forward to get out of stupid wall - I code it</title>
+  <title>在Mac下搭建Common Lisp开发环境(Emacs) - I code it</title>
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Generate the public and private key pair This step is quite strightforward, just generate the keys by using ssh-keygen: $ ssh-keygen #specify the key &hellip;">
+  <meta name="description" content="Lisp编译器（解释器） 首先需要一个Lisp的编译器，SBCL是一个开源的实现，支持所有POSIX平台。你可以选择从源码编译，也可以下载二进制包。而由于使用mac，可以用强大的homebrew来安装： 1
+$ brew install sbcl 简单使用 使用sbcl启动交互环境， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://abruzzi.github.com/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/">
+  <link rel="canonical" href="http://abruzzi.github.com/2013/06/setup-lisp-development-env-on-mac/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -91,7 +92,7 @@
   <header>
     
       
-        <h1 class="entry-title">Using Ssh Forward to Get Out of Stupid Wall</h1>
+        <h1 class="entry-title">在Mac下搭建Common Lisp开发环境(Emacs)</h1>
       
     
     
@@ -108,61 +109,108 @@
   
 
 
-<time datetime="2012-10-25T22:59:00+08:00" pubdate data-updated="true">Oct 25<span>th</span>, 2012</time>
+<time datetime="2013-06-03T16:22:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>Generate the public and private key pair</h2>
+<div class="entry-content"><h4>Lisp编译器（解释器）</h4>
 
-<p>This step is quite strightforward, just generate the keys by using ssh-keygen:</p>
+<p>首先需要一个Lisp的编译器，<a href="http://www.sbcl.org/platform-table.html">SBCL</a>是一个开源的实现，支持所有POSIX平台。你可以选择从源码编译，也可以下载二进制包。而由于使用mac，可以用强大的homebrew来安装：</p>
 
-<pre><code>$ ssh-keygen #specify the key file name (I use the id_ plus remote site hostname)
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ brew install sbcl</span></code></pre></td></tr></table></div></figure>
 
-<p>then you&#8217;ll get 2 keys locally, you can do this step in any place, but people do it
-on their home-dir/.ssh, after the creation, you need to change the mask of the key file:</p>
 
-<pre><code>$ chmod 600 id_site
-</code></pre>
+<h5>简单使用</h5>
 
-<h2>Put the public key remotely</h2>
+<p>使用<code>sbcl</code>启动交互环境，如果用lisp的术语来说，这是一个REPL(read–eval–print loop )。这个环境中就可以尝试Common Lisp编程了。</p>
 
-<p>Okay, once the key is generated, we can simply put the publick key to remote site, and we
-don&#8217;t need to type password any more:</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sbcl
+</span><span class='line'>
+</span><span class='line'>This is SBCL 1.1.7.0-aeb9307, an implementation of ANSI Common Lisp.
+</span><span class='line'>More information about SBCL is available at &lt;http://www.sbcl.org/&gt;.
+</span><span class='line'>
+</span><span class='line'>SBCL is free software, provided as is, with absolutely no warranty.
+</span><span class='line'>It is mostly in the public domain; some portions are provided under
+</span><span class='line'>BSD-style licenses.  See the CREDITS and COPYING files in the
+</span><span class='line'>distribution for more information.
+</span><span class='line'>
+</span><span class='line'>* (+ 1 2 3 4 5 6)
+</span><span class='line'>**21**
+</span><span class='line'>
+</span><span class='line'>* (quit)
+</span><span class='line'>
+</span><span class='line'>$</span></code></pre></td></tr></table></div></figure>
 
-<pre><code>$ scp id_site.pub user@remote:
-</code></pre>
 
-<p>Note the colon at the end of the command above, login to remote server</p>
+<p>但是这个环境对开发者不是非常友好，比如不支持上下键导航，不支持左右键，非常原始，可以使用Emacs来作为开发环境，当然如果你更喜欢vim（像我一样），也没有任何问题。不过这是一个很好的学习Emacs编辑环境的机会，可以尝试一下。</p>
 
-<pre><code># cat id_site.pub &gt;&gt; .ssh/authorized_keys
-# rm id_site.pub
-</code></pre>
+<h4>Emacs + Slime</h4>
 
-<p>Then go back local machine, and we&#8217;re done</p>
+<p><a href="http://common-lisp.net/project/slime/">Slime</a>是一个Emacs下开发Common Lisp程序的一个插件，它本身就是由lisp写成的，下载之后是一个压缩包，将其解压缩到<code>~/.eamcs.d/</code>目录中即可。
+然后在<code>~/.emacs</code>文件中添加下面的配置：</p>
 
-<h2>SSH forward</h2>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>; slime setup
+</span><span class='line'>(setq inferior-lisp-program "/usr/local/bin/sbcl")
+</span><span class='line'>(add-to-list 'load-path "~/.emacs.d/slime/")
+</span><span class='line'>(require 'slime)
+</span><span class='line'>(slime-setup)</span></code></pre></td></tr></table></div></figure>
 
-<p>Now we can simply login the remote server by using the private key just generated:</p>
 
-<pre><code>$ ssh -i id_site user@remote
-</code></pre>
+<h5>Emacs的“开发者”配置</h5>
 
-<p>You then probably be noticed to add the key to system key chain, it is on Mac. And we now don&#8217;t
-need to type the password manually. So let&#8217;s go a little bit further:</p>
+<p>默认的eamcs界面比较简陋，我的vim使用的solarized主题，觉得配色非常合理，结果在github上发现了其对应的<a href="https://github.com/sellout/emacs-color-theme-solarized">emacs主题</a>。现在之后，同样解压在<code>~/.emacs.d/</code>目录中，然后在<code>~/.emacs</code>加上一下配置即可。</p>
 
-<pre><code>$ ssh -N -i id_site -l 15100:localhost:15100 user@remote
-</code></pre>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>; color theme setup 
+</span><span class='line'>(add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized/")
+</span><span class='line'>(load-theme 'solarized-dark t)
+</span><span class='line'>
+</span><span class='line'>; hide the tool bar
+</span><span class='line'>(tool-bar-mode -1)
+</span><span class='line'>
+</span><span class='line'>; set the font
+</span><span class='line'>(set-face-attribute 'default nil :font "Monaco")
+</span><span class='line'>(set-face-attribute 'default nil :height 170)
+</span></code></pre></td></tr></table></div></figure>
 
-<p>Then you can access the localhost:1500 port on remote machine BY using the local port, that&#8217;s why it
-called ssh forward I think.</p>
 
-<p>You may note that I&#8217;m using the port 15100, that&#8217;s the mailcatcher web mananger port, I cannot access
-the mailcatcher running on another machine, but somehow, I can ssh it through ssh port(22), so I asked
-one of my <em>smart</em> colleagues, and got this solution.</p>
+<h4>效果图</h4>
+
+<p><img src="http://abruzzi.github.com/images/2013/06/emacs.resized.png" alt="image" /></p>
 </div>
 
 
@@ -185,7 +233,7 @@ one of my <em>smart</em> colleagues, and got this solution.</p>
   
 
 
-<time datetime="2012-10-25T22:59:00+08:00" pubdate data-updated="true">Oct 25<span>th</span>, 2012</time>
+<time datetime="2013-06-03T16:22:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2013</time>
       
 
 
@@ -193,7 +241,7 @@ one of my <em>smart</em> colleagues, and got this solution.</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/" data-via="" data-counturl="http://abruzzi.github.com/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/06/setup-lisp-development-env-on-mac/" data-via="" data-counturl="http://abruzzi.github.com/2013/06/setup-lisp-development-env-on-mac/" >Tweet</a>
   
   
   
@@ -202,10 +250,8 @@ one of my <em>smart</em> colleagues, and got this solution.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/2012/10/customize-matcher-by-using-hamcrest/" title="Previous Post: Customize matcher by using hamcrest">&laquo; Customize matcher by using hamcrest</a>
+        <a class="basic-alignment left articlenav" href="/2013/05/create-a-alfred-extension-for-create-sinatra-project/" title="Previous Post: Alfred简介及Alfred扩展编写">&laquo; Alfred简介及Alfred扩展编写</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/2012/11/git-squash-localcommits/" title="Next Post: Git squash localcommits">Git squash localcommits &raquo;</a>
       
     </p>
   </footer>
@@ -333,8 +379,8 @@ Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_i
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://abruzzi.github.com/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/';
-        var disqus_url = 'http://abruzzi.github.com/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/';
+        var disqus_identifier = 'http://abruzzi.github.com/2013/06/setup-lisp-development-env-on-mac/';
+        var disqus_url = 'http://abruzzi.github.com/2013/06/setup-lisp-development-env-on-mac/';
         var disqus_script = 'embed.js';
       
     (function () {
