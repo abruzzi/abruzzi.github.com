@@ -1,0 +1,508 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>common lisp 里的一些基本概念 - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="Common Lisp 之前一直说JavaScript是一门被误解很深的语言，现在学习了一段时间Lisp后发现，Lisp才是！Lisp一直为人所诟病的是它虽然很强大，但是有点学院派，难当大用。但是读了七，八章《Practical Common Lisp》和几章《ANSI Common Lisp》 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2013/06/common-lisp-basic/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">lambda</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <!-- <input type="hidden" name="q" value="site:abruzzi.github.com" /> -->
+    <input type="hidden" name="q" value="site:icodeit.org" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about-me">About Me</a></li>
+  <li><a href="/jsccp">JavaScript内核系列</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Common Lisp 里的一些基本概念</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-13T16:15:00+08:00" pubdate data-updated="true">Jun 13<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>Common Lisp</h3>
+
+<p>之前一直说JavaScript是一门被误解很深的语言，现在学习了一段时间Lisp后发现，Lisp才是！Lisp一直为人所诟病的是它虽然很强大，但是有点学院派，难当大用。但是读了七，八章<a href="http://book.douban.com/subject/6859720/">《Practical Common Lisp》</a>和几章<a href="http://book.douban.com/subject/1456906/">《ANSI Common Lisp》</a>之后发现，怎么就学院派了，其他编程语言能处理的，Lisp一样可以处理，其他语言处理不了的（或者很繁琐的，比如java中的循环，map之类），Lisp却能处理。</p>
+
+<p>Lisp本质上是一个抽象语法树（AST）而已，但是又提供了一些操作这个AST的方法（比如强大的宏），这样很容易用Lisp开发出来一个新的DSL。用函数式编程的好处之一就是在编写完一个应用程序之后，通常还可以获得一个新的语言（于业务领域很匹配的语言）。</p>
+
+<p><a href="http://zh.wikipedia.org/wiki/Common_Lisp">Common Lisp</a>本身是Lisp的一个方言，是有一个标准来定义，其目的是为了标准化众多的Lisp分支而定。</p>
+
+<h4>sbcl环境</h4>
+
+<p>上一篇文章已经介绍了如何在Mac下配置Common Lisp的开发环境：</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/06/sbcl.resized.png" alt="image" /></p>
+
+<h4>引用（quote）</h4>
+
+<p>由于在Lisp中，数据和代码都是通过S-expr来表示，所以需要用一种标记法来告诉解释器：这个表达式表示数据/代码。这就是引用的作用：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (+ 1 2 3 4 5)
+</span><span class='line'>15
+</span><span class='line'>
+</span><span class='line'>&gt; '(+ 1 2 3 4 5)
+</span><span class='line'>(+ 1 2 3 4 5)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>解释器会将s-expr的第一项作为函数(car)，而将后续的元素(cdr)作为参数传递给第一项来调用，并求值。可以通过引用（quote）来阻止解释器这样解释。</p>
+
+<h4>反引号(`)</h4>
+
+<p>与引用对应的，有一个反引号形式的引用(在键盘上1的左边)。一般的用法上，它与<code>quote</code>的含义一样，都是防止解释器解释被引用的列表。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt;`(a b c)
+</span><span class='line'>(a b c)
+</span><span class='line'>
+</span><span class='line'>&gt;`(a b (+ 1 2))
+</span><span class='line'>(a b (+ 1 2))</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>但是，反引号引用的列表提供了重新启动求值的能力，这……，我的意思是，如上式中，如果想要将<code>(+1 2)</code>这个子列表求值，怎么做到呢？反引号引用提供了这个能力，用逗号(,)作为子列表的前缀即可：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt;`(a b ,(+ 1 2))
+</span><span class='line'>(a b 3)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个当然在此刻看起来毫无用处，或者感觉略有画蛇添足之嫌，但是在宏中，这个操作符却有很广泛的用途，这里有一个有意思的例子：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defun foo (x) 
+</span><span class='line'>  (only (&gt; x 10) (format t "big than 10")))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们可以通过<code>if</code>来实现此处的only，当only之后的条件满足的话，就执行后续的所有语句：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro only (condition &rest body)
+</span><span class='line'>  `(if ,condition (progn ,@body)))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>此处可以看到，对于宏代码体中，有部分代码我们不需要引用，如(if, progn)，而另外一部分则需要解释器真实地去解释来获得值。另外，我们需要宏本身返回一个列表(被引用的列表)。</p>
+
+<h4>通用的循环（do）</h4>
+
+<p><code>do</code>是Lisp中通用的处理迭代的操作符，可以在其中创建局部变量：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(do ((i 0 (1+ i)))
+</span><span class='line'>    ((&gt;= i 4))
+</span><span class='line'>  (print i))</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>do</code>的格式比较复杂：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(do (variable-definition*)
+</span><span class='line'>  (end-test-form result-form*)
+</span><span class='line'>  statement*)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中，变量声明部分的格式为：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(variable init-form step-form)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后是测试，如果测试成功，有一个可选的返回值（上例中为nil），然后是statement部分，如果测试失败，则执行一次statement，然后通过step-from修改变量的值，测试，执行。</p>
+
+<p>上例的代码会打印<strong>0-3</strong>的数字。<code>do</code>的另外一个功用是它支持多个变量并发的循环，这是(dolist, dotimes等无法完成的，所以在很多宏中，do是不二之选)。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(do ((n 0 (1+ n))
+</span><span class='line'>     (cur 0 next)
+</span><span class='line'>     (next 1 (+ cur next)))
+</span><span class='line'>    ((= 10 n) cur))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个例子则没有statement部分，当n等于10这个测试条件成立后，返回cur当前的值。</p>
+
+<h4>apply 和 funcall</h4>
+
+<p><code>apply/call</code> 这两个函数当然是FP编程语言的必备了：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (apply #'(lambda (x y) (+ x y)) '(3 4))
+</span><span class='line'>7
+</span><span class='line'>
+</span><span class='line'>&gt; (funcall #'(lambda (x y) (+ x y)) 3 4)
+</span><span class='line'>8</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意这里的<code>#'</code>操作符，它表示对函数对象的引用，就像<code>'</code>是对list的引用一样。</p>
+
+<h4>list的基本操作</h4>
+
+<p>构造列表（cons），<code>cons</code>的作用是将两个对象结合成一个对象（这个新的对象由两部分组成），这两部分分别由<code>car</code>,<code>cdr</code>来引用。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (cons 'a nil)
+</span><span class='line'>(a)
+</span><span class='line'>
+</span><span class='line'>&gt; (cons 'a (cons 'b nil))
+</span><span class='line'>(a b)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然可以用更简洁的方式：使用list函数：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (list a b)
+</span><span class='line'>(a b)</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>car</code>, <code>cdr</code>的用法如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (setf x '(a b c (d e)))
+</span><span class='line'>(a b c (d e))
+</span><span class='line'>
+</span><span class='line'>&gt; (car x)
+</span><span class='line'>a
+</span><span class='line'>
+</span><span class='line'>&gt; (cdr x)
+</span><span class='line'>(b c (d e))
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有了<code>car</code>,<code>cdr</code>，对于既定的list，我们总是可以将其遍历（这在宏中非常有用）。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-13T16:15:00+08:00" pubdate data-updated="true">Jun 13<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/functional-programming/'>functional programming</a>, <a class='category' href='/category/lisp/'>lisp</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/06/common-lisp-basic/" data-via="" data-counturl="http://abruzzi.github.com/2013/06/common-lisp-basic/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/2013/06/setup-lisp-development-env-on-mac/" title="Previous Post: 在Mac下搭建Common Lisp开发环境(Emacs)">&laquo; 在Mac下搭建Common Lisp开发环境(Emacs)</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/06/common-lisp-basic/">common lisp 里的一些基本概念</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/06/setup-lisp-development-env-on-mac/">在Mac下搭建Common Lisp开发环境(Emacs)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/05/create-a-alfred-extension-for-create-sinatra-project/">Alfred简介及Alfred扩展编写</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/05/using-active-record-as-a-standalone-orm/">在既有数据库中使用ActiveRecord</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/05/before-and-after-selector-in-css/">CSS中的before和after伪元素及其应用</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中...)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2013/06/common-lisp-basic/';
+        var disqus_url = 'http://abruzzi.github.com/2013/06/common-lisp-basic/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
