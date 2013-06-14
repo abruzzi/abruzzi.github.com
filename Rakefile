@@ -111,6 +111,14 @@ task :new_post, :title do |t, args|
   end
 end
 
+desc "Generate the new post file name"
+task :post_file_name, :title do |t, args|
+    args.with_defaults(:title => 'new-post-file-name')
+    title = args.title
+    filename = "#{source_dir}/#{posts_dir}/#{Time.now.strftime('%Y-%m-%d')}-#{title.to_url}.#{new_post_ext}"
+    puts filename
+end
+
 # usage rake new_page[my-new-page] or rake new_page[my-new-page.html] or rake new_page (defaults to "new-page.markdown")
 desc "Create a new page in #{source_dir}/(filename)/index.#{new_page_ext}"
 task :new_page, :filename do |t, args|
