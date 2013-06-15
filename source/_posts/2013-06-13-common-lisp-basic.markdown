@@ -19,7 +19,7 @@ Lisp本质上是一个抽象语法树（AST）而已，但是又提供了一些�
 
 #### sbcl环境
 
-上一篇文章已经介绍了如何在Mac下配置Common Lisp的开发环境：
+[上一篇文章](http://icodeit.org/2013/06/setup-lisp-development-env-on-mac/)已经介绍了如何在Mac下配置Common Lisp的开发环境：
 
 ![image](http://abruzzi.github.com/images/2013/06/sbcl.resized.png)
 
