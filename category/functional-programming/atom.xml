@@ -4,7 +4,7 @@
   <title><![CDATA[Category: functional programming | I code it]]></title>
   <link href="http://abruzzi.github.com/category/functional-programming/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-06-14T13:33:00+08:00</updated>
+  <updated>2013-06-15T12:40:18+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,205 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Common Lisp中的宏(Macro)]]></title>
+    <link href="http://abruzzi.github.com/2013/06/macro-in-common-lisp/"/>
+    <updated>2013-06-15T11:12:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/06/macro-in-common-lisp</id>
+    <content type="html"><![CDATA[<h4>Lisp与其他语言之区别</h4>
+
+<p>函数式编程，前缀表达式，繁多的括号，奇怪的操作符等等，这些都足以让Lisp和其他编程语言看起来有很大的区别，但是这些区别并非本质上的差异。让Lisp和其他编程语言有本质区别的是它对<code>宏</code>的支持。</p>
+
+<p>C语言中的，被称为<code>宏</code>的预编译系统自有其好处，但是和Lisp中的<code>宏</code>比起来，好比的Notepad和Vim或者Emacs之间的差异。</p>
+
+<h4>数据与代码</h4>
+
+<p>在Lisp中，数据和代码间的差异非常小，<a href="http://icodeit.org/2013/06/common-lisp-basic/">上一篇文章</a>简单讨论了<code>引用</code>的基本概念，其中对数据与代码的差异已经有所涉及。</p>
+
+<h4>宏(Macro)</h4>
+
+<p>简而言之，<code>宏</code>即替换，在Lisp中，可以通过程序生成代码(s-expr)，而这些代码又可以被执行（当然，需要是合法的s-expr）。这一点赋予了<code>宏</code>无限的可能性，比如定义一个新的语法：</p>
+
+<p><code>
+(defmacro only (condition &amp;rest body)
+  `(if ,condition (progn ,@body)))
+</code></p>
+
+<p>Lisp中函数macroexpand-1可以用来查看调用时<code>宏</code>是如何展开的：</p>
+
+<p>```</p>
+
+<blockquote><p>(macroexpand-1 '(only (> x 10) (format t "big than 10")))</p></blockquote>
+
+<p>(IF (> X 10)</p>
+
+<pre><code>(PROGN (FORMAT T "big than 10")))
+</code></pre>
+
+<p>```</p>
+
+<p>上例中，<code>(&gt; x 10)</code>被作为<code>condition</code>，而<code>(format t "big than 10")</code>作为<code>body</code>传递给了宏。</p>
+
+<p>```</p>
+
+<blockquote><p>(macroexpand-1 '(only (> x 10)</p>
+
+<pre><code>(format t "big than 10")
+(format t "~%")))
+</code></pre></blockquote>
+
+<p>(IF (> X 10)</p>
+
+<pre><code>(PROGN (FORMAT T "big than 10") (FORMAT T "~%")))
+</code></pre>
+
+<p>```</p>
+
+<p>使用<code>progn</code>是为了让剩余的多条语句(如果有的话)，逐条执行，并返回最后一条语句的值（正如在函数中那样）。</p>
+
+<h4>可能的陷阱</h4>
+
+<p><a href="http://icodeit.org/2013/06/common-lisp-basic/">上一篇文章</a>中讨论了迭代的通用方式<code>do</code>，虽然很通用，但是三段式的定义略显繁琐。</p>
+
+<p>我们可以编写一个简单的宏<code>ntimes</code>，它接受一个数字参数N和一个代码块Block，并执行N次这个Block：</p>
+
+<p><code>
+(ntimes 10 (format t "Hello, world~%"))
+</code></p>
+
+<p>将打印10次<code>Hello, world</code>，<code>宏</code>的定义如下：</p>
+
+<p><code>``
+(defmacro ntimes (n &amp;rest prog)
+ </code>(do ((x 0 (1+ x)))</p>
+
+<pre><code>   ((&gt;= x ,n))
+ ,@prog))
+</code></pre>
+
+<p>```</p>
+
+<p>但是这个宏在某些场景下不能如预期般的工作：比如当在使用<code>ntimes</code>的context中，本身有一个变量x，而在代码块Block中，尝试修改这个x，会发生什么呢？</p>
+
+<p>```
+(let ((x 10))</p>
+
+<pre><code>(ntimes 5
+   (format t "~a~%" x)))
+</code></pre>
+
+<p>```</p>
+
+<p>预期的执行结果为打印5次10，但是事实上：</p>
+
+<p><code>
+0
+1
+2
+3
+4
+</code></p>
+
+<p>这是因为<code>宏</code>的内部使用了同名的变量，而由于作用域的原因，外部的let被屏蔽了，事实上宏的设计者貌似无法避免这类事情的发生，因为使用者如何使用是不能预料的，Lisp提供了另一种解决方案(类似于UUID)，使用<code>gensym</code>，以避免这种情况：</p>
+
+<p>```</p>
+
+<blockquote><p>(gensym)</p></blockquote>
+
+<h1>:G778</h1>
+
+<blockquote><p>(gensym)</p></blockquote>
+
+<h1>:G779</h1>
+
+<p>```</p>
+
+<p>函数<code>gensym</code>每次都会分配一个新的ID作为标示，因此宏的实现可以修改为：</p>
+
+<p>```
+(defmacro ntimes (n &amp;rest prog)
+  (let ((g (gensym)))</p>
+
+<pre><code>`(do ((,g 0 (+ ,g 1)))
+     ((&gt;= ,g ,n))
+   ,@prog)))
+</code></pre>
+
+<p>```</p>
+
+<p>事实上，这个版本还是有一个隐藏的bug：这里我们预期的n是一个数字，而实际上使用者是可以传入一个表达式如：<code>(setf x (- x 1))</code>，而由于<code>do</code>的特性，迭代中每次都查看测试条件是否满足<code>(&gt;= ,g ,n)</code>，这会使得<code>(setf x (- x 1))</code>会被执行N次。也就是说，当数字N是一个有副作用的表达式时，我们的宏的行为是错误的，可以通过引入额外的临时变量来解决这个问题。</p>
+
+<p>即在最开始的适合对N求值并赋值给一个临时变量，然后每次的测试都是基于这个临时变量而来：</p>
+
+<p>```
+(defmacro ntimes (n &amp;rest prog)
+  (let ((g (gensym))</p>
+
+<pre><code>    (h (gensym)))
+`(let ((,h ,n))
+   (do ((,g 0 (+ ,g 1)))
+       ((&gt;= ,g ,h))
+     ,@prog))))
+</code></pre>
+
+<p>```</p>
+
+<h4>定义新的语法</h4>
+
+<p>这一小节的一个例子是for循环的<code>宏</code>定义：</p>
+
+<p>```
+(defmacro for (var start stop &amp;body body)
+  (let ((gstop (gensym)))</p>
+
+<pre><code>`(do ((,var ,start (1+ ,var))
+      (,gstop ,stop))
+     ((&gt; ,var ,gstop))
+   ,@body)))
+</code></pre>
+
+<p>```</p>
+
+<p>这样，可以很方便的使用我们比较熟悉的for语句了：</p>
+
+<p>```</p>
+
+<blockquote><p>(for x 1 5</p>
+
+<pre><code> (print x))
+</code></pre></blockquote>
+
+<p>1
+2
+3
+4
+5
+```</p>
+
+<p>另一个有意思的例子是求平均值的<code>avg</code>宏：</p>
+
+<p><code>
+(defmacro avg (&amp;rest args)
+  `(/ (+ ,@args) ,(length args)))
+</code></p>
+
+<p>由于Lisp中采取前缀表达式，因此像<code>+</code>这种函数可以很方便的apply到一个列表上，如果是中缀表达式，则这种形式的抽象就变得非常复杂。</p>
+
+<p>```</p>
+
+<blockquote><p>(macroexpand-1 '(avg 1 2 3 4 5 6 7 8 9 10))
+(/ (+ 1 2 3 4 5 6 7 8 9 10) 10)</p>
+
+<p>(avg 1 2 3 4 5 6 7 8 9 10)
+11/2
+```</p></blockquote>
+
+<hr />
+
+<p>附：文中部分代码示例来源于《ANSI Common Lisp》一书。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[common lisp 里的一些基本概念]]></title>
@@ -28,7 +227,7 @@
 
 <h4>sbcl环境</h4>
 
-<p>上一篇文章已经介绍了如何在Mac下配置Common Lisp的开发环境：</p>
+<p><a href="http://icodeit.org/2013/06/setup-lisp-development-env-on-mac/">上一篇文章</a>已经介绍了如何在Mac下配置Common Lisp的开发环境：</p>
 
 <p><img src="http://abruzzi.github.com/images/2013/06/sbcl.resized.png" alt="image" /></p>
 

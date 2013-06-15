@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-06-14T13:33:00+08:00</updated>
+  <updated>2013-06-15T12:40:18+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,223 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Common Lisp中的宏(Macro)]]></title>
+    <link href="http://abruzzi.github.com/2013/06/macro-in-common-lisp/"/>
+    <updated>2013-06-15T11:12:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/06/macro-in-common-lisp</id>
+    <content type="html"><![CDATA[<h4>Lisp与其他语言之区别</h4>
+
+<p>函数式编程，前缀表达式，繁多的括号，奇怪的操作符等等，这些都足以让Lisp和其他编程语言看起来有很大的区别，但是这些区别并非本质上的差异。让Lisp和其他编程语言有本质区别的是它对<code>宏</code>的支持。</p>
+
+<p>C语言中的，被称为<code>宏</code>的预编译系统自有其好处，但是和Lisp中的<code>宏</code>比起来，好比的Notepad和Vim或者Emacs之间的差异。</p>
+
+<h4>数据与代码</h4>
+
+<p>在Lisp中，数据和代码间的差异非常小，<a href="http://icodeit.org/2013/06/common-lisp-basic/">上一篇文章</a>简单讨论了<code>引用</code>的基本概念，其中对数据与代码的差异已经有所涉及。</p>
+
+<h4>宏(Macro)</h4>
+
+<p>简而言之，<code>宏</code>即替换，在Lisp中，可以通过程序生成代码(s-expr)，而这些代码又可以被执行（当然，需要是合法的s-expr）。这一点赋予了<code>宏</code>无限的可能性，比如定义一个新的语法：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro only (condition &rest body)
+</span><span class='line'>  `(if ,condition (progn ,@body)))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lisp中函数macroexpand-1可以用来查看调用时<code>宏</code>是如何展开的：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (macroexpand-1 '(only (&gt; x 10) (format t "big than 10")))   
+</span><span class='line'>
+</span><span class='line'>(IF (&gt; X 10)
+</span><span class='line'>    (PROGN (FORMAT T "big than 10")))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上例中，<code>(&gt; x 10)</code>被作为<code>condition</code>，而<code>(format t "big than 10")</code>作为<code>body</code>传递给了宏。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (macroexpand-1 '(only (&gt; x 10) 
+</span><span class='line'>  (format t "big than 10")
+</span><span class='line'>  (format t "~%")))
+</span><span class='line'>
+</span><span class='line'>(IF (&gt; X 10)
+</span><span class='line'>    (PROGN (FORMAT T "big than 10") (FORMAT T "~%")))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用<code>progn</code>是为了让剩余的多条语句(如果有的话)，逐条执行，并返回最后一条语句的值（正如在函数中那样）。</p>
+
+<h4>可能的陷阱</h4>
+
+<p><a href="http://icodeit.org/2013/06/common-lisp-basic/">上一篇文章</a>中讨论了迭代的通用方式<code>do</code>，虽然很通用，但是三段式的定义略显繁琐。</p>
+
+<p>我们可以编写一个简单的宏<code>ntimes</code>，它接受一个数字参数N和一个代码块Block，并执行N次这个Block：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(ntimes 10 (format t "Hello, world~%"))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将打印10次<code>Hello, world</code>，<code>宏</code>的定义如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro ntimes (n &rest prog)
+</span><span class='line'>  `(do ((x 0 (1+ x)))
+</span><span class='line'>       ((&gt;= x ,n))
+</span><span class='line'>     ,@prog))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是这个宏在某些场景下不能如预期般的工作：比如当在使用<code>ntimes</code>的context中，本身有一个变量x，而在代码块Block中，尝试修改这个x，会发生什么呢？</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(let ((x 10))
+</span><span class='line'>    (ntimes 5
+</span><span class='line'>       (format t "~a~%" x)))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>预期的执行结果为打印5次10，但是事实上：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>0
+</span><span class='line'>1
+</span><span class='line'>2
+</span><span class='line'>3
+</span><span class='line'>4</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这是因为<code>宏</code>的内部使用了同名的变量，而由于作用域的原因，外部的let被屏蔽了，事实上宏的设计者貌似无法避免这类事情的发生，因为使用者如何使用是不能预料的，Lisp提供了另一种解决方案(类似于UUID)，使用<code>gensym</code>，以避免这种情况：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (gensym)
+</span><span class='line'>
+</span><span class='line'>#:G778
+</span><span class='line'>&gt; (gensym)
+</span><span class='line'>
+</span><span class='line'>#:G779</span></code></pre></td></tr></table></div></figure>
+
+
+<p>函数<code>gensym</code>每次都会分配一个新的ID作为标示，因此宏的实现可以修改为：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro ntimes (n &rest prog)
+</span><span class='line'>  (let ((g (gensym)))
+</span><span class='line'>    `(do ((,g 0 (+ ,g 1)))
+</span><span class='line'>         ((&gt;= ,g ,n))
+</span><span class='line'>       ,@prog)))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>事实上，这个版本还是有一个隐藏的bug：这里我们预期的n是一个数字，而实际上使用者是可以传入一个表达式如：<code>(setf x (- x 1))</code>，而由于<code>do</code>的特性，迭代中每次都查看测试条件是否满足<code>(&gt;= ,g ,n)</code>，这会使得<code>(setf x (- x 1))</code>会被执行N次。也就是说，当数字N是一个有副作用的表达式时，我们的宏的行为是错误的，可以通过引入额外的临时变量来解决这个问题。</p>
+
+<p>即在最开始的适合对N求值并赋值给一个临时变量，然后每次的测试都是基于这个临时变量而来：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro ntimes (n &rest prog)
+</span><span class='line'>  (let ((g (gensym))
+</span><span class='line'>        (h (gensym)))
+</span><span class='line'>    `(let ((,h ,n))
+</span><span class='line'>       (do ((,g 0 (+ ,g 1)))
+</span><span class='line'>           ((&gt;= ,g ,h))
+</span><span class='line'>         ,@prog))))</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>定义新的语法</h4>
+
+<p>这一小节的一个例子是for循环的<code>宏</code>定义：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro for (var start stop &body body)
+</span><span class='line'>  (let ((gstop (gensym)))
+</span><span class='line'>    `(do ((,var ,start (1+ ,var))
+</span><span class='line'>          (,gstop ,stop))
+</span><span class='line'>         ((&gt; ,var ,gstop))
+</span><span class='line'>       ,@body)))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，可以很方便的使用我们比较熟悉的for语句了：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (for x 1 5
+</span><span class='line'>     (print x))
+</span><span class='line'>
+</span><span class='line'>1 
+</span><span class='line'>2 
+</span><span class='line'>3 
+</span><span class='line'>4 
+</span><span class='line'>5 </span></code></pre></td></tr></table></div></figure>
+
+
+<p>另一个有意思的例子是求平均值的<code>avg</code>宏：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro avg (&rest args)
+</span><span class='line'>  `(/ (+ ,@args) ,(length args)))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>由于Lisp中采取前缀表达式，因此像<code>+</code>这种函数可以很方便的apply到一个列表上，如果是中缀表达式，则这种形式的抽象就变得非常复杂。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (macroexpand-1 '(avg 1 2 3 4 5 6 7 8 9 10))
+</span><span class='line'>(/ (+ 1 2 3 4 5 6 7 8 9 10) 10)
+</span><span class='line'>
+</span><span class='line'>&gt; (avg 1 2 3 4 5 6 7 8 9 10)
+</span><span class='line'>11/2</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<p>附：文中部分代码示例来源于《ANSI Common Lisp》一书。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[common lisp 里的一些基本概念]]></title>
@@ -28,7 +245,7 @@
 
 <h4>sbcl环境</h4>
 
-<p>上一篇文章已经介绍了如何在Mac下配置Common Lisp的开发环境：</p>
+<p><a href="http://icodeit.org/2013/06/setup-lisp-development-env-on-mac/">上一篇文章</a>已经介绍了如何在Mac下配置Common Lisp的开发环境：</p>
 
 <p><img src="http://abruzzi.github.com/images/2013/06/sbcl.resized.png" alt="image" /></p>
 
@@ -1904,168 +2121,6 @@
 <h3>效果图</h3>
 
 <p><img src="http://abruzzi.github.com/images/2013/01/navigation.png" alt="image" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[k-nearest-neighbour算法简介及示例]]></title>
-    <link href="http://abruzzi.github.com/2013/01/k-nearest-neighbour/"/>
-    <updated>2013-01-03T15:46:00+08:00</updated>
-    <id>http://abruzzi.github.com/2013/01/k-nearest-neighbour</id>
-    <content type="html"><![CDATA[<h3>background</h3>
-
-<p>元旦放假前，team的同事们想要一起学习一些技术，然后一起做些小东西，有人提到将物理墙上的卡，通过手机拍照，识别出其中的卡号，然后与电子墙同步状态。这是一个非常有意思的主题，会涉及到很多方面的知识，其实有好几个topic，只不过我对人工智能/机器学习等比较有兴趣而已，所以就先自己研究下。</p>
-
-<p>几天下来，关于数字识别的基本的流程已经清晰了，关于图片的预处理及边界标定等都差不多就绪了，剩下比较重要的是<strong>识别</strong>本身了。在这个过程中，遇到了一些很有意思的算法，我自己也花费了好几天才弄明白，所以整理了一下，这一篇先介绍下第一个，也是最简单最好用的KNN算法。</p>
-
-<h3>K-nearest-neighbour简介</h3>
-
-<p>KNN是机器学习中<strong>最简单</strong>的一种无值守的学习方法，但是在实际场景中，效果却经常<strong>非常好</strong>。一般来说，在样本较多，分布均匀的空间中，KNN会收到很好的效果。但是由于KNN会计算空间中的每个点与需要标定的点的距离(甚至需要计算额外的权重信息)，所以计算量会较大。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>假设所有的点都均匀的分布在一个平面内，此时的平面密度(单位范围内的点的个数)非常大，而每个子平面内的点的分布与所有点在整个平面内的分布相当。在子平面S中，有一个点Y，则离点X(to be classified)最近的Y很可能与Y同在子平面S中。</span></code></pre></td></tr></table></div></figure>
-
-
-<p>比如取出空间中与X距离最近的有5个点(K=5)，其中3个属于C1类，2个属于C2类，则根据少数服从多数原则，X点被归类为C1.这样的一个缺点就是如果空间内的点分布不均匀，那么会有一些误差，如果上面这个场景经常出现，那么分类会越来越偏离(有一个偏心的硬币，投掷100,000次，有90,000次正面)。这样就有引入了对KNN的另一个扩展方式，加入权重的KNN：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>当然这种形式的KNN不是很精确，由此引申出了带权重的KNN：可以为每个点都赋予一个权值，每个权值与新的点X的距离有关，通常会取距离的倒数，这样与X最近的点有较高的权重，而较远的点具有较低的权重，这样在投票(voting)阶段可以相对的提高精确度</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>KNN的一个python版本示例</h3>
-
-<h4>背景(高斯分布)</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>import random
-</span><span class='line'>
-</span><span class='line'>def gauss_list(mu, sigma, count=100):
-</span><span class='line'>    return [random.gauss(mu, sigma) for _ in range(count)]</span></code></pre></td></tr></table></div></figure>
-
-
-<p>生成一个随机数数组，数组中的元素符合高斯分布，如</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>ran = gauss_list(-2, 1, 10)
-</span><span class='line'>print ran</span></code></pre></td></tr></table></div></figure>
-
-
-<p>运行结果如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[-1.3277188634970218, -2.1034487392146817, -0.5924407591392826, -0.30376289085064045, -2.191337071105794, -1.9781081550478732, -3.7937155472105673, -2.538102349796847, -1.3728510997834549, -2.766669661625006]</span></code></pre></td></tr></table></div></figure>
-
-
-<p>更进一步，我们可以用这种方式生成平面中的一些点，这些点可以根据分布情况分为两组，一组是以(-4,0)为重心的500个点，另一组是以(4,0)为重心的500个点：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def gauss_cluster(center, stdDev, count=500):
-</span><span class='line'>    return [(random.gauss(center[0], stdDev),
-</span><span class='line'>             random.gauss(center[1], stdDev)) for _ in range(count)]
-</span><span class='line'>
-</span><span class='line'>def make_random_data():
-</span><span class='line'>    return gauss_cluster((-4, 0), 1) + gauss_cluster((4, 0), 1)
-</span><span class='line'>
-</span><span class='line'>data = make_random_data()
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>绘制高斯分布</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>data = make_random_data()
-</span><span class='line'>
-</span><span class='line'>x = map(lambda x: x[0], data)
-</span><span class='line'>y = map(lambda x: x[1], data)
-</span><span class='line'>
-</span><span class='line'>plt.clf()
-</span><span class='line'>
-</span><span class='line'>plt.scatter(x, y, c=x, vmin=0, vmax=20, s=35, alpha=0.75)
-</span><span class='line'>plt.colorbar()
-</span><span class='line'>plt.grid(True)
-</span><span class='line'>
-</span><span class='line'>plt.show()</span></code></pre></td></tr></table></div></figure>
-
-
-<p>通过使用matplotlib的绘图功能，将make_random_data生成的点通过图形的方式展现，效果更加直观，图中的两个点集分别表示两个不同的类别。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/01/gauss-distribution-resized.png" alt="image" /></p>
-
-<h4>KNN</h4>
-
-<p>我们定义KNN分类器，其中两点间的距离按照欧氏公式来求，先计算点集中离x点最近的k个点，然后取得对应的k个label，再按照label个数球max。</p>
-
-<p>比如k=5时，求的的label集合为[&#8216;O&#8217;, &#8216;O&#8217;, &#8216;A&#8217;, &#8216;A&#8217;, &#8216;A&#8217;]，则我们认为这个点应该被分类为A(少数服从多数)。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def euclidean_distance(x, y):
-</span><span class='line'>    return math.sqrt(sum([(a-b)**2 for (a,b) in zip(x,y)]))
-</span><span class='line'>
-</span><span class='line'>def makeKNNClassifier(data, labels, k, distance):
-</span><span class='line'>    def classify(x):
-</span><span class='line'>        closestPoints = heapq.nsmallest(k, enumerate(data),
-</span><span class='line'>                                        key=lambda y: distance(x, y[1]))
-</span><span class='line'>        closestLabels = [labels[i] for (i, pt) in closestPoints]
-</span><span class='line'>        return max(set(closestLabels), key=closestLabels.count)
-</span><span class='line'>
-</span><span class='line'>    return classify</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>测试一下</h4>
-
-<p>创建1000个随机点，前500个分类为A(Apple)，后500个分类为O(Orange)，k值为3。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>data = make_random_data()
-</span><span class='line'>labels = ['A'] * 500 + ['O'] * 500
-</span><span class='line'>
-</span><span class='line'>fitter = makeKNNClassifier(data, labels, 3, euclidean_distance)
-</span><span class='line'>
-</span><span class='line'>print fitter((-3, 1))
-</span><span class='line'>print fitter((4, 2))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>图中的两个红色的点分别为P1(-3, 1)和P2(4, 2)。它们都已经被正确的分类。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/01/knn-plant-resized.png" alt="image" /></p>
 ]]></content>
   </entry>
   

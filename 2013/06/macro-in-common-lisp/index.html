@@ -1,0 +1,533 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Common Lisp中的宏(Macro) - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="Lisp与其他语言之区别 函数式编程，前缀表达式，繁多的括号，奇怪的操作符等等，这些都足以让Lisp和其他编程语言看起来有很大的区别，但是这些区别并非本质上的差异。让Lisp和其他编程语言有本质区别的是它对宏的支持。 C语言中的，被称为宏的预编译系统自有其好处，但是和Lisp中的宏比起来， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2013/06/macro-in-common-lisp/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">lambda</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <!-- <input type="hidden" name="q" value="site:abruzzi.github.com" /> -->
+    <input type="hidden" name="q" value="site:icodeit.org" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about-me">About Me</a></li>
+  <li><a href="/jsccp">JavaScript内核系列</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Common Lisp中的宏(Macro)</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-15T11:12:00+08:00" pubdate data-updated="true">Jun 15<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h4>Lisp与其他语言之区别</h4>
+
+<p>函数式编程，前缀表达式，繁多的括号，奇怪的操作符等等，这些都足以让Lisp和其他编程语言看起来有很大的区别，但是这些区别并非本质上的差异。让Lisp和其他编程语言有本质区别的是它对<code>宏</code>的支持。</p>
+
+<p>C语言中的，被称为<code>宏</code>的预编译系统自有其好处，但是和Lisp中的<code>宏</code>比起来，好比的Notepad和Vim或者Emacs之间的差异。</p>
+
+<h4>数据与代码</h4>
+
+<p>在Lisp中，数据和代码间的差异非常小，<a href="http://icodeit.org/2013/06/common-lisp-basic/">上一篇文章</a>简单讨论了<code>引用</code>的基本概念，其中对数据与代码的差异已经有所涉及。</p>
+
+<h4>宏(Macro)</h4>
+
+<p>简而言之，<code>宏</code>即替换，在Lisp中，可以通过程序生成代码(s-expr)，而这些代码又可以被执行（当然，需要是合法的s-expr）。这一点赋予了<code>宏</code>无限的可能性，比如定义一个新的语法：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro only (condition &rest body)
+</span><span class='line'>  `(if ,condition (progn ,@body)))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lisp中函数macroexpand-1可以用来查看调用时<code>宏</code>是如何展开的：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (macroexpand-1 '(only (&gt; x 10) (format t "big than 10")))   
+</span><span class='line'>
+</span><span class='line'>(IF (&gt; X 10)
+</span><span class='line'>    (PROGN (FORMAT T "big than 10")))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上例中，<code>(&gt; x 10)</code>被作为<code>condition</code>，而<code>(format t "big than 10")</code>作为<code>body</code>传递给了宏。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (macroexpand-1 '(only (&gt; x 10) 
+</span><span class='line'>  (format t "big than 10")
+</span><span class='line'>  (format t "~%")))
+</span><span class='line'>
+</span><span class='line'>(IF (&gt; X 10)
+</span><span class='line'>    (PROGN (FORMAT T "big than 10") (FORMAT T "~%")))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用<code>progn</code>是为了让剩余的多条语句(如果有的话)，逐条执行，并返回最后一条语句的值（正如在函数中那样）。</p>
+
+<h4>可能的陷阱</h4>
+
+<p><a href="http://icodeit.org/2013/06/common-lisp-basic/">上一篇文章</a>中讨论了迭代的通用方式<code>do</code>，虽然很通用，但是三段式的定义略显繁琐。</p>
+
+<p>我们可以编写一个简单的宏<code>ntimes</code>，它接受一个数字参数N和一个代码块Block，并执行N次这个Block：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(ntimes 10 (format t "Hello, world~%"))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将打印10次<code>Hello, world</code>，<code>宏</code>的定义如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro ntimes (n &rest prog)
+</span><span class='line'>  `(do ((x 0 (1+ x)))
+</span><span class='line'>       ((&gt;= x ,n))
+</span><span class='line'>     ,@prog))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是这个宏在某些场景下不能如预期般的工作：比如当在使用<code>ntimes</code>的context中，本身有一个变量x，而在代码块Block中，尝试修改这个x，会发生什么呢？</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(let ((x 10))
+</span><span class='line'>    (ntimes 5
+</span><span class='line'>       (format t "~a~%" x)))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>预期的执行结果为打印5次10，但是事实上：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>0
+</span><span class='line'>1
+</span><span class='line'>2
+</span><span class='line'>3
+</span><span class='line'>4</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这是因为<code>宏</code>的内部使用了同名的变量，而由于作用域的原因，外部的let被屏蔽了，事实上宏的设计者貌似无法避免这类事情的发生，因为使用者如何使用是不能预料的，Lisp提供了另一种解决方案(类似于UUID)，使用<code>gensym</code>，以避免这种情况：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (gensym)
+</span><span class='line'>
+</span><span class='line'>#:G778
+</span><span class='line'>&gt; (gensym)
+</span><span class='line'>
+</span><span class='line'>#:G779</span></code></pre></td></tr></table></div></figure>
+
+
+<p>函数<code>gensym</code>每次都会分配一个新的ID作为标示，因此宏的实现可以修改为：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro ntimes (n &rest prog)
+</span><span class='line'>  (let ((g (gensym)))
+</span><span class='line'>    `(do ((,g 0 (+ ,g 1)))
+</span><span class='line'>         ((&gt;= ,g ,n))
+</span><span class='line'>       ,@prog)))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>事实上，这个版本还是有一个隐藏的bug：这里我们预期的n是一个数字，而实际上使用者是可以传入一个表达式如：<code>(setf x (- x 1))</code>，而由于<code>do</code>的特性，迭代中每次都查看测试条件是否满足<code>(&gt;= ,g ,n)</code>，这会使得<code>(setf x (- x 1))</code>会被执行N次。也就是说，当数字N是一个有副作用的表达式时，我们的宏的行为是错误的，可以通过引入额外的临时变量来解决这个问题。</p>
+
+<p>即在最开始的适合对N求值并赋值给一个临时变量，然后每次的测试都是基于这个临时变量而来：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro ntimes (n &rest prog)
+</span><span class='line'>  (let ((g (gensym))
+</span><span class='line'>        (h (gensym)))
+</span><span class='line'>    `(let ((,h ,n))
+</span><span class='line'>       (do ((,g 0 (+ ,g 1)))
+</span><span class='line'>           ((&gt;= ,g ,h))
+</span><span class='line'>         ,@prog))))</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>定义新的语法</h4>
+
+<p>这一小节的一个例子是for循环的<code>宏</code>定义：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro for (var start stop &body body)
+</span><span class='line'>  (let ((gstop (gensym)))
+</span><span class='line'>    `(do ((,var ,start (1+ ,var))
+</span><span class='line'>          (,gstop ,stop))
+</span><span class='line'>         ((&gt; ,var ,gstop))
+</span><span class='line'>       ,@body)))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，可以很方便的使用我们比较熟悉的for语句了：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (for x 1 5
+</span><span class='line'>     (print x))
+</span><span class='line'>
+</span><span class='line'>1 
+</span><span class='line'>2 
+</span><span class='line'>3 
+</span><span class='line'>4 
+</span><span class='line'>5 </span></code></pre></td></tr></table></div></figure>
+
+
+<p>另一个有意思的例子是求平均值的<code>avg</code>宏：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro avg (&rest args)
+</span><span class='line'>  `(/ (+ ,@args) ,(length args)))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>由于Lisp中采取前缀表达式，因此像<code>+</code>这种函数可以很方便的apply到一个列表上，如果是中缀表达式，则这种形式的抽象就变得非常复杂。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (macroexpand-1 '(avg 1 2 3 4 5 6 7 8 9 10))
+</span><span class='line'>(/ (+ 1 2 3 4 5 6 7 8 9 10) 10)
+</span><span class='line'>
+</span><span class='line'>&gt; (avg 1 2 3 4 5 6 7 8 9 10)
+</span><span class='line'>11/2</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<p>附：文中部分代码示例来源于《ANSI Common Lisp》一书。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-15T11:12:00+08:00" pubdate data-updated="true">Jun 15<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/functional-programming/'>functional programming</a>, <a class='category' href='/category/lisp/'>lisp</a>, <a class='category' href='/category/script/'>script</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/06/macro-in-common-lisp/" data-via="" data-counturl="http://abruzzi.github.com/2013/06/macro-in-common-lisp/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/2013/06/common-lisp-basic/" title="Previous Post: common lisp 里的一些基本概念">&laquo; common lisp 里的一些基本概念</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/06/macro-in-common-lisp/">Common Lisp中的宏(Macro)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/06/common-lisp-basic/">common lisp 里的一些基本概念</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/06/setup-lisp-development-env-on-mac/">在Mac下搭建Common Lisp开发环境(Emacs)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/05/create-a-alfred-extension-for-create-sinatra-project/">Alfred简介及Alfred扩展编写</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/05/using-active-record-as-a-standalone-orm/">在既有数据库中使用ActiveRecord</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中...)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2013/06/macro-in-common-lisp/';
+        var disqus_url = 'http://abruzzi.github.com/2013/06/macro-in-common-lisp/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

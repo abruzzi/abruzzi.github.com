@@ -390,7 +390,11 @@
     </url>
     <url>
         <loc>http://abruzzi.github.com/2013/06/common-lisp-basic/</loc>
-        <lastmod>2013-06-14T13:22:57+08:00</lastmod>
+        <lastmod>2013-06-15T11:19:33+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://abruzzi.github.com/2013/06/macro-in-common-lisp/</loc>
+        <lastmod>2013-06-15T12:39:25+08:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/about-me/</loc>
@@ -398,11 +402,11 @@
     </url>
     <url>
         <loc>http://abruzzi.github.com/blog/archives/</loc>
-        <lastmod>2013-06-14T13:22:57+08:00</lastmod>
+        <lastmod>2013-06-15T12:39:25+08:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/</loc>
-        <lastmod>2013-06-14T13:22:57+08:00</lastmod>
+        <lastmod>2013-06-15T12:39:25+08:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/jsccp/</loc>
