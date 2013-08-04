@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby | I code it]]></title>
   <link href="http://abruzzi.github.com/category/ruby/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-07-20T17:01:57+08:00</updated>
+  <updated>2013-08-04T13:12:20+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,163 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用Grape快速开发API]]></title>
+    <link href="http://abruzzi.github.com/2013/08/quick-api-development-by-grape/"/>
+    <updated>2013-08-04T10:29:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/08/quick-api-development-by-grape</id>
+    <content type="html"><![CDATA[<h3>Grape简介</h3>
+
+<p><a href="http://intridea.github.io/grape">Grape</a>是一个基于Rack的非常轻量级的框架，用于快速的开发API。一般来说，Rails对于单独的API来说，太过于重量级；而Sinatra虽然足够小巧，但是又没有为开发API提供足够的默认支持（如果从可控制性，灵活性上来说，Sinatra可能更好一些，但是如果有专门的更好用的工具，为什么不用呢？）。</p>
+
+<p>安装非常简便：</p>
+
+<p><code>
+$ gem install grape
+</code></p>
+
+<p>或者使用在自己的Gemfile中，与其他的gem一起搭建API:</p>
+
+<p><code>
+gem 'grape'
+</code></p>
+
+<h3>为既有系统添加API</h3>
+
+<h4>简单一试</h4>
+
+<p>之前的一篇介绍<a href="http://icodeit.org/2013/05/using-active-record-as-a-standalone-orm/">ActiveRecord在既有系统中使用</a>的文章中，我使用ActiveRecord为既有的数据库visitor中的三个表(visitor, listGroup, listGroupItem)建立了ruby对应的模型。现在我们可以为这些模型包装一组API，以方便客户端（消费者）可以通过web来访问。</p>
+
+<p>```
+module MySys</p>
+
+<pre><code>class API &lt; Grape::API
+    format :json
+
+    resource :visitors do
+
+        desc "get all visitor information"
+        get do
+            Visitor.limit(20)
+        end
+
+    end
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>首先，MySys::API扩展了Grape::API。<code>format</code>定义我们的API会产生JSON格式的输出，resource定义了这一组API是为资源visitors提供的，因此访问API的url为：</p>
+
+<p><code>
+http://localhost:9292/visitors/
+</code></p>
+
+<p>当然，grape提供一个很方便的设置prefix，可以使得API的路径更有意义:</p>
+
+<p><code>
+format :json
+prefix "mysys"
+</code></p>
+
+<p>url则相应地变为:</p>
+
+<p><code>
+http://localhost:9292/mysys/visitors/
+</code></p>
+
+<h4>处理参数</h4>
+
+<p>在对参数的处理上，grape也非常灵活，比如接上例，我们想要获取某一个具体的用户的信息：</p>
+
+<p><code>
+http://localhost:9292/visitors/8a9d82b13b9786e1013b978766150001
+</code></p>
+
+<p>我们可以添加一个新的endpoint：</p>
+
+<p>```
+desc "return a visitor"
+params do</p>
+
+<pre><code>requires :visitor_uid, :type =&gt; String, :desc =&gt; "visitor id"
+</code></pre>
+
+<p>end
+route_param :visitor_uid do</p>
+
+<pre><code>get do
+    Visitor.find(params[:visitor_uid])
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>params中要求，需要一个类型为String的参数visitor_uid。然后在handler中，通过params来引用这个参数的值。</p>
+
+<h4>助手函数(Helper)</h4>
+
+<p>Grape允许开发者将编解码，权限校验等等的通用的操作分离出来，放入助手函数，这些Helper可以被所有的API使用:</p>
+
+<p>```
+helpers do</p>
+
+<pre><code>def generate_default_visitor(email, site) 
+    {
+        :visitor_uid =&gt; SecureRandom.hex,
+        :password_expiration =&gt; (Time.now + 60 * 60 * 24),
+        :last_used_timestamp =&gt; (Time.now - 60 * 60 * 24),
+        :visitor_login_id =&gt; email,
+        :site_name =&gt; site
+    }
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>使用上边定义的助手函数<code>generate_default_visitor</code>：</p>
+
+<p>```
+desc "create a visitor"
+params do</p>
+
+<pre><code>requires :email, :type =&gt; String, :desc =&gt; "Email address"
+requires :site, :type =&gt; String, :desc =&gt; "Site"
+</code></pre>
+
+<p>end
+post do</p>
+
+<pre><code>attr = generate_default_visitor(params[:email], params[:site])
+visitor = Visitor.new attr
+visitor.visitor_uid = attr[:visitor_uid]
+visitor.save
+</code></pre>
+
+<p>end
+```</p>
+
+<h3>对API进行测试</h3>
+
+<p>通过Web测试API有非常多的方式，比如通过浏览器的插件(POSTMan)，RSpec，但是我最喜欢，也是最轻便的方式是通过命令行工具curl：</p>
+
+<p><code>
+curl http://localhost:9292/visitors/8a9d82b13b9786e1013b978766150001
+</code></p>
+
+<p>或者：</p>
+
+<p><code>
+curl -H "Content-Type: application/json" -X POST -d "{\"email\":\"jtqiu@tw.com\", \"site\":\"mysys\"}" http://localhost:9292/visitors/
+</code></p>
+
+<p>命令行的程序curl是一个非常灵活，强大的工具，可以定制HTTP头信息，User Agent，支持所有的HTTP动词，最重要的是，在命令行很容易将工具们组合在一起，并完成自动化。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Alfred简介及Alfred扩展编写]]></title>
@@ -514,37 +671,6 @@ add10.call(10) == 20
 
 <p><p>这个示例主要讨论cucumber在测试外部的(非ruby应用)时的简单实用，主要是与capybara结合起来，测试web应用的例子，更多的信息可以参考其<a href="http://cukes.info/">站点</a>。</p>
 </p>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[神奇的capybara]]></title>
-    <link href="http://abruzzi.github.com/2012/04/%E7%A5%9E%E5%A5%87%E7%9A%84capybara/"/>
-    <updated>2012-04-25T00:00:00+08:00</updated>
-    <id>http://abruzzi.github.com/2012/04/神奇的capybara</id>
-    <content type="html"><![CDATA[<p><p><a href="https://github.com/jnicklas/capybara">capybara</a>是一个ruby的gem，简言之，它是一个用来测试web应用的工具包，使用它可以模拟用户对web应用的操作。它可以通过CSS选择器选中页面上的元素，然后对这些元素应用一些操作，从而实现模拟用户操作。另外一个常见的场景是检测页面上某些元素是否存在，如我们经常会为页面添加一些动态的效果，在某个动作发生后，才会添加某些元素，这些都可以通过<a href="https://github.com/jnicklas/capybara">capybara</a>来完成。</p> <p>下面是一个rails的测试示例：</p> <div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> require <span style="color: #006080">'spec_helper'</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span> describe <span style="color: #006080">"Static pages"</span> <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span>     subject { page }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span>     describe <span style="color: #006080">"Home page"</span> <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span>         before { visit root_path }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span>         it { should have_selector(<span style="color: #006080">'h1'</span>, :text =&gt; <span style="color: #006080">'Sample App'</span>) }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span>         it { should have_selector(<span style="color: #006080">'title'</span>, :text =&gt; <span style="color: #006080">"Ruby on Rails"</span>) }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum10">  10:</span>         it { should_not have_selector(<span style="color: #006080">'title'</span>, :text =&gt; <span style="color: #006080">'| Home'</span>) }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum11">  11:</span>     end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum12">  12:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum13">  13:</span>     describe <span style="color: #006080">"Help page"</span> <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum14">  14:</span>         before { visit help_path }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum15">  15:</span>         it { should have_content(<span style="color: #006080">'Help'</span>) }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum16">  16:</span>         it { should have_selector(<span style="color: #006080">'title'</span>, :text =&gt; <span style="color: #006080">"Ruby on Rails | Help"</span>) }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum17">  17:</span>     end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum18">  18:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum19">  19:</span>     describe <span style="color: #006080">"About page"</span> <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum20">  20:</span>         before { visit about_path }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum21">  21:</span>         it { should have_content(<span style="color: #006080">'About us'</span>) }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum22">  22:</span>         it { should have_selector(<span style="color: #006080">'title'</span>, :text =&gt; <span style="color: #006080">"Ruby on Rails | About us"</span>) }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum23">  23:</span>     end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum24">  24:</span>     </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum25">  25:</span>     describe <span style="color: #006080">"Contact page"</span> <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum26">  26:</span>         before { visit contact_path }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum27">  27:</span>         it { should have_selector(<span style="color: #006080">'h1'</span>, :text =&gt; <span style="color: #006080">'Contact'</span>) }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum28">  28:</span>         it { should have_selector(<span style="color: #006080">'title'</span>, :text =&gt; <span style="color: #006080">'Ruby on Rails | Contact'</span>) }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum29">  29:</span>     end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum30">  30:</span> end</pre><!--CRLF--></div></div></p>
-
-
-
-
-<p><p>visit接受一个url，并模拟浏览器打开该链接。have_selector则接受一个CSS选择器，并检测第二个参数(一个hash)中的key-value-pair在实际的页面中是否存在。</p>
-<div id="codeSnippetWrapper">
-<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> it <span style="color: #006080">"signs me in"</span> <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>   within(<span style="color: #006080">"#session"</span>) <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span>     fill_in <span style="color: #006080">'Login'</span>, :with =&gt; <span style="color: #006080">'user@example.com'</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span>     fill_in <span style="color: #006080">'Password'</span>, :with =&gt; <span style="color: #006080">'password'</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span>   end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span>   click_link <span style="color: #006080">'Sign in'</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span> end</pre><!--CRLF--></div></div></p>
-
-
-
-
-<p><p>这段代码则用以模拟用户登录，填入用户名/密码，然后点击文字为‘Sign in’的按钮进行登录，当然还可以检测页面是否跳转到正确的位置等。</p>
-<div id="codeSnippetWrapper">
-<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> require <span style="color: #006080">'spec_helper'</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span> describe <span style="color: #006080">"admin pages"</span> <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span>     it <span style="color: #006080">"should jump to list when the link is clicked"</span> <span style="color: #0000ff">do</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span>         visit <span style="color: #006080">'/admin_pages/admin'</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span>         click_link(<span style="color: #006080">'User List'</span>)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span>         current_path.should == <span style="color: #006080">'/admin_pages/list'</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span>     end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span> end</pre><!--CRLF--></div></div></p>
-
-
-
-
-<p><p>先访问‘/admin_pages/admin’,然后点击该页面上的链接，则预期应该跳转到另一个页面：‘/admin_pages/list’。</p>
-<p><a href="https://github.com/jnicklas/capybara">capybara</a>的driver是可配置的，driver是指使用哪种模拟器来运行页面，默认的是:rack_test，:rack_test不支持javascript，但是速度会比 <a href="http://seleniumhq.org/">:selenium</a>快很多。很多情况下，可以对那些不需要javascript的页面使用:rack_test来跑，而其他的使用:selenium。</p>
-<p>我打算在下一篇关于cucumber的介绍中，讨论一个更有意思的例子。</p></p>
 
 ]]></content>
   </entry>

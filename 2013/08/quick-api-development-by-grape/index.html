@@ -1,0 +1,497 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>使用Grape快速开发API - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="Grape简介 Grape是一个基于Rack的非常轻量级的框架，用于快速的开发API。一般来说，Rails对于单独的API来说，太过于重量级；而Sinatra虽然足够小巧，但是又没有为开发API提供足够的默认支持（如果从可控制性，灵活性上来说，Sinatra可能更好一些， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2013/08/quick-api-development-by-grape/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">lambda</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <!-- <input type="hidden" name="q" value="site:abruzzi.github.com" /> -->
+    <input type="hidden" name="q" value="site:icodeit.org" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about-me">About Me</a></li>
+  <li><a href="/jsccp">JavaScript内核系列</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">使用Grape快速开发API</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-04T10:29:00+08:00" pubdate data-updated="true">Aug 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>Grape简介</h3>
+
+<p><a href="http://intridea.github.io/grape">Grape</a>是一个基于Rack的非常轻量级的框架，用于快速的开发API。一般来说，Rails对于单独的API来说，太过于重量级；而Sinatra虽然足够小巧，但是又没有为开发API提供足够的默认支持（如果从可控制性，灵活性上来说，Sinatra可能更好一些，但是如果有专门的更好用的工具，为什么不用呢？）。</p>
+
+<p>安装非常简便：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ gem install grape</span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者使用在自己的Gemfile中，与其他的gem一起搭建API:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'grape'</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>为既有系统添加API</h3>
+
+<h4>简单一试</h4>
+
+<p>之前的一篇介绍<a href="http://icodeit.org/2013/05/using-active-record-as-a-standalone-orm/">ActiveRecord在既有系统中使用</a>的文章中，我使用ActiveRecord为既有的数据库visitor中的三个表(visitor, listGroup, listGroupItem)建立了ruby对应的模型。现在我们可以为这些模型包装一组API，以方便客户端（消费者）可以通过web来访问。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module MySys
+</span><span class='line'>    class API &lt; Grape::API
+</span><span class='line'>        format :json
+</span><span class='line'>
+</span><span class='line'>        resource :visitors do
+</span><span class='line'>
+</span><span class='line'>            desc "get all visitor information"
+</span><span class='line'>            get do
+</span><span class='line'>                Visitor.limit(20)
+</span><span class='line'>            end
+</span><span class='line'>
+</span><span class='line'>        end
+</span><span class='line'>    end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先，MySys::API扩展了Grape::API。<code>format</code>定义我们的API会产生JSON格式的输出，resource定义了这一组API是为资源visitors提供的，因此访问API的url为：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:9292/visitors/</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然，grape提供一个很方便的设置prefix，可以使得API的路径更有意义:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>format :json
+</span><span class='line'>prefix "mysys"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>url则相应地变为:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:9292/mysys/visitors/</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>处理参数</h4>
+
+<p>在对参数的处理上，grape也非常灵活，比如接上例，我们想要获取某一个具体的用户的信息：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:9292/visitors/8a9d82b13b9786e1013b978766150001</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们可以添加一个新的endpoint：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>desc "return a visitor"
+</span><span class='line'>params do
+</span><span class='line'>    requires :visitor_uid, :type =&gt; String, :desc =&gt; "visitor id"
+</span><span class='line'>end
+</span><span class='line'>route_param :visitor_uid do
+</span><span class='line'>    get do
+</span><span class='line'>        Visitor.find(params[:visitor_uid])
+</span><span class='line'>    end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>params中要求，需要一个类型为String的参数visitor_uid。然后在handler中，通过params来引用这个参数的值。</p>
+
+<h4>助手函数(Helper)</h4>
+
+<p>Grape允许开发者将编解码，权限校验等等的通用的操作分离出来，放入助手函数，这些Helper可以被所有的API使用:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>helpers do
+</span><span class='line'>    def generate_default_visitor(email, site) 
+</span><span class='line'>        {
+</span><span class='line'>            :visitor_uid =&gt; SecureRandom.hex,
+</span><span class='line'>            :password_expiration =&gt; (Time.now + 60 * 60 * 24),
+</span><span class='line'>            :last_used_timestamp =&gt; (Time.now - 60 * 60 * 24),
+</span><span class='line'>            :visitor_login_id =&gt; email,
+</span><span class='line'>            :site_name =&gt; site
+</span><span class='line'>        }
+</span><span class='line'>    end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用上边定义的助手函数<code>generate_default_visitor</code>：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>desc "create a visitor"
+</span><span class='line'>params do
+</span><span class='line'>    requires :email, :type =&gt; String, :desc =&gt; "Email address"
+</span><span class='line'>    requires :site, :type =&gt; String, :desc =&gt; "Site"
+</span><span class='line'>end
+</span><span class='line'>post do
+</span><span class='line'>    attr = generate_default_visitor(params[:email], params[:site])
+</span><span class='line'>    visitor = Visitor.new attr
+</span><span class='line'>    visitor.visitor_uid = attr[:visitor_uid]
+</span><span class='line'>    visitor.save
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>对API进行测试</h3>
+
+<p>通过Web测试API有非常多的方式，比如通过浏览器的插件(POSTMan)，RSpec，但是我最喜欢，也是最轻便的方式是通过命令行工具curl：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:9292/visitors/8a9d82b13b9786e1013b978766150001</span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -H "Content-Type: application/json" -X POST -d "{\"email\":\"jtqiu@tw.com\", \"site\":\"mysys\"}" http://localhost:9292/visitors/</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命令行的程序curl是一个非常灵活，强大的工具，可以定制HTTP头信息，User Agent，支持所有的HTTP动词，最重要的是，在命令行很容易将工具们组合在一起，并完成自动化。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-04T10:29:00+08:00" pubdate data-updated="true">Aug 4<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/grape/'>grape</a>, <a class='category' href='/category/lightweight/'>lightweight</a>, <a class='category' href='/category/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/08/quick-api-development-by-grape/" data-via="" data-counturl="http://abruzzi.github.com/2013/08/quick-api-development-by-grape/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/2013/07/write-a-jquery-plugin-step-by-step/" title="Previous Post: 逐步编写一个jQuery插件(todoify)">&laquo; 逐步编写一个jQuery插件(todoify)</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/08/quick-api-development-by-grape/">使用Grape快速开发API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/07/write-a-jquery-plugin-step-by-step/">逐步编写一个jQuery插件(todoify)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/06/macro-in-common-lisp/">Common Lisp中的宏(Macro)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/06/common-lisp-basic/">common lisp 里的一些基本概念</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/06/setup-lisp-development-env-on-mac/">在Mac下搭建Common Lisp开发环境(Emacs)</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中...)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2013/08/quick-api-development-by-grape/';
+        var disqus_url = 'http://abruzzi.github.com/2013/08/quick-api-development-by-grape/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
