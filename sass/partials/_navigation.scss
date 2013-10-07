@@ -17,16 +17,16 @@ body > nav {
       font-family: $sans;
       line-height: 1em;
       width: 95%;
-      @include border-radius(.5em);
+      // @include border-radius(.5em);
       @include background-clip(padding-box);
-      @include box-shadow(lighten($nav-bg, 2) 0 1px);
+      // @include box-shadow(lighten($nav-bg, 2) 0 1px);
       background-color: lighten($nav-bg, 15);
       border: 1px solid $nav-border;
       color: #888;
       &:focus {
         color: #444;
         border-color: #80b1df;
-        @include box-shadow(#80b1df 0 0 4px, #80b1df 0 0 3px inset);
+        // @include box-shadow(#80b1df 0 0 4px, #80b1df 0 0 3px inset);
         background-color: #fff;
         outline: none;
       }
