@@ -4,7 +4,7 @@
   <title><![CDATA[Category: lightweight | I code it]]></title>
   <link href="http://abruzzi.github.com/category/lightweight/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-08-04T13:12:20+08:00</updated>
+  <updated>2013-10-07T23:26:46+05:30</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,9 +14,206 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Using grunt as your build tool]]></title>
+    <link href="http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool/"/>
+    <updated>2013-10-07T18:14:00+05:30</updated>
+    <id>http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool</id>
+    <content type="html"><![CDATA[<h3>Grunt简介</h3>
+
+<p>Grunt是一个基于JavaScript的构建工具。和其他的构建工具类似，grunt主要用于一些将一些繁琐的工作自动化，比如运行测试，代码的静态检查，压缩JavaScript源代码等等。</p>
+
+<h4>安装grunt-cli</h4>
+
+<p>要在命令行运行grunt，需要安装grunt的命令行工具：</p>
+
+<p><code>
+$ npm install -g grunt-cli
+</code></p>
+
+<p>grunt-cli本身并不会提供Grunt构建工具，而只是一个Grunt的调用器。<code>-g</code>参数表示将grunt-cli安装在全局的路径中，这样我们可以在不同的项目中使用grunt-cli，而由于grunt-cli本身只是一个调用器，所以对于不同的项目，真正运行的Grunt可以是不同的版本，而命令行的借口则完全一致。</p>
+
+<p>grunt-cli提供的命令行可执行文件的名称为<code>grunt</code>，这个工具每次运行时都会检查当前目录下的Grunt。</p>
+
+<h4>使用grunt-cli</h4>
+
+<p>如果在一个既有的npm模块中，可以很容易的加入grunt的支持，只需要修改package.json，加入依赖，然后运行<code>npm install</code>来完成依赖的安装即可。</p>
+
+<p>如果是一个新启动的项目，那么在项目中添加两个文件：package.json和Gruntfile。其中package.json用来定义当前项目是一个npm的模块，而Gruntfile用来定义具体的任务，以及加载Grunt的其他插件(Grunt提供丰富的插件，比如运行测试，代码静态检查等功能都是通过插件来完成的)</p>
+
+<h4>package.json</h4>
+
+<p>package.json定义了一个工程的元数据，这些数据被npm管理器来使用，npm本身提供了<code>init</code>参数可以很容易的生成一个package.json文件：</p>
+
+<p><code>
+$ npm init
+</code></p>
+
+<p>根据提示可以很容易的生成一个新的package.json</p>
+
+<p>```
+{
+  "name": "chapter-testing",
+  "version": "0.0.0",
+  "description": "This is the demo for how to use grunt.js",
+  "main": "my.conf.js",
+  "directories": {</p>
+
+<pre><code>"test": "test"
+</code></pre>
+
+<p>  },
+  "scripts": {</p>
+
+<pre><code>"test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
+</code></pre>
+
+<p>  },
+  "author": "Juntao",
+  "license": "BSD-2-Clause"
+}
+```</p>
+
+<p>一般来说，package.json文件中有一个<code>devDependencies</code>的小节，定义了本项目的外部依赖。</p>
+
+<p>可以通过运行</p>
+
+<p><code>
+$ npm install grunt --save-dev
+</code>
+来为工程文件package.json添加<code>devDependencies</code>小节的定义：</p>
+
+<p><code>
+"devDependencies": {
+  "grunt": "~0.4.1"
+}
+</code></p>
+
+<p>该命令会为工程添加一条依赖关系，如果别人拿到这个文件，就可以在本地“复原”你的开发环境，以保证整个团队使用同样地<strong>库</strong>文件。</p>
+
+<p>完成之后，该命令会在本地生成一个目录(如果没有的话)<code>node_modules</code>，其中包括了完成的Grunt的可执行文件，这时候在命令行运行grunt(由grunt-cli提供的命令行工具)，就会尝试在此目录中查找Grunt的可执行文件。</p>
+
+<h4>Gruntfile</h4>
+
+<p>要运行Grunt，还需要定义你自己的任务，默认的任务定义在Gruntfile中，Gruntfile有一定的格式。</p>
+
+<p>所有的任务需要定义在一个函数中：</p>
+
+<p><code>
+module.exports = function(grunt) {
+  // task defination
+};
+</code></p>
+
+<p>一般而言，使用Grunt会读取一些项目的信息(定义在package.json中)：</p>
+
+<p>```
+grunt.initConfig({</p>
+
+<pre><code>pkg: grunt.file.readJSON('package.json')
+</code></pre>
+
+<p>});
+```</p>
+
+<p>亦可以在这个时刻指定一些其他的插件的选项：</p>
+
+<p>```
+grunt.initConfig({</p>
+
+<pre><code>pkg: grunt.file.readJSON('package.json'),
+jshint: {
+    all: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<p>然后需要加载其他的插件(如果需要的话)</p>
+
+<p><code>
+grunt.loadNpmTasks('grunt-contrib-jshint');
+</code></p>
+
+<p>最后，需要指定一个grunt的入口任务(default任务)：</p>
+
+<p>```
+grunt.registerTask('default', function() {</p>
+
+<pre><code>console.log("default task");
+</code></pre>
+
+<p>});</p>
+
+<p>```</p>
+
+<p>然后运行<code>grunt</code>，我们此处定义的default任务仅仅在控制台上打印一行字符串:</p>
+
+<p>```
+$ grunt
+Running "default" task
+default task</p>
+
+<p>Done, without errors.
+```</p>
+
+<h3>Grunt插件</h3>
+
+<p>Grunt已经得到了很多的开源软件贡献者的支持，已经又众多的插件被开发出来。比如:</p>
+
+<ol>
+<li><a href="https://github.com/gruntjs/grunt-contrib-jshint">grunt-contrib-jshint</a></li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-uglify">grunt-contrib-uglify</a></li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-qunit">grunt-contrib-qunit</a></li>
+<li><a href="https://github.com/karma-runner/grunt-karma">grunt-karma</a></li>
+</ol>
+
+
+<p>等等，使用这些插件可以快速的为你的项目开发提供很多的便利，以grunt-jshint为例，
+首先需要安装此插件：</p>
+
+<p><code>
+$ npm install grunt-contrib-jshint --save-dev
+</code></p>
+
+<p>然后在grunt.initConfig中指定jshint需要的参数：</p>
+
+<p>```
+grunt.initConfig({</p>
+
+<pre><code>jshint: {
+    files: ['js/*.js'],
+    options: {
+        ignores: ['js/jquery*.js']
+    }
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<p>然后加载此插件：</p>
+
+<p><code>
+grunt.loadNpmTasks('grunt-contrib-jshint');
+</code></p>
+
+<p>最后，可以将<code>jshint</code>加入到默认的任务中：</p>
+
+<p><code>
+grunt.registerTask('default', ['jshint']);
+</code></p>
+
+<p>运行结果<code>可能</code>如下:</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/10/jshint.png" alt="image" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[使用Grape快速开发API]]></title>
     <link href="http://abruzzi.github.com/2013/08/quick-api-development-by-grape/"/>
-    <updated>2013-08-04T10:29:00+08:00</updated>
+    <updated>2013-08-04T10:29:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/08/quick-api-development-by-grape</id>
     <content type="html"><![CDATA[<h3>Grape简介</h3>
 
@@ -167,6 +364,28 @@ curl -H "Content-Type: application/json" -X POST -d "{\"email\":\"jtqiu@tw.com\"
 </code></p>
 
 <p>命令行的程序curl是一个非常灵活，强大的工具，可以定制HTTP头信息，User Agent，支持所有的HTTP动词，最重要的是，在命令行很容易将工具们组合在一起，并完成自动化。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[rack it up]]></title>
+    <link href="http://abruzzi.github.com/2013/08/rack-it-up/"/>
+    <updated>2013-08-02T07:38:00+05:30</updated>
+    <id>http://abruzzi.github.com/2013/08/rack-it-up</id>
+    <content type="html"><![CDATA[<h3>Rack it up (proc)</h3>
+
+<p>一个最简单的rack应用程序可以是：一个简单的ruby对象，包含了一个call方法。这个call方法接受一个参数，并返回一个有三个元素的数组即可：</p>
+
+<p>```
+def call(env)</p>
+
+<pre><code>[200, {}, ["content"]]
+</code></pre>
+
+<p>end
+```</p>
+
+<p>其中参数env将被rack用作HTTP请求对象来传递进来，而函数的返回值与HTTP响应对应：分别为状态码，HTTP头信息以及响应内容。</p>
 ]]></content>
   </entry>
   

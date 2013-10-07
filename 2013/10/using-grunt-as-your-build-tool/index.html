@@ -1,0 +1,531 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Using grunt as your build tool - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="Grunt简介 Grunt是一个基于JavaScript的构建工具。和其他的构建工具类似，grunt主要用于一些将一些繁琐的工作自动化，比如运行测试，代码的静态检查，压缩JavaScript源代码等等。 安装grunt-cli 要在命令行运行grunt，需要安装grunt的命令行工具： 1
+$ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">mob</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Using Grunt as Your Build Tool</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-07T18:14:00+05:30" pubdate data-updated="true">Oct 7<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>Grunt简介</h3>
+
+<p>Grunt是一个基于JavaScript的构建工具。和其他的构建工具类似，grunt主要用于一些将一些繁琐的工作自动化，比如运行测试，代码的静态检查，压缩JavaScript源代码等等。</p>
+
+<h4>安装grunt-cli</h4>
+
+<p>要在命令行运行grunt，需要安装grunt的命令行工具：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g grunt-cli</span></code></pre></td></tr></table></div></figure>
+
+
+<p>grunt-cli本身并不会提供Grunt构建工具，而只是一个Grunt的调用器。<code>-g</code>参数表示将grunt-cli安装在全局的路径中，这样我们可以在不同的项目中使用grunt-cli，而由于grunt-cli本身只是一个调用器，所以对于不同的项目，真正运行的Grunt可以是不同的版本，而命令行的借口则完全一致。</p>
+
+<p>grunt-cli提供的命令行可执行文件的名称为<code>grunt</code>，这个工具每次运行时都会检查当前目录下的Grunt。</p>
+
+<h4>使用grunt-cli</h4>
+
+<p>如果在一个既有的npm模块中，可以很容易的加入grunt的支持，只需要修改package.json，加入依赖，然后运行<code>npm install</code>来完成依赖的安装即可。</p>
+
+<p>如果是一个新启动的项目，那么在项目中添加两个文件：package.json和Gruntfile。其中package.json用来定义当前项目是一个npm的模块，而Gruntfile用来定义具体的任务，以及加载Grunt的其他插件(Grunt提供丰富的插件，比如运行测试，代码静态检查等功能都是通过插件来完成的)</p>
+
+<h4>package.json</h4>
+
+<p>package.json定义了一个工程的元数据，这些数据被npm管理器来使用，npm本身提供了<code>init</code>参数可以很容易的生成一个package.json文件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm init </span></code></pre></td></tr></table></div></figure>
+
+
+<p>根据提示可以很容易的生成一个新的package.json</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name": "chapter-testing",
+</span><span class='line'>  "version": "0.0.0",
+</span><span class='line'>  "description": "This is the demo for how to use grunt.js",
+</span><span class='line'>  "main": "my.conf.js",
+</span><span class='line'>  "directories": {
+</span><span class='line'>    "test": "test"
+</span><span class='line'>  },
+</span><span class='line'>  "scripts": {
+</span><span class='line'>    "test": "echo \"Error: no test specified\" && exit 1"
+</span><span class='line'>  },
+</span><span class='line'>  "author": "Juntao",
+</span><span class='line'>  "license": "BSD-2-Clause"
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一般来说，package.json文件中有一个<code>devDependencies</code>的小节，定义了本项目的外部依赖。</p>
+
+<p>可以通过运行</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install grunt --save-dev</span></code></pre></td></tr></table></div></figure>
+
+
+<p>来为工程文件package.json添加<code>devDependencies</code>小节的定义：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"devDependencies": {
+</span><span class='line'>  "grunt": "~0.4.1"
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>该命令会为工程添加一条依赖关系，如果别人拿到这个文件，就可以在本地“复原”你的开发环境，以保证整个团队使用同样地<strong>库</strong>文件。</p>
+
+<p>完成之后，该命令会在本地生成一个目录(如果没有的话)<code>node_modules</code>，其中包括了完成的Grunt的可执行文件，这时候在命令行运行grunt(由grunt-cli提供的命令行工具)，就会尝试在此目录中查找Grunt的可执行文件。</p>
+
+<h4>Gruntfile</h4>
+
+<p>要运行Grunt，还需要定义你自己的任务，默认的任务定义在Gruntfile中，Gruntfile有一定的格式。</p>
+
+<p>所有的任务需要定义在一个函数中：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module.exports = function(grunt) {
+</span><span class='line'>  // task defination
+</span><span class='line'>};</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一般而言，使用Grunt会读取一些项目的信息(定义在package.json中)：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
+</span><span class='line'>    pkg: grunt.file.readJSON('package.json')
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p>亦可以在这个时刻指定一些其他的插件的选项：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
+</span><span class='line'>    pkg: grunt.file.readJSON('package.json'),
+</span><span class='line'>    jshint: {
+</span><span class='line'>        all: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
+</span><span class='line'>    }
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后需要加载其他的插件(如果需要的话)</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-contrib-jshint');</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，需要指定一个grunt的入口任务(default任务)：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.registerTask('default', function() {
+</span><span class='line'>  console.log("default task");
+</span><span class='line'>});
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后运行<code>grunt</code>，我们此处定义的default任务仅仅在控制台上打印一行字符串:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ grunt
+</span><span class='line'>Running "default" task
+</span><span class='line'>default task
+</span><span class='line'>
+</span><span class='line'>Done, without errors.</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Grunt插件</h3>
+
+<p>Grunt已经得到了很多的开源软件贡献者的支持，已经又众多的插件被开发出来。比如:</p>
+
+<ol>
+<li><a href="https://github.com/gruntjs/grunt-contrib-jshint">grunt-contrib-jshint</a></li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-uglify">grunt-contrib-uglify</a></li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-qunit">grunt-contrib-qunit</a></li>
+<li><a href="https://github.com/karma-runner/grunt-karma">grunt-karma</a></li>
+</ol>
+
+
+<p>等等，使用这些插件可以快速的为你的项目开发提供很多的便利，以grunt-jshint为例，
+首先需要安装此插件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install grunt-contrib-jshint --save-dev</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在grunt.initConfig中指定jshint需要的参数：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
+</span><span class='line'>    jshint: {
+</span><span class='line'>        files: ['js/*.js'],
+</span><span class='line'>        options: {
+</span><span class='line'>            ignores: ['js/jquery*.js']
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后加载此插件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-contrib-jshint');</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，可以将<code>jshint</code>加入到默认的任务中：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.registerTask('default', ['jshint']);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行结果<code>可能</code>如下:</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/10/jshint.png" alt="image" /></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-07T18:14:00+05:30" pubdate data-updated="true">Oct 7<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/javascript/'>JavaScript</a>, <a class='category' href='/category/lightweight/'>lightweight</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool/" data-via="" data-counturl="http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/2013/08/quick-api-development-by-grape/" title="Previous Post: 使用Grape快速开发API">&laquo; 使用Grape快速开发API</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/10/using-grunt-as-your-build-tool/">Using grunt as your build tool</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/08/quick-api-development-by-grape/">使用Grape快速开发API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/08/rack-it-up/">rack it up</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/07/write-a-jquery-plugin-step-by-step/">逐步编写一个jQuery插件(todoify)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/06/macro-in-common-lisp/">Common Lisp中的宏(Macro)</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中...)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool/';
+        var disqus_url = 'http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

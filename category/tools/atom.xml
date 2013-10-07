@@ -4,7 +4,7 @@
   <title><![CDATA[Category: tools | I code it]]></title>
   <link href="http://abruzzi.github.com/category/tools/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-08-04T13:12:20+08:00</updated>
+  <updated>2013-10-07T23:26:46+05:30</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Alfred简介及Alfred扩展编写]]></title>
     <link href="http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project/"/>
-    <updated>2013-05-18T20:04:00+08:00</updated>
+    <updated>2013-05-18T20:04:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project</id>
     <content type="html"><![CDATA[<h3>Alfred简介</h3>
 
@@ -111,7 +111,7 @@ $ pwd
   <entry>
     <title type="html"><![CDATA[Install powerline (fancy status line) for vim in Mac OS]]></title>
     <link href="http://abruzzi.github.com/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os/"/>
-    <updated>2013-02-19T10:53:00+08:00</updated>
+    <updated>2013-02-19T10:53:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os</id>
     <content type="html"><![CDATA[<h3>Powerline</h3>
 
@@ -172,7 +172,7 @@ set guifont=Menlo\ for\ Powerline:h14
   <entry>
     <title type="html"><![CDATA[将Google Code上的项目迁移到Github]]></title>
     <link href="http://abruzzi.github.com/2013/01/migrate-google-code-to-github/"/>
-    <updated>2013-01-13T23:28:00+08:00</updated>
+    <updated>2013-01-13T23:28:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/01/migrate-google-code-to-github</id>
     <content type="html"><![CDATA[<h3>一些闲话</h3>
 
@@ -248,7 +248,7 @@ git push
   <entry>
     <title type="html"><![CDATA[为什么每个开发人员都应该使用Mac系统]]></title>
     <link href="http://abruzzi.github.com/2013/01/why-every-dev-should-try-mac-os/"/>
-    <updated>2013-01-01T22:41:00+08:00</updated>
+    <updated>2013-01-01T22:41:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/01/why-every-dev-should-try-mac-os</id>
     <content type="html"><![CDATA[<h2>为什么每个开发人员都应该使用Mac系统</h2>
 

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: rack | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/rack/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2013-10-07T23:26:46+05:30</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[rack it up]]></title>
+    <link href="http://abruzzi.github.com/2013/08/rack-it-up/"/>
+    <updated>2013-08-02T07:38:00+05:30</updated>
+    <id>http://abruzzi.github.com/2013/08/rack-it-up</id>
+    <content type="html"><![CDATA[<h3>Rack it up (proc)</h3>
+
+<p>一个最简单的rack应用程序可以是：一个简单的ruby对象，包含了一个call方法。这个call方法接受一个参数，并返回一个有三个元素的数组即可：</p>
+
+<p>```
+def call(env)</p>
+
+<pre><code>[200, {}, ["content"]]
+</code></pre>
+
+<p>end
+```</p>
+
+<p>其中参数env将被rack用作HTTP请求对象来传递进来，而函数的返回值与HTTP响应对应：分别为状态码，HTTP头信息以及响应内容。</p>
+]]></content>
+  </entry>
+  
+</feed>

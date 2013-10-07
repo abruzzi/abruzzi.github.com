@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-08-04T13:12:20+08:00</updated>
+  <updated>2013-10-07T23:26:46+05:30</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,9 +14,226 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Using grunt as your build tool]]></title>
+    <link href="http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool/"/>
+    <updated>2013-10-07T18:14:00+05:30</updated>
+    <id>http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool</id>
+    <content type="html"><![CDATA[<h3>Grunt简介</h3>
+
+<p>Grunt是一个基于JavaScript的构建工具。和其他的构建工具类似，grunt主要用于一些将一些繁琐的工作自动化，比如运行测试，代码的静态检查，压缩JavaScript源代码等等。</p>
+
+<h4>安装grunt-cli</h4>
+
+<p>要在命令行运行grunt，需要安装grunt的命令行工具：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g grunt-cli</span></code></pre></td></tr></table></div></figure>
+
+
+<p>grunt-cli本身并不会提供Grunt构建工具，而只是一个Grunt的调用器。<code>-g</code>参数表示将grunt-cli安装在全局的路径中，这样我们可以在不同的项目中使用grunt-cli，而由于grunt-cli本身只是一个调用器，所以对于不同的项目，真正运行的Grunt可以是不同的版本，而命令行的借口则完全一致。</p>
+
+<p>grunt-cli提供的命令行可执行文件的名称为<code>grunt</code>，这个工具每次运行时都会检查当前目录下的Grunt。</p>
+
+<h4>使用grunt-cli</h4>
+
+<p>如果在一个既有的npm模块中，可以很容易的加入grunt的支持，只需要修改package.json，加入依赖，然后运行<code>npm install</code>来完成依赖的安装即可。</p>
+
+<p>如果是一个新启动的项目，那么在项目中添加两个文件：package.json和Gruntfile。其中package.json用来定义当前项目是一个npm的模块，而Gruntfile用来定义具体的任务，以及加载Grunt的其他插件(Grunt提供丰富的插件，比如运行测试，代码静态检查等功能都是通过插件来完成的)</p>
+
+<h4>package.json</h4>
+
+<p>package.json定义了一个工程的元数据，这些数据被npm管理器来使用，npm本身提供了<code>init</code>参数可以很容易的生成一个package.json文件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm init </span></code></pre></td></tr></table></div></figure>
+
+
+<p>根据提示可以很容易的生成一个新的package.json</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name": "chapter-testing",
+</span><span class='line'>  "version": "0.0.0",
+</span><span class='line'>  "description": "This is the demo for how to use grunt.js",
+</span><span class='line'>  "main": "my.conf.js",
+</span><span class='line'>  "directories": {
+</span><span class='line'>    "test": "test"
+</span><span class='line'>  },
+</span><span class='line'>  "scripts": {
+</span><span class='line'>    "test": "echo \"Error: no test specified\" && exit 1"
+</span><span class='line'>  },
+</span><span class='line'>  "author": "Juntao",
+</span><span class='line'>  "license": "BSD-2-Clause"
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一般来说，package.json文件中有一个<code>devDependencies</code>的小节，定义了本项目的外部依赖。</p>
+
+<p>可以通过运行</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install grunt --save-dev</span></code></pre></td></tr></table></div></figure>
+
+
+<p>来为工程文件package.json添加<code>devDependencies</code>小节的定义：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"devDependencies": {
+</span><span class='line'>  "grunt": "~0.4.1"
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>该命令会为工程添加一条依赖关系，如果别人拿到这个文件，就可以在本地“复原”你的开发环境，以保证整个团队使用同样地<strong>库</strong>文件。</p>
+
+<p>完成之后，该命令会在本地生成一个目录(如果没有的话)<code>node_modules</code>，其中包括了完成的Grunt的可执行文件，这时候在命令行运行grunt(由grunt-cli提供的命令行工具)，就会尝试在此目录中查找Grunt的可执行文件。</p>
+
+<h4>Gruntfile</h4>
+
+<p>要运行Grunt，还需要定义你自己的任务，默认的任务定义在Gruntfile中，Gruntfile有一定的格式。</p>
+
+<p>所有的任务需要定义在一个函数中：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module.exports = function(grunt) {
+</span><span class='line'>  // task defination
+</span><span class='line'>};</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一般而言，使用Grunt会读取一些项目的信息(定义在package.json中)：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
+</span><span class='line'>    pkg: grunt.file.readJSON('package.json')
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p>亦可以在这个时刻指定一些其他的插件的选项：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
+</span><span class='line'>    pkg: grunt.file.readJSON('package.json'),
+</span><span class='line'>    jshint: {
+</span><span class='line'>        all: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
+</span><span class='line'>    }
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后需要加载其他的插件(如果需要的话)</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-contrib-jshint');</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，需要指定一个grunt的入口任务(default任务)：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.registerTask('default', function() {
+</span><span class='line'>  console.log("default task");
+</span><span class='line'>});
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后运行<code>grunt</code>，我们此处定义的default任务仅仅在控制台上打印一行字符串:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ grunt
+</span><span class='line'>Running "default" task
+</span><span class='line'>default task
+</span><span class='line'>
+</span><span class='line'>Done, without errors.</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Grunt插件</h3>
+
+<p>Grunt已经得到了很多的开源软件贡献者的支持，已经又众多的插件被开发出来。比如:</p>
+
+<ol>
+<li><a href="https://github.com/gruntjs/grunt-contrib-jshint">grunt-contrib-jshint</a></li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-uglify">grunt-contrib-uglify</a></li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-qunit">grunt-contrib-qunit</a></li>
+<li><a href="https://github.com/karma-runner/grunt-karma">grunt-karma</a></li>
+</ol>
+
+
+<p>等等，使用这些插件可以快速的为你的项目开发提供很多的便利，以grunt-jshint为例，
+首先需要安装此插件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install grunt-contrib-jshint --save-dev</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在grunt.initConfig中指定jshint需要的参数：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
+</span><span class='line'>    jshint: {
+</span><span class='line'>        files: ['js/*.js'],
+</span><span class='line'>        options: {
+</span><span class='line'>            ignores: ['js/jquery*.js']
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后加载此插件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-contrib-jshint');</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，可以将<code>jshint</code>加入到默认的任务中：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.registerTask('default', ['jshint']);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行结果<code>可能</code>如下:</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/10/jshint.png" alt="image" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[使用Grape快速开发API]]></title>
     <link href="http://abruzzi.github.com/2013/08/quick-api-development-by-grape/"/>
-    <updated>2013-08-04T10:29:00+08:00</updated>
+    <updated>2013-08-04T10:29:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/08/quick-api-development-by-grape</id>
     <content type="html"><![CDATA[<h3>Grape简介</h3>
 
@@ -195,9 +412,30 @@
   </entry>
   
   <entry>
+    <title type="html"><![CDATA[rack it up]]></title>
+    <link href="http://abruzzi.github.com/2013/08/rack-it-up/"/>
+    <updated>2013-08-02T07:38:00+05:30</updated>
+    <id>http://abruzzi.github.com/2013/08/rack-it-up</id>
+    <content type="html"><![CDATA[<h3>Rack it up (proc)</h3>
+
+<p>一个最简单的rack应用程序可以是：一个简单的ruby对象，包含了一个call方法。这个call方法接受一个参数，并返回一个有三个元素的数组即可：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def call(env)
+</span><span class='line'>  [200, {}, ["content"]]
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中参数env将被rack用作HTTP请求对象来传递进来，而函数的返回值与HTTP响应对应：分别为状态码，HTTP头信息以及响应内容。</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[逐步编写一个jQuery插件(todoify)]]></title>
     <link href="http://abruzzi.github.com/2013/07/write-a-jquery-plugin-step-by-step/"/>
-    <updated>2013-07-20T13:04:00+08:00</updated>
+    <updated>2013-07-20T13:04:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/07/write-a-jquery-plugin-step-by-step</id>
     <content type="html"><![CDATA[<h3>最终结果</h3>
 
@@ -504,7 +742,7 @@
   <entry>
     <title type="html"><![CDATA[Common Lisp中的宏(Macro)]]></title>
     <link href="http://abruzzi.github.com/2013/06/macro-in-common-lisp/"/>
-    <updated>2013-06-15T11:12:00+08:00</updated>
+    <updated>2013-06-15T11:12:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/06/macro-in-common-lisp</id>
     <content type="html"><![CDATA[<h4>Lisp与其他语言之区别</h4>
 
@@ -721,7 +959,7 @@
   <entry>
     <title type="html"><![CDATA[common lisp 里的一些基本概念]]></title>
     <link href="http://abruzzi.github.com/2013/06/common-lisp-basic/"/>
-    <updated>2013-06-13T16:15:00+08:00</updated>
+    <updated>2013-06-13T16:15:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/06/common-lisp-basic</id>
     <content type="html"><![CDATA[<h3>Common Lisp</h3>
 
@@ -913,7 +1151,7 @@
   <entry>
     <title type="html"><![CDATA[在Mac下搭建Common Lisp开发环境(Emacs)]]></title>
     <link href="http://abruzzi.github.com/2013/06/setup-lisp-development-env-on-mac/"/>
-    <updated>2013-06-03T16:22:00+08:00</updated>
+    <updated>2013-06-03T16:22:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/06/setup-lisp-development-env-on-mac</id>
     <content type="html"><![CDATA[<h4>Lisp编译器（解释器）</h4>
 
@@ -1016,7 +1254,7 @@
   <entry>
     <title type="html"><![CDATA[Alfred简介及Alfred扩展编写]]></title>
     <link href="http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project/"/>
-    <updated>2013-05-18T20:04:00+08:00</updated>
+    <updated>2013-05-18T20:04:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project</id>
     <content type="html"><![CDATA[<h3>Alfred简介</h3>
 
@@ -1130,7 +1368,7 @@
   <entry>
     <title type="html"><![CDATA[在既有数据库中使用ActiveRecord]]></title>
     <link href="http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm/"/>
-    <updated>2013-05-18T14:56:00+08:00</updated>
+    <updated>2013-05-18T14:56:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm</id>
     <content type="html"><![CDATA[<h3>ActiveRecord</h3>
 
@@ -1363,7 +1601,7 @@
   <entry>
     <title type="html"><![CDATA[CSS中的before和after伪元素及其应用]]></title>
     <link href="http://abruzzi.github.com/2013/05/before-and-after-selector-in-css/"/>
-    <updated>2013-05-16T15:29:00+08:00</updated>
+    <updated>2013-05-16T15:29:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/05/before-and-after-selector-in-css</id>
     <content type="html"><![CDATA[<h3>before和after伪元素</h3>
 
@@ -1562,7 +1800,7 @@
   <entry>
     <title type="html"><![CDATA[JavaScript核心概念及实践勘误表]]></title>
     <link href="http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao/"/>
-    <updated>2013-05-16T11:29:00+08:00</updated>
+    <updated>2013-05-16T11:29:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao</id>
     <content type="html"><![CDATA[<h3>《JavaScript核心概念及实践》勘误表</h3>
 
@@ -1602,7 +1840,7 @@
   <entry>
     <title type="html"><![CDATA[proc in ruby]]></title>
     <link href="http://abruzzi.github.com/2013/05/proc-in-ruby/"/>
-    <updated>2013-05-12T16:01:00+08:00</updated>
+    <updated>2013-05-12T16:01:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/05/proc-in-ruby</id>
     <content type="html"><![CDATA[<h2>block in ruby</h2>
 
@@ -1703,7 +1941,7 @@
   <entry>
     <title type="html"><![CDATA[重阳宫奇遇记]]></title>
     <link href="http://abruzzi.github.com/2013/04/chongyang-palase/"/>
-    <updated>2013-04-28T10:32:00+08:00</updated>
+    <updated>2013-04-28T10:32:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/04/chongyang-palase</id>
     <content type="html"><![CDATA[<h3>重阳宫简介</h3>
 
@@ -1738,7 +1976,7 @@
   <entry>
     <title type="html"><![CDATA[图书封面故事]]></title>
     <link href="http://abruzzi.github.com/2013/04/book-cover-story/"/>
-    <updated>2013-04-13T15:57:00+08:00</updated>
+    <updated>2013-04-13T15:57:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/04/book-cover-story</id>
     <content type="html"><![CDATA[<h2>虎符</h2>
 
@@ -1779,7 +2017,7 @@
   <entry>
     <title type="html"><![CDATA[Turning to a designer]]></title>
     <link href="http://abruzzi.github.com/2013/03/turning-to-a-designer/"/>
-    <updated>2013-03-26T22:46:00+08:00</updated>
+    <updated>2013-03-26T22:46:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/03/turning-to-a-designer</id>
     <content type="html"><![CDATA[<h4>Hack design的建议</h4>
 
@@ -1835,7 +2073,7 @@
   <entry>
     <title type="html"><![CDATA[关于Hack day]]></title>
     <link href="http://abruzzi.github.com/2013/03/guan-yu-hack-day/"/>
-    <updated>2013-03-22T20:55:00+08:00</updated>
+    <updated>2013-03-22T20:55:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/03/guan-yu-hack-day</id>
     <content type="html"><![CDATA[<h4>关于Hackday</h4>
 
@@ -1899,7 +2137,7 @@
   <entry>
     <title type="html"><![CDATA[cycling]]></title>
     <link href="http://abruzzi.github.com/2013/03/cycling/"/>
-    <updated>2013-03-10T15:34:00+08:00</updated>
+    <updated>2013-03-10T15:34:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/03/cycling</id>
     <content type="html"><![CDATA[<h3>昆明骑行</h3>
 
@@ -1952,7 +2190,7 @@
   <entry>
     <title type="html"><![CDATA[Install powerline (fancy status line) for vim in Mac OS]]></title>
     <link href="http://abruzzi.github.com/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os/"/>
-    <updated>2013-02-19T10:53:00+08:00</updated>
+    <updated>2013-02-19T10:53:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os</id>
     <content type="html"><![CDATA[<h3>Powerline</h3>
 
@@ -2017,7 +2255,7 @@
   <entry>
     <title type="html"><![CDATA[Get started with jQuery Mobile]]></title>
     <link href="http://abruzzi.github.com/2013/02/get-started-with-jquery-mobile/"/>
-    <updated>2013-02-14T13:50:00+08:00</updated>
+    <updated>2013-02-14T13:50:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/02/get-started-with-jquery-mobile</id>
     <content type="html"><![CDATA[<h3>jQuery mobile</h3>
 
@@ -2130,7 +2368,7 @@
   <entry>
     <title type="html"><![CDATA[将应用程序部署到heroku]]></title>
     <link href="http://abruzzi.github.com/2013/01/developing-with-heroku/"/>
-    <updated>2013-01-26T19:02:00+08:00</updated>
+    <updated>2013-01-26T19:02:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/01/developing-with-heroku</id>
     <content type="html"><![CDATA[<h3>heroku</h3>
 
@@ -2227,111 +2465,6 @@
 
 
 <p>我的应用在本地使用sqlite，而在heroku中使用其提供的postgresql。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[将Google Code上的项目迁移到Github]]></title>
-    <link href="http://abruzzi.github.com/2013/01/migrate-google-code-to-github/"/>
-    <updated>2013-01-13T23:28:00+08:00</updated>
-    <id>http://abruzzi.github.com/2013/01/migrate-google-code-to-github</id>
-    <content type="html"><![CDATA[<h3>一些闲话</h3>
-
-<p>虽然对开源社区没有任何杰出的贡献，但是我自己在业余时间开发的很多小东西都是开源的，有部分放在google code上，可是除了一个<a href="http://code.google.com/p/stodo/">sTodo</a>有几个用户外，其他的工具几乎都纯属自娱自乐。虽然当时做的时候自己非常投入，会各种YY，假设用户会需要这个功能，会需要那个功能，用户会需要脚本化，自定义插件等等，但是到最后发现只有自己在使用，而再过一段时间，连自己也不会使用了。</p>
-
-<p>我自己托管在google code上的，还算有点用处的项目有三个：</p>
-
-<ul>
-<li><a href="http://code.google.com/p/stodo/">sTodo</a> 一个简单的todo管理器</li>
-<li><a href="http://code.google.com/p/phoc/">phoc</a> 一个可以用JavaScript脚本化的计算器</li>
-<li><a href="http://code.google.com/p/utouch">utouch</a> 一个使用styledTextCtrl的编辑器</li>
-</ul>
-
-
-<p>虽然这种事情发生在几乎每一个喜欢写程序的家伙身上，但是整个过程对自我修炼来说，还是非常有现实意义的，首先专业技能得到了锻炼，而最重要的一点是：需求不是想象出来的！在没有和用户真正仔细的讨论之前，我们的假设和推断往往是错的。</p>
-
-<p>Idea到处都是，有很多很酷且很有挑战的idea，但是它们不一定真的在解决人们的问题。这是一个很值得思考的问题，我最近在尝试组织一个活动，主题以及目标已经确定，上周找胡凯帮我把关，结果发现我又一次的进入了“帮助用户想需求”的老路上了。</p>
-
-<h3>迁移</h3>
-
-<h4>使用svn同步到本地</h4>
-
-<p>根据google code的提示，将code从svn中的checkout到本地：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>svn checkout http://phoc.googlecode.com/svn phoc-read-only</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>去除掉.svn隐藏目录</h4>
-
-<p>现使用<code>find</code>在当前目录下找到名称为.svn的目录，然后将其删除，这个过程是递归的，即可以清除掉当前目录及所有子目录中的.svn目录:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>find . -name ".svn" -type d -exec rm -rf {} \;</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>初始化git的repo</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git init
-</span><span class='line'>git add .
-</span><span class='line'>git ci -m "migrate of project xxx to github"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后对应的在github上创建repo，创建之后，需要将本地的remote指向github上的repo:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git remote add origin git@github.com:project/project.git</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果本地的master分支没有配置，可以在<code>.git/config</code>中进行配置：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[branch "master"]
-</span><span class='line'>  remote = origin
-</span><span class='line'>  merge = refs/heads/master</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最后将新的commit push到新的repo上即可：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git pull --rebase
-</span><span class='line'>git push</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我已经把这个工具迁移到了github上<a href="https://github.com/abruzzi">abruzzi</a>，正式告别了google code。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[是时候慢下来了]]></title>
-    <link href="http://abruzzi.github.com/2013/01/where-am-i/"/>
-    <updated>2013-01-09T20:56:00+08:00</updated>
-    <id>http://abruzzi.github.com/2013/01/where-am-i</id>
-    <content type="html"><![CDATA[<p>某个晚上，我在网上为自己挑选一个适合出差的行李箱，两个小时之后，我突然发现我停留在了一个瑞士军刀的淘宝店里；本来计划晚上看看AppleScript的资料，结果一个小时之后，我在用python写一个opencv的小程序，又过了一个小时，我停留在Alfred的powerpack的支付页面，面对着15英镑的价格陷入沉思。</p>
-
-<p>而且周围好像每个人都有这样类似的经历。我咨询其他同事遇到类似的情况怎么处理，有人推荐使用Todo列表，而且Todo最好列在纸上。当列表中的Todo被消灭时，会激发你去写下更多的task。这当然是个好办法，我很早的时候就写过一个软件来完成Todo管理：<a href="http://code.google.com/p/stodo/">sTodo</a>。但是当打开电脑之后，时间就完全不受控制了，网络上总是有各种各样好玩的东西，新的框架，新的语言，某种颠覆式的CSS框架，新奇而好用的软件，可以大大提高用户体验的UI库，太多了……。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/01/stodo_edit.png" alt="sTodo" /></p>
-
-<p>上周三的晚上，回家之后打开电脑，开始了“学习”，事实上是很盲目的在网络上游荡，当我意识到又要重蹈覆辙的时候，我毅然的合起了电脑，然后拿起一本纸质的《JavaScript: The good parts》。最后当我要睡觉时才发现，读了大概30多页，而且以前的一些概念也更加清楚了。而且事实上我并未因为没有打开计算机而有什么实质性的损失。</p>
-
-<p>然后我突然意识到我之前的所谓的学习的方式有很大的问题，网络当然可以为你提供大量的信息，但是很多时候，这些呈碎片装的信息的作用并不如预期般的大。它会帮你解决手头的小问题，但是阻挡了你的视线，你本可以走的更远！</p>
-
-<p>在网络上看资料，总是有一种紧迫感：这么多的东西都不会，落后于时代好多年。打开电脑，一个晚上过去了，你可能读了很多的东西，但是记下来的非常少，因为总是会被各种链接，图片等干扰，这个看似在学习的过程事实上完全是在浪费实践，一天之后，你前一个晚上看到的东西几乎被完全遗忘，然后周而复始。</p>
-
-<p>所以，是时候慢下来，你不会因为没有浏览几个网页，或者少读几篇文章而落后于时代几十年的，你需要好多年才能积累起来的知识，别人同样需要好多年。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/01/todos.png" alt="image" /></p>
-
-<p>合上电脑，捧起纸质的书籍，世界突然慢了下来，但是却会充盈很多。事实上，放慢脚步，消除网络带来的<strong><em>虚假的紧迫感</em></strong>，反而可以以更快的速度掌握一项技术，一个框架，也可以让印象更加深刻。晚上回家尽量不带电脑，我用trainng经费购买的10本书，现在才读完2.5本，去年5月买的书还有两本没有读完，这些亏欠都需要在脱离电脑的舒服之后才能想起来，也才有可能完成。</p>
-
-<p>慢下来。</p>
 ]]></content>
   </entry>
   

@@ -9,7 +9,8 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="spring在3.0之后分离成了差不多20个分离的jar包，又对JDBC/JMS等的支持，对AOP的支持，WEB开发的支持，以及核心的依赖注入部分(几乎所有的spring应用都或多或少的会涉及到spring的依赖注入特性)。下图是一个3.0的依赖注入子模块需要的包结构： 这篇文章中， &hellip;">
+  <meta name="description" content="How to load a key-value pair config file Recently, I want to parse a simple configration file in python, and I
+don&#8217;t like use other existing &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -50,7 +51,7 @@
   <header role="banner"><hgroup>
   <div id="logo">
   	<div id="logoLeft">{</div>
-  	<div id="logoText">lambda</div>
+  	<div id="logoText">mob</div>
   	<div id="logoRight">}</div>
   	<div class="clear"></div>
   </div>
@@ -69,8 +70,7 @@
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <!-- <input type="hidden" name="q" value="site:abruzzi.github.com" /> -->
-    <input type="hidden" name="q" value="site:icodeit.org" />
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -78,8 +78,6 @@
 <ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
-  <li><a href="/about-me">About Me</a></li>
-  <li><a href="/jsccp">JavaScript内核系列</a></li>
 </ul>
 
 </nav>
@@ -87,6 +85,141 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2012/07/post-from-python-vim-2/">Post From Python + Vim</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-13T00:00:00+05:30" pubdate data-updated="true">Jul 13<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><h2>How to load a key-value pair config file</h2></p>
+
+<p><p>Recently, I want to parse a simple configration file in python, and I<br />
+don&#8217;t like use other existing libraries, because they are all<br />
+full-functionality, just too complex for me.</p></p>
+
+<p><p>Finally I found a simple way to do that, code is following:</p></p>
+
+<p><pre><code>def loadUserInfo(fileName):
+    userinfo = {}
+    file = open(fileName, "r")
+    while file:
+        line = file.readline()
+        if len(line) == 0:
+            break
+        if line.startswith('#'):
+            continue
+        key, value = line.split("=")
+        userinfo[key.strip()] = value.strip()</code></pre></p>
+
+<p>    return userinfo
+</p>
+
+<p><p>Key features:</p></p>
+
+<p><ol>
+<li>Simple enough</li>
+<li>Comment supported</li>
+<li>Nothing much </li>
+</ol></p>
+
+<p><h2>Misc</h2></p>
+
+<p><p>Another intersting thing is this blog is post by my vim + python, it&#8217;s<br />
+cool to write blog in my favorest editor.</p></p>
+
+<p><p>中文应该没有问题吧？</p>
+</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2012/05/git%E4%B8%AD%E7%9A%84merge%E5%92%8Crebase/">Git中的merge和rebase</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-17T00:00:00+05:30" pubdate data-updated="true">May 17<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><p>使用git时，如果遇到分支的情况，比如两个开发人员都从commit2开始各自开发，然后分贝在本地完成了两个commit：</p></p>
+
+<p><p><a href="http://abruzzi.github.com/images/2012/05/branch.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="branch" border="0" alt="branch" src="http://abruzzi.github.com/images/2012/05/branch_thumb.png" width="196" height="361" /></a></p></p>
+
+<p><p>此时，如果要将两个分支的代码合并起来，通常会有两种方式，一种对两个分支的代码进行merge，通常会执行的命令为:</p></p>
+
+<p><div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> git pull</pre><!--CRLF--></div></div></p>
+
+<p><p>这时的版本库历史看起来会是这样：</p></p>
+
+<p><p><a href="http://abruzzi.github.com/images/2012/05/merge.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="merge" border="0" alt="merge" src="http://abruzzi.github.com/images/2012/05/merge_thumb.png" width="197" height="460" /></a></p></p>
+
+<p><p>不过通常我们想要的是，保持一个较为简单的历史轨迹，分支太多的话会显得比较凌乱，当引入bug或者其他问题时，可能会影响到追踪。另一种做法是先将某一个分支A上的提交保存下来，然后将分支B上的，对于commit2的修改作用到commit2上，然后将保存起来的修改作用到新的结果上：</p></p>
+
+<p><p><a href="http://abruzzi.github.com/images/2012/05/rebase.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="rebase" border="0" alt="rebase" src="http://abruzzi.github.com/images/2012/05/rebase_thumb.png" width="200" height="559" /></a></p></p>
+
+<p><p>对应的命令为：</p></p>
+
+<p><div id="codeSnippetWrapper">
+<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> git pull --rebase</pre><!--CRLF--></div></div></p>
+
+<p><p>这个过程并非必要，但是是一种良好的实践，当本地有commit，而需要和别人的commit合并时，建议使用rebase来保证修改历史的轨迹的简洁。</p>
+</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -111,7 +244,7 @@
   
 
 
-<time datetime="2012-05-16T00:00:00+08:00" pubdate data-updated="true">May 16<span>th</span>, 2012</time>
+<time datetime="2012-05-16T00:00:00+05:30" pubdate data-updated="true">May 16<span>th</span>, 2012</time>
         
       </p>
     
@@ -194,7 +327,7 @@
   
 
 
-<time datetime="2012-05-14T00:00:00+08:00" pubdate data-updated="true">May 14<span>th</span>, 2012</time>
+<time datetime="2012-05-14T00:00:00+05:30" pubdate data-updated="true">May 14<span>th</span>, 2012</time>
         
       </p>
     
@@ -267,7 +400,7 @@
   
 
 
-<time datetime="2012-05-14T00:00:00+08:00" pubdate data-updated="true">May 14<span>th</span>, 2012</time>
+<time datetime="2012-05-14T00:00:00+05:30" pubdate data-updated="true">May 14<span>th</span>, 2012</time>
         
       </p>
     
@@ -365,7 +498,7 @@
   
 
 
-<time datetime="2012-04-25T00:00:00+08:00" pubdate data-updated="true">Apr 25<span>th</span>, 2012</time>
+<time datetime="2012-04-25T00:00:00+05:30" pubdate data-updated="true">Apr 25<span>th</span>, 2012</time>
         
       </p>
     
@@ -415,7 +548,7 @@
   
 
 
-<time datetime="2012-04-24T00:00:00+08:00" pubdate data-updated="true">Apr 24<span>th</span>, 2012</time>
+<time datetime="2012-04-24T00:00:00+05:30" pubdate data-updated="true">Apr 24<span>th</span>, 2012</time>
         
       </p>
     
@@ -464,7 +597,7 @@
   
 
 
-<time datetime="2012-04-06T00:00:00+08:00" pubdate data-updated="true">Apr 6<span>th</span>, 2012</time>
+<time datetime="2012-04-06T00:00:00+05:30" pubdate data-updated="true">Apr 6<span>th</span>, 2012</time>
         
       </p>
     
@@ -533,7 +666,7 @@
   
 
 
-<time datetime="2012-04-04T00:00:00+08:00" pubdate data-updated="true">Apr 4<span>th</span>, 2012</time>
+<time datetime="2012-04-04T00:00:00+05:30" pubdate data-updated="true">Apr 4<span>th</span>, 2012</time>
         
       </p>
     
@@ -571,7 +704,7 @@
   
 
 
-<time datetime="2012-03-08T00:00:00+08:00" pubdate data-updated="true">Mar 8<span>th</span>, 2012</time>
+<time datetime="2012-03-08T00:00:00+05:30" pubdate data-updated="true">Mar 8<span>th</span>, 2012</time>
         
       </p>
     
@@ -600,89 +733,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/2012/03/%E8%B5%B0%E5%87%BA%E8%88%92%E9%80%82%E5%8C%BA/">走出舒适区</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-03-05T00:00:00+08:00" pubdate data-updated="true">Mar 5<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><p>舒适区的wiki定义：舒适区(comfort zone)指的是一个人所处的一种环境状态和习惯的行动，人会在这种状态下感到舒适并没有危机感。它是一种精神状态，会导致人们进入并且维持一种不现实的精神行为之中，这种情况会给人带来一种非理性的安全感。</p></p>
-
-<p><p>如果你发现在生活中，工作中很难感觉到挑战，激情，有的只是“安逸”和“安全”，那就是一个十分危险的信号了，说明你很可能已经处于舒适区中。一般来说，人们会希望保持在这个非理性的安全感中，消磨意志(当然可能并非有意为之，但从客观上来看，的确如此)。唯有具有勇气和坚定信念的人才愿意从这个舒适区中走出来，将自己“逼”到一条看似充满荆棘，充满挑战的活路上来。</p></p>
-
-<p><p>《孟子》中有段经典的描述：……人恒过，然后能改，困于心，衡于虑，而后作；征于色，发于声，而后喻。入则无法家拂事，出则无敌国外患者，国恒亡。然后知生于忧患，而死于安乐也。《诗经》里也有一段类似的：嗟尔君子，无恒安息。靖共尔位，好是正直。神之听之，介尔景福。</p></p>
-
-<p><p>当然，迈出第一步是非常难的，但是一旦开始，就不要停下来，你的每一个举动都是在迈向新的，更具活力的生活方式。你会发现，很多之前预想的困难都已经不再是困难，而且很多事先的担心压根就没有发生过。</p>
-</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/2012/03/%E9%95%BF%E8%83%B6%EF%BC%81%E9%95%BF%E8%83%B6%EF%BC%81/">长胶！长胶！</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-03-04T00:00:00+08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><p>其实我打乒乓球的球龄还是挺长的，从小学5年级开始，到初中毕业，一共打了5年，高中起兴趣转移到足球上，就再没有碰过球拍。打法是右手直拍，仅有一面，由于没有老师指导，就是和同学们瞎玩，基本功很弱，就会正手攻和推挡，还掌握的很粗糙，直拍横打的技术则压根没听说过。对于球拍和胶片更是没要求，半截砖也用过，瓦片也用过，纯木板也用过。</p> <p>上大学期间，辅导员组织过一次班内的乒乓球比赛，当时我还得了个亚军(主要是靠发球，我发的侧旋球，冠军一个都接不住，而他拉的弧圈或者正手攻的我一个都防不了，最后他终于接住了一个，就赢了，哈哈)。大学毕业之后，基本的运动就是踢球和爬山，乒乓球是再也没有碰过。后来到了现在的公司，公司所在的园区内有数张乒乓球桌，而且部门很多同事都比较喜欢打球，我就跟着他们一起，在中午吃饭的时候打半个小时。开始还是直拍，部门的同事建议我买块底板，我就在网上订购了一块红双喜的直拍。在等待直拍送货期间，我在家里翻出一块红双喜的横拍，假的，而且胶片已经老化的不行了，但是物流极慢，就过度性的用用横拍。也是机缘巧合，部门有个横拍的高手，对我指点了几天。等到我的直拍到货的时候，我已经不会用直拍了。</p> <p>最开始用的是一块银河的底板，两面反胶，正面狂飙3，反面是729，弧圈球是不会的，正手攻还凑合，打了半年左右，慢慢的也可以拉一些弧圈球，但是反手几乎一片空白。我这位热心的同事又建议我用长胶打，他正好练练拉球。我就入手了现在使用的这块板子，地板是红双喜劲极，正面反胶，狂飙3，反面长胶，云雾3。本来是准备联系削球打法呢，但是一段时间后发现，这个长胶太诡异了，就不削了，正手可以拉，反手用长胶拨或者挑，效果非常好。</p> <p><a href="http://abruzzi.github.com/images/2012/03/image.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" border="0" alt="image" src="http://abruzzi.github.com/images/2012/03/image_thumb.png" width="587" height="229" /></a></p> <p>用长胶的最大特点是不需要用力，越轻效果越好，不管是磕，拱，还是挑，弹，都是这样，另一个需要注意的点是，打的时候要先把球拍凑到球附近，在打，否则不是下网就是出界。</p>  <p>被长胶整过的同事给这块胶皮的定性是：坑爹，非常的坑爹。比如对搓的时候，偶尔用长胶搓一板，对手一般会条件反射进行回搓，那么回过来的球必然冒高。挑过去的球则明显的会下坠，很容易下网。对方拉的前冲弧圈，用长胶弹回去时变成下旋，而且跟拉球的质量高低有关，拉得越转，回去的就越转。应该说，本来建立起来的球感会被长胶完全打乱，最后心里崩溃。所以，我一般都是尽量避免用长胶，因为有点胜之不武的感觉，尽量用两面反胶去打。这几天银河的那块板子胶皮开裂，只好启用长胶这块预备板，各位同事要该倒霉了，哈哈。</p></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/6/">&larr; Older</a>
@@ -700,7 +750,15 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2013/10/using-grunt-as-your-build-tool/">Using grunt as your build tool</a>
+      </li>
+    
+      <li class="post">
         <a href="/2013/08/quick-api-development-by-grape/">使用Grape快速开发API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/08/rack-it-up/">rack it up</a>
       </li>
     
       <li class="post">
@@ -709,14 +767,6 @@
     
       <li class="post">
         <a href="/2013/06/macro-in-common-lisp/">Common Lisp中的宏(Macro)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2013/06/common-lisp-basic/">common lisp 里的一些基本概念</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2013/06/setup-lisp-development-env-on-mac/">在Mac下搭建Common Lisp开发环境(Emacs)</a>
       </li>
     
   </ul>
