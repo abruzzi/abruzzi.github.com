@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Using grunt as your build tool"
+title: "使用Grunt作为构建工具(build tool)"
 date: 2013-10-07 18:14
 comments: true
 categories: 
