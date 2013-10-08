@@ -111,7 +111,7 @@ grunt.initConfig({
 grunt.loadNpmTasks('grunt-contrib-jshint');
 ```
 
-最后，需要指定一个grunt的入口任务(default任务)：
+最后，需要指定一个grunt的入口任务(`default`任务)：
 
 ```
 grunt.registerTask('default', function() {

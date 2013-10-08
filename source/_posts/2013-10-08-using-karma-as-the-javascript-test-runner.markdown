@@ -71,6 +71,35 @@ browsers = ['Chrome'];
 
 ```
 
+- - -
+**更新**
+新的配置文件生成脚本会生成更加**模块化**的配置：
+
+```
+module.exports = function(config) {
+  config.set({
+  
+    frameworks: ['jasmine'],
+
+    files: [
+      'src/**/*.js',
+      'test/**/*spec.js'
+    ],
+
+    port: 9876,
+
+    browsers: ['Chrome'],
+
+    singleRun: true
+    
+  });
+};
+
+```
+
+- - -
+
+
 生成配置文件之后，可以通过命令来启动Karma服务器，同时指定使用`my.conf.js`文件作为配置：
 
 ```
