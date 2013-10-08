@@ -103,5 +103,5 @@ debugger;
 即可。由于在运行时，karma实际上会启动一个真实地浏览器，所以可以在浏览器的developer-tool中进行实际的调试。需要注意的是，当进入调试模式时，需要启动developer-tool(在Karma启动的那个浏览器窗口中)。
 
 
-![image](http://http://abruzzi.github.com/images/2013/10/karma-debug-resized.png)
+![image](http://abruzzi.github.com/images/2013/10/karma-debug-resized.png)
 
