@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Using karma as the JavaScript test runner"
+title: "使用Karma运行JavaScript测试"
 date: 2013-10-08 10:36
 comments: true
 categories: 
