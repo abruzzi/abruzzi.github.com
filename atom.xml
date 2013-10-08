@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-10-07T23:26:46+05:30</updated>
+  <updated>2013-10-08T13:22:31+05:30</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,7 +14,131 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Using grunt as your build tool]]></title>
+    <title type="html"><![CDATA[使用Karma运行JavaScript测试]]></title>
+    <link href="http://abruzzi.github.com/2013/10/using-karma-as-the-javascript-test-runner/"/>
+    <updated>2013-10-08T10:36:00+05:30</updated>
+    <id>http://abruzzi.github.com/2013/10/using-karma-as-the-javascript-test-runner</id>
+    <content type="html"><![CDATA[<h3>Karma 简介</h3>
+
+<p>Karma是一个JavaScript的测试运行器。事实上，Karma更是一个测试环境，使用Karma可以很方便的的运行测试(方便到你感觉不到它的实际存在)。</p>
+
+<p>一般的TDD的开发流程为：</p>
+
+<ol>
+<li>编写测试(一个会失败的case)</li>
+<li>运行测试，并看到这个测试失败</li>
+<li>编写代码(足够让测试通过的代码)</li>
+<li>运行测试，并看到测试通过</li>
+<li>重构</li>
+<li>运行测试，并看到测试通过</li>
+</ol>
+
+
+<p>然后<strong>如此循环</strong>，而在前端开发中，很长一段时间，这个流程受限于开发环境，比如添加了一个新的JavaScript源文件，开发者需要在HTML中引入相应地文件，以及响应的测试文件，然后刷新页面(有时候还需要清空浏览器缓存)。</p>
+
+<p>在这个过程中，开发者真正关注的就是编写测试，运行测试，编写实现，重构等等，需要不断的重复这个过程。而不是关注如刷新页面，清空缓存，修改HTML对脚本的引用等武馆的工作。</p>
+
+<p>Karma就是这样一个开发环境，开发者指定需要测试的脚本/测试文件，需要运行的浏览器等信息，Karma会在后台自动监控文件的修改，并启动一个浏览器与Karma的服务器连接，这样当源代码或者测试发生修改后，Karma会自动运行测试。</p>
+
+<p>开发者可以指定不同的浏览器，甚至可以跨设备。由于Karma只是一个运行器，你可以使用项目中正在使用的测试框架如Jasmine，QUnit等，甚至可以自定义适配器来支持你自己的测试框架。</p>
+
+<h3>运行Karma</h3>
+
+<p>Karma需要一个配置文件来知道哪些文件需要被加载，需要被监控(当文件内容发生变化时，尝试运行测试)，这个配置文件可以通过Karma自带的参数来生成。</p>
+
+<h4>基本使用</h4>
+
+<p>Karma被实现为一个npm的包，所以可以通过</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g karma</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装之后，可以生成karma需要的配置文件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ karma init my.conf.js</span></code></pre></td></tr></table></div></figure>
+
+
+<p>karma会让你回答一些问题，比如是哪种测试框架，哪些文件需要被测试，哪些浏览器需要被考虑等。生成的配置文件的一个片段是：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// base path, that will be used to resolve files and exclude
+</span><span class='line'>basePath = ''; 
+</span><span class='line'>
+</span><span class='line'>// list of files / patterns to load in the browser
+</span><span class='line'>files = [ 
+</span><span class='line'>  JASMINE,
+</span><span class='line'>  JASMINE_ADAPTER,
+</span><span class='line'>  'src/**/*.js',
+</span><span class='line'>  'test/**/*spec.js'
+</span><span class='line'>];
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>// web server port
+</span><span class='line'>port = 9876;
+</span><span class='line'>
+</span><span class='line'>// browsers
+</span><span class='line'>browsers = ['Chrome'];
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>生成配置文件之后，可以通过命令来启动Karma服务器，同时指定使用<code>my.conf.js</code>文件作为配置：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ karma start my.conf.js</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/10/karma-run-resized.png" alt="image" /></p>
+
+<h4>调试及其他</h4>
+
+<p>很多时候，我们只想要运行某一个suite中的所有测试用例，而不是整个工程，比如在Jasmine中：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>describe("Controller User", function() {
+</span><span class='line'>  it("add user", function() {});
+</span><span class='line'>  it("search users", function() {});
+</span><span class='line'>  it("delete user", function() {});
+</span><span class='line'>})</span></code></pre></td></tr></table></div></figure>
+
+
+<p>只需要将<code>describe</code>修改为<code>ddescribe</code>即可，类似的，如果只需要运行某一个测试用例，只需要将<code>it</code>修改为<code>iit</code>即可。</p>
+
+<p>这在运行调试某个测试或者某段特定代码时非常好用。另外，Karma还提供了debugger功能，在测试用例中加入：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>debugger;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>即可。由于在运行时，karma实际上会启动一个真实地浏览器，所以可以在浏览器的developer-tool中进行实际的调试。需要注意的是，当进入调试模式时，需要启动developer-tool(在Karma启动的那个浏览器窗口中)。</p>
+
+<p><img src="http://http://abruzzi.github.com/images/2013/10/karma-debug-resized.png" alt="image" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[使用Grunt作为构建工具(build tool)]]></title>
     <link href="http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool/"/>
     <updated>2013-10-07T18:14:00+05:30</updated>
     <id>http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool</id>
@@ -2362,109 +2486,6 @@
 <p>我在最近的一个开源项目<a href="https://github.com/abruzzi/feather">feather</a>中使用了jQuery Mobile来完成ios上的展现。</p>
 
 <p><img src="http://abruzzi.github.com/images/2013/02/feather-mobile.png" alt="image" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[将应用程序部署到heroku]]></title>
-    <link href="http://abruzzi.github.com/2013/01/developing-with-heroku/"/>
-    <updated>2013-01-26T19:02:00+05:30</updated>
-    <id>http://abruzzi.github.com/2013/01/developing-with-heroku</id>
-    <content type="html"><![CDATA[<h3>heroku</h3>
-
-<p>使用heroku，开发人员可以很容易的将自己的应用程序公开给世界上的其他用户使用，heroku会为你提供一个url，一些预设的空间如数据库（postgresql）等。这对于需要频繁远程showcase的场景提供了非常好的方式，当然对于开发人员向其他的开发人员或者最终用户展现自己的框架的外观/行为等场景也会非常有用。</p>
-
-<h3>在heroku上注册用户</h3>
-
-<p>首先，当然是在heroku上<a href="https://api.heroku.com/signup/devcenter">注册一个开发账户</a>，如果你已经注册过，就请接着第二步</p>
-
-<h3>下载heroku的本地Toolbox</h3>
-
-<p>heroku提供了一个很好用的<a href="https://toolbelt.heroku.com/">工具包</a>，通过这个工具包，开发人员可以很容易的对部署在heroku上的应用程序做操作。</p>
-
-<h3>在本地登陆heroku</h3>
-
-<p>如果没有上传过key的话，heroku会提醒你创建一个新的ssh公钥，然后上传到heroku（这个过程与使用github非常类似）</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku login
-</span><span class='line'>Enter your Heroku credentials.
-</span><span class='line'>Email: adam@example.com
-</span><span class='line'>Password: 
-</span><span class='line'>Could not find an existing public key.
-</span><span class='line'>Would you like to generate one? [Yn] 
-</span><span class='line'>Generating new SSH public key.
-</span><span class='line'>Uploading ssh public key /Users/adam/.ssh/id_rsa.pub</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果已经上传过key，则可以直接登陆</p>
-
-<h3>准备工作</h3>
-
-<p>在本地生成一个应用程序的基本结构，如：<code>Gemfile</code>，目录结构等。然后在本地配置好git环境，比如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git init
-</span><span class='line'>$ git add .
-</span><span class='line'>$ git commit -m "init"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>准备Procfile：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>web: bundle exec ruby app.rb -p $PORT -E production</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>app.rb</code>相当于你的应用程序的主入口(main)，<code>-E</code>指定运行环境（此处指定为production），你的应用程序可能会根据次设置来进行一些资源的选择（数据库指向，资源文件位置等）</p>
-
-<p>在上传之前，需要确保自己的应用程序可以在本地正常运行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>foreman start</span></code></pre></td></tr></table></div></figure>
-
-
-<p>应用程序将在本地的5000端口上运行，此时可以做一些简单的验证，保证应用程序运行正常。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git add .
-</span><span class='line'>$ git commit -m "ready for deploy app to heroku"</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>上传你的App</h3>
-
-<p>这时，可以很轻易的将App上传到heroku了：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku create
-</span><span class='line'>$ git push heroku master</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当然，第一次上传可能会比较慢（取决于你应用程序的大小），如果一切正常，heroku将会尝试根据你的Gemfile来安装依赖，安装完成之后，会尝试根据Procfile中的配置启动你的应用程序。</p>
-
-<p>如果你的应用程序会访问数据库（非postgresql的数据库），那么建议在Gemfile中指定当测试时使用该数据库，而在production环境中使用postgresql，因为heroku使用的正是postgresql：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>configure :test do
-</span><span class='line'>    DataMapper.setup(:default, ENV['DATABASE_URL'] || "local-db-url")
-</span><span class='line'>    DataMapper.finalize.auto_upgrade!
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我的应用在本地使用sqlite，而在heroku中使用其提供的postgresql。</p>
 ]]></content>
   </entry>
   

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: lightweight | I code it]]></title>
+  <title><![CDATA[Category: Lightweight | I code it]]></title>
   <link href="http://abruzzi.github.com/category/lightweight/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-10-07T23:26:46+05:30</updated>
+  <updated>2013-10-08T13:22:31+05:30</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,378 +14,108 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Using grunt as your build tool]]></title>
-    <link href="http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool/"/>
-    <updated>2013-10-07T18:14:00+05:30</updated>
-    <id>http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool</id>
-    <content type="html"><![CDATA[<h3>Grunt简介</h3>
+    <title type="html"><![CDATA[使用Karma运行JavaScript测试]]></title>
+    <link href="http://abruzzi.github.com/2013/10/using-karma-as-the-javascript-test-runner/"/>
+    <updated>2013-10-08T10:36:00+05:30</updated>
+    <id>http://abruzzi.github.com/2013/10/using-karma-as-the-javascript-test-runner</id>
+    <content type="html"><![CDATA[<h3>Karma 简介</h3>
 
-<p>Grunt是一个基于JavaScript的构建工具。和其他的构建工具类似，grunt主要用于一些将一些繁琐的工作自动化，比如运行测试，代码的静态检查，压缩JavaScript源代码等等。</p>
+<p>Karma是一个JavaScript的测试运行器。事实上，Karma更是一个测试环境，使用Karma可以很方便的的运行测试(方便到你感觉不到它的实际存在)。</p>
 
-<h4>安装grunt-cli</h4>
-
-<p>要在命令行运行grunt，需要安装grunt的命令行工具：</p>
-
-<p><code>
-$ npm install -g grunt-cli
-</code></p>
-
-<p>grunt-cli本身并不会提供Grunt构建工具，而只是一个Grunt的调用器。<code>-g</code>参数表示将grunt-cli安装在全局的路径中，这样我们可以在不同的项目中使用grunt-cli，而由于grunt-cli本身只是一个调用器，所以对于不同的项目，真正运行的Grunt可以是不同的版本，而命令行的借口则完全一致。</p>
-
-<p>grunt-cli提供的命令行可执行文件的名称为<code>grunt</code>，这个工具每次运行时都会检查当前目录下的Grunt。</p>
-
-<h4>使用grunt-cli</h4>
-
-<p>如果在一个既有的npm模块中，可以很容易的加入grunt的支持，只需要修改package.json，加入依赖，然后运行<code>npm install</code>来完成依赖的安装即可。</p>
-
-<p>如果是一个新启动的项目，那么在项目中添加两个文件：package.json和Gruntfile。其中package.json用来定义当前项目是一个npm的模块，而Gruntfile用来定义具体的任务，以及加载Grunt的其他插件(Grunt提供丰富的插件，比如运行测试，代码静态检查等功能都是通过插件来完成的)</p>
-
-<h4>package.json</h4>
-
-<p>package.json定义了一个工程的元数据，这些数据被npm管理器来使用，npm本身提供了<code>init</code>参数可以很容易的生成一个package.json文件：</p>
-
-<p><code>
-$ npm init
-</code></p>
-
-<p>根据提示可以很容易的生成一个新的package.json</p>
-
-<p>```
-{
-  "name": "chapter-testing",
-  "version": "0.0.0",
-  "description": "This is the demo for how to use grunt.js",
-  "main": "my.conf.js",
-  "directories": {</p>
-
-<pre><code>"test": "test"
-</code></pre>
-
-<p>  },
-  "scripts": {</p>
-
-<pre><code>"test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
-</code></pre>
-
-<p>  },
-  "author": "Juntao",
-  "license": "BSD-2-Clause"
-}
-```</p>
-
-<p>一般来说，package.json文件中有一个<code>devDependencies</code>的小节，定义了本项目的外部依赖。</p>
-
-<p>可以通过运行</p>
-
-<p><code>
-$ npm install grunt --save-dev
-</code>
-来为工程文件package.json添加<code>devDependencies</code>小节的定义：</p>
-
-<p><code>
-"devDependencies": {
-  "grunt": "~0.4.1"
-}
-</code></p>
-
-<p>该命令会为工程添加一条依赖关系，如果别人拿到这个文件，就可以在本地“复原”你的开发环境，以保证整个团队使用同样地<strong>库</strong>文件。</p>
-
-<p>完成之后，该命令会在本地生成一个目录(如果没有的话)<code>node_modules</code>，其中包括了完成的Grunt的可执行文件，这时候在命令行运行grunt(由grunt-cli提供的命令行工具)，就会尝试在此目录中查找Grunt的可执行文件。</p>
-
-<h4>Gruntfile</h4>
-
-<p>要运行Grunt，还需要定义你自己的任务，默认的任务定义在Gruntfile中，Gruntfile有一定的格式。</p>
-
-<p>所有的任务需要定义在一个函数中：</p>
-
-<p><code>
-module.exports = function(grunt) {
-  // task defination
-};
-</code></p>
-
-<p>一般而言，使用Grunt会读取一些项目的信息(定义在package.json中)：</p>
-
-<p>```
-grunt.initConfig({</p>
-
-<pre><code>pkg: grunt.file.readJSON('package.json')
-</code></pre>
-
-<p>});
-```</p>
-
-<p>亦可以在这个时刻指定一些其他的插件的选项：</p>
-
-<p>```
-grunt.initConfig({</p>
-
-<pre><code>pkg: grunt.file.readJSON('package.json'),
-jshint: {
-    all: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
-}
-</code></pre>
-
-<p>});
-```</p>
-
-<p>然后需要加载其他的插件(如果需要的话)</p>
-
-<p><code>
-grunt.loadNpmTasks('grunt-contrib-jshint');
-</code></p>
-
-<p>最后，需要指定一个grunt的入口任务(default任务)：</p>
-
-<p>```
-grunt.registerTask('default', function() {</p>
-
-<pre><code>console.log("default task");
-</code></pre>
-
-<p>});</p>
-
-<p>```</p>
-
-<p>然后运行<code>grunt</code>，我们此处定义的default任务仅仅在控制台上打印一行字符串:</p>
-
-<p>```
-$ grunt
-Running "default" task
-default task</p>
-
-<p>Done, without errors.
-```</p>
-
-<h3>Grunt插件</h3>
-
-<p>Grunt已经得到了很多的开源软件贡献者的支持，已经又众多的插件被开发出来。比如:</p>
+<p>一般的TDD的开发流程为：</p>
 
 <ol>
-<li><a href="https://github.com/gruntjs/grunt-contrib-jshint">grunt-contrib-jshint</a></li>
-<li><a href="https://github.com/gruntjs/grunt-contrib-uglify">grunt-contrib-uglify</a></li>
-<li><a href="https://github.com/gruntjs/grunt-contrib-qunit">grunt-contrib-qunit</a></li>
-<li><a href="https://github.com/karma-runner/grunt-karma">grunt-karma</a></li>
+<li>编写测试(一个会失败的case)</li>
+<li>运行测试，并看到这个测试失败</li>
+<li>编写代码(足够让测试通过的代码)</li>
+<li>运行测试，并看到测试通过</li>
+<li>重构</li>
+<li>运行测试，并看到测试通过</li>
 </ol>
 
 
-<p>等等，使用这些插件可以快速的为你的项目开发提供很多的便利，以grunt-jshint为例，
-首先需要安装此插件：</p>
+<p>然后<strong>如此循环</strong>，而在前端开发中，很长一段时间，这个流程受限于开发环境，比如添加了一个新的JavaScript源文件，开发者需要在HTML中引入相应地文件，以及响应的测试文件，然后刷新页面(有时候还需要清空浏览器缓存)。</p>
+
+<p>在这个过程中，开发者真正关注的就是编写测试，运行测试，编写实现，重构等等，需要不断的重复这个过程。而不是关注如刷新页面，清空缓存，修改HTML对脚本的引用等武馆的工作。</p>
+
+<p>Karma就是这样一个开发环境，开发者指定需要测试的脚本/测试文件，需要运行的浏览器等信息，Karma会在后台自动监控文件的修改，并启动一个浏览器与Karma的服务器连接，这样当源代码或者测试发生修改后，Karma会自动运行测试。</p>
+
+<p>开发者可以指定不同的浏览器，甚至可以跨设备。由于Karma只是一个运行器，你可以使用项目中正在使用的测试框架如Jasmine，QUnit等，甚至可以自定义适配器来支持你自己的测试框架。</p>
+
+<h3>运行Karma</h3>
+
+<p>Karma需要一个配置文件来知道哪些文件需要被加载，需要被监控(当文件内容发生变化时，尝试运行测试)，这个配置文件可以通过Karma自带的参数来生成。</p>
+
+<h4>基本使用</h4>
+
+<p>Karma被实现为一个npm的包，所以可以通过</p>
 
 <p><code>
-$ npm install grunt-contrib-jshint --save-dev
+$ npm install -g karma
 </code></p>
 
-<p>然后在grunt.initConfig中指定jshint需要的参数：</p>
+<p>安装之后，可以生成karma需要的配置文件：</p>
+
+<p><code>
+$ karma init my.conf.js
+</code></p>
+
+<p>karma会让你回答一些问题，比如是哪种测试框架，哪些文件需要被测试，哪些浏览器需要被考虑等。生成的配置文件的一个片段是：</p>
 
 <p>```
-grunt.initConfig({</p>
+// base path, that will be used to resolve files and exclude
+basePath = '';</p>
 
-<pre><code>jshint: {
-    files: ['js/*.js'],
-    options: {
-        ignores: ['js/jquery*.js']
-    }
-}
-</code></pre>
+<p>// list of files / patterns to load in the browser
+files = [
+  JASMINE,
+  JASMINE_ADAPTER,
+  'src/<strong>/*.js',
+  'test/</strong>/*spec.js'
+];</p>
 
-<p>});
-```</p>
+<p>// web server port
+port = 9876;</p>
 
-<p>然后加载此插件：</p>
+<p>// browsers
+browsers = ['Chrome'];</p>
 
-<p><code>
-grunt.loadNpmTasks('grunt-contrib-jshint');
-</code></p>
+<p>```</p>
 
-<p>最后，可以将<code>jshint</code>加入到默认的任务中：</p>
-
-<p><code>
-grunt.registerTask('default', ['jshint']);
-</code></p>
-
-<p>运行结果<code>可能</code>如下:</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/10/jshint.png" alt="image" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用Grape快速开发API]]></title>
-    <link href="http://abruzzi.github.com/2013/08/quick-api-development-by-grape/"/>
-    <updated>2013-08-04T10:29:00+05:30</updated>
-    <id>http://abruzzi.github.com/2013/08/quick-api-development-by-grape</id>
-    <content type="html"><![CDATA[<h3>Grape简介</h3>
-
-<p><a href="http://intridea.github.io/grape">Grape</a>是一个基于Rack的非常轻量级的框架，用于快速的开发API。一般来说，Rails对于单独的API来说，太过于重量级；而Sinatra虽然足够小巧，但是又没有为开发API提供足够的默认支持（如果从可控制性，灵活性上来说，Sinatra可能更好一些，但是如果有专门的更好用的工具，为什么不用呢？）。</p>
-
-<p>安装非常简便：</p>
+<p>生成配置文件之后，可以通过命令来启动Karma服务器，同时指定使用<code>my.conf.js</code>文件作为配置：</p>
 
 <p><code>
-$ gem install grape
+$ karma start my.conf.js
 </code></p>
 
-<p>或者使用在自己的Gemfile中，与其他的gem一起搭建API:</p>
+<p><img src="http://abruzzi.github.com/images/2013/10/karma-run-resized.png" alt="image" /></p>
 
-<p><code>
-gem 'grape'
-</code></p>
+<h4>调试及其他</h4>
 
-<h3>为既有系统添加API</h3>
-
-<h4>简单一试</h4>
-
-<p>之前的一篇介绍<a href="http://icodeit.org/2013/05/using-active-record-as-a-standalone-orm/">ActiveRecord在既有系统中使用</a>的文章中，我使用ActiveRecord为既有的数据库visitor中的三个表(visitor, listGroup, listGroupItem)建立了ruby对应的模型。现在我们可以为这些模型包装一组API，以方便客户端（消费者）可以通过web来访问。</p>
+<p>很多时候，我们只想要运行某一个suite中的所有测试用例，而不是整个工程，比如在Jasmine中：</p>
 
 <p>```
-module MySys</p>
+describe("Controller User", function() {</p>
 
-<pre><code>class API &lt; Grape::API
-    format :json
-
-    resource :visitors do
-
-        desc "get all visitor information"
-        get do
-            Visitor.limit(20)
-        end
-
-    end
-end
+<pre><code>it("add user", function() {});
+it("search users", function() {});
+it("delete user", function() {});
 </code></pre>
 
-<p>end
+<p>})
 ```</p>
 
-<p>首先，MySys::API扩展了Grape::API。<code>format</code>定义我们的API会产生JSON格式的输出，resource定义了这一组API是为资源visitors提供的，因此访问API的url为：</p>
+<p>只需要将<code>describe</code>修改为<code>ddescribe</code>即可，类似的，如果只需要运行某一个测试用例，只需要将<code>it</code>修改为<code>iit</code>即可。</p>
+
+<p>这在运行调试某个测试或者某段特定代码时非常好用。另外，Karma还提供了debugger功能，在测试用例中加入：</p>
 
 <p><code>
-http://localhost:9292/visitors/
+debugger;
 </code></p>
 
-<p>当然，grape提供一个很方便的设置prefix，可以使得API的路径更有意义:</p>
+<p>即可。由于在运行时，karma实际上会启动一个真实地浏览器，所以可以在浏览器的developer-tool中进行实际的调试。需要注意的是，当进入调试模式时，需要启动developer-tool(在Karma启动的那个浏览器窗口中)。</p>
 
-<p><code>
-format :json
-prefix "mysys"
-</code></p>
-
-<p>url则相应地变为:</p>
-
-<p><code>
-http://localhost:9292/mysys/visitors/
-</code></p>
-
-<h4>处理参数</h4>
-
-<p>在对参数的处理上，grape也非常灵活，比如接上例，我们想要获取某一个具体的用户的信息：</p>
-
-<p><code>
-http://localhost:9292/visitors/8a9d82b13b9786e1013b978766150001
-</code></p>
-
-<p>我们可以添加一个新的endpoint：</p>
-
-<p>```
-desc "return a visitor"
-params do</p>
-
-<pre><code>requires :visitor_uid, :type =&gt; String, :desc =&gt; "visitor id"
-</code></pre>
-
-<p>end
-route_param :visitor_uid do</p>
-
-<pre><code>get do
-    Visitor.find(params[:visitor_uid])
-end
-</code></pre>
-
-<p>end
-```</p>
-
-<p>params中要求，需要一个类型为String的参数visitor_uid。然后在handler中，通过params来引用这个参数的值。</p>
-
-<h4>助手函数(Helper)</h4>
-
-<p>Grape允许开发者将编解码，权限校验等等的通用的操作分离出来，放入助手函数，这些Helper可以被所有的API使用:</p>
-
-<p>```
-helpers do</p>
-
-<pre><code>def generate_default_visitor(email, site) 
-    {
-        :visitor_uid =&gt; SecureRandom.hex,
-        :password_expiration =&gt; (Time.now + 60 * 60 * 24),
-        :last_used_timestamp =&gt; (Time.now - 60 * 60 * 24),
-        :visitor_login_id =&gt; email,
-        :site_name =&gt; site
-    }
-end
-</code></pre>
-
-<p>end
-```</p>
-
-<p>使用上边定义的助手函数<code>generate_default_visitor</code>：</p>
-
-<p>```
-desc "create a visitor"
-params do</p>
-
-<pre><code>requires :email, :type =&gt; String, :desc =&gt; "Email address"
-requires :site, :type =&gt; String, :desc =&gt; "Site"
-</code></pre>
-
-<p>end
-post do</p>
-
-<pre><code>attr = generate_default_visitor(params[:email], params[:site])
-visitor = Visitor.new attr
-visitor.visitor_uid = attr[:visitor_uid]
-visitor.save
-</code></pre>
-
-<p>end
-```</p>
-
-<h3>对API进行测试</h3>
-
-<p>通过Web测试API有非常多的方式，比如通过浏览器的插件(POSTMan)，RSpec，但是我最喜欢，也是最轻便的方式是通过命令行工具curl：</p>
-
-<p><code>
-curl http://localhost:9292/visitors/8a9d82b13b9786e1013b978766150001
-</code></p>
-
-<p>或者：</p>
-
-<p><code>
-curl -H "Content-Type: application/json" -X POST -d "{\"email\":\"jtqiu@tw.com\", \"site\":\"mysys\"}" http://localhost:9292/visitors/
-</code></p>
-
-<p>命令行的程序curl是一个非常灵活，强大的工具，可以定制HTTP头信息，User Agent，支持所有的HTTP动词，最重要的是，在命令行很容易将工具们组合在一起，并完成自动化。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[rack it up]]></title>
-    <link href="http://abruzzi.github.com/2013/08/rack-it-up/"/>
-    <updated>2013-08-02T07:38:00+05:30</updated>
-    <id>http://abruzzi.github.com/2013/08/rack-it-up</id>
-    <content type="html"><![CDATA[<h3>Rack it up (proc)</h3>
-
-<p>一个最简单的rack应用程序可以是：一个简单的ruby对象，包含了一个call方法。这个call方法接受一个参数，并返回一个有三个元素的数组即可：</p>
-
-<p>```
-def call(env)</p>
-
-<pre><code>[200, {}, ["content"]]
-</code></pre>
-
-<p>end
-```</p>
-
-<p>其中参数env将被rack用作HTTP请求对象来传递进来，而函数的返回值与HTTP响应对应：分别为状态码，HTTP头信息以及响应内容。</p>
+<p><img src="http://http://abruzzi.github.com/images/2013/10/karma-debug-resized.png" alt="image" /></p>
 ]]></content>
   </entry>
   

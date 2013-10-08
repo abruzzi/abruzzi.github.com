@@ -9,7 +9,15 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="《JavaScript核心概念及实践》勘误表 JavaScript核心概念及实践一书已经于2013年5月出版，由于时间原因以及作者的疏于检查，导致书中出现了一些错别字词等错误，现在将错误及更正列于此页，作者为对读者朋友带来的不便表示深深的歉意。 第一章第12页 “则向控制台打印：goodbay” &hellip;">
+  <meta name="description" content="before和after伪元素 所谓伪元素，可以理解为浏览器为某元素附加的元素（根据名字，附加在这个元素之前/之后）。用来完成特定的效果，before/after需要和content属性一起使用： 1
+2
+3
+4
+5
+6
+.css-class:before { content: " ";
+}
+. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -84,6 +92,234 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2013/05/before-and-after-selector-in-css/">CSS中的before和after伪元素及其应用</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-16T15:29:00+05:30" pubdate data-updated="true">May 16<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>before和after伪元素</h3>
+
+<p>所谓伪元素，可以理解为浏览器为某元素附加的元素（根据名字，附加在这个元素之前/之后）。用来完成特定的效果，before/after需要和content属性一起使用：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>.css-class:before {
+</span><span class='line'>  content: " ";
+</span><span class='line'>}
+</span><span class='line'>.css-class:after {
+</span><span class='line'>  content: " ";
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过使用before/after伪元素，可以做一些很有意思的效果。<a href="http://css-tricks.com/pseudo-element-roundup/">这里</a>有一些有意思的示例。</p>
+
+<h3>四个三角形</h3>
+
+<p>页面上经常会遇到小三角形这种视觉元素，比如表示一个可以<strong>打开/关闭</strong>的开关（将不会频繁使用的元素隐藏起来，点击可以展开/收起），或者一个模拟消息盒子（纯CSS实现），最早的做法是使用一个小的图片来完成，但是这个事实上可以通过纯CSS来实现。</p>
+
+<p>原理是利用block元素的<code>border</code>属性，当<code>border</code>的值很小的时候，<code>border</code>之间的连接处并无异常，但是当<code>border</code>较大，而元素本身的尺寸小于<code>border</code>自身时，则每一个<code>border</code>都会呈现为梯形，而当元素的<code>width</code>和<code>height</code>都为0时，就会看到一个正方形，而每个边都变成了一个三角形：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>.container .color-box {
+</span><span class='line'>  content: " ";
+</span><span class='line'>  width: 0;
+</span><span class='line'>  height: 0;
+</span><span class='line'>  border: 10px solid transparent;
+</span><span class='line'>  border-left-color: #00ff00;
+</span><span class='line'>  border-right-color: #000000;
+</span><span class='line'>  border-top-color: #ff0000;
+</span><span class='line'>  border-bottom-color: #0000ff;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/05/color-box.png" alt="image" /></p>
+
+<h3>小三角形</h3>
+
+<p>这时候，如果将其他的三条边隐藏起来（通过将<code>border</code>的颜色置为透明）：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>.container .color-box {
+</span><span class='line'>  content: " ";
+</span><span class='line'>  width: 0;
+</span><span class='line'>  height: 0;
+</span><span class='line'>  border: 10px solid transparent;//朝下的三角形
+</span><span class='line'>  border-top-color: #ff0000;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/05/triggle.png" alt="image" /></p>
+
+<p>先将所有的边都设置为透明色，然后根据需要显示某一个边，来完成三角形的指向。</p>
+
+<h3>一个普通的消息框</h3>
+
+<p>一个普通的消息框，通过设置<code>box-shadow</code>和<code>border-radius</code>之后，可以变得比较“好看”，但是如果可以给这个消息框加上一个小的三角形（可以指向用户的头像等）。</p>
+
+<p>HTML代码：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> &lt;div class="container"&gt;
+</span><span class='line'>      &lt;div class="chat-box"&gt;
+</span><span class='line'>          &lt;p&gt;
+</span><span class='line'>              Resque (pronounced like "rescue") is a Redis-backed library for creating background jobs, placing those jobs on multiple queues, and processing them later.
+</span><span class='line'>          &lt;/p&gt;
+</span><span class='line'>      &lt;/div&gt;
+</span><span class='line'>  &lt;/div&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>样式如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>.container .chat-box {
+</span><span class='line'>  position: relative;
+</span><span class='line'>  border: 1px solid #6b6b6b;
+</span><span class='line'>  border-radius: 5px;
+</span><span class='line'>  box-shadow: 1px 1px 4px #6b6b6b;
+</span><span class='line'>  width: 300px;
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>.container .chat-box p {
+</span><span class='line'>  margin: 0;
+</span><span class='line'>  padding: 10px;
+</span><span class='line'>  font-size: 18px;
+</span><span class='line'>  font-family: "Microsoft Yahei";
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/05/box.png" alt="image" /></p>
+
+<h3>更fancy的消息框</h3>
+
+<p>先通过before伪元素，在消息框的底部加上一个小的三角形：</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/05/box-triggle-gray.png" alt="image" /></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>.container .chat-box:after, 
+</span><span class='line'>.container .chat-box:before {
+</span><span class='line'>  position: absolute;
+</span><span class='line'>  content: " ";
+</span><span class='line'>  width: 0;
+</span><span class='line'>  height: 0;
+</span><span class='line'>  border: solid transparent;
+</span><span class='line'>  top: 100%;
+</span><span class='line'>  left: 62%;
+</span><span class='line'>} 
+</span><span class='line'>
+</span><span class='line'>.container .chat-box:before {
+</span><span class='line'>  border-width: 10px;
+</span><span class='line'>  border-top-color: #6b6b6b;
+</span><span class='line'>  margin-left: -10px;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>UPDATE:</strong></p>
+
+<hr />
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>.container .chat-box:after {
+</span><span class='line'>  border-width: 9px;
+</span><span class='line'>  border-top-color: white;
+</span><span class='line'>  margin-left: -9px;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<p>但是一个实心的灰色三角形比较难看，我们需要再改进一下，即通过在这个伪元素之上，再绘制一个白色（与消息框颜色相同）的伪元素，但是尺寸又小一个单位（单位与消息框本身的尺寸相同，这里为<code>1px</code>）。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/05/box-triggle-both.png" alt="image" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -914,138 +1150,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/2013/01/developing-with-heroku/">将应用程序部署到heroku</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-26T19:02:00+05:30" pubdate data-updated="true">Jan 26<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>heroku</h3>
-
-<p>使用heroku，开发人员可以很容易的将自己的应用程序公开给世界上的其他用户使用，heroku会为你提供一个url，一些预设的空间如数据库（postgresql）等。这对于需要频繁远程showcase的场景提供了非常好的方式，当然对于开发人员向其他的开发人员或者最终用户展现自己的框架的外观/行为等场景也会非常有用。</p>
-
-<h3>在heroku上注册用户</h3>
-
-<p>首先，当然是在heroku上<a href="https://api.heroku.com/signup/devcenter">注册一个开发账户</a>，如果你已经注册过，就请接着第二步</p>
-
-<h3>下载heroku的本地Toolbox</h3>
-
-<p>heroku提供了一个很好用的<a href="https://toolbelt.heroku.com/">工具包</a>，通过这个工具包，开发人员可以很容易的对部署在heroku上的应用程序做操作。</p>
-
-<h3>在本地登陆heroku</h3>
-
-<p>如果没有上传过key的话，heroku会提醒你创建一个新的ssh公钥，然后上传到heroku（这个过程与使用github非常类似）</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku login
-</span><span class='line'>Enter your Heroku credentials.
-</span><span class='line'>Email: adam@example.com
-</span><span class='line'>Password: 
-</span><span class='line'>Could not find an existing public key.
-</span><span class='line'>Would you like to generate one? [Yn] 
-</span><span class='line'>Generating new SSH public key.
-</span><span class='line'>Uploading ssh public key /Users/adam/.ssh/id_rsa.pub</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果已经上传过key，则可以直接登陆</p>
-
-<h3>准备工作</h3>
-
-<p>在本地生成一个应用程序的基本结构，如：<code>Gemfile</code>，目录结构等。然后在本地配置好git环境，比如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git init
-</span><span class='line'>$ git add .
-</span><span class='line'>$ git commit -m "init"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>准备Procfile：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>web: bundle exec ruby app.rb -p $PORT -E production</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>app.rb</code>相当于你的应用程序的主入口(main)，<code>-E</code>指定运行环境（此处指定为production），你的应用程序可能会根据次设置来进行一些资源的选择（数据库指向，资源文件位置等）</p>
-
-<p>在上传之前，需要确保自己的应用程序可以在本地正常运行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>foreman start</span></code></pre></td></tr></table></div></figure>
-
-
-<p>应用程序将在本地的5000端口上运行，此时可以做一些简单的验证，保证应用程序运行正常。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git add .
-</span><span class='line'>$ git commit -m "ready for deploy app to heroku"</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>上传你的App</h3>
-
-<p>这时，可以很轻易的将App上传到heroku了：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku create
-</span><span class='line'>$ git push heroku master</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当然，第一次上传可能会比较慢（取决于你应用程序的大小），如果一切正常，heroku将会尝试根据你的Gemfile来安装依赖，安装完成之后，会尝试根据Procfile中的配置启动你的应用程序。</p>
-
-<p>如果你的应用程序会访问数据库（非postgresql的数据库），那么建议在Gemfile中指定当测试时使用该数据库，而在production环境中使用postgresql，因为heroku使用的正是postgresql：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>configure :test do
-</span><span class='line'>    DataMapper.setup(:default, ENV['DATABASE_URL'] || "local-db-url")
-</span><span class='line'>    DataMapper.finalize.auto_upgrade!
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我的应用在本地使用sqlite，而在heroku中使用其提供的postgresql。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/3/">&larr; Older</a>
@@ -1063,7 +1167,11 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/2013/10/using-grunt-as-your-build-tool/">Using grunt as your build tool</a>
+        <a href="/2013/10/using-karma-as-the-javascript-test-runner/">使用Karma运行JavaScript测试</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/10/using-grunt-as-your-build-tool/">使用Grunt作为构建工具(build tool)</a>
       </li>
     
       <li class="post">
@@ -1076,10 +1184,6 @@
     
       <li class="post">
         <a href="/2013/07/write-a-jquery-plugin-step-by-step/">逐步编写一个jQuery插件(todoify)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2013/06/macro-in-common-lisp/">Common Lisp中的宏(Macro)</a>
       </li>
     
   </ul>

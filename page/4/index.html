@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="In my last post, I mentioned to how to setup a intellij project by using gradle. and today we are going to talk about how to using intellij to write &hellip;">
+  <meta name="description" content="Although we can write tests all by the default matchers that hamcrest provided, but somehow we need the code to be more readable, and maintainable, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -84,6 +84,135 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2012/10/customize-matcher-by-using-hamcrest/">Customize Matcher by Using Hamcrest</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-15T22:24:00+05:30" pubdate data-updated="true">Oct 15<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Although we can write tests all by the default matchers that hamcrest provided, but somehow we need the code to be more readable, and maintainable, so it&#8217;s a good way to try customize our own matchers.</p>
+
+<p>We discussed how to TDD in last post, and in the book class we talked:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldGetBookInfo</span><span class="o">(){</span>
+</span><span class='line'>    <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The Ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">book</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;The Ruby programming language&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">book</span><span class="o">.</span><span class="na">getCategory</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Development&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The default <em>is</em> matcher can get the job done, but not that readable, we can simply provide a customized matcher for this case:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldGetBookInfoByMatcher</span><span class="o">(){</span>
+</span><span class='line'>    <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The Ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">book</span><span class="o">,</span> <span class="n">BookMatcher</span><span class="o">.</span><span class="na">isCorrect</span><span class="o">(</span><span class="s">&quot;The Ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Thanks for the flexibility of hamcrest, just extends the <em>BaseMatcher<T></em> like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">BookMatcher</span> <span class="kd">extends</span> <span class="n">BaseMatcher</span><span class="o">&lt;</span><span class="n">Book</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">category</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="nf">BookMatcher</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">category</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">category</span> <span class="o">=</span> <span class="n">category</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">matches</span><span class="o">(</span><span class="n">Object</span> <span class="n">item</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="o">(</span><span class="n">Book</span><span class="o">)</span><span class="n">item</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">book</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">book</span><span class="o">.</span><span class="na">getCategory</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">category</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">describeTo</span><span class="o">(</span><span class="n">Description</span> <span class="n">description</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">BookMatcher</span> <span class="nf">isCorrect</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">category</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">new</span> <span class="nf">BookMatcher</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">category</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -961,70 +1090,6 @@ handler(datamodel);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/2012/07/revert-workflow-in-git/">Revert Workflow in Git</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-07-17T00:00:00+05:30" pubdate data-updated="true">Jul 17<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><h2>git中Revert的基本使用流程</h2></p>
-
-<p><ul>
-<li>git log (找出引入bug的commit, 比如说是<em>&#8230;d4e5f6&#8230;</em>)</li>
-<li>git revert <em>&#8230;d4e5f6&#8230;</em></li>
-<li>git push</li>
-</ul></p>
-
-<p><p>如果不幸这个过程中有其他同事进行了push，且与你的commit有冲突，则需要</p></p>
-
-<p><pre><code>git pull --rebase
-</code></pre></p>
-
-<p><p>解决冲突之后，按照标准的提交流程操作:</p></p>
-
-<p><pre><code>git add &lt;changes&gt;
-</code></pre></p>
-
-<p><p>最后再将这个revert(也就是一个commit)push到remote上。</p></p>
-
-<p><p>一般来说，这时候我们需要在<em>work tree</em>里fix引入的bug，所以需要对刚才的revert做一次revert，这时候引入错误的commit应该在我们的<em>work tree</em>中，这样就可以按照正常的开发流程来做了: push(对revert的push)成功之后，会得到一个新的commit的hash，比如叫<em>&#8230;a1b2c3&#8230;</em>,则使用：</p></p>
-
-<p><pre><code>git revert -n ...a1b2c3...
-</code></pre></p>
-
-<p><p>现在我们的work tree里就是需要修改的代码了。</p>
-</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/5/">&larr; Older</a>
@@ -1042,7 +1107,11 @@ handler(datamodel);
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/2013/10/using-grunt-as-your-build-tool/">Using grunt as your build tool</a>
+        <a href="/2013/10/using-karma-as-the-javascript-test-runner/">使用Karma运行JavaScript测试</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/10/using-grunt-as-your-build-tool/">使用Grunt作为构建工具(build tool)</a>
       </li>
     
       <li class="post">
@@ -1055,10 +1124,6 @@ handler(datamodel);
     
       <li class="post">
         <a href="/2013/07/write-a-jquery-plugin-step-by-step/">逐步编写一个jQuery插件(todoify)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2013/06/macro-in-common-lisp/">Common Lisp中的宏(Macro)</a>
       </li>
     
   </ul>
