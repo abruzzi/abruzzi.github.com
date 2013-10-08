@@ -4,7 +4,7 @@
   <title><![CDATA[Category: JavaScript | I code it]]></title>
   <link href="http://abruzzi.github.com/category/javascript/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-10-08T13:22:31+05:30</updated>
+  <updated>2013-10-08T13:29:52+05:30</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -115,7 +115,7 @@ debugger;
 
 <p>即可。由于在运行时，karma实际上会启动一个真实地浏览器，所以可以在浏览器的developer-tool中进行实际的调试。需要注意的是，当进入调试模式时，需要启动developer-tool(在Karma启动的那个浏览器窗口中)。</p>
 
-<p><img src="http://http://abruzzi.github.com/images/2013/10/karma-debug-resized.png" alt="image" /></p>
+<p><img src="http://abruzzi.github.com/images/2013/10/karma-debug-resized.png" alt="image" /></p>
 ]]></content>
   </entry>
   
