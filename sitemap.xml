@@ -410,11 +410,15 @@
     </url>
     <url>
         <loc>http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool/</loc>
-        <lastmod>2013-10-08T10:37:26+05:30</lastmod>
+        <lastmod>2013-10-08T21:22:10+05:30</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/2013/10/using-karma-as-the-javascript-test-runner/</loc>
-        <lastmod>2013-10-08T13:28:04+05:30</lastmod>
+        <lastmod>2013-10-08T17:57:04+05:30</lastmod>
+    </url>
+    <url>
+        <loc>http://abruzzi.github.com/2013/10/grunt-plugins/</loc>
+        <lastmod>2013-10-09T10:12:06+05:30</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/about-me/</loc>
@@ -422,11 +426,11 @@
     </url>
     <url>
         <loc>http://abruzzi.github.com/blog/archives/</loc>
-        <lastmod>2013-10-08T13:28:04+05:30</lastmod>
+        <lastmod>2013-10-09T10:12:06+05:30</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/</loc>
-        <lastmod>2013-10-08T13:28:04+05:30</lastmod>
+        <lastmod>2013-10-09T10:12:06+05:30</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/jsccp/</loc>

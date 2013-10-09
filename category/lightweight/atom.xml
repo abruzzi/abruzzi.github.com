@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Lightweight | I code it]]></title>
   <link href="http://abruzzi.github.com/category/lightweight/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-10-08T15:18:35+05:30</updated>
+  <updated>2013-10-09T10:13:51+05:30</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,115 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Grunt的几个常用插件]]></title>
+    <link href="http://abruzzi.github.com/2013/10/grunt-plugins/"/>
+    <updated>2013-10-08T16:42:00+05:30</updated>
+    <id>http://abruzzi.github.com/2013/10/grunt-plugins</id>
+    <content type="html"><![CDATA[<h3>Grunt的几个常用插件</h3>
+
+<h4>grunt-karma 简介</h4>
+
+<p><a href="https://github.com/karma-runner/grunt-karma">grunt-karma</a>是一个karma的Grunt插件，<a href="http://icodeit.org/2013/10/using-karma-as-the-javascript-test-runner/">上一篇文章</a>中已经介绍了karma的基本用法。这里简单介绍如何在Grunt中使用karma。</p>
+
+<p>首先需要安装grunt-karma插件：</p>
+
+<p><code>
+$ npm install grunt-karma --save-dev
+</code></p>
+
+<p>然后在Gruntfile.js中加载该插件：</p>
+
+<p><code>
+grunt.loadNpmTasks('grunt-karma');
+</code></p>
+
+<p>在使用karma之前，需要生成一个karma的配置文件<code>karma.conf.js</code>:</p>
+
+<p><code>
+$ karma init karma.conf.js
+</code></p>
+
+<p>然后在Gruntfile.js中，加入初始化karma的参数，并指定，karma需要使用<code>karma.conf.js</code>文件作为配置来运行：</p>
+
+<p>```
+grunt.initConfig({</p>
+
+<pre><code>karma: {
+  unit: {
+    configFile: 'karma.conf.js'
+  }
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<p>大多数情况下，如果要把karma作为CI的一部分，应该启动单次运行模式:</p>
+
+<p><code>
+singleRun: true
+</code></p>
+
+<p>这样karma会启动浏览器，运行所有的测试用例，然后退出。</p>
+
+<p>```
+grunt.loadNpmTasks('grunt-contrib-jshint');
+grunt.loadNpmTasks('grunt-karma');</p>
+
+<p>grunt.registerTask('default', ['jshint', 'karma']);
+```</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/10/grunt-karma-resized.png" alt="image" /></p>
+
+<p>注意此处的default后边带了一个任务数组，其中每个任务会按照声明的顺序依次被执行。事实上此处的'default'是后边整个列表的一个别名(alias)。</p>
+
+<h4>grunt-jshint / grunt-uglify / grunt-concat</h4>
+
+<p><a href="https://github.com/gruntjs/grunt-contrib-jshint">grunt-contrib-jshint</a>是一个用于JavaScript静态语法检查的工具，它会帮助开发者在进行较为严格的语法检查。</p>
+
+<p>和其他的Grunt插件一样，它是以一个npm的包的形式发布的，因此安装非常容易:</p>
+
+<p><code>
+$ npm install grunt-contrib-jshint --save-dev
+</code></p>
+
+<p>然后在Gruntfile.js中加载该插件:</p>
+
+<p><code>
+grunt.loadNpmTasks('grunt-contrib-jshint');
+</code></p>
+
+<p>即可，类似的还有：用以连接所有JavaScript源代码为一个独立文件的<a href="https://github.com/gruntjs/grunt-contrib-concat">grunt-contrib-concat</a>，以及用以最小化JavaScript源码的<a href="https://github.com/gruntjs/grunt-contrib-uglify">grunt-contrib-uglify</a>。</p>
+
+<h4>自定义插件</h4>
+
+<p><a href="https://github.com/gruntjs/grunt-init">grunt-init</a>是一个帮助开发人员快速搭建基于Grunt项目的工具，比如开发jQuery插件，Gruntfile，或者Grunt插件本身。安装方式很简单，我们需要在其他项目也用到grunt-init，因此安装在全局路径下<code>-g</code>:</p>
+
+<p><code>
+$ npm install -g grunt-init
+</code></p>
+
+<p>开发Grunt插件，我们需要一个基本的模板，将这个模板clone到home下的.grunt-init目录下：</p>
+
+<p><code>
+$ git clone git://github.com/gruntjs/grunt-init-gruntplugin.git ~/.grunt-init/gruntplugin
+</code></p>
+
+<p>然后新建一个目录，并在该目录下运行：</p>
+
+<p><code>
+$ mkdir beautify
+$ cd beautify
+$ grunt-init gruntplugin
+</code></p>
+
+<p>grunt-init会让你回答一些问题，比如插件名称，版本号，github链接等。之后，grunt-init会生成一个基本的模板，开发者只需要完成自己插件的逻辑代码即可。逻辑实现在<code>tasks/&lt;plugin-name&gt;.js</code>中即可。</p>
+
+<p>完成后可以通过<code>npm publish</code>来发布，发布之后，你的插件就可以向上边提到的常用插件那样被其他的开发者使用了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用Karma运行JavaScript测试]]></title>
@@ -81,6 +190,36 @@ port = 9876;</p>
 browsers = ['Chrome'];</p>
 
 <p>```</p>
+
+<hr />
+
+<p><strong>更新</strong>
+新的配置文件生成脚本会生成更加<strong>模块化</strong>的配置：</p>
+
+<p>```
+module.exports = function(config) {
+  config.set({</p>
+
+<pre><code>frameworks: ['jasmine'],
+
+files: [
+  'src/**/*.js',
+  'test/**/*spec.js'
+],
+
+port: 9876,
+
+browsers: ['Chrome'],
+
+singleRun: true
+</code></pre>
+
+<p>  });
+};</p>
+
+<p>```</p>
+
+<hr />
 
 <p>生成配置文件之后，可以通过命令来启动Karma服务器，同时指定使用<code>my.conf.js</code>文件作为配置：</p>
 
