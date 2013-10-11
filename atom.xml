@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-10-09T10:40:13+05:30</updated>
+  <updated>2013-10-11T23:15:15+05:30</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,97 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[bower as dependencies manager]]></title>
+    <link href="http://abruzzi.github.com/2013/10/bower-as-dependencies-manager/"/>
+    <updated>2013-10-09T16:38:00+05:30</updated>
+    <id>http://abruzzi.github.com/2013/10/bower-as-dependencies-manager</id>
+    <content type="html"><![CDATA[<h3>Bower简介</h3>
+
+<h4>Bower安装及简单配置</h4>
+
+<p><a href="http://bower.io/">Bower</a>是一个基于Node.js的依赖管理工具，它是一个npm的包，因此安装十分简单，由于我们需要在所有项目中都可以使用bower，因此将其安装在全局目录下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g bower</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装完成之后，可以通过<code>bower search</code>来搜索需要的包，比如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ bower search underscore</span></code></pre></td></tr></table></div></figure>
+
+
+<p>典型的应用场景可能会是这样的，新建一个项目目录，然后运行<code>bower init</code>：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ mkdir -p listing
+</span><span class='line'>$ cd listing
+</span><span class='line'>$ bower init</span></code></pre></td></tr></table></div></figure>
+
+
+<p>和Grunt类似，bower会问你一些问题，比如项目名称，项目入口点，作者信息之类：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name": "listing",
+</span><span class='line'>  "version": "0.0.0",
+</span><span class='line'>  "authors": [
+</span><span class='line'>    "Qiu Juntao &lt;juntao.qiu@gmail.com&gt;"
+</span><span class='line'>  ],
+</span><span class='line'>  "main": "src/app.js",
+</span><span class='line'>  "license": "MIT",
+</span><span class='line'>  "ignore": [
+</span><span class='line'>    "**/.*",
+</span><span class='line'>    "node_modules",
+</span><span class='line'>    "bower_components",
+</span><span class='line'>    "test",
+</span><span class='line'>    "tests"
+</span><span class='line'>  ]
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>比如我们需要安装jQuery和underscore.js，则很简单的运行<code>bower install</code>命令即可：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ bower install jquery
+</span><span class='line'>$ bower install underscore</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果需要团队中的其他成员可以在本地恢复我们的环境，需要在bower.json中指定<code>dependencies</code>小节：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  "dependencies": {
+</span><span class='line'>    "jquery": "~2.0.3",
+</span><span class='line'>    "underscore": "~1.5.2"
+</span><span class='line'>  }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所有的JavaScript包都被安装到了本地的<code>bower_components</code>目录下，如果有了bower.json文件，那么即使本地的<code>bower_components</code>目录不存在，或者其中的包内容过期了，那么很容易用<code>bower install</code>将其更新。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Grunt的几个常用插件]]></title>
@@ -2471,71 +2562,6 @@
 <p>毫无疑问，西安骑行的经历是最糟糕的了：第一次是从南三环，沿太白南路往北，骑到老城墙，穿城而过，然后到北二环，再从城北骑回来；第二次路线和第一次差不多，不过是跟孙曼思一起，而且是和不过骑得更远，到了草滩附近；第三次是往南，跟孙曼思，还有三个同事，骑行沣峪口，恰遇极为严重的沙尘暴，当时PM2.5已经过千。</p>
 
 <p><img src="http://abruzzi.github.com/images/2013/03/xian-cycling-3rd.resized.jpg" alt="image" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Install powerline (fancy status line) for vim in Mac OS]]></title>
-    <link href="http://abruzzi.github.com/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os/"/>
-    <updated>2013-02-19T10:53:00+05:30</updated>
-    <id>http://abruzzi.github.com/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os</id>
-    <content type="html"><![CDATA[<h3>Powerline</h3>
-
-<p><a href="https://github.com/Lokaltog/powerline">powerline</a>会将vim的status line变的非常漂亮，看起来像一个“主流”的编辑器那样，而又不会引入额外的“重量”。基本原理是使用字体将特殊字符展现成特殊形状（如三角形），额外的有一些漂亮的配色。</p>
-
-<h4>效果</h4>
-
-<p><img src="http://abruzzi.github.com/images/2013/02/vim-power-line-resized.png" alt="image" /></p>
-
-<h4>安装</h4>
-
-<p>有几个额外的点需要确保：</p>
-
-<h5>保证你的vim包含了对python的支持</h5>
-
-<p><code>vim --version | grep python</code>的结果应该包含<code>+python</code>，如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>+path_extra -perl +persistent_undo +postscript +printer -profile +python/dyn </span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果没有的话，需要将vim重新编译，比如在Mac OS下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>brew install macvim --env-std --override-system-vim</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>安装powerline</h5>
-
-<p>最简单的方式是直接clone到本地，比如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git clone git://github.com/Lokaltog/powerline.git ~/PowerLine/</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>配置.vimrc</h5>
-
-<p>为你的vimrc添加下面的配置：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>set rtp+={path_to_powerline}/powerline/bindings/vim
-</span><span class='line'>set laststatus=2
-</span><span class='line'>set noshowmode</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这时，如果你启动vim，应该已经可以看到powerline了，但是有可能有“乱码”的问题，幸运的是，已经有很多的预定义字体。</p>
-
-<h3>Fonts</h3>
-
-<p><a href="https://github.com/Lokaltog/powerline-fonts">这里</a>有许多额外的预定义fonts。选中需要的字体，安装到本地即可（双击字体文件或者拷贝到<code>~/Library/Fonts</code>下）。然后在.vimrc中使用这个字体，比如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>set encoding=utf-8
-</span><span class='line'>set guifont=Menlo\ for\ Powerline:h14</span></code></pre></td></tr></table></div></figure>
-
 ]]></content>
   </entry>
   

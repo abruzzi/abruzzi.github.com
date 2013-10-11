@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>闲话孔孟 - I code it</title>
+  <title>bower as dependencies manager - I code it</title>
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="序 所谓无聊斋者，盖异于蒲公柳泉之聊斋也。《无聊斋集》中之篇幅，皆作于癸未，甲申年。其中文字无聊，乖悖者多矣，学者通人，勿须深究。是为序。 一 孔子穿着一件袈裟也似的长袍，静立于门外。眼看着秋风将门外杨树上的最后一篇叶子也摇下来之后，才长吁一口气，慢慢的度进屋中。 屋子里只有两把椅子，一张床， &hellip;">
+  <meta name="description" content="Bower简介 Bower安装及简单配置 Bower是一个基于Node.js的依赖管理工具，它是一个npm的包，因此安装十分简单，由于我们需要在所有项目中都可以使用bower，因此将其安装在全局目录下： 1
+$ npm install -g bower 安装完成之后，可以通过bower &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://abruzzi.github.com/2009/07/%E9%97%B2%E8%AF%9D%E5%AD%94%E5%AD%9F/">
+  <link rel="canonical" href="http://abruzzi.github.com/2013/10/bower-as-dependencies-manager/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -90,7 +91,7 @@
   <header>
     
       
-        <h1 class="entry-title">闲话孔孟</h1>
+        <h1 class="entry-title">Bower as Dependencies Manager</h1>
       
     
     
@@ -107,28 +108,96 @@
   
 
 
-<time datetime="2009-07-27T00:00:00+05:30" pubdate data-updated="true">Jul 27<span>th</span>, 2009</time>
+<time datetime="2013-10-09T16:38:00+05:30" pubdate data-updated="true">Oct 9<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p><strong>序</strong></p>
+<div class="entry-content"><h3>Bower简介</h3>
 
-<p>所谓无聊斋者，盖异于蒲公柳泉之聊斋也。《无聊斋集》中之篇幅，皆作于癸未，甲申年。其中文字无聊，乖悖者多矣，学者通人，勿须深究。是为序。</p>
+<h4>Bower安装及简单配置</h4>
 
-<p><strong>一</strong></p>
+<p><a href="http://bower.io/">Bower</a>是一个基于Node.js的依赖管理工具，它是一个npm的包，因此安装十分简单，由于我们需要在所有项目中都可以使用bower，因此将其安装在全局目录下：</p>
 
-<p>孔子穿着一件袈裟也似的长袍，静立于门外。眼看着秋风将门外杨树上的最后一篇叶子也摇下来之后，才长吁一口气，慢慢的度进屋中。</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g bower</span></code></pre></td></tr></table></div></figure>
 
-<p>屋子里只有两把椅子，一张床，居中是一个火炉，炉火正旺，上面打着一壶水，正在吱吱的冒着热气。孔子一声不响的坐在床上，恰如一个入定了的老和尚。夕阳下树的影子越来越长，天，终于黑了。</p>
 
-<p><strong>二</strong></p>
+<p>安装完成之后，可以通过<code>bower search</code>来搜索需要的包，比如：</p>
 
-<p>孔子正在睡懒觉，忽然有人敲门，不由的就有点恼火，找到鞋，拉开门看时，只见门外一人，身着一身玄布长袍，腰间系一条大红色带子，黄黑色脸，正是孟子。</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ bower search underscore</span></code></pre></td></tr></table></div></figure>
 
-<p>“唔，呵呵，来了就好，进来吧”，孔子一面说，一面让着孟子进门。孟子进门后，黑着脸，一言不发的坐在一张椅子上。约莫过了一盏茶的时候，才愤愤的说：“我去诸国游说，这些老东西根本就不听我的主张。卫国的那个老匹夫，竟然问我怎样才可以长生不老，哼！莫名其妙！”。孔子微笑不语，孟子又道：“难道轻君重民的思想竟不对么？”孔子微笑着摇了摇头，过了半响，才缓缓的说道：“成，又如何；败，又如何；高高在上，又如何；卑卑怯怯，又如何？不要再执迷不悟，皈依我佛，早成正果！”。孟子脸色不由的变得很难看，反驳道：“这算什么？西方极乐，佛法无边之说，终属渺茫，先生何以如此消沉？”，孔子也有些不高兴了，孟子又道：“何况，先生还是吃荤的”，孟子一面说，一面指着墙上挂着的几段黑乎乎的腊肠。孔子勃然色变，骂道：“你是什么东西，竟然敢羞辱我？”说着站起身来，在腰间摸出一把熟铜刀来。孟子吃了一惊，忙陪笑道：“先生何必发这么大火，先生你……”，孔子跳起身来，着脸带耳根就是一个耳光，只听得“啪”的一声脆响，孟子直觉脸上火辣辣的疼，眼前金光闪闪，不由得怒从心中起，恶向胆边生，一面挨着打，一面在腰里摸出匕首来。眼看的孔孟二人难免血溅书房之际，忽听得当的一声轻响，孟子只觉五指一松，匕首已被人用石子打落在地。孔子也是一惊，这下子死里逃生，也不敢再打，只是骂。忽然门帘一动，两人只觉眼前一花，面前已经多出一个人来，此人一身青布长袍，鹑衣百结，背上背了一柄带环的熟铜刀，脚下不丁不八；青黑色脸，头等上扎着一根红头绳，下颌有些干黄的胡须，双目精光湛湛，双手抱拳道：“在下墨翟！”。孔子一惊，忙整一整袈裟也似的长袍，道：“阿弥陀佛，久闻大名，如雷贯耳，今日一见可谓三生有幸，多蒙义士适才出手相救，不然老衲已往生极乐了，哈哈，善哉，善哉！”，墨子还了一礼，道：“区区小事，不足挂齿”，忽然面色一沉，向孟子道：“还不快走？！”。孟子狠狠的瞪了两人一眼，道：“哼，告辞！”，拂袖而去。</p>
+
+<p>典型的应用场景可能会是这样的，新建一个项目目录，然后运行<code>bower init</code>：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ mkdir -p listing
+</span><span class='line'>$ cd listing
+</span><span class='line'>$ bower init</span></code></pre></td></tr></table></div></figure>
+
+
+<p>和Grunt类似，bower会问你一些问题，比如项目名称，项目入口点，作者信息之类：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name": "listing",
+</span><span class='line'>  "version": "0.0.0",
+</span><span class='line'>  "authors": [
+</span><span class='line'>    "Qiu Juntao &lt;juntao.qiu@gmail.com&gt;"
+</span><span class='line'>  ],
+</span><span class='line'>  "main": "src/app.js",
+</span><span class='line'>  "license": "MIT",
+</span><span class='line'>  "ignore": [
+</span><span class='line'>    "**/.*",
+</span><span class='line'>    "node_modules",
+</span><span class='line'>    "bower_components",
+</span><span class='line'>    "test",
+</span><span class='line'>    "tests"
+</span><span class='line'>  ]
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>比如我们需要安装jQuery和underscore.js，则很简单的运行<code>bower install</code>命令即可：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ bower install jquery
+</span><span class='line'>$ bower install underscore</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果需要团队中的其他成员可以在本地恢复我们的环境，需要在bower.json中指定<code>dependencies</code>小节：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  "dependencies": {
+</span><span class='line'>    "jquery": "~2.0.3",
+</span><span class='line'>    "underscore": "~1.5.2"
+</span><span class='line'>  }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所有的JavaScript包都被安装到了本地的<code>bower_components</code>目录下，如果有了bower.json文件，那么即使本地的<code>bower_components</code>目录不存在，或者其中的包内容过期了，那么很容易用<code>bower install</code>将其更新。</p>
 </div>
 
 
@@ -151,12 +220,12 @@
   
 
 
-<time datetime="2009-07-27T00:00:00+05:30" pubdate data-updated="true">Jul 27<span>th</span>, 2009</time>
+<time datetime="2013-10-09T16:38:00+05:30" pubdate data-updated="true">Oct 9<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/category/无聊斋集/'>无聊斋集</a>
+    <a class='category' href='/category/javascript/'>JavaScript</a>, <a class='category' href='/category/lightweight/'>Lightweight</a>
   
 </span>
 
@@ -165,7 +234,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2009/07/%E9%97%B2%E8%AF%9D%E5%AD%94%E5%AD%9F/" data-via="" data-counturl="http://abruzzi.github.com/2009/07/%E9%97%B2%E8%AF%9D%E5%AD%94%E5%AD%9F/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/10/bower-as-dependencies-manager/" data-via="" data-counturl="http://abruzzi.github.com/2013/10/bower-as-dependencies-manager/" >Tweet</a>
   
   
   
@@ -174,10 +243,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/2009/07/%E6%96%87%E4%BA%BA%E5%B0%8F%E4%BC%A0/" title="Previous Post: 文人小传">&laquo; 文人小传</a>
+        <a class="basic-alignment left articlenav" href="/2013/10/grunt-plugins/" title="Previous Post: Grunt的几个常用插件">&laquo; Grunt的几个常用插件</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/2009/11/%E6%A5%94%E5%AD%90-%E4%B8%8A/" title="Next Post: 把臂话山河 之楔子 上">把臂话山河 之楔子 上 &raquo;</a>
       
     </p>
   </footer>
@@ -305,8 +372,8 @@ Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_i
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://abruzzi.github.com/2009/07/%E9%97%B2%E8%AF%9D%E5%AD%94%E5%AD%9F/';
-        var disqus_url = 'http://abruzzi.github.com/2009/07/%E9%97%B2%E8%AF%9D%E5%AD%94%E5%AD%9F/';
+        var disqus_identifier = 'http://abruzzi.github.com/2013/10/bower-as-dependencies-manager/';
+        var disqus_url = 'http://abruzzi.github.com/2013/10/bower-as-dependencies-manager/';
         var disqus_script = 'embed.js';
       
     (function () {
