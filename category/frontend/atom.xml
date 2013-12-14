@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Frontend | I code it]]></title>
   <link href="http://abruzzi.github.com/category/frontend/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-10-11T23:15:15+05:30</updated>
+  <updated>2013-12-14T19:38:40+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[逐步编写一个jQuery插件(todoify)]]></title>
     <link href="http://abruzzi.github.com/2013/07/write-a-jquery-plugin-step-by-step/"/>
-    <updated>2013-07-20T13:04:00+05:30</updated>
+    <updated>2013-07-20T13:04:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/07/write-a-jquery-plugin-step-by-step</id>
     <content type="html"><![CDATA[<h3>最终结果</h3>
 

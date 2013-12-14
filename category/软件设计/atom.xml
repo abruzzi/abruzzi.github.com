@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 软件设计 | I code it]]></title>
   <link href="http://abruzzi.github.com/category/软件设计/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-10-11T23:15:15+05:30</updated>
+  <updated>2013-12-14T19:38:40+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Thoughtworks Immersion Day 3]]></title>
     <link href="http://abruzzi.github.com/2012/08/thoughtworks-immersion-day-3/"/>
-    <updated>2012-08-02T00:00:00+05:30</updated>
+    <updated>2012-08-02T00:00:00+10:00</updated>
     <id>http://abruzzi.github.com/2012/08/thoughtworks-immersion-day-3</id>
     <content type="html"><![CDATA[<p><p>早上的热身活动中，我们玩了这样一个游戏：6个人一组坐成一个环，每个人在卡片上写下一句话(或者诗词等)，然后交给下一个人A，A将这句话用图像表达出来，然后传递给下下一个人B，B又根据图像把文字还原出来，交给自己的下一个，依次循环，到最后，你会拿到你自己写的卡，和你的后续们翻译的结果，整个过程中不许讨论。</p> <p><a href="http://abruzzi.github.com/images/2012/08/2012-07-27-09.42.10.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="2012-07-27 09.42.10" border="0" alt="2012-07-27 09.42.10" src="http://abruzzi.github.com/images/2012/08/2012-07-27-09.42.10_thumb.jpg" width="644" height="484" /></a></p> <p>可以看出，仅仅基于“内容”的交流，很难让对方明白你要表达的意思。日常的沟通中，除了最基本的“内容”之外，我们还采用大量的诸如肢体语言，眼神，语调等等，而我们用以表意内容的仅占信息量的7%。事实上，经常有这样的体验，面对面的交流会非常的容易，即使是外语交流也是这样。另一个体验就是我们通过IM聊天的时候，总是会使用表情，标点符号等来使得意思更好的传递。</p> <p>最后一个环节是如何Feedback，<a href="http://www.thoughtworks.com/">Thoughtworks</a>长期以来形成了这样一种机制：你可以给公司的任何同事回馈，比如你的pair在和你结对的时候不注意措辞，某些同事的某些行为令你不舒服等等。这种机制鼓励大家互相促进，增加交流。很多时候，我们很难发现自己身上的问题，但是很容易发现别人的问题，这种feedback机制就可以快速使得自己发现自己的不足，并快速的消除隔阂，更加愉快的投入学习工作中。</p> <p>这里有一些应该注意的地方：</p> <ol> <li>提出Feedback时，要尽量的具体，笼统的描述对当事人没有任何的好处</li> <li>不要对别人的信仰，价值观等方面提出开发，而应局限在行为上</li> <li>Feedback也要注意方式</li></ol> <p>通常可以使用这样的模式：</p> <ol> <li>Ask for permission (Do you have any free time?)</li> <li>One to one</li> <li>I see/hear/smell(<img style="border-bottom-style: none; border-left-style: none; border-top-style: none; border-right-style: none" class="wlEmoticon wlEmoticon-smile" alt="Smile" src="http://abruzzi.github.com/images/2012/08/wlEmoticon-smile.png" />) something</li> <li>And I think/feel it's ……</li> <li>What do you think?</li></ol> <p>不论怎么说，feedback帮助我们快速发现问题，如果有人给feedback，请以开放的态度来对待，并感谢他/她。</p> <p>三天时间很短，但是确实学到了很多的东西。回来后跟<a href="http://www.iamhukai.com/">胡凯</a>聊的时候，他告诉我global的TWI已经取消了，虽然在工作日做这样的培训会有较大的开销，但是公司还是愿意负担这样的成本，因为公司觉得很有必要让我们新入职的社招人员进行一下不同的文化上的冲击。</p></p>
 
@@ -26,7 +26,7 @@
   <entry>
     <title type="html"><![CDATA[Thoughtworks Immersion Day 2]]></title>
     <link href="http://abruzzi.github.com/2012/08/thoughtworks-immersion-day-2/"/>
-    <updated>2012-08-02T00:00:00+05:30</updated>
+    <updated>2012-08-02T00:00:00+10:00</updated>
     <id>http://abruzzi.github.com/2012/08/thoughtworks-immersion-day-2</id>
     <content type="html"><![CDATA[<p><p>日常开发中，我们经常遵循的实践是，使用<em>用户story</em>来划分并确认需求，每个story有一个对应的点(point)。一般来说会将story写在一张卡片上，而很多的story卡会贴到墙上，不同类型的卡可能会用不同的颜色来标注：</p></p>
 
@@ -117,7 +117,7 @@
   <entry>
     <title type="html"><![CDATA[Thoughtworks Immersion Day 1]]></title>
     <link href="http://abruzzi.github.com/2012/08/thoughtworks-immersion-day-1/"/>
-    <updated>2012-08-01T00:00:00+05:30</updated>
+    <updated>2012-08-01T00:00:00+10:00</updated>
     <id>http://abruzzi.github.com/2012/08/thoughtworks-immersion-day-1</id>
     <content type="html"><![CDATA[<p><p>进入<a href="http://www.thoughtworks.com/">Thoughtworks</a>已经有差不多4个月了，对于TDD，敏捷开发等有了一点基本的，感性的认识，也知道了一些简单的实践，但是知识非常的不系统，很离散，很破碎。</p></p>
 
@@ -203,7 +203,7 @@
   <entry>
     <title type="html"><![CDATA[spring的注入示例]]></title>
     <link href="http://abruzzi.github.com/2012/05/spring%E7%9A%84%E6%B3%A8%E5%85%A5%E7%A4%BA%E4%BE%8B/"/>
-    <updated>2012-05-16T00:00:00+05:30</updated>
+    <updated>2012-05-16T00:00:00+10:00</updated>
     <id>http://abruzzi.github.com/2012/05/spring的注入示例</id>
     <content type="html"><![CDATA[<p><p>spring在3.0之后分离成了差不多20个分离的jar包，又对JDBC/JMS等的支持，对AOP的支持，WEB开发的支持，以及核心的依赖注入部分(几乎所有的spring应用都或多或少的会涉及到spring的依赖注入特性)。下图是一个3.0的依赖注入子模块需要的包结构：</p></p>
 
@@ -315,7 +315,7 @@
   <entry>
     <title type="html"><![CDATA[spring的web应用示例]]></title>
     <link href="http://abruzzi.github.com/2012/05/spring%E7%9A%84web%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B/"/>
-    <updated>2012-05-14T00:00:00+05:30</updated>
+    <updated>2012-05-14T00:00:00+10:00</updated>
     <id>http://abruzzi.github.com/2012/05/spring的web应用示例</id>
     <content type="html"><![CDATA[<p><p>最早使用<a href="http://www.springsource.org/">spring</a>是在2008年，但是只是测试性的使用了spring的DI功能，对于web方面，当时公司使用的是自己的框架，所以并未深入了解。最近的一个项目基于spring3，因此就专门研究了一下，做了一个简单的示例。网络上关于spring3-web的教程并不多见，可能由于众多的Java开发人员已经熟悉了spring之前的模式，所以学习起来比较平坦的缘故。但是对于一个新进入spring-web世界的开发人员来说，在没有context的情况下，并不那么容易，后来在网络上找到一篇很好的教程，我根据这个教程实践了一遍，然后在其基础上做了少量的改动。</p></p>
 

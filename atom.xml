@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-10-11T23:15:15+05:30</updated>
+  <updated>2013-12-14T19:38:40+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,9 +14,145 @@
 
   
   <entry>
+    <title type="html"><![CDATA[使用expect来自动化交互式命令]]></title>
+    <link href="http://abruzzi.github.com/2013/12/expect-how-to-make-yourself-more-efficient/"/>
+    <updated>2013-12-14T17:40:00+11:00</updated>
+    <id>http://abruzzi.github.com/2013/12/expect-how-to-make-yourself-more-efficient</id>
+    <content type="html"><![CDATA[<h3>一个实际的场景</h3>
+
+<p>大部分命令行程序都被设计成了可以被管道连接起来的，这样在命令行里可以很容易的讲很多命令串起来，从而完成极为强大的功能。比如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ find . -name "*.js" | xargs basename | uniq | wc -l</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个命令会递归的查找当前目录下所有的JavaScript文件，然后用<code>basename</code>去掉可能存在的路径字符串(比如，<code>basename path/to/file</code>会返回<code>file</code>)，然后我们使用uniq来保证查找列表中得每个条目都是唯一的，最后用<code>wc -l</code>来统计行数。</p>
+
+<p>但是并非所有场景都不需要人的干预，比如一个<strong>vpn</strong>链接的建立过程：</p>
+
+<ol>
+<li>选择vpn的Group名称</li>
+<li>填写用户名</li>
+<li>填写密码</li>
+<li>等待连接建立，然后程序退出</li>
+</ol>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/12/vpnlogin.png" alt="image" /></p>
+
+<p>像这种需要用户交互操作的程序，是无法通过常规的方式来完成自动化的。如果你经常需要做这样的操作，比如网络环境并不稳定，每天需要连接2-3次，那也是一个非常烦人的事情。</p>
+
+<p><a href="http://expect.sourceforge.net/">Expect</a>正是为这种场景设计的。</p>
+
+<h3>Expect简介</h3>
+
+<p><a href="http://expect.sourceforge.net/">Expect</a>用来自动化这些<code>交互式</code>的命令行程序，比如telnet, ftp等。</p>
+
+<p>Expect脚本非常简单，基本的模式是：</p>
+
+<ol>
+<li>启动一个命令A</li>
+<li>当命令的输出中包含字符串X的话</li>
+<li>输入Y</li>
+</ol>
+
+
+<p>用expect的脚本来表示的话，代码如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/expect
+</span><span class='line'>
+</span><span class='line'>spawn A
+</span><span class='line'>expect "X"
+</span><span class='line'>send "Y"</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>spawn</code>会启动一个进程，<code>expect</code>会负责和这个进程来交互。如果没有匹配到指定的字符串，则在一个超时时间内expect就会退出。当然可以通过<code>set timeout -1</code>来让程序expect永远等待下去。</p>
+
+<h3>两个小例子</h3>
+
+<h4>自动的登录到vpn服务器上</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/expect
+</span><span class='line'>
+</span><span class='line'>set addr "vpn.service.com.au"
+</span><span class='line'>set user "qiu.juntao"
+</span><span class='line'>set pass "mypassword"
+</span><span class='line'>
+</span><span class='line'>set timeout -1 
+</span><span class='line'>spawn /opt/cisco/anyconnect/bin/vpn connect $addr
+</span><span class='line'>
+</span><span class='line'>expect "Group: "
+</span><span class='line'>send "1\r"
+</span><span class='line'>
+</span><span class='line'>expect "Username: " 
+</span><span class='line'>send "$user\r"
+</span><span class='line'>
+</span><span class='line'>expect "Password: " 
+</span><span class='line'>send "$pass\r"
+</span><span class='line'>
+</span><span class='line'>expect "&gt;&gt; state: Connected"</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>自动通过ssh登录到远程</h4>
+
+<p>另外一个问题是，如果需要这个session保持下去，比如需要自动<code>ssh</code>到一个远程的服务器上，但是又不想每次都输入认证信息，则可以进入<code>inactive</code>模式：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/expect
+</span><span class='line'>
+</span><span class='line'>set pass "mypassword"
+</span><span class='line'>
+</span><span class='line'>set timeout -1 
+</span><span class='line'>spawn ssh user@remote.dev.env.com
+</span><span class='line'>
+</span><span class='line'>expect "Password:"
+</span><span class='line'>send "$pass\r"
+</span><span class='line'>
+</span><span class='line'>interact</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样就可以完成自动登录了，而expect回一直等到你从ssh中退出。</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[bower as dependencies manager]]></title>
     <link href="http://abruzzi.github.com/2013/10/bower-as-dependencies-manager/"/>
-    <updated>2013-10-09T16:38:00+05:30</updated>
+    <updated>2013-10-09T16:38:00+11:00</updated>
     <id>http://abruzzi.github.com/2013/10/bower-as-dependencies-manager</id>
     <content type="html"><![CDATA[<h3>Bower简介</h3>
 
@@ -107,7 +243,7 @@
   <entry>
     <title type="html"><![CDATA[Grunt的几个常用插件]]></title>
     <link href="http://abruzzi.github.com/2013/10/grunt-plugins/"/>
-    <updated>2013-10-08T16:42:00+05:30</updated>
+    <updated>2013-10-08T16:42:00+11:00</updated>
     <id>http://abruzzi.github.com/2013/10/grunt-plugins</id>
     <content type="html"><![CDATA[<h3>Grunt的几个常用插件</h3>
 
@@ -224,7 +360,7 @@
   <entry>
     <title type="html"><![CDATA[使用Karma运行JavaScript测试]]></title>
     <link href="http://abruzzi.github.com/2013/10/using-karma-as-the-javascript-test-runner/"/>
-    <updated>2013-10-08T10:36:00+05:30</updated>
+    <updated>2013-10-08T10:36:00+11:00</updated>
     <id>http://abruzzi.github.com/2013/10/using-karma-as-the-javascript-test-runner</id>
     <content type="html"><![CDATA[<h3>Karma 简介</h3>
 
@@ -394,7 +530,7 @@
   <entry>
     <title type="html"><![CDATA[使用Grunt作为构建工具(build tool)]]></title>
     <link href="http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool/"/>
-    <updated>2013-10-07T18:14:00+05:30</updated>
+    <updated>2013-10-07T18:14:00+11:00</updated>
     <id>http://abruzzi.github.com/2013/10/using-grunt-as-your-build-tool</id>
     <content type="html"><![CDATA[<h3>Grunt简介</h3>
 
@@ -611,7 +747,7 @@
   <entry>
     <title type="html"><![CDATA[使用Grape快速开发API]]></title>
     <link href="http://abruzzi.github.com/2013/08/quick-api-development-by-grape/"/>
-    <updated>2013-08-04T10:29:00+05:30</updated>
+    <updated>2013-08-04T10:29:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/08/quick-api-development-by-grape</id>
     <content type="html"><![CDATA[<h3>Grape简介</h3>
 
@@ -792,7 +928,7 @@
   <entry>
     <title type="html"><![CDATA[rack it up]]></title>
     <link href="http://abruzzi.github.com/2013/08/rack-it-up/"/>
-    <updated>2013-08-02T07:38:00+05:30</updated>
+    <updated>2013-08-02T07:38:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/08/rack-it-up</id>
     <content type="html"><![CDATA[<h3>Rack it up (proc)</h3>
 
@@ -813,7 +949,7 @@
   <entry>
     <title type="html"><![CDATA[逐步编写一个jQuery插件(todoify)]]></title>
     <link href="http://abruzzi.github.com/2013/07/write-a-jquery-plugin-step-by-step/"/>
-    <updated>2013-07-20T13:04:00+05:30</updated>
+    <updated>2013-07-20T13:04:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/07/write-a-jquery-plugin-step-by-step</id>
     <content type="html"><![CDATA[<h3>最终结果</h3>
 
@@ -1120,7 +1256,7 @@
   <entry>
     <title type="html"><![CDATA[Common Lisp中的宏(Macro)]]></title>
     <link href="http://abruzzi.github.com/2013/06/macro-in-common-lisp/"/>
-    <updated>2013-06-15T11:12:00+05:30</updated>
+    <updated>2013-06-15T11:12:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/06/macro-in-common-lisp</id>
     <content type="html"><![CDATA[<h4>Lisp与其他语言之区别</h4>
 
@@ -1337,7 +1473,7 @@
   <entry>
     <title type="html"><![CDATA[common lisp 里的一些基本概念]]></title>
     <link href="http://abruzzi.github.com/2013/06/common-lisp-basic/"/>
-    <updated>2013-06-13T16:15:00+05:30</updated>
+    <updated>2013-06-13T16:15:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/06/common-lisp-basic</id>
     <content type="html"><![CDATA[<h3>Common Lisp</h3>
 
@@ -1529,7 +1665,7 @@
   <entry>
     <title type="html"><![CDATA[在Mac下搭建Common Lisp开发环境(Emacs)]]></title>
     <link href="http://abruzzi.github.com/2013/06/setup-lisp-development-env-on-mac/"/>
-    <updated>2013-06-03T16:22:00+05:30</updated>
+    <updated>2013-06-03T16:22:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/06/setup-lisp-development-env-on-mac</id>
     <content type="html"><![CDATA[<h4>Lisp编译器（解释器）</h4>
 
@@ -1632,7 +1768,7 @@
   <entry>
     <title type="html"><![CDATA[Alfred简介及Alfred扩展编写]]></title>
     <link href="http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project/"/>
-    <updated>2013-05-18T20:04:00+05:30</updated>
+    <updated>2013-05-18T20:04:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project</id>
     <content type="html"><![CDATA[<h3>Alfred简介</h3>
 
@@ -1746,7 +1882,7 @@
   <entry>
     <title type="html"><![CDATA[在既有数据库中使用ActiveRecord]]></title>
     <link href="http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm/"/>
-    <updated>2013-05-18T14:56:00+05:30</updated>
+    <updated>2013-05-18T14:56:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm</id>
     <content type="html"><![CDATA[<h3>ActiveRecord</h3>
 
@@ -1979,7 +2115,7 @@
   <entry>
     <title type="html"><![CDATA[CSS中的before和after伪元素及其应用]]></title>
     <link href="http://abruzzi.github.com/2013/05/before-and-after-selector-in-css/"/>
-    <updated>2013-05-16T15:29:00+05:30</updated>
+    <updated>2013-05-16T15:29:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/05/before-and-after-selector-in-css</id>
     <content type="html"><![CDATA[<h3>before和after伪元素</h3>
 
@@ -2178,7 +2314,7 @@
   <entry>
     <title type="html"><![CDATA[JavaScript核心概念及实践勘误表]]></title>
     <link href="http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao/"/>
-    <updated>2013-05-16T11:29:00+05:30</updated>
+    <updated>2013-05-16T11:29:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao</id>
     <content type="html"><![CDATA[<h3>《JavaScript核心概念及实践》勘误表</h3>
 
@@ -2218,7 +2354,7 @@
   <entry>
     <title type="html"><![CDATA[proc in ruby]]></title>
     <link href="http://abruzzi.github.com/2013/05/proc-in-ruby/"/>
-    <updated>2013-05-12T16:01:00+05:30</updated>
+    <updated>2013-05-12T16:01:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/05/proc-in-ruby</id>
     <content type="html"><![CDATA[<h2>block in ruby</h2>
 
@@ -2319,7 +2455,7 @@
   <entry>
     <title type="html"><![CDATA[重阳宫奇遇记]]></title>
     <link href="http://abruzzi.github.com/2013/04/chongyang-palase/"/>
-    <updated>2013-04-28T10:32:00+05:30</updated>
+    <updated>2013-04-28T10:32:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/04/chongyang-palase</id>
     <content type="html"><![CDATA[<h3>重阳宫简介</h3>
 
@@ -2354,7 +2490,7 @@
   <entry>
     <title type="html"><![CDATA[图书封面故事]]></title>
     <link href="http://abruzzi.github.com/2013/04/book-cover-story/"/>
-    <updated>2013-04-13T15:57:00+05:30</updated>
+    <updated>2013-04-13T15:57:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/04/book-cover-story</id>
     <content type="html"><![CDATA[<h2>虎符</h2>
 
@@ -2395,7 +2531,7 @@
   <entry>
     <title type="html"><![CDATA[Turning to a designer]]></title>
     <link href="http://abruzzi.github.com/2013/03/turning-to-a-designer/"/>
-    <updated>2013-03-26T22:46:00+05:30</updated>
+    <updated>2013-03-26T22:46:00+11:00</updated>
     <id>http://abruzzi.github.com/2013/03/turning-to-a-designer</id>
     <content type="html"><![CDATA[<h4>Hack design的建议</h4>
 
@@ -2451,7 +2587,7 @@
   <entry>
     <title type="html"><![CDATA[关于Hack day]]></title>
     <link href="http://abruzzi.github.com/2013/03/guan-yu-hack-day/"/>
-    <updated>2013-03-22T20:55:00+05:30</updated>
+    <updated>2013-03-22T20:55:00+11:00</updated>
     <id>http://abruzzi.github.com/2013/03/guan-yu-hack-day</id>
     <content type="html"><![CDATA[<h4>关于Hackday</h4>
 
@@ -2509,59 +2645,6 @@
 <p>虽然每次的“成果”都不大，但是整个hack的过程都非常有意思，每次都可以使用前几次活动中好的工作方式，而前几次中做的不好的则可以进行改进，技术仅仅是其中的一个方面，与团队成员的协作，对自己信心的加强，通过创新来给客户带来价值，这一系列的，不那么明显的“成果”才是更重要的。</p>
 
 <p>另一个“成果”是，我对轻量级的框架如<a href="http://www.sinatrarb.com/">sinatra</a>，引擎<a href="http://haml.info/">haml</a>等有了非常浓厚的兴趣，用这些工具可以快速的搭建用于showcase的应用程序，而且非常容易改进，非常适合小步迭代的开发方式。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[cycling]]></title>
-    <link href="http://abruzzi.github.com/2013/03/cycling/"/>
-    <updated>2013-03-10T15:34:00+05:30</updated>
-    <id>http://abruzzi.github.com/2013/03/cycling</id>
-    <content type="html"><![CDATA[<h3>昆明骑行</h3>
-
-<h4>首次骑行</h4>
-
-<p>从城西出发，骑到城北长虫山，到龙凤公墓集合，然后沿着小哨，大哨，最后从金殿后山返回。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-1st.resized.jpg" alt="image" /></p>
-
-<p>整个路线大概80公里，山中时而风雨大作，时而阳光遍地，依稀记得中午休息时，山里某个农家乐里的带皮羊肉火锅滋味鲜美无比。</p>
-
-<h4>东大花椒鸡</h4>
-
-<p>云青青兮欲雨，水澹澹兮生烟。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-dongda-2.resized.jpg" alt="image" /></p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-dongda-chicken.resized.jpg" alt="image" /></p>
-
-<h4>夜骑宝珠寺</h4>
-
-<p>宝珠寺在昆明城西，寺在山脚下，整个骑行路线全是上坡，而且有好几公里的坡度巨大，算是一个骑行初级班和进阶班的分水岭。事实上，和同事骑行宝珠寺，从来没有去看过“宝珠寺”本身。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-baozhu.resized.jpg" alt="image" /></p>
-
-<p>宝珠寺山顶附近有了泉，有很多人开车去山上打泉水。我们曾用脉动的瓶子装了些，但是终于没有敢喝。在夜间骑行感觉非常诡异，山中非常黑，只有一条灰白色的公路，偶尔有车子开过，会有一点光闪过，由于坡度非常陡峭，可以听到头顶上有下坡朋友在单车上高声呼啸而过。骑到高处，俯瞰城市，山坳里的昆明城尽收眼底。</p>
-
-<p>从山上起下来之后，去城西的烧烤摊上点一些酒肉，和朋友们扯扯淡，然后再沿着空旷的街道返回。</p>
-
-<h4>卧云山</h4>
-
-<p>从宝珠寺顶一直往西北，过了筇竹寺，然后一路往西，骑到卧云山下吃午饭，貌似每个地方的花椒鸡都各有特色，这种蘸着花椒蘸水的吃饭比东大的好吃一些：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-woyun-chicken.resized.jpg" alt="image" /></p>
-
-<p>到达卧云山顶，小转盘附近：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-woyun.resized.jpg" alt="image" /></p>
-
-<h3>西安骑行</h3>
-
-<h4>沣峪口</h4>
-
-<p>毫无疑问，西安骑行的经历是最糟糕的了：第一次是从南三环，沿太白南路往北，骑到老城墙，穿城而过，然后到北二环，再从城北骑回来；第二次路线和第一次差不多，不过是跟孙曼思一起，而且是和不过骑得更远，到了草滩附近；第三次是往南，跟孙曼思，还有三个同事，骑行沣峪口，恰遇极为严重的沙尘暴，当时PM2.5已经过千。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/xian-cycling-3rd.resized.jpg" alt="image" /></p>
 ]]></content>
   </entry>
   

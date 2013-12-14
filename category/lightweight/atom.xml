@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Lightweight | I code it]]></title>
   <link href="http://abruzzi.github.com/category/lightweight/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-10-11T23:15:15+05:30</updated>
+  <updated>2013-12-14T19:38:40+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[bower as dependencies manager]]></title>
     <link href="http://abruzzi.github.com/2013/10/bower-as-dependencies-manager/"/>
-    <updated>2013-10-09T16:38:00+05:30</updated>
+    <updated>2013-10-09T16:38:00+11:00</updated>
     <id>http://abruzzi.github.com/2013/10/bower-as-dependencies-manager</id>
     <content type="html"><![CDATA[<h3>Bower简介</h3>
 
@@ -94,7 +94,7 @@ $ bower install underscore
   <entry>
     <title type="html"><![CDATA[Grunt的几个常用插件]]></title>
     <link href="http://abruzzi.github.com/2013/10/grunt-plugins/"/>
-    <updated>2013-10-08T16:42:00+05:30</updated>
+    <updated>2013-10-08T16:42:00+11:00</updated>
     <id>http://abruzzi.github.com/2013/10/grunt-plugins</id>
     <content type="html"><![CDATA[<h3>Grunt的几个常用插件</h3>
 
@@ -203,7 +203,7 @@ $ grunt-init gruntplugin
   <entry>
     <title type="html"><![CDATA[使用Karma运行JavaScript测试]]></title>
     <link href="http://abruzzi.github.com/2013/10/using-karma-as-the-javascript-test-runner/"/>
-    <updated>2013-10-08T10:36:00+05:30</updated>
+    <updated>2013-10-08T10:36:00+11:00</updated>
     <id>http://abruzzi.github.com/2013/10/using-karma-as-the-javascript-test-runner</id>
     <content type="html"><![CDATA[<h3>Karma 简介</h3>
 

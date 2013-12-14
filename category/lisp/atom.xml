@@ -4,7 +4,7 @@
   <title><![CDATA[Category: lisp | I code it]]></title>
   <link href="http://abruzzi.github.com/category/lisp/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-10-11T23:15:15+05:30</updated>
+  <updated>2013-12-14T19:38:40+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Common Lisp中的宏(Macro)]]></title>
     <link href="http://abruzzi.github.com/2013/06/macro-in-common-lisp/"/>
-    <updated>2013-06-15T11:12:00+05:30</updated>
+    <updated>2013-06-15T11:12:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/06/macro-in-common-lisp</id>
     <content type="html"><![CDATA[<h4>Lisp与其他语言之区别</h4>
 
@@ -215,7 +215,7 @@
   <entry>
     <title type="html"><![CDATA[common lisp 里的一些基本概念]]></title>
     <link href="http://abruzzi.github.com/2013/06/common-lisp-basic/"/>
-    <updated>2013-06-13T16:15:00+05:30</updated>
+    <updated>2013-06-13T16:15:00+10:00</updated>
     <id>http://abruzzi.github.com/2013/06/common-lisp-basic</id>
     <content type="html"><![CDATA[<h3>Common Lisp</h3>
 
