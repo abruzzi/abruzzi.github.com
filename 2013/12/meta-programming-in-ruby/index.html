@@ -1,0 +1,790 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Ruby元编程的一个示例：InactiveRecord - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="一个场景 元编程在所有的Lisp系语言中应该都是一个必备的feature，coommon lisp, scheme等包含该功能自然不在话下，而比较主流的编程语言如JavaScript，python之流，也或多或少的受到了lisp得影响，在面向对象的同时，也嵌入了一些元编程的特性。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2013/12/meta-programming-in-ruby/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">lambda</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:icodeit.org" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about-me">About Me</a></li>
+  <li><a href="/jsccp">JavaScript内核系列</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Ruby元编程的一个示例：InactiveRecord</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-15T15:18:00+11:00" pubdate data-updated="true">Dec 15<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h4>一个场景</h4>
+
+<p>元编程在所有的Lisp系语言中应该都是一个必备的feature，coommon lisp, scheme等包含该功能自然不在话下，而比较主流的编程语言如JavaScript，python之流，也或多或少的受到了lisp得影响，在面向对象的同时，也嵌入了一些元编程的特性。</p>
+
+<p>而元编程在ruby中，虽然不如在lisp的宏那样灵活/强大，但是对于被“主流”编程语言影响很久的程序员 &#8211; 如我，来说，已经非常震撼了。</p>
+
+<p>很多ruby程序员都是通过rails才慢慢接触到ruby本身的，在rails中，ORM是通过强大到无穷大得<a href="http://guides.rubyonrails.org/active_record_basics.html">ActiveRecord</a>来完成的。</p>
+
+<p>一个简单的示例如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Person &lt; ActiveRecord::Base
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对应的，数据库中有一个Person的表：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>CREATE TABLE person (
+</span><span class='line'>   id int(11) NOT NULL auto_increment,
+</span><span class='line'>   name varchar(255),
+</span><span class='line'>   age int,
+</span><span class='line'>   email varchar(255),
+</span><span class='line'>   PRIMARY KEY  (id)
+</span><span class='line'>);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，在使用模型Person的地方，可以很容易的编写这样的代码：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>juntao = Person.new
+</span><span class='line'>
+</span><span class='line'>juntao.name = 'juntao'
+</span><span class='line'>juntao.age = 28
+</span><span class='line'>juntao.email = 'juntao.qiu@gmail.com'
+</span><span class='line'>
+</span><span class='line'>juntao.save</span></code></pre></td></tr></table></div></figure>
+
+
+<p>也就是说，开发者仅仅需要简单的创建一个与数据库同名的ruby类，然后这个类(Person)只需要继承自<code>ActiveRecord::Base</code>，那么它就自动的获得了很多的功能。这些神奇的功能就是通过ruby的元编程来完成的。</p>
+
+<h4>一个ActiveRecord的拙劣模仿</h4>
+
+<p>我们在这里将编写一个简单的类<code>InactiveRecord</code>，当有其他类继承自此类时，会完成如<code>ActiveRecord</code>那样的功能，当然第一步我们并没有数据校验之类的功能，只是简单的将数据存储起来即可：</p>
+
+<p>在person.rb文件中</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Person &lt; InactiveRecord::Base
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在address.rb中：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Address &lt; InactiveRecord::Base
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而在使用他们的地方：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require './person'
+</span><span class='line'>require './address'
+</span><span class='line'>
+</span><span class='line'>def test
+</span><span class='line'>    juntao = Person.new do |p| 
+</span><span class='line'>        p.name = 'Juntao'
+</span><span class='line'>        p.age = 28
+</span><span class='line'>        p.email = 'juntao.qiu@gmail.com'
+</span><span class='line'>    end 
+</span><span class='line'>
+</span><span class='line'>    juntao.save
+</span><span class='line'>
+</span><span class='line'>    nicholas = Person.new
+</span><span class='line'>    nicholas.name = 'Nicholas'
+</span><span class='line'>    nicholas.email = 'nicholas.ren@gmail.com'
+</span><span class='line'>
+</span><span class='line'>    nicholas.save
+</span><span class='line'>
+</span><span class='line'>    thougtworks = Address.new do |a| 
+</span><span class='line'>        a.street = 'Jinye 1st Rd'
+</span><span class='line'>        a.city = 'Xian'
+</span><span class='line'>        a.state = 'Shaanxi'
+</span><span class='line'>        a.country = 'China'
+</span><span class='line'>    end 
+</span><span class='line'>
+</span><span class='line'>    thougtworks.save
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>test</span></code></pre></td></tr></table></div></figure>
+
+
+<p>预期的，test测试会打印出一下信息：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ruby main.rb 
+</span><span class='line'>{"name"=&gt;"Juntao", "age"=&gt;28, "email"=&gt;"juntao.qiu@gmail.com"}
+</span><span class='line'>{"name"=&gt;"Nicholas", "email"=&gt;"nicholas.ren@gmail.com"}
+</span><span class='line'>{"street"=&gt;"Jinye 1st Rd", "city"=&gt;"Xian", "state"=&gt;"Shaanxi", "country"=&gt;"China"}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里的save方法仅仅打印出当前对象上的属性即可。</p>
+
+<h4>InactiveRecord的实现</h4>
+
+<p>首先，对于最简单的case：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def test
+</span><span class='line'>    nicholas = Person.new
+</span><span class='line'>    nicholas.name = 'Nicholas'
+</span><span class='line'>    nicholas.email = 'nicholas.ren@gmail.com'
+</span><span class='line'>
+</span><span class='line'>    nicholas.save
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>只需要动态的创建<code>name=</code>或者<code>email=</code>这样的方法即可，这里有个比较trick的地方是，<code>nicholas.name = 'Nicholas'</code>其实是在<code>nicholas</code>对象上调用了一个名叫<code>name=</code>的方法，ruby会将等号和对象间的空格去掉。</p>
+
+<p>此时的实现非常简单，只需要在<code>method_missing</code>时，将调用时的key,value存在一个hash表中即可。这意味着，test中的那些<em>赋值</em>方法其实至始至终都并不存在，当ruby调用<code>name=</code>的时候，发现<code>nicholas</code>对象上并没有这个方法，然后ruby会沿着方法查找链向上追溯，直到顶级对象BasicObject时，还是没有发现，这时候，ruby会fallback到method_missing上，这个时刻，如果我们捕获这个调用，并完成对@attrs的赋值的话，那么这个方法事实上并不存在，但是又不会抛出异常。</p>
+
+<p>当然在这个时刻，我们事实上可以为类动态的定义一些方法，由于这些方法不能通过常规方式看到(类定义中无法看到，而且在对象的methods列表中也无法看到)，因此它被称之为幽灵方法。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module InactiveRecord
+</span><span class='line'>    class Base
+</span><span class='line'>        def initialize(&block)
+</span><span class='line'>            @attrs = {}
+</span><span class='line'>        end 
+</span><span class='line'>            
+</span><span class='line'>        def method_missing(method, *args, &block)
+</span><span class='line'>           attr = method.to_s
+</span><span class='line'>           if attr =~ /=$/
+</span><span class='line'>               @attrs[attr.chop] = args[0]
+</span><span class='line'>           else
+</span><span class='line'>               @attrs[attr]
+</span><span class='line'>           end 
+</span><span class='line'>        end 
+</span><span class='line'>
+</span><span class='line'>        def save
+</span><span class='line'>            p @attrs
+</span><span class='line'>        end 
+</span><span class='line'>    end 
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>更进一步，对于下边这种形式的创建方式：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>juntao = Person.new do |p| 
+</span><span class='line'>  p.name = 'Juntao'
+</span><span class='line'>  p.age = 28
+</span><span class='line'>  p.email = 'juntao.qiu@gmail.com'
+</span><span class='line'>end 
+</span><span class='line'>
+</span><span class='line'>juntao.save</span></code></pre></td></tr></table></div></figure>
+
+
+<p>则需要对<code>InactiveRecord::Base</code>中做一些修改：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def initialize(&block)
+</span><span class='line'>    @attrs = {}
+</span><span class='line'>    if block_given?
+</span><span class='line'>        if block.arity == 1
+</span><span class='line'>            yield self
+</span><span class='line'>        end
+</span><span class='line'>    end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果调用者传递了一个block(可执行的单元)进来，那么使用<code>yield</code>将对象本身传递给该block。</p>
+
+<h4>专业的spec</h4>
+
+<p><a href="http://nicholasren.github.io/">同事任晓君</a>是一个ruby专家，他为这个InactiveRecord设计了一个spec：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'spec_helper'
+</span><span class='line'>
+</span><span class='line'>InactiveRecord::Base.config do |config|
+</span><span class='line'>  config.schemas "spec/fixtures/schema.yml"
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>class Person &lt; InactiveRecord::Base
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>describe "InactiveRecord" do
+</span><span class='line'>  context "save attribtues" do
+</span><span class='line'>    subject {
+</span><span class='line'>      juntao = Person.new do |p|
+</span><span class='line'>        p.name = 'juntao'
+</span><span class='line'>        p.age = 28
+</span><span class='line'>        p.email = 'juntao.qiu@gmail.com'
+</span><span class='line'>      end
+</span><span class='line'>      juntao
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    it "should read saved attributes " do
+</span><span class='line'>      subject.name.should == 'juntao'
+</span><span class='line'>      subject.age.should == 28
+</span><span class='line'>      subject.email.should == "juntao.qiu@gmail.com"
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  context "schema validation" do
+</span><span class='line'>    subject {
+</span><span class='line'>      juntao = Person.new do |p|
+</span><span class='line'>        p.name = 'juntao'
+</span><span class='line'>        p.age = 28
+</span><span class='line'>        p.email = 'juntao.qiu@gmail.com'
+</span><span class='line'>      end
+</span><span class='line'>      juntao
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    context "change a valid field" do
+</span><span class='line'>      it "should succeed" do
+</span><span class='line'>        subject.age = 29
+</span><span class='line'>        subject.age.should == 29
+</span><span class='line'>      end
+</span><span class='line'>    end
+</span><span class='line'>
+</span><span class='line'>    context "change a invalid field" do
+</span><span class='line'>      it "should raise error" do
+</span><span class='line'>        expect { subject.weight= 60 }.to raise_error(StandardError)
+</span><span class='line'>      end
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在<code>spec/fixtures/schema.yml</code>中，定义了Person的schema，<code>ActiveRecord</code>会从数据库中获得元数据，<code>InactiveRecord</code>在一点上大大的简化了：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>---
+</span><span class='line'>Person:
+</span><span class='line'>  Name: String
+</span><span class='line'>  Age: Integer
+</span><span class='line'>  Email: String</span></code></pre></td></tr></table></div></figure>
+
+
+<p>预期的运行结果应当是：</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/12/rspec.png" alt="image" /></p>
+
+<h4>基于这个spec的进一步实现</h4>
+
+<p>由于加入了对schema的校验，即，对于非法的赋值<code>juntao.weight=60</code>，InactiveRecord会报告一个异常，因为<code>weight</code>并不存在在schema中。</p>
+
+<p>ruby在对象模型中提供了一些hook，当别的类包含一个模块，或者集成一个类时，这些hook会被触发，这个特性被很多ruby框架使用，从而实现很多有趣的代码风格。</p>
+
+<p>由于所有的model都需要继承自<code>InactiveRecord::Base</code>，因此我们可以在该类上注册一个hook：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def inherited(who)
+</span><span class='line'>    table_name = who.name.downcase
+</span><span class='line'>    table = YAML.load_file("./metadata/#{table_name}.yml")
+</span><span class='line'>        
+</span><span class='line'>    who.class_eval do
+</span><span class='line'>        define_method :schema do
+</span><span class='line'>            table[who.name]
+</span><span class='line'>        end 
+</span><span class='line'>    end 
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，对于每一个继承自<code>InactiveRecord::Base</code>的类，就动态的添加了一个方法，方法名为schema，这个方法可以获得类名对应的yml文件中定义的shema信息。此处的<code>define_method</code>动态的定义了一个新的方法，方法名为<code>schema</code>，后边的block中定义了方法体，在此处仅仅是返回从yml中读取的schema。</p>
+
+<p>最后，在method_missing中，需要在赋值方法被调用时，查看该方法是否存在于schema中：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def method_missing(method, *args, &block)
+</span><span class='line'>   attr = method.to_s
+</span><span class='line'>   if @attrs.key?(attr)
+</span><span class='line'>       @attrs[attr]
+</span><span class='line'>   elsif attr =~ /=$/
+</span><span class='line'>       raise StandardError.new("invalid attribute") 
+</span><span class='line'>       unless valid?(attr.chop)
+</span><span class='line'>       @attrs[attr.chop] = args[0]
+</span><span class='line'>   else
+</span><span class='line'>       super.method_missing(method, args, &block)
+</span><span class='line'>   end
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>def valid? attr
+</span><span class='line'>    schema.keys.map{|key| key.downcase}.include? attr
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果schema中并不包含赋值字段：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>person.style = "#004c97"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>则会抛出一个错误退出:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/Users/twer/develop/tutorial/meta/inactive_record.rb:38:in `method_missing': invalid attribute (StandardError)
+</span><span class='line'>  from main.rb:38:in `test'
+</span><span class='line'>  from main.rb:41:in `&lt;main&gt;'</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-15T15:18:00+11:00" pubdate data-updated="true">Dec 15<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/language/'>language</a>, <a class='category' href='/category/meta-programming/'>meta programming</a>, <a class='category' href='/category/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2013/12/meta-programming-in-ruby/" data-via="" data-counturl="http://abruzzi.github.com/2013/12/meta-programming-in-ruby/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/2013/12/expect-how-to-make-yourself-more-efficient/" title="Previous Post: 使用expect来自动化交互式命令">&laquo; 使用expect来自动化交互式命令</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/12/meta-programming-in-ruby/">Ruby元编程的一个示例：InactiveRecord</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/12/expect-how-to-make-yourself-more-efficient/">使用expect来自动化交互式命令</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/10/bower-as-dependencies-manager/">bower as dependencies manager</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/10/grunt-plugins/">Grunt的几个常用插件</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/10/using-karma-as-the-javascript-test-runner/">使用Karma运行JavaScript测试</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中...)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2013/12/meta-programming-in-ruby/';
+        var disqus_url = 'http://abruzzi.github.com/2013/12/meta-programming-in-ruby/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

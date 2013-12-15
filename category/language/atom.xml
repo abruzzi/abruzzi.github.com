@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: language | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/language/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2013-12-15T18:33:05+11:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby元编程的一个示例：InactiveRecord]]></title>
+    <link href="http://abruzzi.github.com/2013/12/meta-programming-in-ruby/"/>
+    <updated>2013-12-15T15:18:00+11:00</updated>
+    <id>http://abruzzi.github.com/2013/12/meta-programming-in-ruby</id>
+    <content type="html"><![CDATA[<h4>一个场景</h4>
+
+<p>元编程在所有的Lisp系语言中应该都是一个必备的feature，coommon lisp, scheme等包含该功能自然不在话下，而比较主流的编程语言如JavaScript，python之流，也或多或少的受到了lisp得影响，在面向对象的同时，也嵌入了一些元编程的特性。</p>
+
+<p>而元编程在ruby中，虽然不如在lisp的宏那样灵活/强大，但是对于被“主流”编程语言影响很久的程序员 -- 如我，来说，已经非常震撼了。</p>
+
+<p>很多ruby程序员都是通过rails才慢慢接触到ruby本身的，在rails中，ORM是通过强大到无穷大得<a href="http://guides.rubyonrails.org/active_record_basics.html">ActiveRecord</a>来完成的。</p>
+
+<p>一个简单的示例如：</p>
+
+<p><code>
+class Person &lt; ActiveRecord::Base
+end
+</code>
+对应的，数据库中有一个Person的表：</p>
+
+<p><code>
+CREATE TABLE person (
+   id int(11) NOT NULL auto_increment,
+   name varchar(255),
+   age int,
+   email varchar(255),
+   PRIMARY KEY  (id)
+);
+</code></p>
+
+<p>这样，在使用模型Person的地方，可以很容易的编写这样的代码：</p>
+
+<p>```
+juntao = Person.new</p>
+
+<p>juntao.name = 'juntao'
+juntao.age = 28
+juntao.email = 'juntao.qiu@gmail.com'</p>
+
+<p>juntao.save
+```</p>
+
+<p>也就是说，开发者仅仅需要简单的创建一个与数据库同名的ruby类，然后这个类(Person)只需要继承自<code>ActiveRecord::Base</code>，那么它就自动的获得了很多的功能。这些神奇的功能就是通过ruby的元编程来完成的。</p>
+
+<h4>一个ActiveRecord的拙劣模仿</h4>
+
+<p>我们在这里将编写一个简单的类<code>InactiveRecord</code>，当有其他类继承自此类时，会完成如<code>ActiveRecord</code>那样的功能，当然第一步我们并没有数据校验之类的功能，只是简单的将数据存储起来即可：</p>
+
+<p>在person.rb文件中</p>
+
+<p><code>
+class Person &lt; InactiveRecord::Base
+end
+</code></p>
+
+<p>在address.rb中：</p>
+
+<p><code>
+class Address &lt; InactiveRecord::Base
+end
+</code></p>
+
+<p>而在使用他们的地方：</p>
+
+<p>```
+require './person'
+require './address'</p>
+
+<p>def test</p>
+
+<pre><code>juntao = Person.new do |p| 
+    p.name = 'Juntao'
+    p.age = 28
+    p.email = 'juntao.qiu@gmail.com'
+end 
+
+juntao.save
+
+nicholas = Person.new
+nicholas.name = 'Nicholas'
+nicholas.email = 'nicholas.ren@gmail.com'
+
+nicholas.save
+
+thougtworks = Address.new do |a| 
+    a.street = 'Jinye 1st Rd'
+    a.city = 'Xian'
+    a.state = 'Shaanxi'
+    a.country = 'China'
+end 
+
+thougtworks.save
+</code></pre>
+
+<p>end</p>
+
+<p>test
+```</p>
+
+<p>预期的，test测试会打印出一下信息：</p>
+
+<p><code>
+$ ruby main.rb
+{"name"=&gt;"Juntao", "age"=&gt;28, "email"=&gt;"juntao.qiu@gmail.com"}
+{"name"=&gt;"Nicholas", "email"=&gt;"nicholas.ren@gmail.com"}
+{"street"=&gt;"Jinye 1st Rd", "city"=&gt;"Xian", "state"=&gt;"Shaanxi", "country"=&gt;"China"}
+</code></p>
+
+<p>这里的save方法仅仅打印出当前对象上的属性即可。</p>
+
+<h4>InactiveRecord的实现</h4>
+
+<p>首先，对于最简单的case：</p>
+
+<p>```
+def test</p>
+
+<pre><code>nicholas = Person.new
+nicholas.name = 'Nicholas'
+nicholas.email = 'nicholas.ren@gmail.com'
+
+nicholas.save
+</code></pre>
+
+<p>end
+```</p>
+
+<p>只需要动态的创建<code>name=</code>或者<code>email=</code>这样的方法即可，这里有个比较trick的地方是，<code>nicholas.name = 'Nicholas'</code>其实是在<code>nicholas</code>对象上调用了一个名叫<code>name=</code>的方法，ruby会将等号和对象间的空格去掉。</p>
+
+<p>此时的实现非常简单，只需要在<code>method_missing</code>时，将调用时的key,value存在一个hash表中即可。这意味着，test中的那些<em>赋值</em>方法其实至始至终都并不存在，当ruby调用<code>name=</code>的时候，发现<code>nicholas</code>对象上并没有这个方法，然后ruby会沿着方法查找链向上追溯，直到顶级对象BasicObject时，还是没有发现，这时候，ruby会fallback到method_missing上，这个时刻，如果我们捕获这个调用，并完成对@attrs的赋值的话，那么这个方法事实上并不存在，但是又不会抛出异常。</p>
+
+<p>当然在这个时刻，我们事实上可以为类动态的定义一些方法，由于这些方法不能通过常规方式看到(类定义中无法看到，而且在对象的methods列表中也无法看到)，因此它被称之为幽灵方法。</p>
+
+<p>```
+module InactiveRecord</p>
+
+<pre><code>class Base
+    def initialize(&amp;block)
+        @attrs = {}
+    end 
+
+    def method_missing(method, *args, &amp;block)
+       attr = method.to_s
+       if attr =~ /=$/
+           @attrs[attr.chop] = args[0]
+       else
+           @attrs[attr]
+       end 
+    end 
+
+    def save
+        p @attrs
+    end 
+end 
+</code></pre>
+
+<p>end
+```</p>
+
+<p>更进一步，对于下边这种形式的创建方式：</p>
+
+<p>```
+juntao = Person.new do |p|</p>
+
+<pre><code>p.name = 'Juntao'
+p.age = 28
+p.email = 'juntao.qiu@gmail.com'
+</code></pre>
+
+<p>end</p>
+
+<p>juntao.save
+```</p>
+
+<p>则需要对<code>InactiveRecord::Base</code>中做一些修改：</p>
+
+<p>```
+def initialize(&amp;block)</p>
+
+<pre><code>@attrs = {}
+if block_given?
+    if block.arity == 1
+        yield self
+    end
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>如果调用者传递了一个block(可执行的单元)进来，那么使用<code>yield</code>将对象本身传递给该block。</p>
+
+<h4>专业的spec</h4>
+
+<p><a href="http://nicholasren.github.io/">同事任晓君</a>是一个ruby专家，他为这个InactiveRecord设计了一个spec：</p>
+
+<p>```
+require 'spec_helper'</p>
+
+<p>InactiveRecord::Base.config do |config|
+  config.schemas "spec/fixtures/schema.yml"
+end</p>
+
+<p>class Person &lt; InactiveRecord::Base
+end</p>
+
+<p>describe "InactiveRecord" do
+  context "save attribtues" do</p>
+
+<pre><code>subject {
+  juntao = Person.new do |p|
+    p.name = 'juntao'
+    p.age = 28
+    p.email = 'juntao.qiu@gmail.com'
+  end
+  juntao
+}
+
+it "should read saved attributes " do
+  subject.name.should == 'juntao'
+  subject.age.should == 28
+  subject.email.should == "juntao.qiu@gmail.com"
+end
+</code></pre>
+
+<p>  end</p>
+
+<p>  context "schema validation" do</p>
+
+<pre><code>subject {
+  juntao = Person.new do |p|
+    p.name = 'juntao'
+    p.age = 28
+    p.email = 'juntao.qiu@gmail.com'
+  end
+  juntao
+}
+
+context "change a valid field" do
+  it "should succeed" do
+    subject.age = 29
+    subject.age.should == 29
+  end
+end
+
+context "change a invalid field" do
+  it "should raise error" do
+    expect { subject.weight= 60 }.to raise_error(StandardError)
+  end
+end
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>在<code>spec/fixtures/schema.yml</code>中，定义了Person的schema，<code>ActiveRecord</code>会从数据库中获得元数据，<code>InactiveRecord</code>在一点上大大的简化了：</p>
+
+<h2>```</h2>
+
+<p>Person:
+  Name: String
+  Age: Integer
+  Email: String
+```</p>
+
+<p>预期的运行结果应当是：</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/12/rspec.png" alt="image" /></p>
+
+<h4>基于这个spec的进一步实现</h4>
+
+<p>由于加入了对schema的校验，即，对于非法的赋值<code>juntao.weight=60</code>，InactiveRecord会报告一个异常，因为<code>weight</code>并不存在在schema中。</p>
+
+<p>ruby在对象模型中提供了一些hook，当别的类包含一个模块，或者集成一个类时，这些hook会被触发，这个特性被很多ruby框架使用，从而实现很多有趣的代码风格。</p>
+
+<p>由于所有的model都需要继承自<code>InactiveRecord::Base</code>，因此我们可以在该类上注册一个hook：</p>
+
+<p>```
+def inherited(who)</p>
+
+<pre><code>table_name = who.name.downcase
+table = YAML.load_file("./metadata/#{table_name}.yml")
+
+who.class_eval do
+    define_method :schema do
+        table[who.name]
+    end 
+end 
+</code></pre>
+
+<p>end
+```</p>
+
+<p>这样，对于每一个继承自<code>InactiveRecord::Base</code>的类，就动态的添加了一个方法，方法名为schema，这个方法可以获得类名对应的yml文件中定义的shema信息。此处的<code>define_method</code>动态的定义了一个新的方法，方法名为<code>schema</code>，后边的block中定义了方法体，在此处仅仅是返回从yml中读取的schema。</p>
+
+<p>最后，在method_missing中，需要在赋值方法被调用时，查看该方法是否存在于schema中：</p>
+
+<p>```
+def method_missing(method, *args, &amp;block)
+   attr = method.to_s
+   if @attrs.key?(attr)</p>
+
+<pre><code>   @attrs[attr]
+</code></pre>
+
+<p>   elsif attr =~ /=$/</p>
+
+<pre><code>   raise StandardError.new("invalid attribute") 
+   unless valid?(attr.chop)
+   @attrs[attr.chop] = args[0]
+</code></pre>
+
+<p>   else</p>
+
+<pre><code>   super.method_missing(method, args, &amp;block)
+</code></pre>
+
+<p>   end
+end</p>
+
+<p>def valid? attr</p>
+
+<pre><code>schema.keys.map{|key| key.downcase}.include? attr
+</code></pre>
+
+<p>end
+```</p>
+
+<p>如果schema中并不包含赋值字段：</p>
+
+<p><code>
+person.style = "#004c97"
+</code></p>
+
+<p>则会抛出一个错误退出:</p>
+
+<p><code>``
+/Users/twer/develop/tutorial/meta/inactive_record.rb:38:in</code>method_missing': invalid attribute (StandardError)</p>
+
+<pre><code>from main.rb:38:in `test'
+from main.rb:41:in `&lt;main&gt;'
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -9,8 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Lisp编译器（解释器） 首先需要一个Lisp的编译器，SBCL是一个开源的实现，支持所有POSIX平台。你可以选择从源码编译，也可以下载二进制包。而由于使用mac，可以用强大的homebrew来安装： 1
-$ brew install sbcl 简单使用 使用sbcl启动交互环境， &hellip;">
+  <meta name="description" content="Common Lisp 之前一直说JavaScript是一门被误解很深的语言，现在学习了一段时间Lisp后发现，Lisp才是！Lisp一直为人所诟病的是它虽然很强大，但是有点学院派，难当大用。但是读了七，八章《Practical Common Lisp》和几章《ANSI Common Lisp》 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -87,6 +86,227 @@ $ brew install sbcl 简单使用 使用sbcl启动交互环境， &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/2013/06/common-lisp-basic/">Common Lisp 里的一些基本概念</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-13T16:15:00+10:00" pubdate data-updated="true">Jun 13<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Common Lisp</h3>
+
+<p>之前一直说JavaScript是一门被误解很深的语言，现在学习了一段时间Lisp后发现，Lisp才是！Lisp一直为人所诟病的是它虽然很强大，但是有点学院派，难当大用。但是读了七，八章<a href="http://book.douban.com/subject/6859720/">《Practical Common Lisp》</a>和几章<a href="http://book.douban.com/subject/1456906/">《ANSI Common Lisp》</a>之后发现，怎么就学院派了，其他编程语言能处理的，Lisp一样可以处理，其他语言处理不了的（或者很繁琐的，比如java中的循环，map之类），Lisp却能处理。</p>
+
+<p>Lisp本质上是一个抽象语法树（AST）而已，但是又提供了一些操作这个AST的方法（比如强大的宏），这样很容易用Lisp开发出来一个新的DSL。用函数式编程的好处之一就是在编写完一个应用程序之后，通常还可以获得一个新的语言（于业务领域很匹配的语言）。</p>
+
+<p><a href="http://zh.wikipedia.org/wiki/Common_Lisp">Common Lisp</a>本身是Lisp的一个方言，是有一个标准来定义，其目的是为了标准化众多的Lisp分支而定。</p>
+
+<h4>sbcl环境</h4>
+
+<p><a href="http://icodeit.org/2013/06/setup-lisp-development-env-on-mac/">上一篇文章</a>已经介绍了如何在Mac下配置Common Lisp的开发环境：</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/06/sbcl.resized.png" alt="image" /></p>
+
+<h4>引用（quote）</h4>
+
+<p>由于在Lisp中，数据和代码都是通过S-expr来表示，所以需要用一种标记法来告诉解释器：这个表达式表示数据/代码。这就是引用的作用：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (+ 1 2 3 4 5)
+</span><span class='line'>15
+</span><span class='line'>
+</span><span class='line'>&gt; '(+ 1 2 3 4 5)
+</span><span class='line'>(+ 1 2 3 4 5)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>解释器会将s-expr的第一项作为函数(car)，而将后续的元素(cdr)作为参数传递给第一项来调用，并求值。可以通过引用（quote）来阻止解释器这样解释。</p>
+
+<h4>反引号(`)</h4>
+
+<p>与引用对应的，有一个反引号形式的引用(在键盘上1的左边)。一般的用法上，它与<code>quote</code>的含义一样，都是防止解释器解释被引用的列表。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt;`(a b c)
+</span><span class='line'>(a b c)
+</span><span class='line'>
+</span><span class='line'>&gt;`(a b (+ 1 2))
+</span><span class='line'>(a b (+ 1 2))</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>但是，反引号引用的列表提供了重新启动求值的能力，这……，我的意思是，如上式中，如果想要将<code>(+1 2)</code>这个子列表求值，怎么做到呢？反引号引用提供了这个能力，用逗号(,)作为子列表的前缀即可：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt;`(a b ,(+ 1 2))
+</span><span class='line'>(a b 3)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个当然在此刻看起来毫无用处，或者感觉略有画蛇添足之嫌，但是在宏中，这个操作符却有很广泛的用途，这里有一个有意思的例子：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defun foo (x) 
+</span><span class='line'>  (only (&gt; x 10) (format t "big than 10")))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们可以通过<code>if</code>来实现此处的only，当only之后的条件满足的话，就执行后续的所有语句：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro only (condition &rest body)
+</span><span class='line'>  `(if ,condition (progn ,@body)))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>此处可以看到，对于宏代码体中，有部分代码我们不需要引用，如(if, progn)，而另外一部分则需要解释器真实地去解释来获得值。另外，我们需要宏本身返回一个列表(被引用的列表)。</p>
+
+<h4>通用的循环（do）</h4>
+
+<p><code>do</code>是Lisp中通用的处理迭代的操作符，可以在其中创建局部变量：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(do ((i 0 (1+ i)))
+</span><span class='line'>    ((&gt;= i 4))
+</span><span class='line'>  (print i))</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>do</code>的格式比较复杂：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(do (variable-definition*)
+</span><span class='line'>  (end-test-form result-form*)
+</span><span class='line'>  statement*)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中，变量声明部分的格式为：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(variable init-form step-form)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后是测试，如果测试成功，有一个可选的返回值（上例中为nil），然后是statement部分，如果测试失败，则执行一次statement，然后通过step-from修改变量的值，测试，执行。</p>
+
+<p>上例的代码会打印<strong>0-3</strong>的数字。<code>do</code>的另外一个功用是它支持多个变量并发的循环，这是(dolist, dotimes等无法完成的，所以在很多宏中，do是不二之选)。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(do ((n 0 (1+ n))
+</span><span class='line'>     (cur 0 next)
+</span><span class='line'>     (next 1 (+ cur next)))
+</span><span class='line'>    ((= 10 n) cur))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个例子则没有statement部分，当n等于10这个测试条件成立后，返回cur当前的值。</p>
+
+<h4>apply 和 funcall</h4>
+
+<p><code>apply/call</code> 这两个函数当然是FP编程语言的必备了：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (apply #'(lambda (x y) (+ x y)) '(3 4))
+</span><span class='line'>7
+</span><span class='line'>
+</span><span class='line'>&gt; (funcall #'(lambda (x y) (+ x y)) 3 4)
+</span><span class='line'>8</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意这里的<code>#'</code>操作符，它表示对函数对象的引用，就像<code>'</code>是对list的引用一样。</p>
+
+<h4>list的基本操作</h4>
+
+<p>构造列表（cons），<code>cons</code>的作用是将两个对象结合成一个对象（这个新的对象由两部分组成），这两部分分别由<code>car</code>,<code>cdr</code>来引用。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (cons 'a nil)
+</span><span class='line'>(a)
+</span><span class='line'>
+</span><span class='line'>&gt; (cons 'a (cons 'b nil))
+</span><span class='line'>(a b)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然可以用更简洁的方式：使用list函数：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (list a b)
+</span><span class='line'>(a b)</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>car</code>, <code>cdr</code>的用法如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (setf x '(a b c (d e)))
+</span><span class='line'>(a b c (d e))
+</span><span class='line'>
+</span><span class='line'>&gt; (car x)
+</span><span class='line'>a
+</span><span class='line'>
+</span><span class='line'>&gt; (cdr x)
+</span><span class='line'>(b c (d e))
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有了<code>car</code>,<code>cdr</code>，对于既定的list，我们总是可以将其遍历（这在宏中非常有用）。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1271,99 +1491,6 @@ $ brew install sbcl 简单使用 使用sbcl启动交互环境， &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/2013/03/guan-yu-hack-day/">关于Hack Day</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-22T20:55:00+11:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h4>关于Hackday</h4>
-
-<p>Hackday是一个技术活动，每三个月举行一次，每次正式时间为两天，每次的hackday都有一个主题，比如对某个业务模块的数据挖掘，关于某个模块的功能/执行效率的改进。</p>
-
-<p>Hackday中的idea多是工作中接触到的痛点，但是又有一些挑战，很难在工作的时候将其完成，或者是一些有意思的主题，平时想做又不太合适（比如一些没有经过确认创新的点子）。</p>
-
-<h4>Hackday 1st</h4>
-
-<p>第一次Hackday是跟<a href="http://adams.co.tt/blog">Adam</a>一起做一个数据展现的idea，Adam是墨尔本Office里一个相当senior的咨询师，我们当时做的idea是根据系统中已有的数据信息，来做一些简单的数据分析，如：</p>
-
-<ol>
-<li>找出一个地区内的所有中介，看看哪些中介持有最多的房产资料</li>
-<li>找出一个地区中，可以最快卖掉手中房产的中介</li>
-</ol>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/03/hackday-agent-info.resized.png" alt="image" /></p>
-
-<p>我们的应用使用sinatra作为服务器；由于数据库系统已经存在，所以ORM需要做的是将对象和已存在的数据表关联，因此功能强大且可以独立使用的ActiveRecord就成了首选；模板使用haml；UI框架风格使用了BootStrap。</p>
-
-<p>搭建环境大概只用了1到1.5个小时，在整个开发过程中，我学习到了一个专业的敏捷开发的流程：</p>
-
-<ol>
-<li>划分大的目标，使之称为小的task</li>
-<li>小步前进，做完一个功能之后，进行快速的review（首先有一个可以工作的版本）</li>
-<li>如果发现有潜在的问题，进行重构，以方便下一个小的task</li>
-</ol>
-
-
-<p>两天之后，当一个可以工作，并且很容易扩展的应用程序真实的放在我们面前的时候，我觉得十分有意思，这当然不是因为build something本身的乐趣，而是我看到一种理论在实际的生活中可以工作（而且是以一种非常有意思的方式），这个过程让我对这种开发方式产生了很多新的认识。</p>
-
-<h4>Hackday 2nd</h4>
-
-<p>第二次的idea是一个基于google map的应用，比如某人的公司在A地，老婆的公司在B地，他们最喜欢的超市在C地，然后他们想找一个离这三个地方距离都很近的房子。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/hackday-neighborhood.resized.png" alt="image" /></p>
-
-<p>同样也使用了Sinatra+haml+javascript。由于idea本身就是西安团队想出来的，所以这次的参与者都是西安office的，这样可以省去交流的成本，做起来肯快，但是问题也很严重，就是没有人做演示，别的团队也不清楚我们在干什么。</p>
-
-<h4>Hackday 3rd</h4>
-
-<p>经历了前两次，第三次的就非常official了，有story wall，有producer，有站会，有showcase，正好这段时间我们的一个客户designer在西安office出差，所以还设计了一些海报。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/hackday-rango-stories.resized.png" alt="image" /></p>
-
-<p>有了专业的designer参与，应用程序的外观立马得到了改善，看起来非常有产品的感觉：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/hackday-rango-homepage.resized.png" alt="image" /></p>
-
-<p>这次本来计划开发离线版本，使用浏览器的localStorage，但是静态网页在iPad上无法工作。team快速的做出了调整，使用sinatra（又一次）搭建了服务器，然后将应用部署在cloud上。</p>
-
-<h4>总结</h4>
-
-<p>虽然每次的“成果”都不大，但是整个hack的过程都非常有意思，每次都可以使用前几次活动中好的工作方式，而前几次中做的不好的则可以进行改进，技术仅仅是其中的一个方面，与团队成员的协作，对自己信心的加强，通过创新来给客户带来价值，这一系列的，不那么明显的“成果”才是更重要的。</p>
-
-<p>另一个“成果”是，我对轻量级的框架如<a href="http://www.sinatrarb.com/">sinatra</a>，引擎<a href="http://haml.info/">haml</a>等有了非常浓厚的兴趣，用这些工具可以快速的搭建用于showcase的应用程序，而且非常容易改进，非常适合小步迭代的开发方式。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/3/">&larr; Older</a>
@@ -1381,6 +1508,10 @@ $ brew install sbcl 简单使用 使用sbcl启动交互环境， &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2013/12/meta-programming-in-ruby/">Ruby元编程的一个示例：InactiveRecord</a>
+      </li>
+    
+      <li class="post">
         <a href="/2013/12/expect-how-to-make-yourself-more-efficient/">使用expect来自动化交互式命令</a>
       </li>
     
@@ -1394,10 +1525,6 @@ $ brew install sbcl 简单使用 使用sbcl启动交互环境， &hellip;">
     
       <li class="post">
         <a href="/2013/10/using-karma-as-the-javascript-test-runner/">使用Karma运行JavaScript测试</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2013/10/using-grunt-as-your-build-tool/">使用Grunt作为构建工具(build tool)</a>
       </li>
     
   </ul>
