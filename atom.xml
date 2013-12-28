@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2013-12-15T18:33:05+11:00</updated>
+  <updated>2013-12-28T19:35:40+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,244 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[如何测试AngularJS中的Controller]]></title>
+    <link href="http://abruzzi.github.com/2013/12/how-to-test-controller-in-angularjs/"/>
+    <updated>2013-12-28T17:40:00+11:00</updated>
+    <id>http://abruzzi.github.com/2013/12/how-to-test-controller-in-angularjs</id>
+    <content type="html"><![CDATA[<h3>AngularJS中的一个典型的Controller</h3>
+
+<p>在AngularJS中，Controller主要用于hold一些跟view的有关的状态，以及数据模型，比如界面上某些元素是否展示，以及展示那些内容等。通常来说，Controller会依赖与一个Service来提供数据：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;EventController&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;$scope&#39;</span><span class="p">,</span> <span class="s1">&#39;EventService&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">EventService</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">EventService</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">events</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">$scope</span><span class="p">.</span><span class="nx">events</span> <span class="o">=</span> <span class="nx">events</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而service本身则需要通过向后台服务发送请求来获取数据：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;EventService&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;$http&#39;</span><span class="p">,</span> <span class="s1">&#39;$q&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="kd">function</span><span class="p">(</span><span class="nx">$http</span><span class="p">,</span> <span class="nx">$q</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">getEvents</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>              <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">$q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/events.json&#39;</span><span class="p">).</span><span class="nx">success</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                  <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span><span class='line'>              <span class="p">}).</span><span class="nx">error</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                  <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span><span class='line'>              <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">};</span>
+</span><span class='line'>  <span class="p">}]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通常的做法是返回一个<a href="http://docs.angularjs.org/api/ng.$q">promise</a>对象，然后当数据准备完整之后，controller的then会被执行。</p>
+
+<p>那么对于这种情况（在AngularJS中，算是一个非常典型的场景），我们如何进行单元测试呢？</p>
+
+<h3>测试依赖与Service的Controller</h3>
+
+<p>通常来讲，在单元级别的测试中，我们肯定不希望Service真正的发送请求，这样就变成了集成测试，而且前端的开发完全依赖与后台的开发进度/稳定程度等。</p>
+
+<p>所以我们需要做一个假的Service，这个假的Service仅仅在测试中存在：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;MyApp&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">describe</span><span class="p">(</span><span class="s2">&quot;EventController&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">scope</span><span class="p">,</span> <span class="nx">q</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">controllerFactory</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">mockSerivce</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">events</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Event1&quot;</span><span class="p">,</span> <span class="s2">&quot;Event2&quot;</span><span class="p">,</span> <span class="s2">&quot;Event3&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">module</span><span class="p">(</span><span class="s2">&quot;MyApp&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">inject</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">$rootScope</span><span class="p">,</span> <span class="nx">$controller</span><span class="p">,</span> <span class="nx">$q</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">controllerFactory</span> <span class="o">=</span> <span class="nx">$controller</span><span class="p">;</span>
+</span><span class='line'>          <span class="nx">scope</span> <span class="o">=</span> <span class="nx">$rootScope</span><span class="p">.</span><span class="nx">$new</span><span class="p">();</span>
+</span><span class='line'>          <span class="nx">q</span> <span class="o">=</span> <span class="nx">$q</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+</span><span class='line'>      <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">events</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">mockSerivce</span><span class="p">.</span><span class="nx">getEvents</span> <span class="o">=</span> <span class="nx">jasmine</span><span class="p">.</span><span class="nx">createSpy</span><span class="p">(</span><span class="s1">&#39;getEvents&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">mockSerivce</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">.</span><span class="nx">andReturn</span><span class="p">(</span><span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">function</span> <span class="nx">initController</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">controllerFactory</span><span class="p">(</span><span class="s1">&#39;EventController&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">$scope</span><span class="o">:</span> <span class="nx">scope</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">EventService</span><span class="o">:</span> <span class="nx">mockSerivce</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should have a events list&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">initController</span><span class="p">();</span>
+</span><span class='line'>      <span class="nx">scope</span><span class="p">.</span><span class="nx">$digest</span><span class="p">();</span>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">scope</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">scope</span><span class="p">.</span><span class="nx">events</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">events</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>此处有很多值得注意的事情：</p>
+
+<h4>在何处实例化Controller</h4>
+
+<p>不要在注入<code>beforeEach</code>中初始化Controller，很多示例中都会在注入了<code>$controller</code>之后紧接着实例化Controller，如果Controller有多个外部的依赖的话，那么在<code>beforeEach</code>中的代码将越来越多，而且读每一个测试用例时会有一些疑惑。</p>
+
+<p>一个好的做法是将依赖注入到<code>describe</code>中的临时变量中，然后将初始化的动作延后到一个函数中：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">initController</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">controllerFactory</span><span class="p">(</span><span class="s1">&#39;EventController&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="o">:</span> <span class="nx">scope</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">EventService</span><span class="o">:</span> <span class="nx">mockSerivce</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>如何mock一个service</h4>
+
+<p>由于在AngularJS中，Service一般会返回一个<a href="http://docs.angularjs.org/api/ng.$q">promise</a>对象。因此在测试时需要有一些技巧来绕过：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">events</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Event1&quot;</span><span class="p">,</span> <span class="s2">&quot;Event2&quot;</span><span class="p">,</span> <span class="s2">&quot;Event3&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">events</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">mockSerivce</span><span class="p">.</span><span class="nx">getEvents</span> <span class="o">=</span> <span class="nx">jasmine</span><span class="p">.</span><span class="nx">createSpy</span><span class="p">(</span><span class="s1">&#39;getEvents&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">mockSerivce</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">.</span><span class="nx">andReturn</span><span class="p">(</span><span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，当使用注入<code>EventService.getEvents().then(callback)</code>的地方就可以访问到此处的promise对象了。</p>
+
+<p>如果添加了新的用例，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;EventController&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;$scope&#39;</span><span class="p">,</span> <span class="s1">&#39;EventService&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">EventService</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">EventService</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">events</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">$scope</span><span class="p">.</span><span class="nx">events</span> <span class="o">=</span> <span class="nx">events</span><span class="p">;</span>
+</span><span class='line'>          <span class="nx">$scope</span><span class="p">.</span><span class="nx">recentEvent</span> <span class="o">=</span> <span class="nx">$scope</span><span class="p">.</span><span class="nx">events</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>则在用例开始完成创建Controller的动作即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should have a recent event&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">initController</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">scope</span><span class="p">.</span><span class="nx">$digest</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">expect</span><span class="p">(</span><span class="nx">scope</span><span class="p">.</span><span class="nx">recentEvent</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s2">&quot;Event1&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>完整的代码<a href="https://github.com/abruzzi/angularjs-controller-demo">请看此处</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Ruby元编程的一个示例：InactiveRecord]]></title>
@@ -3000,62 +3238,6 @@
 
 
 <p></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Turning to a designer]]></title>
-    <link href="http://abruzzi.github.com/2013/03/turning-to-a-designer/"/>
-    <updated>2013-03-26T22:46:00+11:00</updated>
-    <id>http://abruzzi.github.com/2013/03/turning-to-a-designer</id>
-    <content type="html"><![CDATA[<h4>Hack design的建议</h4>
-
-<p>首先，design无处不在，它的目的是提高产品使用者的效率和易用性的。它不是一个“运用之妙，存乎一心”的东西，它是一个实实在在可以通过学习来获得的能力（正如编程或者写作或者厨艺一样，当然，如果一个人把精力和心血放在编程上，同样可以将编程做成一个“运用之妙，存乎一心”的东西。）</p>
-
-<p>什么是一个好的设计？下面是设计师Dieter Rams给出的10条原则：</p>
-
-<ol>
-<li>创新性</li>
-<li>使产品有用</li>
-<li>美学</li>
-<li>使产品可以被理解</li>
-<li>不那么引人注目</li>
-<li>诚实的设计</li>
-<li>可持久的</li>
-<li>彻底，纯粹</li>
-<li>尽量做小的设计</li>
-<li>环境友好</li>
-</ol>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/03/design-10-commandments.resized.png" alt="image" /></p>
-
-<p>这里有<a href="http://startupsthisishowdesignworks.com/">原文的链接</a>，总而言之，设计不仅仅是一个web页面，一个海报，所有的产品都会有不同程度的设计包含在其中。</p>
-
-<h4>Alex的建议</h4>
-
-<p>想想你觉得“好看”的页面为什么好看，是字体，配色，背景色，布局还是其他？把这些记录下来，并在自己后续的设计中尝试使用。</p>
-
-<p>多看一些优秀的设计，比如web页面，如果你发现上边有一些很感兴趣的特性，或者细节，比如这个菜单看着很漂亮，后者标签功能很炫，你可以用chrome的inspect来查看别人使用了什么样的HTML，又apply了那些CSS，做出了这样的效果。</p>
-
-<p>如果在这个过程中，遇到一些没有见过的标签，或者标签的属性，那么去<a href="http://www.w3schools.com/">w3school</a>上查看一下这些标签/属性的含义，尽量使用这些Tag原始的意义（设计时的初衷）。</p>
-
-<p>比如div，它是divider的缩写，本来是用来分割块的，那么就用它来做分割，比如p(paragraph)标签，用来分段，可以将文字放入其中。这些都是HTML标签的设计初衷，我们应该尽量遵循，在实现的时候，如果使用原始的标签很难实现，那么可以尝试一些比较trick的方式来绕过，但是毕竟并非正途。</p>
-
-<p>最后，design和编程类似，你需要不断的练习，自己动手多尝试，在研究了别人的实现之后，自己最好做一个示例出来。</p>
-
-<h4>其他人的建议</h4>
-
-<p>最近读到的一篇写的<a href="http://somerandomdude.com/2012/01/10/transition-from-development-to-design/">非常好的文章</a>，作者也是一个有开发背景的设计师，因此有很多地方可以借鉴：</p>
-
-<ol>
-<li>在转向designer的同时，不要丢掉编程</li>
-<li>按照一定的顺序来学习design（可用优先，性能优先）</li>
-<li>设计一切见得到的东西</li>
-<li>和其他人一起讨论设计，并聆听别人</li>
-<li>尝试分享，尝试将自己的设计讲给别人</li>
-</ol>
-
 ]]></content>
   </entry>
   

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Test | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/test/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2013-12-28T19:35:40+11:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[如何测试AngularJS中的Controller]]></title>
+    <link href="http://abruzzi.github.com/2013/12/how-to-test-controller-in-angularjs/"/>
+    <updated>2013-12-28T17:40:00+11:00</updated>
+    <id>http://abruzzi.github.com/2013/12/how-to-test-controller-in-angularjs</id>
+    <content type="html"><![CDATA[<h3>AngularJS中的一个典型的Controller</h3>
+
+<p>在AngularJS中，Controller主要用于hold一些跟view的有关的状态，以及数据模型，比如界面上某些元素是否展示，以及展示那些内容等。通常来说，Controller会依赖与一个Service来提供数据：</p>
+
+<p>```js
+app.controller('EventController', ['$scope', 'EventService',</p>
+
+<pre><code>function($scope, EventService) {
+    EventService.getEvents().then(function(events) {
+        $scope.events = events;
+    });
+}]);
+</code></pre>
+
+<p>```</p>
+
+<p>而service本身则需要通过向后台服务发送请求来获取数据：</p>
+
+<p>```js
+app.factory('EventService', ['$http', '$q',</p>
+
+<pre><code>function($http, $q) {
+    return {
+        getEvents: function() {
+            var deferred = $q.defer();
+
+            $http.get('/events.json').success(function(result) {
+                deferred.resolve(result);
+            }).error(function(result) {
+                deferred.reject(result);
+            });
+
+            return deferred.promise;
+        }
+    };
+}]);
+</code></pre>
+
+<p>```</p>
+
+<p>通常的做法是返回一个<a href="http://docs.angularjs.org/api/ng.$q">promise</a>对象，然后当数据准备完整之后，controller的then会被执行。</p>
+
+<p>那么对于这种情况（在AngularJS中，算是一个非常典型的场景），我们如何进行单元测试呢？</p>
+
+<h3>测试依赖与Service的Controller</h3>
+
+<p>通常来讲，在单元级别的测试中，我们肯定不希望Service真正的发送请求，这样就变成了集成测试，而且前端的开发完全依赖与后台的开发进度/稳定程度等。</p>
+
+<p>所以我们需要做一个假的Service，这个假的Service仅仅在测试中存在：</p>
+
+<p>```js</p>
+
+<p>var app = angular.module('MyApp');</p>
+
+<p>describe("EventController", function() {</p>
+
+<pre><code>var scope, q;
+var controllerFactory;
+var mockSerivce = {};
+
+var events = ["Event1", "Event2", "Event3"];
+
+beforeEach(function() {
+    module("MyApp");
+    inject(function($rootScope, $controller, $q) {
+        controllerFactory = $controller;
+        scope = $rootScope.$new();
+        q = $q;
+    });
+});
+
+beforeEach(function() {
+    var deferred = q.defer();
+    deferred.resolve(events);
+    mockSerivce.getEvents = jasmine.createSpy('getEvents');
+    mockSerivce.getEvents.andReturn(deferred.promise);
+});
+
+function initController() {
+    return controllerFactory('EventController', {
+        $scope: scope,
+        EventService: mockSerivce
+    });
+}
+
+it("should have a events list", function() {
+    initController();
+    scope.$digest();
+    expect(scope.events.length).toEqual(3);
+    expect(scope.events).toEqual(events);
+});
+</code></pre>
+
+<p>});
+```</p>
+
+<p>此处有很多值得注意的事情：</p>
+
+<h4>在何处实例化Controller</h4>
+
+<p>不要在注入<code>beforeEach</code>中初始化Controller，很多示例中都会在注入了<code>$controller</code>之后紧接着实例化Controller，如果Controller有多个外部的依赖的话，那么在<code>beforeEach</code>中的代码将越来越多，而且读每一个测试用例时会有一些疑惑。</p>
+
+<p>一个好的做法是将依赖注入到<code>describe</code>中的临时变量中，然后将初始化的动作延后到一个函数中：</p>
+
+<p>```js
+function initController() {</p>
+
+<pre><code>return controllerFactory('EventController', {
+    $scope: scope,
+    EventService: mockSerivce
+});
+</code></pre>
+
+<p>}
+```</p>
+
+<h4>如何mock一个service</h4>
+
+<p>由于在AngularJS中，Service一般会返回一个<a href="http://docs.angularjs.org/api/ng.$q">promise</a>对象。因此在测试时需要有一些技巧来绕过：</p>
+
+<p>```js
+var events = ["Event1", "Event2", "Event3"];</p>
+
+<p>beforeEach(function() {</p>
+
+<pre><code>var deferred = q.defer();
+deferred.resolve(events);
+mockSerivce.getEvents = jasmine.createSpy('getEvents');
+mockSerivce.getEvents.andReturn(deferred.promise);
+</code></pre>
+
+<p>});
+```</p>
+
+<p>这样，当使用注入<code>EventService.getEvents().then(callback)</code>的地方就可以访问到此处的promise对象了。</p>
+
+<p>如果添加了新的用例，</p>
+
+<p>```js
+app.controller('EventController', ['$scope', 'EventService',</p>
+
+<pre><code>function($scope, EventService) {
+    EventService.getEvents().then(function(events) {
+        $scope.events = events;
+        $scope.recentEvent = $scope.events[0];
+    });
+}]);
+</code></pre>
+
+<p>```</p>
+
+<p>则在用例开始完成创建Controller的动作即可：</p>
+
+<p>```js
+it("should have a recent event", function() {</p>
+
+<pre><code>initController();
+scope.$digest();
+expect(scope.recentEvent).toEqual("Event1");
+</code></pre>
+
+<p>});
+```</p>
+
+<p>完整的代码<a href="https://github.com/abruzzi/angularjs-controller-demo">请看此处</a></p>
+]]></content>
+  </entry>
+  
+</feed>
