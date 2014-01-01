@@ -1,0 +1,440 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>使用 Yahoo pipes 服务做内容聚合 -- ThoughtWorks好声音 - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="ThoughtWorks好声音 ThoughtWorks好声音是一个聚合网站，内容来自众ThoughtWorker的博客，我们每周会汇聚一次，从众多的博客中挑选出一些P2(软件卓越)相关的主题，然后编为一辑，再分享出去。 但是从近100个博客中找P2相关的内容，这件事本身非常繁琐， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2014/01/use-yahoo-pipe-service-to-aggregate-blogs-you-care/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">lambda</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:icodeit.org" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about-me">About Me</a></li>
+  <li><a href="/jsccp">JavaScript内核系列</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">使用 Yahoo Pipes 服务做内容聚合 -- ThoughtWorks好声音</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-01T19:48:00+11:00" pubdate data-updated="true">Jan 1<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>ThoughtWorks好声音</h3>
+
+<p><a href="http://voice.thoughtworkers.org/">ThoughtWorks好声音</a>是一个聚合网站，内容来自众ThoughtWorker的博客，我们每周会汇聚一次，从众多的博客中挑选出一些P2(软件卓越)相关的主题，然后编为一辑，再分享出去。</p>
+
+<p>但是从近100个博客中找P2相关的内容，这件事本身非常繁琐，如果每周都做这个重复劳动的话，那么软件卓越从何谈起呢？作为以解放人类为己任的程序员，我们绝对不能忍受纯体力的劳动。</p>
+
+<h4>获取博客地址列表</h4>
+
+<p>之前郑晔做了一个<a href="https://jinshuju.net/">金数据</a>的统计，请各位同事把自己的名字和博客地址登记在一个金数据的表单上：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/01/blog-colllecting.png" alt="image" /></p>
+
+<p>接下来第一步就是把网页上的所有地址取下来，这一步很容易，从金数据的页面上用jQuery找到表格的第二列，然后将其中的文字取出来：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;table tr td:nth-child(2)&quot;</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">item</span><span class="p">).</span><span class="nx">text</span><span class="p">().</span><span class="nx">trim</span><span class="p">();</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>写到这里突发奇想，能不能用phantomjs去把这个动作自动化？</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">page</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">status</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">status</span> <span class="o">!==</span> <span class="s1">&#39;success&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Unable to access network&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">page</span><span class="p">.</span><span class="nx">injectJs</span><span class="p">(</span><span class="s1">&#39;jquery.js&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">links</span> <span class="o">=</span> <span class="nx">page</span><span class="p">.</span><span class="nx">evaluate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;table tr td:nth-child(2)&quot;</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">).</span><span class="nx">text</span><span class="p">().</span><span class="nx">trim</span><span class="p">();</span>
+</span><span class='line'>            <span class="p">});</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">underscore</span><span class="p">(</span><span class="nx">links</span><span class="p">).</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s1">&#39;^(https|http)&#39;</span><span class="p">).</span><span class="nx">test</span><span class="p">(</span><span class="nx">item</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">return</span> <span class="s2">&quot;http://&quot;</span> <span class="o">+</span> <span class="nx">item</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">item</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="nx">phantom</span><span class="p">.</span><span class="nx">exit</span><span class="p">();</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，results数组中就包含了所有的博客链接了，而且有的同事比较懒，提供的URL中不包含<code>http</code>，这段代码还顺手给这样的url添加了头尾。</p>
+
+<p>然后<strong>第二步</strong>，我<strong>想象</strong>着应该再写个脚本，在这个数组中得每个url的后边加上诸如<code>rss</code>或者<code>atom.xml</code>之类的后缀，然后去获取每个博客的rss文件，然后根据这些信息做一些事情。吃午饭的过程中我还在想象这个工具分为几个模块，用什么样的语言来做开发等等细节。</p>
+
+<p>吃完午饭，突然想起来之前熊杰貌似发过一个yahoo pipes生成的rss，我在邮件中翻出来之后，失望的发现我自己的博客都不在里边，想想熊杰貌似还在乌干达援助非洲人民，那就自己动手重新定义一个吧。</p>
+
+<h4>Yahoo pipes 服务</h4>
+
+<p><a href="http://pipes.yahoo.com/pipes/">Yahoo pipes</a>是一个用来定制聚合的服务，只需要定义好数据源(通常是rss/atom)，然后定义一些操作，比如排序，去重，联合等等。最后这个pipe会生成一个结果集，这些特性简直就是为我们这个需求定制的：</p>
+
+<ol>
+<li>将博客地址+&#8217;/rss&#8217; / 博客地址+&#8217;/atom.xml&#8217; 添加到一个个的fetcher上</li>
+<li>将这些fetcher联合起来</li>
+<li>将联合的结果排序(按照发表日期/更新日期)</li>
+<li>生成最后的rss</li>
+</ol>
+
+
+<p>yahoo pipes提供的编辑器非常简单易用：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/01/single-pipe.png" alt="image" /></p>
+
+<p>而且在编辑界面底下有一个预览界面：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/01/single-preview.png" alt="image" /></p>
+
+<p>当然，当定义好完整的pipe之后，我们的ThoughtWorks好声音的源看起来是这样的：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/01/tvot-pipe-resized.png" alt="image" /></p>
+
+<p>运行这个pipe之后，得到一个preview的界面：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/01/tvot-pipe-run-resized.png" alt="image" /></p>
+
+<p>最后，可以将这个pipe公开发布，或者将这个pipe生成的rss订阅到阅读器中，比如<a href="http://www.vienna-rss.org/">vienna</a>:</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/01/vienna-resized.png" alt="image" /></p>
+
+<p>然后就可以一目了然的看到最近有哪些ThoughtWorker更新了自己的博客，又有那些是P2相关的，可以<code>理论上</code>减轻我们编辑很多的工作量。</p>
+
+<h4>结论</h4>
+
+<p>手里是锤子的时候，看着周围的东西都像钉子。有时候，那些又酷又炫的技巧/工具可能并非必须。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-01T19:48:00+11:00" pubdate data-updated="true">Jan 1<span>st</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/thoughtworks/'>ThoughtWorks</a>, <a class='category' href='/category/tools/'>tools</a>, <a class='category' href='/category/yahoo/'>yahoo</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://abruzzi.github.com/2014/01/use-yahoo-pipe-service-to-aggregate-blogs-you-care/" data-via="" data-counturl="http://abruzzi.github.com/2014/01/use-yahoo-pipe-service-to-aggregate-blogs-you-care/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/2013/12/by-the-end-of-2013/" title="Previous Post: 我的2013">&laquo; 我的2013</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2014/01/use-yahoo-pipe-service-to-aggregate-blogs-you-care/">使用 Yahoo pipes 服务做内容聚合 -- ThoughtWorks好声音</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/12/by-the-end-of-2013/">我的2013</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/12/how-to-test-controller-in-angularjs/">如何测试AngularJS中的Controller</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/12/meta-programming-in-ruby/">Ruby元编程的一个示例：InactiveRecord</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/12/expect-how-to-make-yourself-more-efficient/">使用expect来自动化交互式命令</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中...)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2014/01/use-yahoo-pipe-service-to-aggregate-blogs-you-care/';
+        var disqus_url = 'http://abruzzi.github.com/2014/01/use-yahoo-pipe-service-to-aggregate-blogs-you-care/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
