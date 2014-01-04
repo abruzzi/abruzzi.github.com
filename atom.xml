@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-01-01T20:58:21+11:00</updated>
+  <updated>2014-01-05T01:19:12+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,291 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[如何测试AngularJS中的Service]]></title>
+    <link href="http://abruzzi.github.com/2014/01/how-to-test-service-in-angularjs/"/>
+    <updated>2014-01-04T14:22:00+11:00</updated>
+    <id>http://abruzzi.github.com/2014/01/how-to-test-service-in-angularjs</id>
+    <content type="html"><![CDATA[<h3>Service的典型示例</h3>
+
+<p>在AngularJS中，Service都是单例的实体，通常会将Service作为向后台交互的数据提供者，所有的需要数据的组件只需要依赖于这个Service即可。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;MyApp&#39;</span><span class="p">,</span> <span class="p">[]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;SearchSettingService&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">[</span><span class="s1">&#39;$http&#39;</span><span class="p">,</span> <span class="s1">&#39;$q&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$http</span><span class="p">,</span> <span class="nx">$q</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">setting</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>            <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">$q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">success</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}).</span><span class="nx">error</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="s2">&quot;network error&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'><span class="p">}]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>$httpBackend</h4>
+
+<p>测试的时候，我们不需要真实的发送HTTP请求来获取数据。如果可以只测试Service的逻辑，当发送请求时，我们将这个请求拦截下来，然后返回一个预定义好的数据即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have settings from http request&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;period&quot;</span><span class="o">:</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;date&quot;</span><span class="o">:</span> <span class="s2">&quot;Sat Dec 21 12:56:53 EST 2013&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">settingService</span><span class="p">.</span><span class="nx">setting</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">result</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>$httpBackend是AngularJS提供的一个测试用的服务，可以在spec中注入进来：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">module</span><span class="p">(</span><span class="s1">&#39;services&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">inject</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">SearchSettingService</span><span class="p">,</span> <span class="nx">$httpBackend</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">settingService</span> <span class="o">=</span> <span class="nx">SearchSettingService</span><span class="p">;</span>
+</span><span class='line'>        <span class="nx">httpBackend</span> <span class="o">=</span> <span class="nx">$httpBackend</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>httpBackend</code>服务有一些很方便测试的方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="nx">url</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span><span class='line'><span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectPOST</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">param</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>设置之后，当调用<code>httpBackend.flush</code>时，AngularJS会调用这个setup，发送的请求会被之前的setup拦截并返回，这样service中的数据就被填充好了。</p>
+
+<h4>Service测试的模板</h4>
+
+<p>或者说，当测试一个Service时，我们应该测那些方面呢？</p>
+
+<ol>
+<li>正常流程，一个完整的处理过程</li>
+<li>异常处理，如果服务器出错了，程序需要如何反馈？</li>
+<li>其他异常情况</li>
+</ol>
+
+
+<p>正常流程很容易，在调用service提供的方法之后，在获得的promise对象上调用then方法来填充一个数据即可，然后调用<code>httpBackend.flush()</code>来<strong>发送</strong>请求，最后验证数据的格式/内容是否正确。</p>
+
+<p>这个测试的主要目的是验证当调用service的方法时，service真实的发送了一个http请求：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have settings from http request&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;period&quot;</span><span class="o">:</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;date&quot;</span><span class="o">:</span> <span class="s2">&quot;Sat Dec 21 12:56:53 EST 2013&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">settingService</span><span class="p">.</span><span class="nx">setting</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">result</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对于异常的情况，比如服务器返回了错误，如<code>500</code>，那么最低程度，程序应该可以处理这个异常：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should throw error when network expection&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">error</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">settingService</span><span class="p">.</span><span class="nx">setting</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">result</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">error</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toBeUndefined</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">error</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s2">&quot;network error&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4><em>服务器</em> moco</h4>
+
+<p><a href="https://github.com/dreamhead/moco">moco</a>是同事<a href="http://dreamhead.blogbus.com/">郑晔</a>开发的一个测试框架/工具，基本上来说，moco是一个用来集成测试的用的HTTP服务器。</p>
+
+<p>你可以通过API方式或者启动moco服务器的方式来使用它，我比较喜欢将moco作为一个独立的服务器来使用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>java -jar moco-runner-0.9-standalone.jar start -p 12306 -c moco.conf.json
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>比如<code>moco.conf.json</code>中定义了一下规则：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;request&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="s2">&quot;post&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;uri&quot;</span><span class="o">:</span> <span class="s2">&quot;/resource&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="s2">&quot;response&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;status&quot;</span><span class="o">:</span> <span class="mi">201</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;resource has been created&quot;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;request&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;uri&quot;</span><span class="o">:</span> <span class="s2">&quot;/resource&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="s2">&quot;response&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;status&quot;</span><span class="o">:</span> <span class="mi">200</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;file&quot;</span><span class="o">:</span> <span class="s2">&quot;resources.json&quot;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>则启动moco的服务器之后，所有发往<code>/resource</code>的<code>post</code>请求都会得到</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="mi">201</span>
+</span><span class='line'><span class="nx">resource</span> <span class="nx">has</span> <span class="nx">been</span> <span class="nx">created</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>的HTTP响应，这个功能在前端开发越来越独立的情况下变得非常好用。我最近在有很多小项目中都在尝试moco，非常的好用，后边会有相关的博客专门介绍。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用 Yahoo pipes 服务做内容聚合 -- ThoughtWorks好声音]]></title>
@@ -3265,107 +3550,6 @@
 <hr />
 
 <p>这个页面将维持更新，如果有新的错误被发现，我会第一时间更新书籍的电子版本，并在此页面上更新。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[proc in ruby]]></title>
-    <link href="http://abruzzi.github.com/2013/05/proc-in-ruby/"/>
-    <updated>2013-05-12T16:01:00+10:00</updated>
-    <id>http://abruzzi.github.com/2013/05/proc-in-ruby</id>
-    <content type="html"><![CDATA[<h2>block in ruby</h2>
-
-<p>block在ruby中，相当于JavaScript中的匿名函数，可以用来实现诸如高阶函数等。高阶函数最好用的一个特点就是它很好的将“动作”（action）本身抽象成了一个对象来传递。</p>
-
-<p>block本身不是对象，但是可以被转换成Proc类的实例，然后以一种特别的方式执行。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> &gt; proc = lambda {puts "hello, world"}
-</span><span class='line'> =&gt; #&lt;Proc:0x007ff11284d068@(irb):8 (lambda)&gt; </span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc = lambda do
-</span><span class='line'>&gt;  puts "hello, world"
-</span><span class='line'>&gt; end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>从irb打印的信息可以看出，<code>&lt;Proc:0x007ff11284d068@(irb):8 (lambda)&gt;</code>是一个Proc类的实例用lambda生成的block对象，看起来像一个ruby中定义的函数/方法一样，但是执行的时候需要特别的调用方式：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc.call
-</span><span class='line'>hello, world
-</span><span class='line'> =&gt; nil</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果需要参数，可以这样指定：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc = lambda {|a, b| a + b}
-</span><span class='line'> =&gt; #&lt;Proc:0x007ff114843d40@(irb):14 (lambda)&gt; 
-</span><span class='line'>&gt; proc.call(1,2)
-</span><span class='line'> =&gt; 3 
-</span><span class='line'>&gt; proc.call("hello, ","world")
-</span><span class='line'> =&gt; "hello, world" </span></code></pre></td></tr></table></div></figure>
-
-
-<h2>proc自身</h2>
-
-<p>ruby中大名鼎鼎的rack应用程序，本质上就只是负责调用一个block来获得结果：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rack_proc = lambda {|env| [200, {}, ["&lt;h1&gt;Hello, world&lt;/h1&gt;"]]}
-</span><span class='line'>rack_proc.call({})</span></code></pre></td></tr></table></div></figure>
-
-
-<p>也可以使用proc来创建一个Proc：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; x = proc {puts "hello, world"}
-</span><span class='line'> =&gt; #&lt;Proc:0x007ff114851698@(irb):18&gt; 
-</span><span class='line'>&gt; x.call
-</span><span class='line'>hello, world
-</span><span class='line'> =&gt; nil </span></code></pre></td></tr></table></div></figure>
-
-
-<p>也可以将proc实例返回出来，然后提供给其他函数使用，需要注意的是那个call方法：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def adder(number)
-</span><span class='line'>  proc {|x| x + number}
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>add15 = adder(15)
-</span><span class='line'>add15.call(10) == 25
-</span><span class='line'>
-</span><span class='line'>add10 = adder(10)
-</span><span class='line'>add10.call(10) == 20</span></code></pre></td></tr></table></div></figure>
-
 ]]></content>
   </entry>
   
