@@ -68,18 +68,10 @@ douban_user: juntao.qiu
 # ----------------------- #
 
 # Github repositories
-github_user:
-github_repo_count: 0
+github_user: abruzzi
+github_repo_count: 5
 github_show_profile_link: true
 github_skip_forks: true
-
-# Twitter
-twitter_user:
-twitter_tweet_count: 4
-twitter_show_replies: false
-twitter_follow_button: true
-twitter_show_follower_count: false
-twitter_tweet_button: true
 
 # Google +1
 google_plus_one: false
