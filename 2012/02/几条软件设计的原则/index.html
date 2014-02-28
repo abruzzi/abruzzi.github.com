@@ -18,18 +18,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://abruzzi.github.com/2012/02/%E5%87%A0%E6%9D%A1%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%8E%9F%E5%88%99/">
+  <link rel="canonical" href="http://abruzzi.github.com/2012/02/%E5%87%A0%E6%9D%A1%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%8E%9F%E5%88%99">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
-  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
   
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -38,7 +38,7 @@
 
     (function() {
       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
   </script>
@@ -46,19 +46,12 @@
 
 </head>
 
-<body   >
+<body   class="collapse-sidebar sidebar-footer" >
   <header role="banner"><hgroup>
-  <div id="logo">
-  	<div id="logoLeft">{</div>
-  	<div id="logoText">lambda</div>
-  	<div id="logoRight">}</div>
-  	<div class="clear"></div>
-  </div>
   <h1><a href="/">I code it</a></h1>
   
     <h2>Code and Life</h2>
   
-  <div class="clear"></div>
 </hgroup>
 
 </header>
@@ -69,17 +62,17 @@
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:icodeit.org" />
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
   
 <ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-  <li><a href="/about-me">About Me</a></li>
-  <li><a href="/jsccp">JavaScript内核系列</a></li>
+  <li><a href="/">文章</a></li>
+  <li><a href="/about-me">关于我</a></li>
+  <li><a href="/jsccp">JavaScript核心概念及实践</a></li>
 </ul>
+
 
 </nav>
   <div id="main">
@@ -89,9 +82,7 @@
   
   <header>
     
-      
-        <h1 class="entry-title">几条软件设计的原则</h1>
-      
+      <h1 class="entry-title">几条软件设计的原则</h1>
     
     
       <p class="meta">
@@ -158,10 +149,10 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/2012/02/javascript%E5%86%85%E6%A0%B8%E7%B3%BB%E5%88%97v0-9-9beta%E7%89%88%E6%9C%AC%E4%B8%8B%E8%BD%BD/" title="Previous Post: JavaScript内核系列V0.9.9Beta版本下载">&laquo; JavaScript内核系列V0.9.9Beta版本下载</a>
+        <a class="basic-alignment left" href="/2012/02/javascript%E5%86%85%E6%A0%B8%E7%B3%BB%E5%88%97v0-9-9beta%E7%89%88%E6%9C%AC%E4%B8%8B%E8%BD%BD/" title="Previous Post: JavaScript内核系列V0.9.9Beta版本下载">&laquo; JavaScript内核系列V0.9.9Beta版本下载</a>
       
       
-        <a class="basic-alignment right articlenav" href="/2012/03/%E9%95%BF%E8%83%B6%EF%BC%81%E9%95%BF%E8%83%B6%EF%BC%81/" title="Next Post: 长胶！长胶！">长胶！长胶！ &raquo;</a>
+        <a class="basic-alignment right" href="/2012/03/%E9%95%BF%E8%83%B6%EF%BC%81%E9%95%BF%E8%83%B6%EF%BC%81/" title="Next Post: 长胶！长胶！">长胶！长胶！ &raquo;</a>
       
     </p>
   </footer>
@@ -172,6 +163,7 @@
     <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
   </section>
+
 
 </div>
 
@@ -274,7 +266,7 @@ Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_i
   <a href="https://github.com/abruzzi">@abruzzi</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -307,7 +299,7 @@ Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_i
   </div>
   <footer role="contentinfo"><p>
   Copyright &copy; 2014 - Qiu Juntao -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
 </p>
 
 </footer>
@@ -330,17 +322,8 @@ Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_i
 </script>
 
 
-<!--[if !(lte IE 8)]><!-->
-<script type="text/javascript"> 
-    // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GPL-v3-or-Later
-(function(){
- var e = document.createElement('script'); e.type='text/javascript'; e.async = true;
- e.src = document.location.protocol + '//d1agz031tafz8n.cloudfront.net/thedaywefightback.js/widget.min.js';
- var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(e, s);
- })();
-// @license-end
-</script>
-<!--<![endif]-->
+
+
 
 
 
