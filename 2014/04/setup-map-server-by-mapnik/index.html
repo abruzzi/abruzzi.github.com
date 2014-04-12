@@ -1,0 +1,652 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>搭建地图服务器（使用Mapnik） - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="渲染引擎Mapnik 上一篇文章中大概介绍了Mapnik，它是一个渲染引擎，一般开发中都会使用他的python的bind做开发。 Mapnik的文档写的比较详细，我们这里只是做一些必要的介绍，详细的细节可以参看Mapnik在Github上的文档。 在Mac下，安装Mapnik十分容易， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2014/04/setup-map-server-by-mapnik">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">文章</a></li>
+  <li><a href="/about-me">关于我</a></li>
+  <li><a href="/jsccp">JavaScript核心概念及实践</a></li>
+</ul>
+
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">搭建地图服务器（使用Mapnik）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-12T14:07:00+10:00" pubdate data-updated="true">Apr 12<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h4>渲染引擎Mapnik</h4>
+
+<p><a href="http://icodeit.org/2014/04/intro-map-gis/">上一篇文章</a>中大概介绍了<a href="https://github.com/mapnik">Mapnik</a>，它是一个渲染引擎，一般开发中都会使用他的python的bind做开发。</p>
+
+<p>Mapnik的文档写的比较详细，我们这里只是做一些必要的介绍，详细的细节可以参看Mapnik在<a href="https://github.com/mapnik/mapnik/wiki">Github上的文档</a>。</p>
+
+<p>在Mac下，安装Mapnik十分容易，使用brew即可，注意我们在此处带上<code>--with-postgresql</code>选项，使得Mapnik可以通过PostGIS来访问数据库：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>brew install mapnik --with-postgresql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装完成之后，可以通过一个小的python脚本来测试：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">mapnik</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s">&#39;red&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">zoom_all</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">mapnik</span><span class="o">.</span><span class="n">render_to_file</span><span class="p">(</span><span class="nb">map</span><span class="p">,</span> <span class="s">&#39;red.png&#39;</span><span class="p">,</span> <span class="s">&#39;png&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这段脚本可以在当前目录下生成一个红色的256x256的小图片。好了，有了渲染引擎，我们需要一些数据来进行渲染了。</p>
+
+<h4>数据源</h4>
+
+<p>最通用的数据格式为Shapefiles，目前有很多的免费地理信息供公共下载，我们可以从<a href="http://metro.teczno.com/">Metro的站点</a>上下载一些小的数据文件。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm2pgsql-shapefiles.zip
+</span><span class='line'><span class="nv">$ </span>mkdir chengdu
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>chengdu
+</span><span class='line'><span class="nv">$ </span>unzip chengdu.osm2pgsql-shapefiles.zip
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样就得到了一组文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>find . -name <span class="s2">&quot;*.shp&quot;</span>
+</span><span class='line'>./chengdu.osm-line.shp
+</span><span class='line'>./chengdu.osm-point.shp
+</span><span class='line'>./chengdu.osm-polygon.shp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>每一个shp文件都会对应几个其他类型的文件，比如投影信息，属性表等。仅仅查看shp的话，有表示所有点的文件chengdu.osm-line.shp，又表示所有线的chengdu.osm-line.shp，以及表示所有面（区域）的chengdu.osm-polygon.shp文件。</p>
+
+<p>有了这些文件，我们就可以做一些测试了，比如我们首先加载所有的线条，并根据这些线条生成一个图层：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">mapnik</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s">&#39;#ffffff&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">style</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Style</span><span class="p">()</span>
+</span><span class='line'><span class="n">rule</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Rule</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">point_symbolizer</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">PointSymbolizer</span><span class="p">()</span>
+</span><span class='line'><span class="n">rule</span><span class="o">.</span><span class="n">symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point_symbolizer</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">style</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">append_style</span><span class="p">(</span><span class="s">&#39;default&#39;</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ds_point</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Shapefile</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="s">&#39;chengdu.osm-point.shp&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">point</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="s">&#39;point&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">point</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">ds_point</span>
+</span><span class='line'><span class="n">point</span><span class="o">.</span><span class="n">styles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;default&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">zoom_all</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">mapnik</span><span class="o">.</span><span class="n">render_to_file</span><span class="p">(</span><span class="nb">map</span><span class="p">,</span> <span class="s">&#39;chengdu.png&#39;</span><span class="p">,</span> <span class="s">&#39;png&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以得到：</p>
+
+<p><img src="/images/2014/04/chengdu-point.png" alt="points" /></p>
+
+<p>这里介绍一下Mapnik中的一些概念：一个Map可以包含若干个层（Layer），每个层可以独立着色，即可以为每个层定制样式（Style），每个样式由若干个规则组成（Rule）。每个规则由是由若干个符号定制。</p>
+
+<p><img src="/images/2014/04/chengdu-line.png" alt="lines" /></p>
+
+<p>如果将两者重叠，则可以得到：</p>
+
+<p><img src="/images/2014/04/chengdu-point-and-line.png" alt="lines" /></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">polygon_symbolizer</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">PolygonSymbolizer</span><span class="p">(</span><span class="n">mapnik</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s">&#39;#c8102e&#39;</span><span class="p">))</span>
+</span><span class='line'><span class="n">polygon_rule</span><span class="o">.</span><span class="n">symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">polygon_symbolizer</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ds_polygon</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Shapefile</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="s">&#39;chengdu.osm-polygon.shp&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">polygon</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="s">&#39;polygon&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">polygon</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">ds_polygon</span>
+</span><span class='line'><span class="n">polygon</span><span class="o">.</span><span class="n">styles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;polygon&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2014/04/chengdu-polygon.png" alt="image" /></p>
+
+<p>将这三个层叠加在一起，会得到最终的结果：</p>
+
+<p><img src="/images/2014/04/chengdu-point-and-line-and-polygon.png" alt="lines" /></p>
+
+<h4>数据转化</h4>
+
+<p>在进一步之前，我们需要将数据存储在数据库中。我们可以将shapefile通过转化存入到数据库中。PostGIS本身自带了一个用于此作用的工具：<code>shp2pgsql</code>。可以通过这个工具来先将shapefile导入到数据库中。也可以直接导入别的开放数据，比如很多OSM格式的数据源，我们此处仅仅简单的从别的数据源将OSM格式的数据下载并导入到PostGIS中。</p>
+
+<p>创建数据库<code>chengdu</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>createdb chengdu -O gis -E UTF8 -e
+</span><span class='line'>CREATE DATABASE chengdu OWNER gis ENCODING <span class="s1">&#39;UTF8&#39;</span>;
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>psql -U gis -d chengdu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>登陆PostGres，然后为数据库<code>chengdu</code>启动PostGIS扩展：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="c1">-- Enable PostGIS (includes raster)</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">postgis</span><span class="p">;</span>
+</span><span class='line'><span class="c1">-- Enable Topology</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">postgis_topology</span><span class="p">;</span>
+</span><span class='line'><span class="c1">-- fuzzy matching needed for Tiger</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">fuzzystrmatch</span><span class="p">;</span>
+</span><span class='line'><span class="c1">-- Enable US Tiger Geocoder</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">postgis_tiger_geocoder</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm.bz2
+</span><span class='line'><span class="nv">$ </span>bunzip2 -d chengdu.osm.bz2
+</span><span class='line'><span class="nv">$ </span>osm2pgsql -U gis -d chengdu -s -S ./default.style chengdu.osm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个命令将chengdu.osm导入到了名称为<code>chengdu</code>的数据库中。</p>
+
+<p>可以通过SQL命令查看其中的数据：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">select</span> <span class="n">ST_Extent</span><span class="p">(</span><span class="n">ST_Transform</span><span class="p">(</span><span class="n">way</span><span class="p">,</span><span class="mi">4326</span><span class="p">))</span> <span class="k">from</span> <span class="n">planet_osm_roads</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>结果如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'>                            <span class="n">st_extent</span>
+</span><span class='line'><span class="c1">--------------------------------------------------------------------------</span>
+</span><span class='line'> <span class="n">BOX</span><span class="p">(</span><span class="mi">103</span><span class="p">.</span><span class="mi">564165069794</span> <span class="mi">30</span><span class="p">.</span><span class="mi">3634139134986</span><span class="p">,</span><span class="mi">104</span><span class="p">.</span><span class="mi">554549945024</span> <span class="mi">30</span><span class="p">.</span><span class="mi">9869936005376</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="mi">1</span> <span class="k">row</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>WMS服务器</h4>
+
+<p>生成图片之后，我们还需要将这些图片切成瓦片，然后公开给外部以便使用。Mapnik提供了切图的功能，并且还提供一个实现了<a href="https://github.com/mapnik/OGCServer">WMS协议的服务器</a>，以便使用。</p>
+
+<p>安装这个OGCServer服务器非常容易：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git clone git@github.com:mapnik/OGCServer.git
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>OGCServer
+</span><span class='line'><span class="nv">$ </span>sudo python setup.py install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是OGCServer的启动，需要一个配置XML配置文件，这个配置文件可以由Mapnik提供的工具集生成：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn co http://svn.openstreetmap.org/applications/rendering/mapnik/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个svn仓库中包含了众多的小工具，generate_xml.py用于生成Mapnik的样式文件，generate_image.py用于生成图片，generate_tiles.py用于生成众多的瓦片。</p>
+
+<p>此处我们将使用<code>generate_xml.py</code>来创建一个地图样式文件，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">cd </span>svn.openstreetmap.org/applications/rendering/mapnik/
+</span><span class='line'><span class="nv">$ </span>./generate_xml.py osm.xml chengdu.xml --dbname chengdu --user gis --accept-none
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>generate_xml.py根据osm.xml作为模板，生成<code>chengdu.xml</code>。这个文件即可用于测试OGCServer：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>OGCServer chengdu.xml
+</span><span class='line'>Listening at 0.0.0.0:8000....
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在浏览器中查看：</p>
+
+<p><img src="/images/2014/04/ogcserver-localhost-resized.png" alt="ogcserver" /></p>
+
+<h4>使用OpenLayers测试</h4>
+
+<p>有了一张图片，那么我们就需要有更多的图片组成的瓦片，这就需要使用引入GIS的前端利器OpenLayers了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="k">$(function</span><span class="o">(</span><span class="k">)</span> <span class="o">{</span>
+</span><span class='line'>    var map, layer;
+</span><span class='line'>    <span class="nv">map</span> <span class="o">=</span> new OpenLayers.Map<span class="o">(</span><span class="s1">&#39;map&#39;</span>, <span class="o">{})</span>;
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">layer</span> <span class="o">=</span> new OpenLayers.Layer.WMS<span class="o">(</span><span class="s1">&#39;Tile Cache&#39;</span>,
+</span><span class='line'>        <span class="s1">&#39;http://localhost:8000/?&#39;</span>, <span class="o">{</span>
+</span><span class='line'>            layers: <span class="s1">&#39;__all__&#39;</span>,
+</span><span class='line'>            format: <span class="s1">&#39;image/png&#39;</span>
+</span><span class='line'>        <span class="o">})</span>;
+</span><span class='line'>
+</span><span class='line'>    map.addLayer<span class="o">(</span>layer<span class="o">)</span>;
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span>!map.getCenter<span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        map.zoomToMaxExtent<span class="o">()</span>;
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">})</span>;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2014/04/openlayers-chengdu-resized.png" alt="openlayers" /></p>
+
+<p><img src="/images/2014/04/openlayers-chengdu-detail-resized.png" alt="openlayers" /></p>
+
+<p>应该注意的是，此处在OpenLayers中使用了来自与OSM导入的数据，而并非Shapefile中的数据（Shapefile中仅有三个层次，point, line, polygon）。而OSM的数据则丰富的多。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-12T14:07:00+10:00" pubdate data-updated="true">Apr 12<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/gis/'>GIS</a>, <a class='category' href='/category/javascript/'>JavaScript</a>, <a class='category' href='/category/python/'>python</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2014/04/intro-map-gis/" title="Previous Post: GIS系统如何工作">&laquo; GIS系统如何工作</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2014/04/setup-map-server-by-mapnik/">搭建地图服务器（使用Mapnik）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2014/04/intro-map-gis/">GIS系统如何工作</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2014/01/how-to-test-service-in-angularjs/">如何测试AngularJS中的Service</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2014/01/use-yahoo-pipe-service-to-aggregate-blogs-you-care/">使用 Yahoo pipes 服务做内容聚合 -- ThoughtWorks好声音</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/12/by-the-end-of-2013/">我的2013</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中...)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/abruzzi">@abruzzi</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'abruzzi',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2014/04/setup-map-server-by-mapnik/';
+        var disqus_url = 'http://abruzzi.github.com/2014/04/setup-map-server-by-mapnik/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

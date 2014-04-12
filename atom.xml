@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-04-12T13:58:55+10:00</updated>
+  <updated>2014-04-12T17:27:48+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,331 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[搭建地图服务器（使用Mapnik）]]></title>
+    <link href="http://abruzzi.github.com/2014/04/setup-map-server-by-mapnik/"/>
+    <updated>2014-04-12T14:07:00+10:00</updated>
+    <id>http://abruzzi.github.com/2014/04/setup-map-server-by-mapnik</id>
+    <content type="html"><![CDATA[<h4>渲染引擎Mapnik</h4>
+
+<p><a href="http://icodeit.org/2014/04/intro-map-gis/">上一篇文章</a>中大概介绍了<a href="https://github.com/mapnik">Mapnik</a>，它是一个渲染引擎，一般开发中都会使用他的python的bind做开发。</p>
+
+<p>Mapnik的文档写的比较详细，我们这里只是做一些必要的介绍，详细的细节可以参看Mapnik在<a href="https://github.com/mapnik/mapnik/wiki">Github上的文档</a>。</p>
+
+<p>在Mac下，安装Mapnik十分容易，使用brew即可，注意我们在此处带上<code>--with-postgresql</code>选项，使得Mapnik可以通过PostGIS来访问数据库：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>brew install mapnik --with-postgresql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装完成之后，可以通过一个小的python脚本来测试：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">mapnik</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s">&#39;red&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">zoom_all</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">mapnik</span><span class="o">.</span><span class="n">render_to_file</span><span class="p">(</span><span class="nb">map</span><span class="p">,</span> <span class="s">&#39;red.png&#39;</span><span class="p">,</span> <span class="s">&#39;png&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这段脚本可以在当前目录下生成一个红色的256x256的小图片。好了，有了渲染引擎，我们需要一些数据来进行渲染了。</p>
+
+<h4>数据源</h4>
+
+<p>最通用的数据格式为Shapefiles，目前有很多的免费地理信息供公共下载，我们可以从<a href="http://metro.teczno.com/">Metro的站点</a>上下载一些小的数据文件。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm2pgsql-shapefiles.zip
+</span><span class='line'><span class="nv">$ </span>mkdir chengdu
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>chengdu
+</span><span class='line'><span class="nv">$ </span>unzip chengdu.osm2pgsql-shapefiles.zip
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样就得到了一组文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>find . -name <span class="s2">&quot;*.shp&quot;</span>
+</span><span class='line'>./chengdu.osm-line.shp
+</span><span class='line'>./chengdu.osm-point.shp
+</span><span class='line'>./chengdu.osm-polygon.shp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>每一个shp文件都会对应几个其他类型的文件，比如投影信息，属性表等。仅仅查看shp的话，有表示所有点的文件chengdu.osm-line.shp，又表示所有线的chengdu.osm-line.shp，以及表示所有面（区域）的chengdu.osm-polygon.shp文件。</p>
+
+<p>有了这些文件，我们就可以做一些测试了，比如我们首先加载所有的线条，并根据这些线条生成一个图层：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">mapnik</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s">&#39;#ffffff&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">style</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Style</span><span class="p">()</span>
+</span><span class='line'><span class="n">rule</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Rule</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">point_symbolizer</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">PointSymbolizer</span><span class="p">()</span>
+</span><span class='line'><span class="n">rule</span><span class="o">.</span><span class="n">symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point_symbolizer</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">style</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">append_style</span><span class="p">(</span><span class="s">&#39;default&#39;</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ds_point</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Shapefile</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="s">&#39;chengdu.osm-point.shp&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">point</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="s">&#39;point&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">point</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">ds_point</span>
+</span><span class='line'><span class="n">point</span><span class="o">.</span><span class="n">styles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;default&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">zoom_all</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">mapnik</span><span class="o">.</span><span class="n">render_to_file</span><span class="p">(</span><span class="nb">map</span><span class="p">,</span> <span class="s">&#39;chengdu.png&#39;</span><span class="p">,</span> <span class="s">&#39;png&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以得到：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/04/chengdu-point.png" alt="points" /></p>
+
+<p>这里介绍一下Mapnik中的一些概念：一个Map可以包含若干个层（Layer），每个层可以独立着色，即可以为每个层定制样式（Style），每个样式由若干个规则组成（Rule）。每个规则由是由若干个符号定制。</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/04/chengdu-line.png" alt="lines" /></p>
+
+<p>如果将两者重叠，则可以得到：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/04/chengdu-point-and-line.png" alt="lines" /></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">polygon_symbolizer</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">PolygonSymbolizer</span><span class="p">(</span><span class="n">mapnik</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s">&#39;#c8102e&#39;</span><span class="p">))</span>
+</span><span class='line'><span class="n">polygon_rule</span><span class="o">.</span><span class="n">symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">polygon_symbolizer</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ds_polygon</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Shapefile</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="s">&#39;chengdu.osm-polygon.shp&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">polygon</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="s">&#39;polygon&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">polygon</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">ds_polygon</span>
+</span><span class='line'><span class="n">polygon</span><span class="o">.</span><span class="n">styles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;polygon&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2014/04/chengdu-polygon.png" alt="image" /></p>
+
+<p>将这三个层叠加在一起，会得到最终的结果：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/04/chengdu-point-and-line-and-polygon.png" alt="lines" /></p>
+
+<h4>数据转化</h4>
+
+<p>在进一步之前，我们需要将数据存储在数据库中。我们可以将shapefile通过转化存入到数据库中。PostGIS本身自带了一个用于此作用的工具：<code>shp2pgsql</code>。可以通过这个工具来先将shapefile导入到数据库中。也可以直接导入别的开放数据，比如很多OSM格式的数据源，我们此处仅仅简单的从别的数据源将OSM格式的数据下载并导入到PostGIS中。</p>
+
+<p>创建数据库<code>chengdu</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>createdb chengdu -O gis -E UTF8 -e
+</span><span class='line'>CREATE DATABASE chengdu OWNER gis ENCODING <span class="s1">&#39;UTF8&#39;</span>;
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>psql -U gis -d chengdu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>登陆PostGres，然后为数据库<code>chengdu</code>启动PostGIS扩展：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="c1">-- Enable PostGIS (includes raster)</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">postgis</span><span class="p">;</span>
+</span><span class='line'><span class="c1">-- Enable Topology</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">postgis_topology</span><span class="p">;</span>
+</span><span class='line'><span class="c1">-- fuzzy matching needed for Tiger</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">fuzzystrmatch</span><span class="p">;</span>
+</span><span class='line'><span class="c1">-- Enable US Tiger Geocoder</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">postgis_tiger_geocoder</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm.bz2
+</span><span class='line'><span class="nv">$ </span>bunzip2 -d chengdu.osm.bz2
+</span><span class='line'><span class="nv">$ </span>osm2pgsql -U gis -d chengdu -s -S ./default.style chengdu.osm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个命令将chengdu.osm导入到了名称为<code>chengdu</code>的数据库中。</p>
+
+<p>可以通过SQL命令查看其中的数据：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">select</span> <span class="n">ST_Extent</span><span class="p">(</span><span class="n">ST_Transform</span><span class="p">(</span><span class="n">way</span><span class="p">,</span><span class="mi">4326</span><span class="p">))</span> <span class="k">from</span> <span class="n">planet_osm_roads</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>结果如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'>                            <span class="n">st_extent</span>
+</span><span class='line'><span class="c1">--------------------------------------------------------------------------</span>
+</span><span class='line'> <span class="n">BOX</span><span class="p">(</span><span class="mi">103</span><span class="p">.</span><span class="mi">564165069794</span> <span class="mi">30</span><span class="p">.</span><span class="mi">3634139134986</span><span class="p">,</span><span class="mi">104</span><span class="p">.</span><span class="mi">554549945024</span> <span class="mi">30</span><span class="p">.</span><span class="mi">9869936005376</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="mi">1</span> <span class="k">row</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>WMS服务器</h4>
+
+<p>生成图片之后，我们还需要将这些图片切成瓦片，然后公开给外部以便使用。Mapnik提供了切图的功能，并且还提供一个实现了<a href="https://github.com/mapnik/OGCServer">WMS协议的服务器</a>，以便使用。</p>
+
+<p>安装这个OGCServer服务器非常容易：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git clone git@github.com:mapnik/OGCServer.git
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>OGCServer
+</span><span class='line'><span class="nv">$ </span>sudo python setup.py install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是OGCServer的启动，需要一个配置XML配置文件，这个配置文件可以由Mapnik提供的工具集生成：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn co http://svn.openstreetmap.org/applications/rendering/mapnik/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个svn仓库中包含了众多的小工具，generate_xml.py用于生成Mapnik的样式文件，generate_image.py用于生成图片，generate_tiles.py用于生成众多的瓦片。</p>
+
+<p>此处我们将使用<code>generate_xml.py</code>来创建一个地图样式文件，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">cd </span>svn.openstreetmap.org/applications/rendering/mapnik/
+</span><span class='line'><span class="nv">$ </span>./generate_xml.py osm.xml chengdu.xml --dbname chengdu --user gis --accept-none
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>generate_xml.py根据osm.xml作为模板，生成<code>chengdu.xml</code>。这个文件即可用于测试OGCServer：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>OGCServer chengdu.xml
+</span><span class='line'>Listening at 0.0.0.0:8000....
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在浏览器中查看：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/04/ogcserver-localhost-resized.png" alt="ogcserver" /></p>
+
+<h4>使用OpenLayers测试</h4>
+
+<p>有了一张图片，那么我们就需要有更多的图片组成的瓦片，这就需要使用引入GIS的前端利器OpenLayers了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="k">$(function</span><span class="o">(</span><span class="k">)</span> <span class="o">{</span>
+</span><span class='line'>    var map, layer;
+</span><span class='line'>    <span class="nv">map</span> <span class="o">=</span> new OpenLayers.Map<span class="o">(</span><span class="s1">&#39;map&#39;</span>, <span class="o">{})</span>;
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">layer</span> <span class="o">=</span> new OpenLayers.Layer.WMS<span class="o">(</span><span class="s1">&#39;Tile Cache&#39;</span>,
+</span><span class='line'>        <span class="s1">&#39;http://localhost:8000/?&#39;</span>, <span class="o">{</span>
+</span><span class='line'>            layers: <span class="s1">&#39;__all__&#39;</span>,
+</span><span class='line'>            format: <span class="s1">&#39;image/png&#39;</span>
+</span><span class='line'>        <span class="o">})</span>;
+</span><span class='line'>
+</span><span class='line'>    map.addLayer<span class="o">(</span>layer<span class="o">)</span>;
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span>!map.getCenter<span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        map.zoomToMaxExtent<span class="o">()</span>;
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">})</span>;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2014/04/openlayers-chengdu-resized.png" alt="openlayers" /></p>
+
+<p><img src="http://abruzzi.github.com/images/2014/04/openlayers-chengdu-detail-resized.png" alt="openlayers" /></p>
+
+<p>应该注意的是，此处在OpenLayers中使用了来自与OSM导入的数据，而并非Shapefile中的数据（Shapefile中仅有三个层次，point, line, polygon）。而OSM的数据则丰富的多。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[GIS系统如何工作]]></title>
@@ -3473,205 +3798,6 @@
 
 
 <p>这里即可任意的使用诸如new/save,find等ActiveRecord为我们包装起来的方法了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CSS中的before和after伪元素及其应用]]></title>
-    <link href="http://abruzzi.github.com/2013/05/before-and-after-selector-in-css/"/>
-    <updated>2013-05-16T15:29:00+10:00</updated>
-    <id>http://abruzzi.github.com/2013/05/before-and-after-selector-in-css</id>
-    <content type="html"><![CDATA[<h3>before和after伪元素</h3>
-
-<p>所谓伪元素，可以理解为浏览器为某元素附加的元素（根据名字，附加在这个元素之前/之后）。用来完成特定的效果，before/after需要和content属性一起使用：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>.css-class:before {
-</span><span class='line'>  content: " ";
-</span><span class='line'>}
-</span><span class='line'>.css-class:after {
-</span><span class='line'>  content: " ";
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>通过使用before/after伪元素，可以做一些很有意思的效果。<a href="http://css-tricks.com/pseudo-element-roundup/">这里</a>有一些有意思的示例。</p>
-
-<h3>四个三角形</h3>
-
-<p>页面上经常会遇到小三角形这种视觉元素，比如表示一个可以<strong>打开/关闭</strong>的开关（将不会频繁使用的元素隐藏起来，点击可以展开/收起），或者一个模拟消息盒子（纯CSS实现），最早的做法是使用一个小的图片来完成，但是这个事实上可以通过纯CSS来实现。</p>
-
-<p>原理是利用block元素的<code>border</code>属性，当<code>border</code>的值很小的时候，<code>border</code>之间的连接处并无异常，但是当<code>border</code>较大，而元素本身的尺寸小于<code>border</code>自身时，则每一个<code>border</code>都会呈现为梯形，而当元素的<code>width</code>和<code>height</code>都为0时，就会看到一个正方形，而每个边都变成了一个三角形：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>.container .color-box {
-</span><span class='line'>  content: " ";
-</span><span class='line'>  width: 0;
-</span><span class='line'>  height: 0;
-</span><span class='line'>  border: 10px solid transparent;
-</span><span class='line'>  border-left-color: #00ff00;
-</span><span class='line'>  border-right-color: #000000;
-</span><span class='line'>  border-top-color: #ff0000;
-</span><span class='line'>  border-bottom-color: #0000ff;
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/05/color-box.png" alt="image" /></p>
-
-<h3>小三角形</h3>
-
-<p>这时候，如果将其他的三条边隐藏起来（通过将<code>border</code>的颜色置为透明）：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>.container .color-box {
-</span><span class='line'>  content: " ";
-</span><span class='line'>  width: 0;
-</span><span class='line'>  height: 0;
-</span><span class='line'>  border: 10px solid transparent;//朝下的三角形
-</span><span class='line'>  border-top-color: #ff0000;
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/05/triggle.png" alt="image" /></p>
-
-<p>先将所有的边都设置为透明色，然后根据需要显示某一个边，来完成三角形的指向。</p>
-
-<h3>一个普通的消息框</h3>
-
-<p>一个普通的消息框，通过设置<code>box-shadow</code>和<code>border-radius</code>之后，可以变得比较“好看”，但是如果可以给这个消息框加上一个小的三角形（可以指向用户的头像等）。</p>
-
-<p>HTML代码：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> &lt;div class="container"&gt;
-</span><span class='line'>      &lt;div class="chat-box"&gt;
-</span><span class='line'>          &lt;p&gt;
-</span><span class='line'>              Resque (pronounced like "rescue") is a Redis-backed library for creating background jobs, placing those jobs on multiple queues, and processing them later.
-</span><span class='line'>          &lt;/p&gt;
-</span><span class='line'>      &lt;/div&gt;
-</span><span class='line'>  &lt;/div&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>样式如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>.container .chat-box {
-</span><span class='line'>  position: relative;
-</span><span class='line'>  border: 1px solid #6b6b6b;
-</span><span class='line'>  border-radius: 5px;
-</span><span class='line'>  box-shadow: 1px 1px 4px #6b6b6b;
-</span><span class='line'>  width: 300px;
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>.container .chat-box p {
-</span><span class='line'>  margin: 0;
-</span><span class='line'>  padding: 10px;
-</span><span class='line'>  font-size: 18px;
-</span><span class='line'>  font-family: "Microsoft Yahei";
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/05/box.png" alt="image" /></p>
-
-<h3>更fancy的消息框</h3>
-
-<p>先通过before伪元素，在消息框的底部加上一个小的三角形：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/05/box-triggle-gray.png" alt="image" /></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>.container .chat-box:after, 
-</span><span class='line'>.container .chat-box:before {
-</span><span class='line'>  position: absolute;
-</span><span class='line'>  content: " ";
-</span><span class='line'>  width: 0;
-</span><span class='line'>  height: 0;
-</span><span class='line'>  border: solid transparent;
-</span><span class='line'>  top: 100%;
-</span><span class='line'>  left: 62%;
-</span><span class='line'>} 
-</span><span class='line'>
-</span><span class='line'>.container .chat-box:before {
-</span><span class='line'>  border-width: 10px;
-</span><span class='line'>  border-top-color: #6b6b6b;
-</span><span class='line'>  margin-left: -10px;
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>UPDATE:</strong></p>
-
-<hr />
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>.container .chat-box:after {
-</span><span class='line'>  border-width: 9px;
-</span><span class='line'>  border-top-color: white;
-</span><span class='line'>  margin-left: -9px;
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<p>但是一个实心的灰色三角形比较难看，我们需要再改进一下，即通过在这个伪元素之上，再绘制一个白色（与消息框颜色相同）的伪元素，但是尺寸又小一个单位（单位与消息框本身的尺寸相同，这里为<code>1px</code>）。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/05/box-triggle-both.png" alt="image" /></p>
 ]]></content>
   </entry>
   

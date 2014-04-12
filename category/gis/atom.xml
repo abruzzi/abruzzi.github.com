@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: gis | I code it]]></title>
+  <title><![CDATA[Category: GIS | I code it]]></title>
   <link href="http://abruzzi.github.com/category/gis/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-04-12T13:58:55+10:00</updated>
+  <updated>2014-04-12T17:27:48+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,148 +14,238 @@
 
   
   <entry>
-    <title type="html"><![CDATA[GIS系统如何工作]]></title>
-    <link href="http://abruzzi.github.com/2014/04/intro-map-gis/"/>
-    <updated>2014-04-10T23:45:00+10:00</updated>
-    <id>http://abruzzi.github.com/2014/04/intro-map-gis</id>
-    <content type="html"><![CDATA[<h4>GIS系统如何工作</h4>
+    <title type="html"><![CDATA[搭建地图服务器（使用Mapnik）]]></title>
+    <link href="http://abruzzi.github.com/2014/04/setup-map-server-by-mapnik/"/>
+    <updated>2014-04-12T14:07:00+10:00</updated>
+    <id>http://abruzzi.github.com/2014/04/setup-map-server-by-mapnik</id>
+    <content type="html"><![CDATA[<h4>渲染引擎Mapnik</h4>
 
-<p>去年十二月中旬从RCA项目上下来之后，就一直在一个<a href="http://en.wikipedia.org/wiki/Geographic_information_system">GIS</a>项目上做咨询。在新的项目上，日常工作的重点主要是放在前端开发上（比如AngularJS，Grunt，Jamsine之类），对于业务（与GIS相关）方面，则完全没有涉及。</p>
+<p><a href="http://icodeit.org/2014/04/intro-map-gis/">上一篇文章</a>中大概介绍了<a href="https://github.com/mapnik">Mapnik</a>，它是一个渲染引擎，一般开发中都会使用他的python的bind做开发。</p>
 
-<p>虽说之前也接触过<a href="http://icodeit.org/2013/03/guan-yu-hack-day/">一点GIS相关的开发</a>，比如Google Maps API，<a href="http://openlayers.org/">OpenLayers</a>之类，但是仅仅停留在使用别人的API搭建个小应用的层次。</p>
+<p>Mapnik的文档写的比较详细，我们这里只是做一些必要的介绍，详细的细节可以参看Mapnik在<a href="https://github.com/mapnik/mapnik/wiki">Github上的文档</a>。</p>
 
-<p><img src="/images/2014/04/roads-resized.png" alt="image" /></p>
+<p>在Mac下，安装Mapnik十分容易，使用brew即可，注意我们在此处带上<code>--with-postgresql</code>选项，使得Mapnik可以通过PostGIS来访问数据库：</p>
 
-<p>直到最近，在GIS专家芦康平的指导下，才真正开始接触GIS，很快我就发现这是另一个十分好玩的新天地。简而言之，这个新的天地里，所有的东西都有一种似曾相识的感觉，但是又非常新鲜。比如地图服务器，渲染引擎，缓存，地理信息数据库等，都可以在其他的系统中找到对应。这种感觉好比收集硬币，或者收集邮票一样，当你看到新的有着不同花纹，大小，材质，年代的硬币时，那种既在意料之中又在意料之外的感觉简直太有意思了。</p>
+<p><code>sh
+brew install mapnik --with-postgresql
+</code></p>
 
-<p>GIS系统，毋庸置疑可以帮助人们更加直观的分析数据，当数据与地理信息有所关联的时候，GIS系统会变得十分友好，也可以更充分的提供信息。</p>
+<p>安装完成之后，可以通过一个小的python脚本来测试：</p>
 
-<p>鉴于GIS对我来说是一个完全崭新的领域，那么学习之前，自然有很多的问题出现：</p>
+<p>```python
+import mapnik</p>
 
-<ol>
-<li>地图的信息（建筑物，河流，街道）从何而来？</li>
-<li>数据在服务器端以何种方式存储？</li>
-<li>地图数据到底如何被渲染出来？</li>
-<li>一个GIS系统的部署结构是什么样的？需要哪些组件？</li>
-<li>业界的标准是什么，有哪些开源的项目和工具可供参考？</li>
-</ol>
+<p>map = mapnik.Map(256, 256)
+map.background = mapnik.Color('red')
+map.zoom_all()</p>
 
-
-<p>等等。</p>
-
-<h5>地图是如何被渲染的？</h5>
-
-<p>通常来讲，我们看到的地图是由一个底图和若干个层的叠加来达到的最终结果。其中每个层次都会保存不同类型的地理信息，比如将所有的河流信息放在一个层，将建筑物放在另外一个层。</p>
-
-<p><img src="/images/2014/04/elevation-map.jpg" alt="image" /></p>
-
-<p>这些信息存储在数据文件中（<a href="http://en.wikipedia.org/wiki/Shapefiles">shapefiles</a>）或者数据库中，通过使用专门的工具来将这些地理信息转换成图片。由于每张图片都是透明的，这样叠加起来的最后效果就是如Google Maps之类应用的结果了。当然，叠加过程一般都发生在服务器端（有些简单应用则是在客户端完成某些层次的绘制，比如我之前发过的<a href="http://icodeit.org/placesihavebeen">我去过的地方</a>，这些热力图就是在客户端通过JavaScript加上去的。）。</p>
-
-<p>地图在服务器端被渲染出来之后，尺寸一般会非常大。需要有工具将这些大图切分成很多组的小图，这些小图被称之为瓦片（tile）。为了给不同缩放级别的客户端提供不同的图片，这些瓦片被精心的分成了多个组，每个组都有编号。如果地图支持18级的缩放，就会现有18个分组。当然分组好越靠后，分组中的瓦片越多。</p>
-
-<p><img src="/images/2014/04/tiles-resized.png" alt="image" /></p>
-
-<p>比如当客户端请求缩放级别为10的地图时，客户端（比如OpenLayers）会根据经纬度计算好图片的边界，然后请求第10级的一些瓦片，并将这些瓦片排列在画布上。一般而言，这些瓦片都是正方形（256x256或者512x512）。</p>
-
-<h5>WMS服务</h5>
-
-<p><a href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS(Web Map Service)</a>是一个基于HTTP的简单协议，客户端发送的请求中包含请求类型，地图的层次，边界等信息，服务器根据这个信息生成图片，并返回该图片：</p>
-
-<p><img src="/images/2014/04/wms-request.png" alt="image" /></p>
-
-<p>当然，WMS本身支持多种请求，最常见的就是<code>GetMap</code>，细节可以参考OGC规范及具体服务器的实现。而对于后端的服务器来说，从请求中获取这些信息之后，会首先从数据库/数据文件中得到数据，并使用渲染引擎绘制图片，并最后将图片返回客户端。</p>
-
-<h5>图片类型</h5>
-
-<p>图片分为栅格类型和矢量类型两种。栅格图片一般的原始来源是航拍，遥感等，本质上来说是照片，照片必然会有大小，如果放大到某一个范围之外，就会模糊。而矢量图是数学上的抽象，比如在某个坐标系统中，在某处有一个点A，另一处有一个点B，两点之间有一条线连接。矢量图的特点是与缩放程度无关。</p>
-
-<p><img src="/images/2014/04/bangor_oli_2014040_red_swir_tir_720.jpg" alt="栅格图" /></p>
-
-<p>栅格图的特点是真实，矢量图的特点是抽象（存储方便，占用空间更少，也更容易修改）。但是为了绘制正确，完整的地图，两种类型的图片信息都是必要的：</p>
-
-<p><img src="/images/2014/04/polygon-resized.png" alt="矢量图" /></p>
-
-<h5>常用文件格式</h5>
-
-<p>Shapefiles是Esri公司开发出来的用于存储地理信息的文件格式。说是文件，其实是一个文件族，Shapefile包含了数种文件，其中有三种必须的(.shp，.shx，.dbf)。其他有一些可选的(.prj，.sbn/.sbx等等)。</p>
-
-<p>OSM格式是由OpenStreetMap采用的文件格式，其实是一个XML。</p>
-
-<p>```xml
-<osm version="0.6" generator="Osmosis 0.43.1">
-  <bounds minlon="144.26600" minlat="-38.55200" maxlon="145.81000" maxlat="-37.36500" origin="http://www.openstreetmap.org/api/0.6"/>
-  <node id="579259" version="3" timestamp="2008-12-17T02:28:22Z" uid="57437" user="Canley" changeset="431325" lat="-37.9309048" lon="145.1282066"/>
-  <node id="579260" version="5" timestamp="2009-12-03T21:42:45Z" uid="1679" user="andrewpmk" changeset="3284133" lat="-37.9388304" lon="145.1266866"/>
-  <node id="579261" version="4" timestamp="2013-02-15T20:00:37Z" uid="79475" user="AlexOnTheBus" changeset="15043978" lat="-37.9404366" lon="145.1395848"/>
-  <node id="579262" version="18" timestamp="2013-01-31T21:37:02Z" uid="79475" user="AlexOnTheBus" changeset="14864580" lat="-37.9295116" lon="145.1266366"></p>
-
-<pre><code>&lt;tag k="highway" v="traffic_signals"/&gt;
-</code></pre>
-
-<p>  </node>
-  <node id="579265" version="2" timestamp="2010-06-24T12:05:34Z" uid="57437" user="Canley" changeset="5065613" lat="-37.9369707" lon="145.140732"/>
-  ...
-</osm><br/>
+<p>mapnik.render_to_file(map, 'red.png', 'png')
 ```</p>
 
-<h4>技术栈</h4>
+<p>这段脚本可以在当前目录下生成一个红色的256x256的小图片。好了，有了渲染引擎，我们需要一些数据来进行渲染了。</p>
 
-<p>和传统的三层架构一样，一个典型的GIS系统也是由三部分组成：客户端，服务器，存储。在实际的场景中，可能又会引入缓存服务器，负载均衡服务器等。</p>
+<h4>数据源</h4>
 
-<p><img src="/images/2014/04/gis-stack-resized.png" alt="image" /></p>
+<p>最通用的数据格式为Shapefiles，目前有很多的免费地理信息供公共下载，我们可以从<a href="http://metro.teczno.com/">Metro的站点</a>上下载一些小的数据文件。</p>
 
-<ol>
-<li><a href="http://openlayers.org/">OpenLayers</a> / Leaflet</li>
-<li><a href="http://mapnik.org/">Mapnik</a> / Mapnik::OGCServer</li>
-<li><a href="http://www.postgresql.org/">Postgres</a> + <a href="http://postgis.net/">PostGIS</a> / OSM Data / Shapefiles</li>
-</ol>
+<p><code>sh
+$ wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm2pgsql-shapefiles.zip
+$ mkdir chengdu
+$ cd chengdu
+$ unzip chengdu.osm2pgsql-shapefiles.zip
+</code>
+这样就得到了一组文件：</p>
 
+<p><code>
+$ find . -name "*.shp"
+./chengdu.osm-line.shp
+./chengdu.osm-point.shp
+./chengdu.osm-polygon.shp
+</code></p>
 
-<p><a href="http://openlayers.org/">OpenLayers</a>是一个前端的JavaScript库，几乎可以算是前端的必选了，它提供众多的特性：与任意的后端地图服务集成（Google Maps，Bing Maps，OSM等等），对向量层的支持使得其非常方便的展示用户自定义的元素（多边形，点，InfoWindow等）。OpenLayers的API也非常清晰易用：</p>
+<p>每一个shp文件都会对应几个其他类型的文件，比如投影信息，属性表等。仅仅查看shp的话，有表示所有点的文件chengdu.osm-line.shp，又表示所有线的chengdu.osm-line.shp，以及表示所有面（区域）的chengdu.osm-polygon.shp文件。</p>
 
-<p>```js
+<p>有了这些文件，我们就可以做一些测试了，比如我们首先加载所有的线条，并根据这些线条生成一个图层：</p>
+
+<p>```python
+import mapnik</p>
+
+<p>map = mapnik.Map(800, 800)
+map.background = mapnik.Color('#ffffff')</p>
+
+<p>style = mapnik.Style()
+rule = mapnik.Rule()</p>
+
+<p>point_symbolizer = mapnik.PointSymbolizer()
+rule.symbols.append(point_symbolizer)</p>
+
+<p>style.rules.append(rule)</p>
+
+<p>map.append_style('default', style)</p>
+
+<p>ds_point = mapnik.Shapefile(file='chengdu.osm-point.shp')
+point = mapnik.Layer('point')
+point.datasource = ds_point
+point.styles.append('default')</p>
+
+<p>map.layers.append(point)
+map.zoom_all()</p>
+
+<p>mapnik.render_to_file(map, 'chengdu.png', 'png')
+```</p>
+
+<p>可以得到：</p>
+
+<p><img src="/images/2014/04/chengdu-point.png" alt="points" /></p>
+
+<p>这里介绍一下Mapnik中的一些概念：一个Map可以包含若干个层（Layer），每个层可以独立着色，即可以为每个层定制样式（Style），每个样式由若干个规则组成（Rule）。每个规则由是由若干个符号定制。</p>
+
+<p><img src="/images/2014/04/chengdu-line.png" alt="lines" /></p>
+
+<p>如果将两者重叠，则可以得到：</p>
+
+<p><img src="/images/2014/04/chengdu-point-and-line.png" alt="lines" /></p>
+
+<p>```python
+polygon_symbolizer = mapnik.PolygonSymbolizer(mapnik.Color('#c8102e'))
+polygon_rule.symbols.append(polygon_symbolizer)</p>
+
+<p>ds_polygon = mapnik.Shapefile(file='chengdu.osm-polygon.shp')
+polygon = mapnik.Layer('polygon')
+polygon.datasource = ds_polygon
+polygon.styles.append('polygon')</p>
+
+<p>map.layers.append(polygon)
+```</p>
+
+<p><img src="/images/2014/04/chengdu-polygon.png" alt="image" /></p>
+
+<p>将这三个层叠加在一起，会得到最终的结果：</p>
+
+<p><img src="/images/2014/04/chengdu-point-and-line-and-polygon.png" alt="lines" /></p>
+
+<h4>数据转化</h4>
+
+<p>在进一步之前，我们需要将数据存储在数据库中。我们可以将shapefile通过转化存入到数据库中。PostGIS本身自带了一个用于此作用的工具：<code>shp2pgsql</code>。可以通过这个工具来先将shapefile导入到数据库中。也可以直接导入别的开放数据，比如很多OSM格式的数据源，我们此处仅仅简单的从别的数据源将OSM格式的数据下载并导入到PostGIS中。</p>
+
+<p>创建数据库<code>chengdu</code>:</p>
+
+<p>```sh
+$ createdb chengdu -O gis -E UTF8 -e
+CREATE DATABASE chengdu OWNER gis ENCODING 'UTF8';</p>
+
+<p>$ psql -U gis -d chengdu
+```</p>
+
+<p>登陆PostGres，然后为数据库<code>chengdu</code>启动PostGIS扩展：</p>
+
+<p><code>sql
+-- Enable PostGIS (includes raster)
+CREATE EXTENSION postgis;
+-- Enable Topology
+CREATE EXTENSION postgis_topology;
+-- fuzzy matching needed for Tiger
+CREATE EXTENSION fuzzystrmatch;
+-- Enable US Tiger Geocoder
+CREATE EXTENSION postgis_tiger_geocoder;
+</code></p>
+
+<p><code>sh
+$ wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm.bz2
+$ bunzip2 -d chengdu.osm.bz2
+$ osm2pgsql -U gis -d chengdu -s -S ./default.style chengdu.osm
+</code></p>
+
+<p>这个命令将chengdu.osm导入到了名称为<code>chengdu</code>的数据库中。</p>
+
+<p>可以通过SQL命令查看其中的数据：</p>
+
+<p><code>sql
+select ST_Extent(ST_Transform(way,4326)) from planet_osm_roads;
+</code></p>
+
+<p>结果如下：</p>
+
+<p>```</p>
+
+<pre><code>                            st_extent                                 
+</code></pre>
+
+<hr />
+
+<p> BOX(103.564165069794 30.3634139134986,104.554549945024 30.9869936005376)
+(1 row)
+```</p>
+
+<h4>WMS服务器</h4>
+
+<p>生成图片之后，我们还需要将这些图片切成瓦片，然后公开给外部以便使用。Mapnik提供了切图的功能，并且还提供一个实现了<a href="https://github.com/mapnik/OGCServer">WMS协议的服务器</a>，以便使用。</p>
+
+<p>安装这个OGCServer服务器非常容易：</p>
+
+<p><code>sh
+$ git clone git@github.com:mapnik/OGCServer.git
+$ cd OGCServer
+$ sudo python setup.py install
+</code></p>
+
+<p>但是OGCServer的启动，需要一个配置XML配置文件，这个配置文件可以由Mapnik提供的工具集生成：</p>
+
+<p><code>sh
+$ svn co http://svn.openstreetmap.org/applications/rendering/mapnik/
+</code></p>
+
+<p>这个svn仓库中包含了众多的小工具，generate_xml.py用于生成Mapnik的样式文件，generate_image.py用于生成图片，generate_tiles.py用于生成众多的瓦片。</p>
+
+<p>此处我们将使用<code>generate_xml.py</code>来创建一个地图样式文件，</p>
+
+<p><code>sh
+$ cd svn.openstreetmap.org/applications/rendering/mapnik/
+$ ./generate_xml.py osm.xml chengdu.xml --dbname chengdu --user gis --accept-none
+</code></p>
+
+<p>generate_xml.py根据osm.xml作为模板，生成<code>chengdu.xml</code>。这个文件即可用于测试OGCServer：</p>
+
+<p><code>sh
+$ OGCServer chengdu.xml
+Listening at 0.0.0.0:8000....
+</code></p>
+
+<p>然后在浏览器中查看：</p>
+
+<p><img src="/images/2014/04/ogcserver-localhost-resized.png" alt="ogcserver" /></p>
+
+<h4>使用OpenLayers测试</h4>
+
+<p>有了一张图片，那么我们就需要有更多的图片组成的瓦片，这就需要使用引入GIS的前端利器OpenLayers了：</p>
+
+<p>```
 $(function() {</p>
 
-<pre><code>var map = new OpenLayers.Map('map', {});
+<pre><code>var map, layer;
+map = new OpenLayers.Map('map', {});
 
-var layer = new OpenLayers.Layer.WMS('Tile Cache', 
-    'tilecache?', {
-        layers: 'basic',
+layer = new OpenLayers.Layer.WMS('Tile Cache', 
+    'http://localhost:8000/?', {
+        layers: '__all__',
         format: 'image/png'
     });
 
 map.addLayer(layer);
+
+if (!map.getCenter()) {
+    map.zoomToMaxExtent();
+}
 </code></pre>
 
 <p>});
 ```</p>
 
-<ol>
-<li>创建Map对象</li>
-<li>创建Layer对象</li>
-<li>将Layer添加到Map上</li>
-</ol>
+<p><img src="/images/2014/04/openlayers-chengdu-resized.png" alt="openlayers" /></p>
 
+<p><img src="/images/2014/04/openlayers-chengdu-detail-resized.png" alt="openlayers" /></p>
 
-<p>即可完成基本的设置，并将地图展现在页面上。</p>
-
-<p><a href="http://www.openstreetmap.org/">OSM</a>是Open Street Map的缩写，它本身是一个开源项目，全世界各地的贡献者可以很方便的编辑地图信息，并与其他人分享，整个运作方式非常像Wikipedia，任何人都可以对地图进行编辑。基于这个原因，OSM数据文件是基于XML的。</p>
-
-<p>有很多组织都将OSM的数据下载下来，搭建自己的地图服务器，然后向外部提供<a href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS(Web Map Service)</a>服务。</p>
-
-<p>Mapnik是一个渲染引擎，它可以将地理数据渲染成图片。Mapnik支持来自多种数据源的数据，比如Shapefile，PostGIS中的数据等。而对于OSM数据（一种XML文件），可以使用<a href="https://github.com/openstreetmap/osm2pgsql">osm2postgis</a>工具将其导入到PostGIS数据库，然后使用。</p>
-
-<p>Mapnik本身只是一个C++编写的渲染引擎，并提供很多编程语言的bind，最常用的时python版本的bind，接口非常清晰明了。使用Mapnik可以很容易的定制对地图层次的样式，比如地图中所有土地的颜色，河流的颜色，道路的颜色，标签的字体，属性等等都可以很方便的定制。</p>
-
-<p>实际使用Mapnik+OpenLayers搭建自己的服务器将在下一篇文章中详细描述。</p>
-
-<h5>一些数据源</h5>
-
-<ol>
-<li><a href="http://www.naturalearthdata.com/">Natural Earth</a></li>
-<li><a href="http://download.geofabrik.de/osm/">GEO Fabrik</a></li>
-</ol>
-
+<p>应该注意的是，此处在OpenLayers中使用了来自与OSM导入的数据，而并非Shapefile中的数据（Shapefile中仅有三个层次，point, line, polygon）。而OSM的数据则丰富的多。</p>
 ]]></content>
   </entry>
   
