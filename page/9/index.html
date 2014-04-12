@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="在使用Arduino的时候，发现自带的IDE中的串口监视器不够好用，就配置了下SecureCRT连接。平时用SecureCRT只是用ssh和sftp，它的Serial也很好用，配置如下： 创建新的连接，协议选择Serial： 选择COM口，波特率等参数 建立好之后即可连接了： ">
+  <meta name="description" content="前言 日常开发中，除了基本的编辑器，调试器外，我们还会有各种各样的计算机操作，比如查找一个路径很深的文件，快速启动shell，记录一些网页上看到的优秀代码片段/文字等等。在摸索了很长时间之后，相信每个开发人员都有属于自己的一套工具集了，反正我自己已经搜集了一套可以很大程度提高开发效率的小软件。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +79,80 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/01/%E6%88%91%E5%B8%B8%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E6%8F%90%E9%AB%98%E5%BC%80%E5%8F%91%E6%95%88%E7%8E%87%E7%9A%84%E5%B0%8F%E5%B7%A5%E5%85%B7/">我常用的一些提高开发效率的小工具</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-13T00:00:00+11:00" pubdate data-updated="true">Jan 13<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><h2>前言</h2> <p>日常开发中，除了基本的编辑器，调试器外，我们还会有各种各样的计算机操作，比如查找一个路径很深的文件，快速启动shell，记录一些网页上看到的优秀代码片段/文字等等。在摸索了很长时间之后，相信每个开发人员都有属于自己的一套工具集了，反正我自己已经搜集了一套可以很大程度提高开发效率的小软件。所谓小，只是说这些软件的体积较为小巧，但是功能方面却极为强大，下面是一个列表，列表之后是各个软件的详细介绍。当然，每个工具可能都有其更复杂的配置及使用方法，也不可能在一篇文章中完全覆盖，列位可以自行google。</p> <ol> <li>Google拼音(输入法)  </li><li>ClipX(系统剪贴板扩展) </li><li>Launchy(快速启动)  </li><li>Everything Search(搜索)  </li><li>Evernote(笔记记录)  </li><li>Vim(编辑器)  </li><li>Unxutils(unix下的常用工具的移植版)</li></ol> <p>这里列出的软件基本具备以下特性：</p> <ol> <li>体积小巧，运行速度快  </li><li>免费/免费+开源  </li><li>专注且功能强大  </li><li>运行在windows平台上(Linux本身已经提供了足够多的好工具)</li></ol> <h2>一 Google拼音</h2> <p>每当你需要输入点什么的时候，一个好的输入法总是可以让你事半功倍。智能联想，输入记忆等常规功能就不做讨论了，这些功能其他输入法也会提供。<a href="http://www.google.com/intl/zh-CN/ime/pinyin/index.html" target="_blank">Google拼音</a>提供更多的高级更能，如用户词典同步，网络词典同步，U模式输入，可扩展性(这个对于hacker型技术人员，简直太贴心了，这才是我推荐她的原因)等。</p> <p>U模式</p> <p>当遇到一个生僻字，又不知道其读音的话，可以使用U模式很容易的拼出来， 比如效率的“效”字，由“交”+“文”组成，则可以用“ujiaowen”来查找出其读音：</p> <p><a href="http://abruzzi.github.com/images/2012/01/uxiao.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="uxiao" border="0" alt="uxiao" src="http://abruzzi.github.com/images/2012/01/uxiao_thumb.png" width="208" height="56" /></a></p> <p>可扩展性(I模式)</p> <p>一个良好的软件，可扩展性是必须提供的，Google使用<a href="http://www.lua.org/" target="_blank">lua</a>作为脚本，并提供一些公开的API，这样你就可以很轻易的定义自己的缩写补全功能。比如我想要在输入mz(名字)的时候，输入法返回我的名字；而输入qm(签名)的时候，输入法返回名字+当前日期。可以定义一个脚本：</p> <div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> function FullName()</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span>     <span style="color: #0000ff">return</span> <span style="color: #006080">"邱俊涛"</span></pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span> end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span> function GetDate()</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span>     <span style="color: #0000ff">return</span> os.date(<span style="color: #006080">"%Y-%m-%d"</span>)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span> end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span> function Sign()</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum10">  10:</span>     <span style="color: #0000ff">return</span> <span style="color: #006080">"作者："</span> .. FullName() .. <span style="color: #006080">"，时间："</span> .. GetDate()</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum11">  11:</span> end</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum12">  12:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum13">  13:</span> ime.register_command(<span style="color: #006080">"mz"</span>, <span style="color: #006080">"FullName"</span>, <span style="color: #006080">"姓名"</span>)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum14">  14:</span> ime.register_command(<span style="color: #006080">"qm"</span>, <span style="color: #006080">"Sign"</span>, <span style="color: #006080">"签名"</span>)</pre><!--CRLF--></div></div>
+<p>其中，ime.register_command为Google拼音提供的API，用以将命令与需要调用的函数绑定并注册到Google输入法引擎。输入时，先输入“i”进入命令模式，然后输入注册的命令名“mz”:</p>
+<p><a href="http://abruzzi.github.com/images/2012/01/imz.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="imz" border="0" alt="imz" src="http://abruzzi.github.com/images/2012/01/imz_thumb.png" width="114" height="43" /></a></p>
+<p>或者</p>
+<p><a href="http://abruzzi.github.com/images/2012/01/iqm.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="iqm" border="0" alt="iqm" src="http://abruzzi.github.com/images/2012/01/iqm_thumb.png" width="244" height="39" /></a></p>
+<p>即可。如果你经常需要输入某段重复的文字，建议使用自定义的脚本来完成。关于<a href="http://www.google.com/intl/zh-CN/ime/pinyin/index.html" target="_blank">Google拼音</a>的完整功能列表，请参考<a href="http://www.google.com/intl/zh-CN/ime/pinyin/features.html" target="_blank">这里</a>，API手册，请参考<a href="http://www.google.com/intl/zh-CN/ime/pinyin/api.html" target="_blank">这里</a>。</p>
+<h2>二 ClipX</h2>
+<p>系统自带的剪贴板只有一个，很容易被覆盖，当你编辑一个文件的时候，想要将文件中的几个片段同时拷贝到另一个文件中(这个场景在编程的时候会很常见)，如果有多个剪贴板，那该多好啊。<a href="http://bluemars.org/clipx/" target="_blank">ClipX</a>就是多重剪贴板中比较优秀的一个，ClipX会将你每次的CTRL-C的内容拷贝到一个缓冲中，以备使用。按Win-Insert将剪贴板列表列出，然后选择一个数字即可，ClipX支持预览功能，即，如果你的剪贴板中是图片的话，可以从缩略图中看到其内容：</p>
+<p><a href="http://abruzzi.github.com/images/2012/01/clipx-doc.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clipx-doc" border="0" alt="clipx-doc" src="http://abruzzi.github.com/images/2012/01/clipx-doc_thumb.png" width="483" height="275" /></a></p>
+<p>ClipX无疑非常强大，再也不需要担心内容覆盖的问题了。唯一可能的问题是，不要向Linux用户推荐这个小工具，否则很容易被鄙视，因为vim/emacs中都早在几十年前就具备了多重剪贴板的功能。</p>
+<h2>三 Launchy</h2>
+<p><a href="http://www.launchy.net/" target="_blank">Launchy</a>是一个用于快速启动系统中已安装工具的工具，比如，想要启动MS Office Word，可以用Launchy的快捷键(可以修改，我的机器上是ALT-ESC)将Launchy的查询窗口置于前台：</p>
+<p><a href="http://abruzzi.github.com/images/2012/01/launchy-word.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="launchy-word" border="0" alt="launchy-word" src="http://abruzzi.github.com/images/2012/01/launchy-word_thumb.png" width="244" height="190" /></a></p>
+<p>输入word，可以看到一个匹配word的应用程序列表，回车即可打开该应用程序，使用Launchy，你的手可以不离开键盘就完成所有的操作，这将大大提高效率，特别是你有多个应用程序需要启动的时候(珍惜生命，远离鼠标)。</p>
+<h2>四 Everything Search</h2>
+<p><a href="http://www.voidtools.com/" target="_blank">Everything</a>是一个高速的文件搜索工具，现实世界中，经常会发生：保存了一个文件到一个很深的路径，而第二天要查看该文件的时候，忘记它的路径了，或者一个同事问你有没有apache的源码包，你不记得放在何处了。<a href="http://www.voidtools.com/" target="_blank">Everything</a>可以飞速的将硬盘扫描并做索引，速度快到了你几乎觉察不到。而且<a href="http://www.voidtools.com/" target="_blank">Everything</a>支持正则表达式，甚至内部还嵌如了一个HTTP服务器和一个FTP服务器。</p>
+<p><a href="http://abruzzi.github.com/images/2012/01/everything-linux.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="everything-linux" border="0" alt="everything-linux" src="http://abruzzi.github.com/images/2012/01/everything-linux_thumb.png" width="500" height="308" /></a></p>
+<h2>五 Evernote</h2>
+<p>事实上，<a href="http://www.evernote.com/" target="_blank">Evernote</a>是不应该出现在这个列表的，它的新版本体积太庞大了。但是考虑再三，我还是把它列进来了，因为其功能和在实际中发挥的作用非常强大。我相信每个高效的程序员都有各种形式的知识管理工具，纸笔也是一个不错的方式，但是不容易检索。<a href="http://www.evernote.com/" target="_blank">Evernote</a>支持将网页中的内容剪下来保存到笔记本中，支持多个机器间的同步，分享，导入/导出等。而其搜索功能则强大到令人发指，它可以直接搜索出图片上的文字信息。当然，最重要的是，它是免费的(可以升级到专业版)，虽然免费版本有月空间限制，但是事实上很难用完。</p>
+<p><a href="http://abruzzi.github.com/images/2012/01/evernote-juntao.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="evernote-juntao" border="0" alt="evernote-juntao" src="http://abruzzi.github.com/images/2012/01/evernote-juntao_thumb.png" width="514" height="302" /></a></p>
+<p>搜索字符串&#8221;IDLE&#8221;，可以看到，截图中的图片中的“IDLE”已经高亮了：</p>
+<p><a href="http://abruzzi.github.com/images/2012/01/image2.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="image" border="0" alt="image" src="http://abruzzi.github.com/images/2012/01/image_thumb2.png" width="371" height="243" /></a></p>
+<h2>六 (g)Vim</h2>
+<p><a href="http://www.vim.org/" target="_blank">Vim</a>的简介就免了，这里约略提一下<a href="http://www.vim.org/" target="_blank">vim</a>与外部程序的集成，如在<a href="http://www.vim.org/" target="_blank">vim</a>中编写python脚本片段，并快速执行该片段；或者编写dot片段，并使用<a href="http://www.graphviz.org/" target="_blank">graphviz</a>将其绘制出来等。</p>
+<p>主要涉及vim的autocmd命令：</p>
+<p id="codeSnippetWrapper"></p>
+<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> autocmd [group] {event} {pattern} [nested] {cmd}</pre><!--CRLF--></div>
+<p>简而言之，autocmd完成以下动作：当发生event时，对匹配pattern的模式执行cmd命令。比如，当装载文件/保存文件的动作时，如果文件的扩展名为“.py”，则如果按F5的话，就用python解释器解释之。</p>
+<div id="codeSnippetWrapper">
+<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> autocmd BufRead *.py nmap &lt;F5&gt; :w&lt;CR&gt;:!python %&lt;CR&gt;&lt;CR&gt;</pre><!--CRLF--></div></div>
+<p>将此命令保存到vim的启动配置(.vimrc)中，就可以轻松编写python脚本了，如果想要对“.dot”文件，在按F8时调用graphgiz的dot命令，并在新窗口打开最终结果，则命令对应如下：</p>
+<div id="codeSnippetWrapper">
+<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> autocmd BufRead *.dot nmap &lt;F8&gt; :w&lt;CR&gt;:!dot -Tpng -o %&lt;.png % &amp;&amp; start %&lt;.png&lt;CR&gt;&lt;CR&gt;</pre><!--CRLF--></div></div>
+<p><br /><a href="http://abruzzi.github.com/images/2012/01/vim-message-bus.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="vim-message-bus" border="0" alt="vim-message-bus" src="http://abruzzi.github.com/images/2012/01/vim-message-bus_thumb.png" width="531" height="417" /></a></p>
+<h2>七 Unxutils</h2>
+<p><a href="http://unxutils.sourceforge.net/" target="_blank">Unxutils</a>是常用的GNU工具集的windows移植版本，对于熟悉Linux/Unix命令行操作的开发人员，使用它可以将windows自带的命令行扩展的十分易用，只需要设置好环境变量即可。简单的如grep/cat/ls等命令，复杂的如sed/awk等流编辑器，都可以使用Unxutils来使用，在linux下的经验也完整的得以延续。</p>
+<p><a href="http://abruzzi.github.com/images/2012/01/unxutil.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="unxutil" border="0" alt="unxutil" src="http://abruzzi.github.com/images/2012/01/unxutil_thumb.png" width="476" height="171" /></a></p>
+<p>当然，还有面向开发的<a href="http://www.mingw.org/" target="_blank">Mingw</a>和整个Unix的windows克隆版本<a href="http://www.cygwin.com/" target="_blank">Cygwin</a>等，也都值得一试。</p>
+<p>这里列出的只是我使用最频繁的几个小工具，同时建议列位也应该进行尝试。根据我的经验，它们确实可以在很大程度上提升使用计算机的效率。当然，如果你有更趁手，更高效的工具，请通知我，请保持你工具集的更新。</p></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -536,56 +610,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2009/11/%E6%A5%94%E5%AD%90-%E4%B8%8A/">把臂话山河 之楔子 上</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2009-11-03T00:00:00+11:00" pubdate data-updated="true">Nov 3<span>rd</span>, 2009</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>我出生的年代，皇帝已经不坐龙庭了。四处“反正”，革命，军阀割据，连年混战。那时候，家里的境况已经糟到不能在糟了，因此在我十三岁时，被父亲含泪送往北平在一个同乡处当伙计。这个同乡是一个药铺老板，姓李，常年往来于关内外，从东北收购到药材，然后在北平卖给药店或者中医铺子，由于长年在外，而时局又不太平，所以他曾拜师学过武艺。后来我也蒙他传授了一两手，我问他练的是什么拳，回答说是形意，只学到了一点皮毛，我从他所说的“皮毛”中又学了一点皮毛，所以也就是个三脚猫。其中有一招，是接手，就是交手的时候的借力，化劲一类。这个接手说起来也不难，一般人打人，力量是纯横向的，而你要想在横向上挫折他，需要较大的力气来抵消他的力，但是李老板教的是用纵向的力来化，怎么化？就是撸，直力过来了，用横劲一下子就破了。</p>
-
-<p>在学了之后只有一次用的机会，那也是在药材铺里打杂的时候。有一天，来了几个流氓泼皮，来铺子里收份子，份子是按月给的，老板不敢过分得罪这些泼皮，所以每个月都会给他们一些钱。当时一个伙计在取钱的时候，手脚慢了些，被那个泼皮打了一顿，我看不过眼，站出来指责了两句，那泼皮走过来，二话没说，迎面就是一拳，那时我已经跟了李老板有半年天气了，我伸手在他的臂弯里一撸，他就一头栽到到我脚下，连我也吃了一惊。这时候，李老板赶紧跑过来又是陪笑，又是说好话，泼皮自己估计也害怕了，后来就狠狠的走了。</p>
-
-<p>等那家伙走了，李老板一脸无奈的说，不是我不留你，这里你实在是无法再立足，我在南边有个亲戚，你去投奔他吧。我也知道得罪了地头蛇是什么后果，只好在当前下午与李老板挥泪而别。南来之后，我没有去找李老板的亲戚，而是另有际遇，就在南边安顿下来。</p>
-
-<p>这一别就是十几年，我也再没有回过北平，也在没有见到李老板，倒是后来机缘巧合之下，跟另一个练形意的前辈那儿学了几个月，不过依旧是一个三脚猫。九一八事变，震惊中外，日本鬼子占领了东三省。当时我也不过二十几岁，热血沸腾，跟当时的几个朋友一起去东北投军。谁知道，少帅却已经退入关内。扑了空之后，我们几个的劲没处使，就偷偷的跑到日占区里，准备伺机捣乱。那时候年轻，不知道害怕，在放火烧了一个日本人的粮食仓库之后，我们被一个小队的日军围捕，我的朋友张绍兰在逃跑中被日军击毙。陈胜武，陶剑秋被抓住，我和另一个得以逃脱，但是我们又不能丢下两个朋友不管，结果就在一个军营附近游弋，准备伺机救回两个朋友，结果我们自己终于还是被抓。我们被关押在一个临时监狱中。关到第三天，突然有人打开牢门，将我双手捆住，带了出去。</p>
-
-<p>两个日本兵押着我，推推搡搡的往河边走去，我知道是要枪毙我了，四地里一看，一马平川，跑都没地儿跑。我偷眼看看，他们没有上刺刀，刺刀都挂在腰上。</p>
-
-<p>到了河边，两个日本兵叽里呱啦的说着什么，然后突然就开始拉枪栓，虽然三八大盖只有五发子弹，但是这种平地上，根本不可能躲得过，而且日本兵的枪法是相当准的。略一转念，我突然出脚，用脚掌踩在一个日本兵的脚尖上，一般人踩别人脚，可能设想用脚跟更狠更重一些，其实这是个误解，脚掌的面积小，压强大，用力的当的话，可以一下子踩碎人的脚趾；而脚跟虽然也可以用到力，但是如果一击不中，则会对后脑产生很大的震荡，那样头脑会有片刻的眩晕，稍有差池，就无异于自寻死路了。这时候，生死关头，一下子踩的那个日本兵就弯下腰去，我顺势抬起膝盖，正好撞在他脸上，如果刻意去用膝盖顶敌人的脸，顶上了也没多大力，但是如果无意中顶上去，那力量就大得多了，这中间有个名堂，叫做“无意之中是真意”。那个日本兵还没来得及抱脚，就整个被撞的仰面翻倒。趁着另一个家伙一愣神之间，我抬起右腿，狠狠的踢向他的裆部。日本是一个多地震国家，又是个海岛，所以大部分日本兵都是下肢比较粗壮，站立时也是两腿分开，这样可以站的比较稳。之前练习踢沙袋，一两百斤的沙袋，用弹踢，我可以将沙袋踢得跳起来。这个家伙被我踢得几乎双脚离地，然后就像半麻袋糠一样，直挺挺的倒下去，从他上翻的眼白可以知道，他倒地前就已经晕厥了。</p>
-
-<p>我暗叹一声侥幸，从一个日本兵的腰里抽下刺刀，三两下割断手腕上的绳索，然后迅速摘下两杆枪，抽下另一柄刺刀，转身准备泅水过河。一转念，用刺刀在两个日本兵的胸口各补了一刀，然后跳入水中，游过河水，一路往南去了。</p>
-
-<p>过河之后，还有一个插曲，遇到了一个巡逻的日军，双手端着三八大盖，上着刺刀，对着我叽里呱啦。没有被刺刀顶过的人，无法想象这是什么样一种感觉，首先是头脑中一片空白脑门上的汗也噌的一下就冒出来了，同时屁眼发松，腿发软，几乎无法支撑你的体重。那个日本兵对着我喊了好几句，见没有反应，就直刺过来。我也不知哪里来的念头，伸手在枪杆上一撸，就是以橫破纵，喀的一声，他的枪就掉地下了，我就在这个日本兵这一楞神间，抽出一把刺刀，一下子就刺进他的心口。当时的日军装备的制式刺刀，可以将两个成年人对穿，当然，那要靠枪杆的辅助，而我这是已经有些形意拳中的巧劲，一下子就将他刺穿，握刀的手几乎触到他的胸口。血顺着血槽飙出来，我略微一呆，然后就往另一个方向跑了。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/10/">&larr; Older</a>
@@ -603,6 +627,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2014/04/intro-map-gis/">GIS系统如何工作</a>
+      </li>
+    
+      <li class="post">
         <a href="/2014/01/how-to-test-service-in-angularjs/">如何测试AngularJS中的Service</a>
       </li>
     
@@ -616,10 +644,6 @@
     
       <li class="post">
         <a href="/2013/12/how-to-test-controller-in-angularjs/">如何测试AngularJS中的Controller</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2013/12/meta-programming-in-ruby/">Ruby元编程的一个示例：InactiveRecord</a>
       </li>
     
   </ul>

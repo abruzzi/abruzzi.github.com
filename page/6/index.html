@@ -9,7 +9,8 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="使用git时，如果遇到分支的情况，比如两个开发人员都从commit2开始各自开发，然后分贝在本地完成了两个commit： 此时，如果要将两个分支的代码合并起来，通常会有两种方式，一种对两个分支的代码进行merge，通常会执行的命令为: 1: git pull 这时的版本库历史看起来会是这样： &hellip;">
+  <meta name="description" content="How to load a key-value pair config file Recently, I want to parse a simple configration file in python, and I
+don&#8217;t like use other existing &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +80,79 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/07/post-from-python-vim-2/">Post From Python + Vim</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-13T00:00:00+10:00" pubdate data-updated="true">Jul 13<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><h2>How to load a key-value pair config file</h2></p>
+
+<p><p>Recently, I want to parse a simple configration file in python, and I<br />
+don&#8217;t like use other existing libraries, because they are all<br />
+full-functionality, just too complex for me.</p></p>
+
+<p><p>Finally I found a simple way to do that, code is following:</p></p>
+
+<p><pre><code>def loadUserInfo(fileName):
+    userinfo = {}
+    file = open(fileName, "r")
+    while file:
+        line = file.readline()
+        if len(line) == 0:
+            break
+        if line.startswith('#'):
+            continue
+        key, value = line.split("=")
+        userinfo[key.strip()] = value.strip()</code></pre></p>
+
+<p>    return userinfo
+</p>
+
+<p><p>Key features:</p></p>
+
+<p><ol>
+<li>Simple enough</li>
+<li>Comment supported</li>
+<li>Nothing much </li>
+</ol></p>
+
+<p><h2>Misc</h2></p>
+
+<p><p>Another intersting thing is this blog is post by my vim + python, it&#8217;s<br />
+cool to write blog in my favorest editor.</p></p>
+
+<p><p>中文应该没有问题吧？</p>
+</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -634,49 +708,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/03/%E8%B5%B0%E5%87%BA%E8%88%92%E9%80%82%E5%8C%BA/">走出舒适区</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-03-05T00:00:00+11:00" pubdate data-updated="true">Mar 5<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><p>舒适区的wiki定义：舒适区(comfort zone)指的是一个人所处的一种环境状态和习惯的行动，人会在这种状态下感到舒适并没有危机感。它是一种精神状态，会导致人们进入并且维持一种不现实的精神行为之中，这种情况会给人带来一种非理性的安全感。</p></p>
-
-<p><p>如果你发现在生活中，工作中很难感觉到挑战，激情，有的只是“安逸”和“安全”，那就是一个十分危险的信号了，说明你很可能已经处于舒适区中。一般来说，人们会希望保持在这个非理性的安全感中，消磨意志(当然可能并非有意为之，但从客观上来看，的确如此)。唯有具有勇气和坚定信念的人才愿意从这个舒适区中走出来，将自己“逼”到一条看似充满荆棘，充满挑战的活路上来。</p></p>
-
-<p><p>《孟子》中有段经典的描述：……人恒过，然后能改，困于心，衡于虑，而后作；征于色，发于声，而后喻。入则无法家拂事，出则无敌国外患者，国恒亡。然后知生于忧患，而死于安乐也。《诗经》里也有一段类似的：嗟尔君子，无恒安息。靖共尔位，好是正直。神之听之，介尔景福。</p></p>
-
-<p><p>当然，迈出第一步是非常难的，但是一旦开始，就不要停下来，你的每一个举动都是在迈向新的，更具活力的生活方式。你会发现，很多之前预想的困难都已经不再是困难，而且很多事先的担心压根就没有发生过。</p>
-</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/7/">&larr; Older</a>
@@ -694,6 +725,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2014/04/intro-map-gis/">GIS系统如何工作</a>
+      </li>
+    
+      <li class="post">
         <a href="/2014/01/how-to-test-service-in-angularjs/">如何测试AngularJS中的Service</a>
       </li>
     
@@ -707,10 +742,6 @@
     
       <li class="post">
         <a href="/2013/12/how-to-test-controller-in-angularjs/">如何测试AngularJS中的Controller</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2013/12/meta-programming-in-ruby/">Ruby元编程的一个示例：InactiveRecord</a>
       </li>
     
   </ul>
