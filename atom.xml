@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-04-12T17:27:48+10:00</updated>
+  <updated>2014-04-15T23:14:13+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,323 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[全球地震信息的可视化（使用OpenLayers）]]></title>
+    <link href="http://abruzzi.github.com/2014/04/render-geojson-by-using-openlayers/"/>
+    <updated>2014-04-15T21:33:00+10:00</updated>
+    <id>http://abruzzi.github.com/2014/04/render-geojson-by-using-openlayers</id>
+    <content type="html"><![CDATA[<h4>OpenLayers</h4>
+
+<p>使用<a href="http://openlayers.org/">OpenLayers</a>可以很容易的搭建基于Web的GIS系统，OpenLayers支持不同的数据源(符合WMS协议的服务器，Google Maps API, Bing Maps，KML以及<a href="http://geojson.org/">GeoJSON</a>等等)。通过将不同的数据源的数据整合，我们可以开发出丰富而用户友好的GIS系统。</p>
+
+<p>OpenLayers可以轻松的处理GeoJSON数据，并将其生成矢量层，我们可以将这个层叠加在其他数据源（比如OSM）提供的地图上，以得到一个完整的小应用。</p>
+
+<p>最后的运行结果是这样的：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/04/openlayers-earthquake-resized.png" alt="image" /></p>
+
+<h4>GeoJSON</h4>
+
+<p><a href="http://www.usgs.gov/aboutusgs/">美国地理信息调查局</a>是一个科学组织，他公开了很多地球上的灾难信息，比如对地震的统计，并提供编程接口。它公开的地震统计信息，包含全世界各地报告过的地震，以及全美所有检测到的地震，并以多种周期（小时，天，周，月等），多种格式（GeoJSON，KML，Atom等），以便应用程序的开发者只用这些数据。</p>
+
+<h4>实现</h4>
+
+<h5>设置基本环境</h5>
+
+<p>我们将借助bower来安装所有的代码依赖。首先，我们需要bower将所有的包都安装在<code>components</code>目录下，这个可以通过在当前目录的<code>.bowerrc</code>文件中制定<code>directory</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;directory&quot;</span><span class="p">:</span> <span class="s2">&quot;components&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后运行bower安装jquery以及openlayers：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>bower install jquery
+</span><span class='line'><span class="nv">$ </span>bower install openlayers
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过bower安装OpenLayers之后，可以通过OpenLayers自带的build工具将所有的源码合并压缩为一个文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">cd </span>components/openlayers/build
+</span><span class='line'><span class="nv">$ </span>./build.py <span class="c">#将会在当前目录下生成一个OpenLayers.js的文件</span>
+</span><span class='line'><span class="nv">$ </span>mv OpenLayers.js ../
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后，创建一个简单的HTML文件，引用jquery.js和OpenLayers.js，以及我们的入口脚本app.js，本文所有的代码都只是修改这个文件。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE HTML&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;head&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;content-type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;title&gt;</span>Earthquake distribution<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;style.css&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;body&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;components/jquery/jquery.js&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;components/openlayers/OpenLayers.js&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;app.js&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>还可以运行<code>bower init</code>来将生成<code>bower.json</code>，以方便别人使用我们的应用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span> <span class="nx">bower</span> <span class="nx">init</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>基本代码</h5>
+
+<p>一个最简单的OpenLayers应用，只需要7行代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="s2">&quot;map&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">osm</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Layer</span><span class="p">.</span><span class="nx">OSM</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">addLayers</span><span class="p">([</span><span class="nx">osm</span><span class="p">]);</span>
+</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">zoomToMaxExtent</span><span class="p">();</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这段代码在id为<code>map</code>的HTML元素创建了一个地图，这个地图上有一个叫OSM的层（即<a href="http://www.openstreetmap.org/">OpenStreetMap</a>，一个开源，开放的地图平台），并将地图缩小到边界范围（以获得最大的视野）:</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/04/openlayers-osm-resized.png" alt="image" /></p>
+
+<h5>生成矢量层</h5>
+
+<p>通过GeoJSON生成矢量图非常容易：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">geo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Layer</span><span class="p">.</span><span class="nx">Vector</span><span class="p">(</span><span class="s2">&quot;EarthQuake&quot;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">strategies</span><span class="o">:</span> <span class="p">[</span><span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Strategy</span><span class="p">.</span><span class="nx">Fixed</span><span class="p">()],</span>
+</span><span class='line'>    <span class="nx">protocol</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Protocol</span><span class="p">.</span><span class="nx">HTTP</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/all_day.geojson&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">format</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Format</span><span class="p">.</span><span class="nx">GeoJSON</span><span class="p">({</span><span class="nx">ignoreExtraDims</span><span class="o">:</span> <span class="kc">true</span><span class="p">})</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意此处的<a href="http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson">all_day.geojson</a>是从USGS网站上下载的，过去一天中世界各地的所有地震统计。</p>
+
+<p>上边的代码创建了一个名称为<code>EarthQuake</code>的矢量层，<code>strategies</code>中的Fixed策略表示仅请求一次资源，然后缓存在前端，不再请求。<code>protocol</code>表明数据来源为<code>all_day.geojson</code>，格式为<code>OpenLayers.Format.GeoJSON</code>。由于USGS返回的地理信息除了经纬度还包含深度，而OpenLayers默认只处理经纬度的，因此需要此处的<code>ignoreExtraDims</code>来忽略那个额外的深度信息。</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/04/openlayers-geojson-resized.png" alt="image" /></p>
+
+<h5>定制样式</h5>
+
+<p>虽然我们已经加上了新的层，也可以看到很多表示地震的点信息，但是并不能看出哪些地震是严重的，比如里氏3级以下的地震，几乎没有危害，可以标注成一种颜色；而更高震级的可以标记成另外一种颜色。</p>
+
+<p>OpenLayers可以很容易的做到这个定制化:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">style</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Style</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">ruleLow</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Rule</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">filter</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Filter</span><span class="p">.</span><span class="nb">Function</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">evaluate</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">properties</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">properties</span><span class="p">.</span><span class="nx">mag</span> <span class="o">&lt;</span> <span class="mf">3.0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}),</span>
+</span><span class='line'>  <span class="nx">symbolizer</span><span class="o">:</span> <span class="p">{</span><span class="nx">pointRadius</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span> <span class="nx">fillColor</span><span class="o">:</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
+</span><span class='line'>               <span class="nx">fillOpacity</span><span class="o">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="nx">strokeColor</span><span class="o">:</span> <span class="s2">&quot;black&quot;</span><span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">ruleHigh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Rule</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">filter</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Filter</span><span class="p">.</span><span class="nb">Function</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">evaluate</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">properties</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">properties</span><span class="p">.</span><span class="nx">mag</span> <span class="o">&gt;=</span> <span class="mf">3.0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}),</span>
+</span><span class='line'>    <span class="nx">symbolizer</span><span class="o">:</span> <span class="p">{</span><span class="nx">pointRadius</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="nx">fillColor</span><span class="o">:</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span>
+</span><span class='line'>               <span class="nx">fillOpacity</span><span class="o">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="nx">strokeColor</span><span class="o">:</span> <span class="s2">&quot;black&quot;</span><span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">style</span><span class="p">.</span><span class="nx">addRules</span><span class="p">([</span><span class="nx">ruleLow</span><span class="p">,</span> <span class="nx">ruleHigh</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">geo</span><span class="p">.</span><span class="nx">styleMap</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">StyleMap</span><span class="p">(</span><span class="nx">style</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先创建一个Style对象，为Style添加两条规则Rule，然后将Style对象包装成StyleMap并赋值给表示地震的矢量层<code>earthquake</code>。</p>
+
+<p>对于规则ruleLow，我们定义了，当一个feature的属性值mag(震级)小于三的时候后，使用绿色的，半径为3px的小圆圈来表示。而ruleHigh则定义了当震级大于等于三的时候，用红色，半径为5px的圆圈来表示。</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/04/openlayers-geojson-styling-resized.png" alt="image" /></p>
+
+<h5>加上事件处理</h5>
+
+<p>虽然我们已经可以直观的根据震级不同而看到不同颜色的点，但是整个应用仍然没有多少意义：它不具备于用户的交互能力。我们需要添加上事件处理，当用户点击地图上的一个圆点的时候，应该看到一个更详细的窗口。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">selectControl</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Control</span><span class="p">.</span><span class="nx">SelectFeature</span><span class="p">(</span><span class="nx">geo</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">onSelect</span><span class="o">:</span> <span class="nx">onFeatureSelect</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">onUnselect</span><span class="o">:</span> <span class="nx">onFeatureUnselect</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">map</span><span class="p">.</span><span class="nx">addControl</span><span class="p">(</span><span class="nx">selectControl</span><span class="p">);</span>
+</span><span class='line'><span class="nx">selectControl</span><span class="p">.</span><span class="nx">activate</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">onFeatureSelect</span><span class="p">(</span><span class="nx">feature</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">html</span> <span class="o">=</span> <span class="s2">&quot;&lt;span&gt;&quot;</span><span class="o">+</span><span class="nx">feature</span><span class="p">.</span><span class="nx">attributes</span><span class="p">.</span><span class="nx">title</span><span class="o">+</span><span class="s2">&quot;&lt;/span&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">popup</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Popup</span><span class="p">.</span><span class="nx">FramedCloud</span><span class="p">(</span><span class="s2">&quot;popup&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nx">feature</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">getBounds</span><span class="p">().</span><span class="nx">getCenterLonLat</span><span class="p">(),</span>
+</span><span class='line'>            <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nx">html</span><span class="p">,</span>
+</span><span class='line'>            <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="kc">true</span>
+</span><span class='line'>        <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">popup</span><span class="p">.</span><span class="nx">panMapIfOutOfView</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">popup</span><span class="p">.</span><span class="nx">autoSize</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">feature</span><span class="p">.</span><span class="nx">popup</span> <span class="o">=</span> <span class="nx">popup</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">addPopup</span><span class="p">(</span><span class="nx">popup</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">onFeatureUnselect</span><span class="p">(</span><span class="nx">feature</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">removePopup</span><span class="p">(</span><span class="nx">feature</span><span class="p">.</span><span class="nx">popup</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">feature</span><span class="p">.</span><span class="nx">popup</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">feature</span><span class="p">.</span><span class="nx">popup</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们在地图上添加了一个<code>SelectFeature</code>元素，并注册了回调函数：当矢量层中的矢量被选中之后，函数<code>onFeatureSelect</code>将被执行，我们可以在这个函数中添加对弹出窗口的控制。当<code>onFeatureSelect</code>执行时，OpenLayers会将当前的Feature传递进来，我们可以动态的取得震级，标题，链接等信息，并展现给最终用户。</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/04/openlayers-geojson-popup-resized.png" alt="[image]" /></p>
+
+<p>如果将数据源扩大到本周的所有地震：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">geo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Layer</span><span class="p">.</span><span class="nx">Vector</span><span class="p">(</span><span class="s2">&quot;EarthQuake&quot;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">strategies</span><span class="o">:</span> <span class="p">[</span><span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Strategy</span><span class="p">.</span><span class="nx">Fixed</span><span class="p">()],</span>
+</span><span class='line'>    <span class="nx">protocol</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Protocol</span><span class="p">.</span><span class="nx">HTTP</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/all_week.geojson&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">format</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Format</span><span class="p">.</span><span class="nx">GeoJSON</span><span class="p">({</span><span class="nx">ignoreExtraDims</span><span class="o">:</span> <span class="kc">true</span><span class="p">})</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2014/04/openlayers-geojson-weekly-resized.png" alt="image" /></p>
+
+<p>完整的代码示例<a href="https://github.com/abruzzi/earthquake-viz">可以看这里</a>。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[搭建地图服务器（使用Mapnik）]]></title>
@@ -3565,239 +3882,6 @@
 <p><img src="http://abruzzi.github.com/images/2013/05/sinatra-ext-result.png" alt="image" /></p>
 
 <p>执行完之后，<code>~/develop/ruby</code>下会生成一个新的目录，即<code>note</code>，这个目录中即为一个可以直接开始开发sinatra应用的工作目录了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[在既有数据库中使用ActiveRecord]]></title>
-    <link href="http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm/"/>
-    <updated>2013-05-18T14:56:00+10:00</updated>
-    <id>http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm</id>
-    <content type="html"><![CDATA[<h3>ActiveRecord</h3>
-
-<p>作为rails中的ORM(object relation-db mapping)框架，ActiveRecord在初次出现之时带给了人们以无限的惊喜和热情，也使得很多不堪忍受其他语言中粗糙的ORM框架的开发者转而投入rials的怀抱。而有很多的其他语言也在不断尝试模仿ActiveRecord，比如著名的php框架<a href="http://codeigniter.org.cn/">codeigniter</a>。</p>
-
-<p>在rails的后期版本中，ActiveRecord可以作为一个独立的库来在rails之外使用，这对使用ruby进行其他数据库应用开发的用户来说非常方便。</p>
-
-<h4>在新的项目中使用ActiveRecord</h4>
-
-<p>如果在一个全新的rails应用程序中使用ActiveRecord，那么关于数据库方面的一切都可以托管给它，开发者在初期可能连一行代码都不需要编写就可以让程序“像模像样”的运行起来。</p>
-
-<h4>在已有的数据库上使用ActiveRecord</h4>
-
-<p>现实世界中，最可能遇到的问题是数据库已经存在了（毕竟，对于关系型数据库而言，修改schema的影响太大）。这时候，我们仍然可以使用ActiveRecord来方便的访问数据库，得到ruby对象，而跳过冗长且容易出错的数据库访问层。</p>
-
-<h3>一个例子</h3>
-
-<h4>数据库结构</h4>
-
-<p>数据库中有一个访客表(visitor)：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>+-----------------------+--------------+-----+
-</span><span class='line'>| Field                 | Type         | Key |
-</span><span class='line'>+-----------------------+--------------+-----+
-</span><span class='line'>| visitor_uid           | varchar(32)  | PRI |
-</span><span class='line'>| visitor_login_id      | varchar(128) | MUL |
-</span><span class='line'>| visitor_password      | varchar(32)  |     |
-</span><span class='line'>| visitor_name          | varchar(100) |     |
-</span><span class='line'>| created_timestamp     | timestamp    |     |
-</span><span class='line'>| password_expiration   | timestamp    |     |
-</span><span class='line'>| last_used_timestamp   | timestamp    | MUL |
-</span><span class='line'>| visitor_alias         | varchar(128) | MUL |
-</span><span class='line'>| visitor_password_hash | binary(64)   |     |
-</span><span class='line'>+-----------------------+--------------+-----+</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有一个访客浏览过的<code>分组</code>表(list_group)：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>+------------------+---------------------+-----+
-</span><span class='line'>| Field            | Type                | Key |
-</span><span class='line'>+------------------+---------------------+-----+
-</span><span class='line'>| list_group_id    | bigint(20) unsigned | PRI |
-</span><span class='line'>| list_type        | varchar(32)         | MUL |
-</span><span class='line'>| visitor_uid      | varchar(32)         | MUL |
-</span><span class='line'>| list_name        | varchar(128)        |     |
-</span><span class='line'>| create_timestamp | timestamp           |     |
-</span><span class='line'>+------------------+---------------------+-----+</span></code></pre></td></tr></table></div></figure>
-
-
-<p>每个<code>分组</code>中，都有一些条目，具体到每个条目(list_group_item)：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>+----------------------+---------------------+-----+
-</span><span class='line'>| Field                | Type                | Key |
-</span><span class='line'>+----------------------+---------------------+-----+
-</span><span class='line'>| list_group_item_id   | bigint(20) unsigned | PRI |
-</span><span class='line'>| list_group_id        | bigint(20) unsigned | MUL |
-</span><span class='line'>| item_id              | varchar(128)        | MUL |
-</span><span class='line'>| create_timestamp     | timestamp           |     |
-</span><span class='line'>| last_use_timestamp   | timestamp           |     |
-</span><span class='line'>| note                 | varchar(4000)       |     |
-</span><span class='line'>+----------------------+---------------------+-----+</span></code></pre></td></tr></table></div></figure>
-
-
-<p>三张表的关系如下：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/05/active_record.png" alt="image" /></p>
-
-<h4>示例程序的目录结构</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>├── Gemfile
-</span><span class='line'>├── Gemfile.lock
-</span><span class='line'>├── app.rb
-</span><span class='line'>├── config
-</span><span class='line'>│   └── database.yml
-</span><span class='line'>├── debug.log
-</span><span class='line'>└── model
-</span><span class='line'>    ├── list_group.rb
-</span><span class='line'>    ├── list_group_item.rb
-</span><span class='line'>    └── visitor.rb</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>models</h4>
-
-<p>使用ActiveRecord，只需要简单的在模块上声明模块见的关系即可：</p>
-
-<p>visitor类的定义，读起来非常自然：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require 'active_record'
-</span><span class='line'>
-</span><span class='line'>class Visitor &lt; ActiveRecord::Base
-</span><span class='line'>    has_many :groups, 
-</span><span class='line'>        :class_name =&gt; 'ListGroup', 
-</span><span class='line'>        :foreign_key =&gt; 'visitor_uid'
-</span><span class='line'>
-</span><span class='line'>    self.table_name  = 'visitor'
-</span><span class='line'>    self.primary_key = 'visitor_uid'
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>ListGroup类的定义：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class ListGroup &lt; ActiveRecord::Base
-</span><span class='line'>    self.table_name  = 'list_group'
-</span><span class='line'>    self.primary_key  = 'list_group_id'
-</span><span class='line'>
-</span><span class='line'>    has_many :items, 
-</span><span class='line'>        :class_name =&gt; 'ListGroupItem', 
-</span><span class='line'>        :foreign_key =&gt; 'list_group_id'
-</span><span class='line'>
-</span><span class='line'>    belongs_to :visitor, 
-</span><span class='line'>        :class_name =&gt; 'Visitor', 
-</span><span class='line'>        :foreign_key =&gt; 'visitor_uid'
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最后是ListGroupItem的定义：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class ListGroupItem &lt; ActiveRecord::Base
-</span><span class='line'>    self.table_name = 'list_group_item'
-</span><span class='line'>    self.primary_key = 'list_group_item_id'
-</span><span class='line'>
-</span><span class='line'>    belongs_to :list_group, 
-</span><span class='line'>        :class_name =&gt; 'ListGroup', :foreign_key =&gt; 'list_group_id'
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这种比较复杂的层级关系在现实中经常见到，而大部分HelloWorld型的介绍又touch不到，因此就将代码全部列于此处，以便索引。</p>
-
-<h4>使用这些model</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def main
-</span><span class='line'>    attr = visitor_attr('juntao.qiu#thoughtworks.com')
-</span><span class='line'>    visitor = Visitor.new attr
-</span><span class='line'>    visitor.visitor_uid = attr[:visitor_uid]
-</span><span class='line'>    visitor.save
-</span><span class='line'>
-</span><span class='line'>    visitors = Visitor.find(:all)
-</span><span class='line'>    visitors.each do |visitor|
-</span><span class='line'>        p visitor[:visitor_login_id]
-</span><span class='line'>    end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里即可任意的使用诸如new/save,find等ActiveRecord为我们包装起来的方法了。</p>
 ]]></content>
   </entry>
   

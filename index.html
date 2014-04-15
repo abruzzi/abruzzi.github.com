@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="渲染引擎Mapnik 上一篇文章中大概介绍了Mapnik，它是一个渲染引擎，一般开发中都会使用他的python的bind做开发。 Mapnik的文档写的比较详细，我们这里只是做一些必要的介绍，详细的细节可以参看Mapnik在Github上的文档。 在Mac下，安装Mapnik十分容易， &hellip;">
+  <meta name="description" content="OpenLayers 使用OpenLayers可以很容易的搭建基于Web的GIS系统，OpenLayers支持不同的数据源(符合WMS协议的服务器，Google Maps API, Bing Maps，KML以及GeoJSON等等)。通过将不同的数据源的数据整合， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +79,350 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2014/04/render-geojson-by-using-openlayers/">全球地震信息的可视化（使用OpenLayers）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-15T21:33:00+10:00" pubdate data-updated="true">Apr 15<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>OpenLayers</h4>
+
+<p>使用<a href="http://openlayers.org/">OpenLayers</a>可以很容易的搭建基于Web的GIS系统，OpenLayers支持不同的数据源(符合WMS协议的服务器，Google Maps API, Bing Maps，KML以及<a href="http://geojson.org/">GeoJSON</a>等等)。通过将不同的数据源的数据整合，我们可以开发出丰富而用户友好的GIS系统。</p>
+
+<p>OpenLayers可以轻松的处理GeoJSON数据，并将其生成矢量层，我们可以将这个层叠加在其他数据源（比如OSM）提供的地图上，以得到一个完整的小应用。</p>
+
+<p>最后的运行结果是这样的：</p>
+
+<p><img src="/images/2014/04/openlayers-earthquake-resized.png" alt="image" /></p>
+
+<h4>GeoJSON</h4>
+
+<p><a href="http://www.usgs.gov/aboutusgs/">美国地理信息调查局</a>是一个科学组织，他公开了很多地球上的灾难信息，比如对地震的统计，并提供编程接口。它公开的地震统计信息，包含全世界各地报告过的地震，以及全美所有检测到的地震，并以多种周期（小时，天，周，月等），多种格式（GeoJSON，KML，Atom等），以便应用程序的开发者只用这些数据。</p>
+
+<h4>实现</h4>
+
+<h5>设置基本环境</h5>
+
+<p>我们将借助bower来安装所有的代码依赖。首先，我们需要bower将所有的包都安装在<code>components</code>目录下，这个可以通过在当前目录的<code>.bowerrc</code>文件中制定<code>directory</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;directory&quot;</span><span class="p">:</span> <span class="s2">&quot;components&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后运行bower安装jquery以及openlayers：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>bower install jquery
+</span><span class='line'><span class="nv">$ </span>bower install openlayers
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过bower安装OpenLayers之后，可以通过OpenLayers自带的build工具将所有的源码合并压缩为一个文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">cd </span>components/openlayers/build
+</span><span class='line'><span class="nv">$ </span>./build.py <span class="c">#将会在当前目录下生成一个OpenLayers.js的文件</span>
+</span><span class='line'><span class="nv">$ </span>mv OpenLayers.js ../
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后，创建一个简单的HTML文件，引用jquery.js和OpenLayers.js，以及我们的入口脚本app.js，本文所有的代码都只是修改这个文件。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE HTML&gt;</span>
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;head&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;content-type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;title&gt;</span>Earthquake distribution<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;style.css&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/head&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;body&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;components/jquery/jquery.js&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;components/openlayers/OpenLayers.js&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;app.js&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>还可以运行<code>bower init</code>来将生成<code>bower.json</code>，以方便别人使用我们的应用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span> <span class="nx">bower</span> <span class="nx">init</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>基本代码</h5>
+
+<p>一个最简单的OpenLayers应用，只需要7行代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="s2">&quot;map&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">osm</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Layer</span><span class="p">.</span><span class="nx">OSM</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">addLayers</span><span class="p">([</span><span class="nx">osm</span><span class="p">]);</span>
+</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">zoomToMaxExtent</span><span class="p">();</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这段代码在id为<code>map</code>的HTML元素创建了一个地图，这个地图上有一个叫OSM的层（即<a href="http://www.openstreetmap.org/">OpenStreetMap</a>，一个开源，开放的地图平台），并将地图缩小到边界范围（以获得最大的视野）:</p>
+
+<p><img src="/images/2014/04/openlayers-osm-resized.png" alt="image" /></p>
+
+<h5>生成矢量层</h5>
+
+<p>通过GeoJSON生成矢量图非常容易：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">geo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Layer</span><span class="p">.</span><span class="nx">Vector</span><span class="p">(</span><span class="s2">&quot;EarthQuake&quot;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">strategies</span><span class="o">:</span> <span class="p">[</span><span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Strategy</span><span class="p">.</span><span class="nx">Fixed</span><span class="p">()],</span>
+</span><span class='line'>    <span class="nx">protocol</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Protocol</span><span class="p">.</span><span class="nx">HTTP</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/all_day.geojson&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">format</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Format</span><span class="p">.</span><span class="nx">GeoJSON</span><span class="p">({</span><span class="nx">ignoreExtraDims</span><span class="o">:</span> <span class="kc">true</span><span class="p">})</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意此处的<a href="http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson">all_day.geojson</a>是从USGS网站上下载的，过去一天中世界各地的所有地震统计。</p>
+
+<p>上边的代码创建了一个名称为<code>EarthQuake</code>的矢量层，<code>strategies</code>中的Fixed策略表示仅请求一次资源，然后缓存在前端，不再请求。<code>protocol</code>表明数据来源为<code>all_day.geojson</code>，格式为<code>OpenLayers.Format.GeoJSON</code>。由于USGS返回的地理信息除了经纬度还包含深度，而OpenLayers默认只处理经纬度的，因此需要此处的<code>ignoreExtraDims</code>来忽略那个额外的深度信息。</p>
+
+<p><img src="/images/2014/04/openlayers-geojson-resized.png" alt="image" /></p>
+
+<h5>定制样式</h5>
+
+<p>虽然我们已经加上了新的层，也可以看到很多表示地震的点信息，但是并不能看出哪些地震是严重的，比如里氏3级以下的地震，几乎没有危害，可以标注成一种颜色；而更高震级的可以标记成另外一种颜色。</p>
+
+<p>OpenLayers可以很容易的做到这个定制化:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">style</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Style</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">ruleLow</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Rule</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">filter</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Filter</span><span class="p">.</span><span class="nb">Function</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">evaluate</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">properties</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">properties</span><span class="p">.</span><span class="nx">mag</span> <span class="o">&lt;</span> <span class="mf">3.0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}),</span>
+</span><span class='line'>  <span class="nx">symbolizer</span><span class="o">:</span> <span class="p">{</span><span class="nx">pointRadius</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span> <span class="nx">fillColor</span><span class="o">:</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
+</span><span class='line'>               <span class="nx">fillOpacity</span><span class="o">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="nx">strokeColor</span><span class="o">:</span> <span class="s2">&quot;black&quot;</span><span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">ruleHigh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Rule</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">filter</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Filter</span><span class="p">.</span><span class="nb">Function</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">evaluate</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">properties</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">properties</span><span class="p">.</span><span class="nx">mag</span> <span class="o">&gt;=</span> <span class="mf">3.0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}),</span>
+</span><span class='line'>    <span class="nx">symbolizer</span><span class="o">:</span> <span class="p">{</span><span class="nx">pointRadius</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="nx">fillColor</span><span class="o">:</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span>
+</span><span class='line'>               <span class="nx">fillOpacity</span><span class="o">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="nx">strokeColor</span><span class="o">:</span> <span class="s2">&quot;black&quot;</span><span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">style</span><span class="p">.</span><span class="nx">addRules</span><span class="p">([</span><span class="nx">ruleLow</span><span class="p">,</span> <span class="nx">ruleHigh</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">geo</span><span class="p">.</span><span class="nx">styleMap</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">StyleMap</span><span class="p">(</span><span class="nx">style</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先创建一个Style对象，为Style添加两条规则Rule，然后将Style对象包装成StyleMap并赋值给表示地震的矢量层<code>earthquake</code>。</p>
+
+<p>对于规则ruleLow，我们定义了，当一个feature的属性值mag(震级)小于三的时候后，使用绿色的，半径为3px的小圆圈来表示。而ruleHigh则定义了当震级大于等于三的时候，用红色，半径为5px的圆圈来表示。</p>
+
+<p><img src="/images/2014/04/openlayers-geojson-styling-resized.png" alt="image" /></p>
+
+<h5>加上事件处理</h5>
+
+<p>虽然我们已经可以直观的根据震级不同而看到不同颜色的点，但是整个应用仍然没有多少意义：它不具备于用户的交互能力。我们需要添加上事件处理，当用户点击地图上的一个圆点的时候，应该看到一个更详细的窗口。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">selectControl</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Control</span><span class="p">.</span><span class="nx">SelectFeature</span><span class="p">(</span><span class="nx">geo</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">onSelect</span><span class="o">:</span> <span class="nx">onFeatureSelect</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">onUnselect</span><span class="o">:</span> <span class="nx">onFeatureUnselect</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">map</span><span class="p">.</span><span class="nx">addControl</span><span class="p">(</span><span class="nx">selectControl</span><span class="p">);</span>
+</span><span class='line'><span class="nx">selectControl</span><span class="p">.</span><span class="nx">activate</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">onFeatureSelect</span><span class="p">(</span><span class="nx">feature</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">html</span> <span class="o">=</span> <span class="s2">&quot;&lt;span&gt;&quot;</span><span class="o">+</span><span class="nx">feature</span><span class="p">.</span><span class="nx">attributes</span><span class="p">.</span><span class="nx">title</span><span class="o">+</span><span class="s2">&quot;&lt;/span&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">popup</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Popup</span><span class="p">.</span><span class="nx">FramedCloud</span><span class="p">(</span><span class="s2">&quot;popup&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nx">feature</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">getBounds</span><span class="p">().</span><span class="nx">getCenterLonLat</span><span class="p">(),</span>
+</span><span class='line'>            <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="nx">html</span><span class="p">,</span>
+</span><span class='line'>            <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>            <span class="kc">true</span>
+</span><span class='line'>        <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">popup</span><span class="p">.</span><span class="nx">panMapIfOutOfView</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">popup</span><span class="p">.</span><span class="nx">autoSize</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">feature</span><span class="p">.</span><span class="nx">popup</span> <span class="o">=</span> <span class="nx">popup</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">addPopup</span><span class="p">(</span><span class="nx">popup</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">onFeatureUnselect</span><span class="p">(</span><span class="nx">feature</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">removePopup</span><span class="p">(</span><span class="nx">feature</span><span class="p">.</span><span class="nx">popup</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">feature</span><span class="p">.</span><span class="nx">popup</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">feature</span><span class="p">.</span><span class="nx">popup</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们在地图上添加了一个<code>SelectFeature</code>元素，并注册了回调函数：当矢量层中的矢量被选中之后，函数<code>onFeatureSelect</code>将被执行，我们可以在这个函数中添加对弹出窗口的控制。当<code>onFeatureSelect</code>执行时，OpenLayers会将当前的Feature传递进来，我们可以动态的取得震级，标题，链接等信息，并展现给最终用户。</p>
+
+<p><img src="/images/2014/04/openlayers-geojson-popup-resized.png" alt="[image]" /></p>
+
+<p>如果将数据源扩大到本周的所有地震：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">geo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Layer</span><span class="p">.</span><span class="nx">Vector</span><span class="p">(</span><span class="s2">&quot;EarthQuake&quot;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">strategies</span><span class="o">:</span> <span class="p">[</span><span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Strategy</span><span class="p">.</span><span class="nx">Fixed</span><span class="p">()],</span>
+</span><span class='line'>    <span class="nx">protocol</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Protocol</span><span class="p">.</span><span class="nx">HTTP</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/all_week.geojson&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">format</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Format</span><span class="p">.</span><span class="nx">GeoJSON</span><span class="p">({</span><span class="nx">ignoreExtraDims</span><span class="o">:</span> <span class="kc">true</span><span class="p">})</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2014/04/openlayers-geojson-weekly-resized.png" alt="image" /></p>
+
+<p>完整的代码示例<a href="https://github.com/abruzzi/earthquake-viz">可以看这里</a>。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2239,150 +2583,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/10/grunt-plugins/">Grunt的几个常用插件</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-10-08T16:42:00+11:00" pubdate data-updated="true">Oct 8<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Grunt的几个常用插件</h3>
-
-<h4>grunt-karma 简介</h4>
-
-<p><a href="https://github.com/karma-runner/grunt-karma">grunt-karma</a>是一个karma的Grunt插件，<a href="http://icodeit.org/2013/10/using-karma-as-the-javascript-test-runner/">上一篇文章</a>中已经介绍了karma的基本用法。这里简单介绍如何在Grunt中使用karma。</p>
-
-<p>首先需要安装grunt-karma插件：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install grunt-karma --save-dev</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后在Gruntfile.js中加载该插件：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-karma');</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在使用karma之前，需要生成一个karma的配置文件<code>karma.conf.js</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ karma init karma.conf.js</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后在Gruntfile.js中，加入初始化karma的参数，并指定，karma需要使用<code>karma.conf.js</code>文件作为配置来运行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
-</span><span class='line'>  karma: {
-</span><span class='line'>    unit: {
-</span><span class='line'>      configFile: 'karma.conf.js'
-</span><span class='line'>    }
-</span><span class='line'>  }
-</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
-
-
-<p>大多数情况下，如果要把karma作为CI的一部分，应该启动单次运行模式:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>singleRun: true</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样karma会启动浏览器，运行所有的测试用例，然后退出。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-contrib-jshint');
-</span><span class='line'>grunt.loadNpmTasks('grunt-karma');
-</span><span class='line'>
-</span><span class='line'>grunt.registerTask('default', ['jshint', 'karma']);</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/10/grunt-karma-resized.png" alt="image" /></p>
-
-<p>注意此处的default后边带了一个任务数组，其中每个任务会按照声明的顺序依次被执行。事实上此处的&#8217;default&#8217;是后边整个列表的一个别名(alias)。</p>
-
-<h4>grunt-jshint / grunt-uglify / grunt-concat</h4>
-
-<p><a href="https://github.com/gruntjs/grunt-contrib-jshint">grunt-contrib-jshint</a>是一个用于JavaScript静态语法检查的工具，它会帮助开发者在进行较为严格的语法检查。</p>
-
-<p>和其他的Grunt插件一样，它是以一个npm的包的形式发布的，因此安装非常容易:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install grunt-contrib-jshint --save-dev</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后在Gruntfile.js中加载该插件:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-contrib-jshint');</span></code></pre></td></tr></table></div></figure>
-
-
-<p>即可，类似的还有：用以连接所有JavaScript源代码为一个独立文件的<a href="https://github.com/gruntjs/grunt-contrib-concat">grunt-contrib-concat</a>，以及用以最小化JavaScript源码的<a href="https://github.com/gruntjs/grunt-contrib-uglify">grunt-contrib-uglify</a>。</p>
-
-<h4>自定义插件</h4>
-
-<p><a href="https://github.com/gruntjs/grunt-init">grunt-init</a>是一个帮助开发人员快速搭建基于Grunt项目的工具，比如开发jQuery插件，Gruntfile，或者Grunt插件本身。安装方式很简单，我们需要在其他项目也用到grunt-init，因此安装在全局路径下<code>-g</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g grunt-init</span></code></pre></td></tr></table></div></figure>
-
-
-<p>开发Grunt插件，我们需要一个基本的模板，将这个模板clone到home下的.grunt-init目录下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git clone git://github.com/gruntjs/grunt-init-gruntplugin.git ~/.grunt-init/gruntplugin</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后新建一个目录，并在该目录下运行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ mkdir beautify
-</span><span class='line'>$ cd beautify
-</span><span class='line'>$ grunt-init gruntplugin</span></code></pre></td></tr></table></div></figure>
-
-
-<p>grunt-init会让你回答一些问题，比如插件名称，版本号，github链接等。之后，grunt-init会生成一个基本的模板，开发者只需要完成自己插件的逻辑代码即可。逻辑实现在<code>tasks/&lt;plugin-name&gt;.js</code>中即可。</p>
-
-<p>完成后可以通过<code>npm publish</code>来发布，发布之后，你的插件就可以向上边提到的常用插件那样被其他的开发者使用了。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -2398,6 +2598,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2014/04/render-geojson-by-using-openlayers/">全球地震信息的可视化（使用OpenLayers）</a>
+      </li>
+    
+      <li class="post">
         <a href="/2014/04/setup-map-server-by-mapnik/">搭建地图服务器（使用Mapnik）</a>
       </li>
     
@@ -2411,10 +2615,6 @@
     
       <li class="post">
         <a href="/2014/01/use-yahoo-pipe-service-to-aggregate-blogs-you-care/">使用 Yahoo pipes 服务做内容聚合 &#8211; ThoughtWorks好声音</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2013/12/by-the-end-of-2013/">我的2013</a>
       </li>
     
   </ul>
