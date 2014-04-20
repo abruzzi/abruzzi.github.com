@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: cgi | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/cgi/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2014-04-20T22:36:16+10:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Web是怎么工作的: CGI脚本]]></title>
+    <link href="http://abruzzi.github.com/2014/04/how-web-works-cgi/"/>
+    <updated>2014-04-20T19:22:00+10:00</updated>
+    <id>http://abruzzi.github.com/2014/04/how-web-works-cgi</id>
+    <content type="html"><![CDATA[<h4>CGI的一些背景</h4>
+
+<p>Web在设计之初只是可以提供静态内容，用于诸如文档分享，论文引用这样的内容。但是很快人们就不满足于静态的内容了，根据UNIX系统的哲学，人们倾向于让不同的应用程序通过已有的机制（进程间通信如管道，UNIX域socket，以及TCP/IPsocket）连接起来。</p>
+
+<p>在Web服务器，诸如Apache httpd中加入与外部应用程序的通信接口就显得非常自然了。<a href="http://en.wikipedia.org/wiki/Common_Gateway_Interface">CGI(Common Gateway Interface)</a>即是在这种背景下被发明的。</p>
+
+<p>基本来说，CGI可以是任何的可执行程序，可以是Shell脚本，二进制应用，或者其他的脚本（Python脚本，Ruby脚本等）。CGI的基本流程是这样：</p>
+
+<ol>
+<li>Apache接收到客户端的请求</li>
+<li>通过传统的fork-exec机制启动外部应用程序（cgi程序）</li>
+<li>将客户端的请求数据通过环境变量和重定向发送给外部应用（cgi程序）</li>
+<li>将cgi程序产生的输出写回给客户端（浏览器）</li>
+<li>停止cgi程序（kill）</li>
+</ol>
+
+
+<p><img src="/images/2014/04/cgi.png" alt="image" /></p>
+
+<h4>配置Apache支持CGI</h4>
+
+<p>本文的所有示例都是在Mac OSX环境下编写和实验。</p>
+
+<p>先创建一个cgi的运行目录<code>/Users/jtqiu/Sites/cgi-bin/</code>，然后创建一个空的文件<code>echo.cgi</code>：</p>
+
+<p><code>sh
+$ mkdir -p /Users/jtqiu/Sites/cgi-bin/
+$ touch echo.cgi
+</code></p>
+
+<p>在这个文件中，添加一小段python代码：</p>
+
+<p>```python</p>
+
+<h1>!/usr/bin/env python</h1>
+
+<p>print("Content-Type: text/html\n\n")
+print("<b>Hello, World</b>\n")
+```</p>
+
+<p>修改文件的执行权限：</p>
+
+<p><code>sh
+$ chmod +x echo.cgi
+</code></p>
+
+<p>这段python代码并无特别，如果在shell运行这个脚本，可以得到：</p>
+
+<p>```
+Content-Type: text/html</p>
+
+<p><b>Hello, World</b>
+```</p>
+
+<p>这个可执行文件将作为我们的第一个CGI脚本，完成了这一步，我们需要配置Apache来支持CGI，首先，在目录<code>/etc/apache2/users/</code>中创建一个文件，文件名就是你的用户名称，如<code>jtqiu.conf</code>。</p>
+
+<p><code>sh
+$ sudo vi /etc/apache2/users/jtqiu.conf
+</code></p>
+
+<p>添加以下配置，其中<code>/Users/jtqiu/Sites/cgi-bin/</code>目录就是所有cgi脚本所在的目录，在次配置中<code>AddHandler cgi-script .cgi</code>表示为所有后缀为cgi的添加<code>cgi-script</code>的<code>Handler</code>。</p>
+
+<p>```xml
+<Directory "/Users/jtqiu/Sites/cgi-bin/"></p>
+
+<pre><code>AddHandler cgi-script .cgi
+Options +ExecCGI
+</code></pre>
+
+<p></Directory>
+```</p>
+
+<p>然后重启apache:</p>
+
+<p><code>sh
+$ sudo apachectl restart
+</code></p>
+
+<p>下面我们就通过<code>curl</code>来进行测试：</p>
+
+<p><code>sh
+curl -v http://localhost/~jtqiu/cgi-bin/echo.cgi
+</code></p>
+
+<h5>更进一步</h5>
+
+<p>传统的CGI脚本的生命周期很短，Web服务器在接收到一次请求之后，会fork出一个进程来执行CGI脚本，一旦请求完成，这个进程就会被终止。</p>
+
+<p>我们可以设置一个超时来查看：</p>
+
+<p>```python</p>
+
+<h1>!/usr/bin/env python</h1>
+
+<p>import time</p>
+
+<p>time.sleep(5)</p>
+
+<p>print("Content-Type: text/html\n\n")
+print("<b>Hello, World</b>\n")
+```</p>
+
+<p><code>sh
+curl -v http://localhost/~jtqiu/cgi-bin/echo.cgi
+</code></p>
+
+<p>再次通过curl脚本来查看，另起一个窗口，通过<code>ps -Af | grep cgi</code>来查看</p>
+
+<p><img src="/images/2014/04/cgi-ps-resized.png" alt="[image]" /></p>
+
+<h5>一个稍微有点用的脚本</h5>
+
+<p>Web服务器通过环境变量来和CGI脚本进行部分的数据传递，比如下面这个例子会打印所有的，来自Web服务器的环境变量：</p>
+
+<p>```python</p>
+
+<h1>!/usr/bin/env python</h1>
+
+<p>import os</p>
+
+<p>print "Content-type: text/html\n\n";
+print "<b>Environment</b>\n";</p>
+
+<p>print "<ul>"
+for param in os.environ.keys():</p>
+
+<pre><code>  print "&lt;li&gt;%20s: %s&lt;/li&gt;" % (param, os.environ[param])
+</code></pre>
+
+<p>print "</ul>"
+```</p>
+
+<p>通过<code>curl</code>来测试：</p>
+
+<p><code>
+$ curl http://localhost/\~jtqiu/cgi-bin/echo.cgi
+</code></p>
+
+<p>会的到一个完整的环境变量列表：</p>
+
+<p>```html
+<b>Environment</b></p>
+
+<ul>
+<li>VERSIONER_PYTHON_PREFER_32_BIT: no</li>
+<li>     SERVER_SOFTWARE: Apache/2.2.26 (Unix) DAV/2 PHP/5.4.24 mod_ssl/2.2.26 OpenSSL/0.9.8y</li>
+<li>         SCRIPT_NAME: /~jtqiu/cgi-bin/echo.cgi</li>
+<li>    SERVER_SIGNATURE: </li>
+<li>      REQUEST_METHOD: GET</li>
+<li>     SERVER_PROTOCOL: HTTP/1.1</li>
+<li>        QUERY_STRING: </li>
+<li>                PATH: /usr/bin:/bin:/usr/sbin:/sbin</li>
+<li>     HTTP_USER_AGENT: curl/7.30.0</li>
+<li>         SERVER_NAME: localhost</li>
+<li>         REMOTE_ADDR: ::1</li>
+<li>         SERVER_PORT: 80</li>
+<li>         SERVER_ADDR: ::1</li>
+<li>       DOCUMENT_ROOT: /Library/WebServer/Documents</li>
+<li>     SCRIPT_FILENAME: /Users/jtqiu/Sites/cgi-bin/echo.cgi</li>
+<li>        SERVER_ADMIN: you@example.com</li>
+<li>           HTTP_HOST: localhost</li>
+<li>         REQUEST_URI: /~jtqiu/cgi-bin/echo.cgi</li>
+<li>         HTTP_ACCEPT: */*</li>
+<li>   GATEWAY_INTERFACE: CGI/1.1</li>
+<li>         REMOTE_PORT: 64361</li>
+<li>__CF_USER_TEXT_ENCODING: 0x46:0:0</li>
+<li>VERSIONER_PYTHON_VERSION: 2.7</li>
+</ul>
+
+
+<p>```</p>
+
+<h4>更进一步FastCGI</h4>
+
+<p>传统的CGI脚本，生命周期很短，只会serve一次请求就终止了。如果有高并发的场景的话，显然服务器性能会收到极大的冲击。因此人们又设计了<a href="http://en.wikipedia.org/wiki/FastCGI">FastCGI</a>。FastCGI的生命周期很长，甚至可以被实现成一个TCP/IP的服务器，这样就会永远运行下去。</p>
+
+<p>目前，Apache，Nginx等Web服务器都已经支持FastCGI。</p>
+]]></content>
+  </entry>
+  
+</feed>
