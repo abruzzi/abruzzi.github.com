@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-04-20T22:36:16+10:00</updated>
+  <updated>2014-06-02T00:28:46+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,357 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[我的第一个Arduino机器人]]></title>
+    <link href="http://abruzzi.github.com/2014/06/my-4w-robot-built-on-top-of-arduino/"/>
+    <updated>2014-06-01T15:21:00+10:00</updated>
+    <id>http://abruzzi.github.com/2014/06/my-4w-robot-built-on-top-of-arduino</id>
+    <content type="html"><![CDATA[<h3>我的第一个机器人</h3>
+
+<p><img src="http://abruzzi.github.com/images/2014/06/install-together-resized.png" alt="image" /></p>
+
+<p>虽然迟了4年，但是我终于完成了我的第一台机器人的安装和配置。</p>
+
+<ol>
+<li>基于Arduino的<a href="http://arduino.cc/en/Main/arduinoBoard">Duemilanove开发板</a></li>
+<li>可以躲开障碍物继续前进（有距离探测器，与障碍物的距离小于20cm时会自动转向）</li>
+<li>4轮驱动</li>
+</ol>
+
+
+<p>我回忆了一下，这块板子和外设是我2010年3月在昆明的时候买的，那段时间对硬件突然有了极高的热情，但是买了之后准备开始之际，发现了几点困难：</p>
+
+<ol>
+<li>当时航空管制，电池不能空运，因此网购的小车没有电池</li>
+<li>缺乏基本的硬件常识，四个电机如何接在两个电机端口上</li>
+<li>不会焊接电机</li>
+<li>没有买杜邦线，没有测试用的面包板</li>
+</ol>
+
+
+<p>基于这些困难，又加上我当时在找工作，准备面试之类，机器人的制造就放了下来。结果一放就是4年，中途从昆明搬家回到西安，不过细心的孙曼思将那一大包的零部件都打包好带了回来，多亏她认真负责的态度，才让这个机器人的产生有了可能。</p>
+
+<h4>ThoughtWorks西安硬件小组</h4>
+
+<p>2013年，在ThoughtWorks的西安Office有了硬件小组，他们研究开源硬件，以及这些小芯片在实际环境中的应用。比如RCA的高亮，做出了一个“半自动”地移动上的story的产品。2014年Hackday的时候，CASA团队又做出了一个看房机器人Dora，dora可以在房间中移动，由于装置了一个摄像头，因此可以实时的看到它看到的东西，而且Dora有安装了无线模块，你可以在远程操控它并得到实时图像。</p>
+
+<p>好了，这么多铺垫事实上是有意义的，如果没有西安Office的硬件小组，我的这个机器人的诞生可能又需要若干年。它给我提供了丰富的资源，比如：</p>
+
+<ol>
+<li>有丰富硬件经验的张新宇，高亮，王超，可以让我很容易问问题并得到答案</li>
+<li>张新宇帮我焊了一个电源的接头</li>
+<li>王超提供了一个7.2V的电池</li>
+<li>高亮的百宝箱中有一个9V电池盒</li>
+<li>CASA团队桌子上开发Dora的一些下脚料</li>
+<li>杜邦线，热缩管，电烙铁，松香，镊子，钳子，各种螺丝刀等等</li>
+</ol>
+
+
+<h4>4年 vs 4天</h4>
+
+<p>虽然拖的时间很长（4年），但是事实上加起来搭建它的所有时间差不多是4天。</p>
+
+<ol>
+<li>单独测试URM模块</li>
+<li>单独测试电机驱动L298N模块</li>
+</ol>
+
+
+<p>我发现，其实硬件开发和软件一样，化分模块，小步前进，测试，持续集成等等概念可以很好的运用其中，而且效果极好，比如我的小车基本上可以划分为这样几个小功能的逐步实现：</p>
+
+<ol>
+<li>测距模块的单独启动</li>
+<li>测距模块控制一个LED（距离小于5cm，点亮一个LED）</li>
+<li>电机的单独启动（正转，反转）</li>
+<li>测距模块控制电机（距离小于5cm，转动电机）</li>
+<li>多个电机联合（如何联线）</li>
+<li>测距模块控制多个电机</li>
+</ol>
+
+
+<p>当到达最后一步时，基本上所有要验证的功能都已经就绪了，只需要拼装在小车的底座上，进行集成测试即可。其实，当划分好任务之后，每一个小的任务都不会花费很多时间。</p>
+
+<h4>故障</h4>
+
+<p>当我兴高采烈的去掉USB线，加上一个7.2V的电池给整个系统时，URM37测距模块伴随着浓郁的电器焦味中烧坏了，就是因为一个跳线的连接不当。这个系统中，电机需要单独加电，但是由于我自己电气知识的匮乏，导致了这个悲剧的发生。</p>
+
+<p>不过，我又在Office的CASA团队的桌子上发现了另外一个测距模块，不过这次只经过了15分钟就完成了替换掉了老板子，换上了新的测距模块。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;NewPing.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define TRIGGER_PIN  12  </span><span class="c1">// 12端口</span>
+</span><span class='line'><span class="cp">#define ECHO_PIN     11  </span><span class="c1">// 11端口</span>
+</span><span class='line'><span class="cp">#define MAX_DISTANCE 400</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">ledpin</span> <span class="o">=</span> <span class="mi">13</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NewPing</span> <span class="n">sonar</span><span class="p">(</span><span class="n">TRIGGER_PIN</span><span class="p">,</span> <span class="n">ECHO_PIN</span><span class="p">,</span> <span class="n">MAX_DISTANCE</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">setup</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">begin</span><span class="p">(</span><span class="mi">9600</span><span class="p">);</span> <span class="c1">// Sets the baud rate to 9600</span>
+</span><span class='line'>  <span class="n">pinMode</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>   <span class="c1">//设置13号口为输出</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">loop</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">uS</span> <span class="o">=</span> <span class="n">sonar</span><span class="p">.</span><span class="n">ping</span><span class="p">();</span> <span class="c1">// 把扫描时间转化成us</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">dis</span> <span class="o">=</span> <span class="n">uS</span> <span class="o">/</span> <span class="n">US_ROUNDTRIP_CM</span><span class="p">;</span> <span class="c1">//转成距离</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">dis</span> <span class="o">&lt;=</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">LOW</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Distance = &quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">dis</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">delay</span><span class="p">(</span><span class="mi">150</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>安装过程</h4>
+
+<p>测距模块很早之前就<a href="http://icodeit.org/2012/01/arduino%E8%B6%85%E5%A3%B0%E6%B3%A2%E6%B5%8B%E8%B7%9D%E6%A8%A1%E5%9D%97%E4%BD%BF%E7%94%A8/">已经整理过</a>了，可以看看这里。不过我最后的成品已经没有使用URM37了，取而代之的是HC-SR04。</p>
+
+<p>连接电机与电机驱动模块：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/06/motor-resized.png" alt="image" /></p>
+
+<p>第一次焊接电机，话说这种电机的触头也太粗糙了吧，不自己焊接的话，根本就用不成，完全没有进入模块化世界。</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/06/motor-repaired-resized.png" alt="image" /></p>
+
+<p>连接之后
+<img src="http://abruzzi.github.com/images/2014/06/motors-connected-resized.png" alt="image" /></p>
+
+<p>装车
+<img src="http://abruzzi.github.com/images/2014/06/4w-car-resized.png" alt="image" /></p>
+
+<p><img src="http://abruzzi.github.com/images/2014/06/debug-car-resized.png" alt="image" /></p>
+
+<h4>最终的代码</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;NewPing.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define TRIGGER_PIN  12  </span><span class="c1">// 12端口</span>
+</span><span class='line'><span class="cp">#define ECHO_PIN     11  </span><span class="c1">// 11端口</span>
+</span><span class='line'><span class="cp">#define MAX_DISTANCE 400</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">E1</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">M1</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">E2</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">M2</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">ledpin</span> <span class="o">=</span> <span class="mi">13</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">setup</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">begin</span><span class="p">(</span><span class="mi">9600</span><span class="p">);</span>                  <span class="c1">// Sets the baud rate to 9600</span>
+</span><span class='line'>  <span class="n">pinMode</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>   <span class="c1">//设置13号口为输出</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">pinMode</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">pinMode</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">LOW</span><span class="p">);</span> <span class="c1">//灭掉LED  </span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">delay</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span> <span class="c1">//Give sensor some time to start up --Added By crystal  from Singapo, Thanks Crystal.</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">advance</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span><span class="n">HIGH</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span><span class="n">HIGH</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">backoff</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span><span class="n">LOW</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span><span class="n">LOW</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">left</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span><span class="n">LOW</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span><span class="n">HIGH</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">150</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">150</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">right</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span><span class="n">HIGH</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span><span class="n">LOW</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">150</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">150</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">stop</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">NewPing</span> <span class="n">sonar</span><span class="p">(</span><span class="n">TRIGGER_PIN</span><span class="p">,</span> <span class="n">ECHO_PIN</span><span class="p">,</span> <span class="n">MAX_DISTANCE</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="nf">loop</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">uS</span> <span class="o">=</span> <span class="n">sonar</span><span class="p">.</span><span class="n">ping</span><span class="p">();</span> <span class="c1">// 把扫描时间转化成us</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">dis</span> <span class="o">=</span> <span class="n">uS</span> <span class="o">/</span> <span class="n">US_ROUNDTRIP_CM</span><span class="p">;</span> <span class="c1">//转成距离</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">dis</span> <span class="o">&lt;=</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">stop</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">left</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">advance</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">LOW</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Distance = &quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">dis</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">delay</span><span class="p">(</span><span class="mi">150</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>体会</h4>
+
+<ol>
+<li>和开发软件一样，硬件开发也可以使用“敏捷开发”</li>
+<li>实用主义，比如bluetip的使用，杜邦线拼接等</li>
+<li>迭代开发，小步快跑</li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Web是怎么工作的: CGI脚本]]></title>
@@ -3906,109 +4257,6 @@
 
 
 <p>有了<code>car</code>,<code>cdr</code>，对于既定的list，我们总是可以将其遍历（这在宏中非常有用）。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[在Mac下搭建Common Lisp开发环境(Emacs)]]></title>
-    <link href="http://abruzzi.github.com/2013/06/setup-lisp-development-env-on-mac/"/>
-    <updated>2013-06-03T16:22:00+10:00</updated>
-    <id>http://abruzzi.github.com/2013/06/setup-lisp-development-env-on-mac</id>
-    <content type="html"><![CDATA[<h4>Lisp编译器（解释器）</h4>
-
-<p>首先需要一个Lisp的编译器，<a href="http://www.sbcl.org/platform-table.html">SBCL</a>是一个开源的实现，支持所有POSIX平台。你可以选择从源码编译，也可以下载二进制包。而由于使用mac，可以用强大的homebrew来安装：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ brew install sbcl</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>简单使用</h5>
-
-<p>使用<code>sbcl</code>启动交互环境，如果用lisp的术语来说，这是一个REPL(read–eval–print loop )。这个环境中就可以尝试Common Lisp编程了。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sbcl
-</span><span class='line'>
-</span><span class='line'>This is SBCL 1.1.7.0-aeb9307, an implementation of ANSI Common Lisp.
-</span><span class='line'>More information about SBCL is available at &lt;http://www.sbcl.org/&gt;.
-</span><span class='line'>
-</span><span class='line'>SBCL is free software, provided as is, with absolutely no warranty.
-</span><span class='line'>It is mostly in the public domain; some portions are provided under
-</span><span class='line'>BSD-style licenses.  See the CREDITS and COPYING files in the
-</span><span class='line'>distribution for more information.
-</span><span class='line'>
-</span><span class='line'>* (+ 1 2 3 4 5 6)
-</span><span class='line'>**21**
-</span><span class='line'>
-</span><span class='line'>* (quit)
-</span><span class='line'>
-</span><span class='line'>$</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但是这个环境对开发者不是非常友好，比如不支持上下键导航，不支持左右键，非常原始，可以使用Emacs来作为开发环境，当然如果你更喜欢vim（像我一样），也没有任何问题。不过这是一个很好的学习Emacs编辑环境的机会，可以尝试一下。</p>
-
-<h4>Emacs + Slime</h4>
-
-<p><a href="http://common-lisp.net/project/slime/">Slime</a>是一个Emacs下开发Common Lisp程序的一个插件，它本身就是由lisp写成的，下载之后是一个压缩包，将其解压缩到<code>~/.eamcs.d/</code>目录中即可。
-然后在<code>~/.emacs</code>文件中添加下面的配置：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>; slime setup
-</span><span class='line'>(setq inferior-lisp-program "/usr/local/bin/sbcl")
-</span><span class='line'>(add-to-list 'load-path "~/.emacs.d/slime/")
-</span><span class='line'>(require 'slime)
-</span><span class='line'>(slime-setup)</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>Emacs的“开发者”配置</h5>
-
-<p>默认的eamcs界面比较简陋，我的vim使用的solarized主题，觉得配色非常合理，结果在github上发现了其对应的<a href="https://github.com/sellout/emacs-color-theme-solarized">emacs主题</a>。现在之后，同样解压在<code>~/.emacs.d/</code>目录中，然后在<code>~/.emacs</code>加上一下配置即可。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>; color theme setup 
-</span><span class='line'>(add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized/")
-</span><span class='line'>(load-theme 'solarized-dark t)
-</span><span class='line'>
-</span><span class='line'>; hide the tool bar
-</span><span class='line'>(tool-bar-mode -1)
-</span><span class='line'>
-</span><span class='line'>; set the font
-</span><span class='line'>(set-face-attribute 'default nil :font "Monaco")
-</span><span class='line'>(set-face-attribute 'default nil :height 170)
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>效果图</h4>
-
-<p><img src="http://abruzzi.github.com/images/2013/06/emacs.resized.png" alt="image" /></p>
 ]]></content>
   </entry>
   

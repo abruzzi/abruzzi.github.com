@@ -9,9 +9,8 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Alfred简介 Alfred是Mac下的一个小工具，可以极大的提高使用计算机的效率。Alfred提供非常丰富的功能集，比如： 基本的文件/目录查找功能
-应用程序加载器
-快速的搜索（google，wikipedia） powerpack Alfred本身是免费的，但是一些高级的功能，如： &hellip;">
+  <meta name="description" content="Lisp编译器（解释器） 首先需要一个Lisp的编译器，SBCL是一个开源的实现，支持所有POSIX平台。你可以选择从源码编译，也可以下载二进制包。而由于使用mac，可以用强大的homebrew来安装： 1
+$ brew install sbcl 简单使用 使用sbcl启动交互环境， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +80,136 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/06/setup-lisp-development-env-on-mac/">在Mac下搭建Common Lisp开发环境(Emacs)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-03T16:22:00+10:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>Lisp编译器（解释器）</h4>
+
+<p>首先需要一个Lisp的编译器，<a href="http://www.sbcl.org/platform-table.html">SBCL</a>是一个开源的实现，支持所有POSIX平台。你可以选择从源码编译，也可以下载二进制包。而由于使用mac，可以用强大的homebrew来安装：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ brew install sbcl</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>简单使用</h5>
+
+<p>使用<code>sbcl</code>启动交互环境，如果用lisp的术语来说，这是一个REPL(read–eval–print loop )。这个环境中就可以尝试Common Lisp编程了。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ sbcl
+</span><span class='line'>
+</span><span class='line'>This is SBCL 1.1.7.0-aeb9307, an implementation of ANSI Common Lisp.
+</span><span class='line'>More information about SBCL is available at &lt;http://www.sbcl.org/&gt;.
+</span><span class='line'>
+</span><span class='line'>SBCL is free software, provided as is, with absolutely no warranty.
+</span><span class='line'>It is mostly in the public domain; some portions are provided under
+</span><span class='line'>BSD-style licenses.  See the CREDITS and COPYING files in the
+</span><span class='line'>distribution for more information.
+</span><span class='line'>
+</span><span class='line'>* (+ 1 2 3 4 5 6)
+</span><span class='line'>**21**
+</span><span class='line'>
+</span><span class='line'>* (quit)
+</span><span class='line'>
+</span><span class='line'>$</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是这个环境对开发者不是非常友好，比如不支持上下键导航，不支持左右键，非常原始，可以使用Emacs来作为开发环境，当然如果你更喜欢vim（像我一样），也没有任何问题。不过这是一个很好的学习Emacs编辑环境的机会，可以尝试一下。</p>
+
+<h4>Emacs + Slime</h4>
+
+<p><a href="http://common-lisp.net/project/slime/">Slime</a>是一个Emacs下开发Common Lisp程序的一个插件，它本身就是由lisp写成的，下载之后是一个压缩包，将其解压缩到<code>~/.eamcs.d/</code>目录中即可。
+然后在<code>~/.emacs</code>文件中添加下面的配置：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>; slime setup
+</span><span class='line'>(setq inferior-lisp-program "/usr/local/bin/sbcl")
+</span><span class='line'>(add-to-list 'load-path "~/.emacs.d/slime/")
+</span><span class='line'>(require 'slime)
+</span><span class='line'>(slime-setup)</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Emacs的“开发者”配置</h5>
+
+<p>默认的eamcs界面比较简陋，我的vim使用的solarized主题，觉得配色非常合理，结果在github上发现了其对应的<a href="https://github.com/sellout/emacs-color-theme-solarized">emacs主题</a>。现在之后，同样解压在<code>~/.emacs.d/</code>目录中，然后在<code>~/.emacs</code>加上一下配置即可。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>; color theme setup 
+</span><span class='line'>(add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized/")
+</span><span class='line'>(load-theme 'solarized-dark t)
+</span><span class='line'>
+</span><span class='line'>; hide the tool bar
+</span><span class='line'>(tool-bar-mode -1)
+</span><span class='line'>
+</span><span class='line'>; set the font
+</span><span class='line'>(set-face-attribute 'default nil :font "Monaco")
+</span><span class='line'>(set-face-attribute 'default nil :height 170)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>效果图</h4>
+
+<p><img src="http://abruzzi.github.com/images/2013/06/emacs.resized.png" alt="image" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1208,86 +1337,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/03/cycling/">Cycling</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-10T15:34:00+11:00" pubdate data-updated="true">Mar 10<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>昆明骑行</h3>
-
-<h4>首次骑行</h4>
-
-<p>从城西出发，骑到城北长虫山，到龙凤公墓集合，然后沿着小哨，大哨，最后从金殿后山返回。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-1st.resized.jpg" alt="image" /></p>
-
-<p>整个路线大概80公里，山中时而风雨大作，时而阳光遍地，依稀记得中午休息时，山里某个农家乐里的带皮羊肉火锅滋味鲜美无比。</p>
-
-<h4>东大花椒鸡</h4>
-
-<p>云青青兮欲雨，水澹澹兮生烟。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-dongda-2.resized.jpg" alt="image" /></p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-dongda-chicken.resized.jpg" alt="image" /></p>
-
-<h4>夜骑宝珠寺</h4>
-
-<p>宝珠寺在昆明城西，寺在山脚下，整个骑行路线全是上坡，而且有好几公里的坡度巨大，算是一个骑行初级班和进阶班的分水岭。事实上，和同事骑行宝珠寺，从来没有去看过“宝珠寺”本身。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-baozhu.resized.jpg" alt="image" /></p>
-
-<p>宝珠寺山顶附近有了泉，有很多人开车去山上打泉水。我们曾用脉动的瓶子装了些，但是终于没有敢喝。在夜间骑行感觉非常诡异，山中非常黑，只有一条灰白色的公路，偶尔有车子开过，会有一点光闪过，由于坡度非常陡峭，可以听到头顶上有下坡朋友在单车上高声呼啸而过。骑到高处，俯瞰城市，山坳里的昆明城尽收眼底。</p>
-
-<p>从山上起下来之后，去城西的烧烤摊上点一些酒肉，和朋友们扯扯淡，然后再沿着空旷的街道返回。</p>
-
-<h4>卧云山</h4>
-
-<p>从宝珠寺顶一直往西北，过了筇竹寺，然后一路往西，骑到卧云山下吃午饭，貌似每个地方的花椒鸡都各有特色，这种蘸着花椒蘸水的吃饭比东大的好吃一些：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-woyun-chicken.resized.jpg" alt="image" /></p>
-
-<p>到达卧云山顶，小转盘附近：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/kunming-cycling-woyun.resized.jpg" alt="image" /></p>
-
-<h3>西安骑行</h3>
-
-<h4>沣峪口</h4>
-
-<p>毫无疑问，西安骑行的经历是最糟糕的了：第一次是从南三环，沿太白南路往北，骑到老城墙，穿城而过，然后到北二环，再从城北骑回来；第二次路线和第一次差不多，不过是跟孙曼思一起，而且是和不过骑得更远，到了草滩附近；第三次是往南，跟孙曼思，还有三个同事，骑行沣峪口，恰遇极为严重的沙尘暴，当时PM2.5已经过千。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/03/xian-cycling-3rd.resized.jpg" alt="image" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/4/">&larr; Older</a>
@@ -1305,6 +1354,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2014/06/my-4w-robot-built-on-top-of-arduino/">我的第一个Arduino机器人</a>
+      </li>
+    
+      <li class="post">
         <a href="/2014/04/how-web-works-cgi/">Web是怎么工作的: CGI脚本</a>
       </li>
     
@@ -1318,10 +1371,6 @@
     
       <li class="post">
         <a href="/2014/04/intro-map-gis/">GIS系统如何工作</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2014/01/how-to-test-service-in-angularjs/">如何测试AngularJS中的Service</a>
       </li>
     
   </ul>

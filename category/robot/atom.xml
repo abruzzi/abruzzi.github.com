@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: robot | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/robot/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2014-06-02T00:28:46+10:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[我的第一个Arduino机器人]]></title>
+    <link href="http://abruzzi.github.com/2014/06/my-4w-robot-built-on-top-of-arduino/"/>
+    <updated>2014-06-01T15:21:00+10:00</updated>
+    <id>http://abruzzi.github.com/2014/06/my-4w-robot-built-on-top-of-arduino</id>
+    <content type="html"><![CDATA[<h3>我的第一个机器人</h3>
+
+<p><img src="/images/2014/06/install-together-resized.png" alt="image" /></p>
+
+<p>虽然迟了4年，但是我终于完成了我的第一台机器人的安装和配置。</p>
+
+<ol>
+<li>基于Arduino的<a href="http://arduino.cc/en/Main/arduinoBoard">Duemilanove开发板</a></li>
+<li>可以躲开障碍物继续前进（有距离探测器，与障碍物的距离小于20cm时会自动转向）</li>
+<li>4轮驱动</li>
+</ol>
+
+
+<p>我回忆了一下，这块板子和外设是我2010年3月在昆明的时候买的，那段时间对硬件突然有了极高的热情，但是买了之后准备开始之际，发现了几点困难：</p>
+
+<ol>
+<li>当时航空管制，电池不能空运，因此网购的小车没有电池</li>
+<li>缺乏基本的硬件常识，四个电机如何接在两个电机端口上</li>
+<li>不会焊接电机</li>
+<li>没有买杜邦线，没有测试用的面包板</li>
+</ol>
+
+
+<p>基于这些困难，又加上我当时在找工作，准备面试之类，机器人的制造就放了下来。结果一放就是4年，中途从昆明搬家回到西安，不过细心的孙曼思将那一大包的零部件都打包好带了回来，多亏她认真负责的态度，才让这个机器人的产生有了可能。</p>
+
+<h4>ThoughtWorks西安硬件小组</h4>
+
+<p>2013年，在ThoughtWorks的西安Office有了硬件小组，他们研究开源硬件，以及这些小芯片在实际环境中的应用。比如RCA的高亮，做出了一个“半自动”地移动上的story的产品。2014年Hackday的时候，CASA团队又做出了一个看房机器人Dora，dora可以在房间中移动，由于装置了一个摄像头，因此可以实时的看到它看到的东西，而且Dora有安装了无线模块，你可以在远程操控它并得到实时图像。</p>
+
+<p>好了，这么多铺垫事实上是有意义的，如果没有西安Office的硬件小组，我的这个机器人的诞生可能又需要若干年。它给我提供了丰富的资源，比如：</p>
+
+<ol>
+<li>有丰富硬件经验的张新宇，高亮，王超，可以让我很容易问问题并得到答案</li>
+<li>张新宇帮我焊了一个电源的接头</li>
+<li>王超提供了一个7.2V的电池</li>
+<li>高亮的百宝箱中有一个9V电池盒</li>
+<li>CASA团队桌子上开发Dora的一些下脚料</li>
+<li>杜邦线，热缩管，电烙铁，松香，镊子，钳子，各种螺丝刀等等</li>
+</ol>
+
+
+<h4>4年 vs 4天</h4>
+
+<p>虽然拖的时间很长（4年），但是事实上加起来搭建它的所有时间差不多是4天。</p>
+
+<ol>
+<li>单独测试URM模块</li>
+<li>单独测试电机驱动L298N模块</li>
+</ol>
+
+
+<p>我发现，其实硬件开发和软件一样，化分模块，小步前进，测试，持续集成等等概念可以很好的运用其中，而且效果极好，比如我的小车基本上可以划分为这样几个小功能的逐步实现：</p>
+
+<ol>
+<li>测距模块的单独启动</li>
+<li>测距模块控制一个LED（距离小于5cm，点亮一个LED）</li>
+<li>电机的单独启动（正转，反转）</li>
+<li>测距模块控制电机（距离小于5cm，转动电机）</li>
+<li>多个电机联合（如何联线）</li>
+<li>测距模块控制多个电机</li>
+</ol>
+
+
+<p>当到达最后一步时，基本上所有要验证的功能都已经就绪了，只需要拼装在小车的底座上，进行集成测试即可。其实，当划分好任务之后，每一个小的任务都不会花费很多时间。</p>
+
+<h4>故障</h4>
+
+<p>当我兴高采烈的去掉USB线，加上一个7.2V的电池给整个系统时，URM37测距模块伴随着浓郁的电器焦味中烧坏了，就是因为一个跳线的连接不当。这个系统中，电机需要单独加电，但是由于我自己电气知识的匮乏，导致了这个悲剧的发生。</p>
+
+<p>不过，我又在Office的CASA团队的桌子上发现了另外一个测距模块，不过这次只经过了15分钟就完成了替换掉了老板子，换上了新的测距模块。</p>
+
+<p>```c</p>
+
+<h1>include &lt;NewPing.h></h1>
+
+<h1>define TRIGGER_PIN  12  // 12端口</h1>
+
+<h1>define ECHO_PIN     11  // 11端口</h1>
+
+<h1>define MAX_DISTANCE 400</h1>
+
+<p>int ledpin = 13;</p>
+
+<p>NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);</p>
+
+<p>void setup() {
+  Serial.begin(9600); // Sets the baud rate to 9600
+  pinMode(ledpin, OUTPUT);   //设置13号口为输出
+}</p>
+
+<p>void loop()
+{
+  unsigned int uS = sonar.ping(); // 把扫描时间转化成us
+  int dis = uS / US_ROUNDTRIP_CM; //转成距离</p>
+
+<p>  if (dis &lt;= 20) {</p>
+
+<pre><code>digitalWrite(ledpin, HIGH);    
+</code></pre>
+
+<p>  } else {</p>
+
+<pre><code>digitalWrite(ledpin, LOW);  
+</code></pre>
+
+<p>  }</p>
+
+<p>  Serial.print("Distance = ");
+  Serial.println(dis);</p>
+
+<p>  delay(150);
+}
+```</p>
+
+<h4>安装过程</h4>
+
+<p>测距模块很早之前就<a href="http://icodeit.org/2012/01/arduino%E8%B6%85%E5%A3%B0%E6%B3%A2%E6%B5%8B%E8%B7%9D%E6%A8%A1%E5%9D%97%E4%BD%BF%E7%94%A8/">已经整理过</a>了，可以看看这里。不过我最后的成品已经没有使用URM37了，取而代之的是HC-SR04。</p>
+
+<p>连接电机与电机驱动模块：</p>
+
+<p><img src="/images/2014/06/motor-resized.png" alt="image" /></p>
+
+<p>第一次焊接电机，话说这种电机的触头也太粗糙了吧，不自己焊接的话，根本就用不成，完全没有进入模块化世界。</p>
+
+<p><img src="/images/2014/06/motor-repaired-resized.png" alt="image" /></p>
+
+<p>连接之后
+<img src="/images/2014/06/motors-connected-resized.png" alt="image" /></p>
+
+<p>装车
+<img src="/images/2014/06/4w-car-resized.png" alt="image" /></p>
+
+<p><img src="/images/2014/06/debug-car-resized.png" alt="image" /></p>
+
+<h4>最终的代码</h4>
+
+<p>```c</p>
+
+<h1>include &lt;NewPing.h></h1>
+
+<h1>define TRIGGER_PIN  12  // 12端口</h1>
+
+<h1>define ECHO_PIN     11  // 11端口</h1>
+
+<h1>define MAX_DISTANCE 400</h1>
+
+<p>int E1 = 6;
+int M1 = 7;</p>
+
+<p>int E2 = 5;                       <br/>
+int M2 = 4;</p>
+
+<p>int ledpin = 13;</p>
+
+<p>void setup() {
+  Serial.begin(9600);                  // Sets the baud rate to 9600
+  pinMode(ledpin, OUTPUT);   //设置13号口为输出</p>
+
+<p>  pinMode(M1, OUTPUT);
+  pinMode(M2, OUTPUT);</p>
+
+<p>  digitalWrite(ledpin, LOW); //灭掉LED</p>
+
+<p>  delay(200); //Give sensor some time to start up --Added By crystal  from Singapo, Thanks Crystal.
+}</p>
+
+<p>void advance() {</p>
+
+<pre><code>digitalWrite(M1,HIGH);          
+digitalWrite(M2,HIGH);
+analogWrite(E1, 200);
+analogWrite(E2, 200);
+</code></pre>
+
+<p>}</p>
+
+<p>void backoff() {</p>
+
+<pre><code>digitalWrite(M1,LOW);          
+digitalWrite(M2,LOW);
+analogWrite(E1, 200);
+analogWrite(E2, 200);
+</code></pre>
+
+<p>}</p>
+
+<p>void left() {</p>
+
+<pre><code>digitalWrite(M1,LOW);
+digitalWrite(M2,HIGH);
+analogWrite(E1, 150);
+analogWrite(E2, 150);
+delay(1000);
+</code></pre>
+
+<p>}</p>
+
+<p>void right() {</p>
+
+<pre><code>digitalWrite(M1,HIGH);
+digitalWrite(M2,LOW);
+analogWrite(E1, 150);
+analogWrite(E2, 150);
+delay(1000);
+</code></pre>
+
+<p>}</p>
+
+<p>void stop() {</p>
+
+<pre><code>analogWrite(E1, 0);
+analogWrite(E2, 0);
+</code></pre>
+
+<p>}</p>
+
+<p>NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);</p>
+
+<p>void loop()
+{
+  unsigned int uS = sonar.ping(); // 把扫描时间转化成us
+  int dis = uS / US_ROUNDTRIP_CM; //转成距离</p>
+
+<p>  if (dis &lt;= 20) {</p>
+
+<pre><code>stop();
+left();
+delay(30);
+digitalWrite(ledpin, HIGH);    
+</code></pre>
+
+<p>  } else {</p>
+
+<pre><code>advance();
+delay(30);
+digitalWrite(ledpin, LOW);  
+</code></pre>
+
+<p>  }</p>
+
+<p>  Serial.print("Distance = ");
+  Serial.println(dis);</p>
+
+<p>  delay(150);
+}</p>
+
+<p>```</p>
+
+<h4>体会</h4>
+
+<ol>
+<li>和开发软件一样，硬件开发也可以使用“敏捷开发”</li>
+<li>实用主义，比如bluetip的使用，杜邦线拼接等</li>
+<li>迭代开发，小步快跑</li>
+</ol>
+
+]]></content>
+  </entry>
+  
+</feed>
