@@ -12,7 +12,13 @@ categories:
 
 ### 我的第一个机器人
 
-![image](/images/2014/06/install-together-resized.png)
+以我的视角拍摄的机器人
+
+<embed src="http://player.youku.com/player.php/sid/XNzIwNzE4NjYw/v.swf" allowFullScreen="true" quality="high" width="480" height="400" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed>
+
+以机器人自身的视角拍摄的
+
+<embed src="http://player.youku.com/player.php/sid/XNzIwNzI4NDQw/v.swf" allowFullScreen="true" quality="high" width="480" height="400" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed>
 
 虽然迟了4年，但是我终于完成了我的第一台机器人的安装和配置。
 
