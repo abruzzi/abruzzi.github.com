@@ -35,6 +35,9 @@ footer: true
 -    [将 Apache httpd 作为应用开发平台](http://www.ibm.com/developerworks/cn/opensource/os-cn-apachehttpd/index.html)
 -    [使用 Google V8 引擎开发可定制的应用程序](http://www.ibm.com/developerworks/cn/opensource/os-cn-v8engine/)
 
+### 发表在InfoQ上的文章
+-   [全球地震信息的可视化](http://www.infoq.com/cn/articles/visualization-of-the-global-seismic-system)
+
 ### 其他信息
 *    籍贯：陕西.铜川
 *    *现居：云南.昆明*
