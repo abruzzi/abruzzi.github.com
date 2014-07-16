@@ -44,5 +44,6 @@ footer: true
 *    现居：陕西.西安
 
 ### 你可以通过这个地址联系到我： 
-**juntao dot qiu at gmail dot com** 或者 **kmustlinux at gmail dot com**
+
+`juntao.qiu` &#64; `gmail.com` 或者 `kmustlinux` &#64; `gmail.com`
 
