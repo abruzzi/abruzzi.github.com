@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-07-16T11:32:49+10:00</updated>
+  <updated>2014-08-25T23:45:26+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,136 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[SVN中合并分支]]></title>
+    <link href="http://abruzzi.github.com/2014/08/how-to-merge-branches-in-svn/"/>
+    <updated>2014-08-25T22:42:00+10:00</updated>
+    <id>http://abruzzi.github.com/2014/08/how-to-merge-branches-in-svn</id>
+    <content type="html"><![CDATA[<h3>分支策略</h3>
+
+<p>本来准备整理一篇版本管理中，关于分支的维护策略。后来看到阮一峰老师的<a href="http://www.ruanyifeng.com/blog/2012/07/git.html">这篇文章</a>，觉得非常清晰，这里给出一个链接供参考。</p>
+
+<p>另外一个有意思的<a href="http://codicesoftware.blogspot.com/2008/08/4-steps-to-make-version-control-shine.html">链接在这里</a>，也可以一并参看。</p>
+
+<p>本文就仅仅简单的描述一下，使用svn的命令行工具，如何具体完成合并的操作：</p>
+
+<h3>在Svn中合并分支</h3>
+
+<p>在svn中，要合并两个分支（通常是将某个分支b合并到trunk上，不过另一种模式下也可以将trunk合并到b上）非常简单，我们以一个简单的例子来说明其步骤。</p>
+
+<p>比如我们要将trunk上的修改合并到分支b上，操作可以分为4步：</p>
+
+<ol>
+<li>切换到分支b上（之前执行过<code>svn co /path/branches/b</code>之后的目录）</li>
+<li>使用<code>svn log --stop-on-copy</code>命令得到该分支的最早版本号</li>
+<li>使用<code>svn merge --dry-run -rXXX:HEAD /path/trunk</code>来预览合并列表</li>
+<li>合并</li>
+</ol>
+
+
+<p>在第二步中，一个典型的输出是这样的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn log --stop-on-copy
+</span><span class='line'>...
+</span><span class='line'>
+</span><span class='line'>r231625 | juntao | 2014-07-10 13:33:36 +1000 <span class="o">(</span>Thu, 10 Jul 2014<span class="o">)</span> | 1 line
+</span><span class='line'>
+</span><span class='line'>Juntao Change the version in pom.xml
+</span><span class='line'>------------------------------------------------------------------------
+</span><span class='line'>r231623 | abruzzi | 2014-07-10 13:22:00 +1000 <span class="o">(</span>Thu, 10 Jul 2014<span class="o">)</span> | 1 line
+</span><span class='line'>
+</span><span class='line'>Spike on data structure of c-wifi, a workable prototype
+</span><span class='line'>------------------------------------------------------------------------
+</span><span class='line'>r231610 | juntao | 2014-07-10 12:29:01 +1000 <span class="o">(</span>Thu, 10 Jul 2014<span class="o">)</span> | 1 line
+</span><span class='line'>
+</span><span class='line'>Create a new branch <span class="k">for </span>c-wifi
+</span><span class='line'>------------------------------------------------------------------------
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一旦有了这个修订号(231610)，就可以开始合并了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn merge --dry-run -r231610:HEAD /path/trunk
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个命令会列出从修订好r231610到当前版本之中，trunk和分支b之间的所有需要合并的文件列表：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>--- Merging r235763 through r236311 into <span class="s1">&#39;src/test/java&#39;</span>:
+</span><span class='line'>U    src/test/java/tcom/checkout/CheckoutServiceTest.java
+</span><span class='line'>U    src/test/java/bundles/checkout/accordion/AppointmentTest.java
+</span><span class='line'>U    src/test/java/common/service/ServiceHandlerTest.java
+</span><span class='line'>...
+</span><span class='line'>Summary of conflicts:
+</span><span class='line'>  Text conflicts: 2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，svn会给出冲突信息（如果有的话），这时，我们来决定是否合并，以及合并哪些修订号区间的修改。如果预览之后觉得可以直接合并，则可以直接运行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn merge -r231610:HEAD /path/trunk
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>过程中，遇到冲突的情况，svn会询问采取哪种方式来处理</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>Select: <span class="o">(</span>p<span class="o">)</span> postpone, <span class="o">(</span>df<span class="o">)</span> diff-full, <span class="o">(</span>e<span class="o">)</span> edit,
+</span><span class='line'>        <span class="o">(</span>mc<span class="o">)</span> mine-conflict, <span class="o">(</span>tc<span class="o">)</span> theirs-conflict,
+</span><span class='line'>        <span class="o">(</span>s<span class="o">)</span> show all options: p
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果拿不准，可以使用<code>p</code>子命令，然后等到最后在IDE或者编辑器中合并，如果想要丢弃自己的修改，使用<code>tc</code>子命令；如果要丢弃别人的修改，使用<code>mc</code>子命令。</p>
+
+<p>最后，在编辑器中修改完了这些冲突之后，使用:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn resolved pom.xml
+</span><span class='line'>Resolved conflicted state of <span class="s1">&#39;pom.xml&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>来标记该冲突已经被解决。最后，运行测试并提交本次修改：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>mvn clean <span class="nb">test</span>
+</span><span class='line'><span class="nv">$ </span>svn ci -m <span class="s2">&quot;Merge branch b with trunk&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[我的第一个Arduino机器人]]></title>
@@ -4071,198 +4201,6 @@
 <hr />
 
 <p>附：文中部分代码示例来源于《ANSI Common Lisp》一书。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[common lisp 里的一些基本概念]]></title>
-    <link href="http://abruzzi.github.com/2013/06/common-lisp-basic/"/>
-    <updated>2013-06-13T16:15:00+10:00</updated>
-    <id>http://abruzzi.github.com/2013/06/common-lisp-basic</id>
-    <content type="html"><![CDATA[<h3>Common Lisp</h3>
-
-<p>之前一直说JavaScript是一门被误解很深的语言，现在学习了一段时间Lisp后发现，Lisp才是！Lisp一直为人所诟病的是它虽然很强大，但是有点学院派，难当大用。但是读了七，八章<a href="http://book.douban.com/subject/6859720/">《Practical Common Lisp》</a>和几章<a href="http://book.douban.com/subject/1456906/">《ANSI Common Lisp》</a>之后发现，怎么就学院派了，其他编程语言能处理的，Lisp一样可以处理，其他语言处理不了的（或者很繁琐的，比如java中的循环，map之类），Lisp却能处理。</p>
-
-<p>Lisp本质上是一个抽象语法树（AST）而已，但是又提供了一些操作这个AST的方法（比如强大的宏），这样很容易用Lisp开发出来一个新的DSL。用函数式编程的好处之一就是在编写完一个应用程序之后，通常还可以获得一个新的语言（于业务领域很匹配的语言）。</p>
-
-<p><a href="http://zh.wikipedia.org/wiki/Common_Lisp">Common Lisp</a>本身是Lisp的一个方言，是有一个标准来定义，其目的是为了标准化众多的Lisp分支而定。</p>
-
-<h4>sbcl环境</h4>
-
-<p><a href="http://icodeit.org/2013/06/setup-lisp-development-env-on-mac/">上一篇文章</a>已经介绍了如何在Mac下配置Common Lisp的开发环境：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/06/sbcl.resized.png" alt="image" /></p>
-
-<h4>引用（quote）</h4>
-
-<p>由于在Lisp中，数据和代码都是通过S-expr来表示，所以需要用一种标记法来告诉解释器：这个表达式表示数据/代码。这就是引用的作用：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (+ 1 2 3 4 5)
-</span><span class='line'>15
-</span><span class='line'>
-</span><span class='line'>&gt; '(+ 1 2 3 4 5)
-</span><span class='line'>(+ 1 2 3 4 5)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>解释器会将s-expr的第一项作为函数(car)，而将后续的元素(cdr)作为参数传递给第一项来调用，并求值。可以通过引用（quote）来阻止解释器这样解释。</p>
-
-<h4>反引号(`)</h4>
-
-<p>与引用对应的，有一个反引号形式的引用(在键盘上1的左边)。一般的用法上，它与<code>quote</code>的含义一样，都是防止解释器解释被引用的列表。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt;`(a b c)
-</span><span class='line'>(a b c)
-</span><span class='line'>
-</span><span class='line'>&gt;`(a b (+ 1 2))
-</span><span class='line'>(a b (+ 1 2))</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p>但是，反引号引用的列表提供了重新启动求值的能力，这……，我的意思是，如上式中，如果想要将<code>(+1 2)</code>这个子列表求值，怎么做到呢？反引号引用提供了这个能力，用逗号(,)作为子列表的前缀即可：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt;`(a b ,(+ 1 2))
-</span><span class='line'>(a b 3)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个当然在此刻看起来毫无用处，或者感觉略有画蛇添足之嫌，但是在宏中，这个操作符却有很广泛的用途，这里有一个有意思的例子：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defun foo (x) 
-</span><span class='line'>  (only (&gt; x 10) (format t "big than 10")))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们可以通过<code>if</code>来实现此处的only，当only之后的条件满足的话，就执行后续的所有语句：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro only (condition &rest body)
-</span><span class='line'>  `(if ,condition (progn ,@body)))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>此处可以看到，对于宏代码体中，有部分代码我们不需要引用，如(if, progn)，而另外一部分则需要解释器真实地去解释来获得值。另外，我们需要宏本身返回一个列表(被引用的列表)。</p>
-
-<h4>通用的循环（do）</h4>
-
-<p><code>do</code>是Lisp中通用的处理迭代的操作符，可以在其中创建局部变量：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(do ((i 0 (1+ i)))
-</span><span class='line'>    ((&gt;= i 4))
-</span><span class='line'>  (print i))</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>do</code>的格式比较复杂：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(do (variable-definition*)
-</span><span class='line'>  (end-test-form result-form*)
-</span><span class='line'>  statement*)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中，变量声明部分的格式为：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(variable init-form step-form)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后是测试，如果测试成功，有一个可选的返回值（上例中为nil），然后是statement部分，如果测试失败，则执行一次statement，然后通过step-from修改变量的值，测试，执行。</p>
-
-<p>上例的代码会打印<strong>0-3</strong>的数字。<code>do</code>的另外一个功用是它支持多个变量并发的循环，这是(dolist, dotimes等无法完成的，所以在很多宏中，do是不二之选)。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(do ((n 0 (1+ n))
-</span><span class='line'>     (cur 0 next)
-</span><span class='line'>     (next 1 (+ cur next)))
-</span><span class='line'>    ((= 10 n) cur))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个例子则没有statement部分，当n等于10这个测试条件成立后，返回cur当前的值。</p>
-
-<h4>apply 和 funcall</h4>
-
-<p><code>apply/call</code> 这两个函数当然是FP编程语言的必备了：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (apply #'(lambda (x y) (+ x y)) '(3 4))
-</span><span class='line'>7
-</span><span class='line'>
-</span><span class='line'>&gt; (funcall #'(lambda (x y) (+ x y)) 3 4)
-</span><span class='line'>8</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意这里的<code>#'</code>操作符，它表示对函数对象的引用，就像<code>'</code>是对list的引用一样。</p>
-
-<h4>list的基本操作</h4>
-
-<p>构造列表（cons），<code>cons</code>的作用是将两个对象结合成一个对象（这个新的对象由两部分组成），这两部分分别由<code>car</code>,<code>cdr</code>来引用。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (cons 'a nil)
-</span><span class='line'>(a)
-</span><span class='line'>
-</span><span class='line'>&gt; (cons 'a (cons 'b nil))
-</span><span class='line'>(a b)</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当然可以用更简洁的方式：使用list函数：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (list a b)
-</span><span class='line'>(a b)</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>car</code>, <code>cdr</code>的用法如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (setf x '(a b c (d e)))
-</span><span class='line'>(a b c (d e))
-</span><span class='line'>
-</span><span class='line'>&gt; (car x)
-</span><span class='line'>a
-</span><span class='line'>
-</span><span class='line'>&gt; (cdr x)
-</span><span class='line'>(b c (d e))
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有了<code>car</code>,<code>cdr</code>，对于既定的list，我们总是可以将其遍历（这在宏中非常有用）。</p>
 ]]></content>
   </entry>
   
