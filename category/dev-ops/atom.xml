@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: dev-ops | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/dev-ops/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2014-09-01T19:00:05+10:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[快速搭建IE测试环境（Virtualbox+ievms）]]></title>
+    <link href="http://abruzzi.github.com/2014/09/setup-ie-series-testing-enviroments/"/>
+    <updated>2014-09-01T18:16:00+10:00</updated>
+    <id>http://abruzzi.github.com/2014/09/setup-ie-series-testing-enviroments</id>
+    <content type="html"><![CDATA[<h3>IE下的测试</h3>
+
+<p>作为一个有追求的程序员，应该尽可能的远离Windows系统。不论从专业开发者的角度，还是仅仅作为最终用户从使用体验上来说，Windows都可以算是垃圾中的战斗机：<code>没有shell</code>、<code>响应极慢</code>（比如从开机到可用需要多久，再对比一下Mac下的体验）、大部分操作都强依赖于鼠标，没有对应的快捷键、各类<code>病毒</code>等等。</p>
+
+<p>但是，最为一个职业的程序员，又很难绕开Windows这个<code>猥琐</code>而又事实上很现实的存在，毕竟Windows在非专业市场上的占有率还是不容小觑的。一般而言，开发人员可以很轻松的使用现代的操作系统，编辑器，开发工具完成实际的业务需求，这部分工作很可能占整个交付工作的40%，但是又不得不在多个浏览器（IE的各个版本）中花费另外的60%。</p>
+
+<p>既然很难抛开，那么我们就需要想办法简化对其的使用，比如将Windows隔离为一个纯粹的测试环境（不安装任何其他的软件，并且一旦<code>感染病毒</code>之后可以快速恢复）。</p>
+
+<ol>
+<li>将Windows安装到虚拟机中</li>
+<li>使用工具将诸如下载镜像，安装系统，安装特定版本的IE等操作简化为一条命令</li>
+<li>可以很容易的创建一个干净，纯粹，稳定的Windows环境</li>
+</ol>
+
+
+<p><a href="https://github.com/xdissent/ievms">ievms</a>正是这样一个工具，它提供安装了各种版本IE的Windows操作系统的镜像，支持IE6到IE11。默认的，用户可以安装从IE6到IE11的所有镜像，但是很可能你无须所有的环境，ievms也提供对应的参数来确保只下载某一个。</p>
+
+<p>不过对于一个团队来讲，可以安装所有的镜像到团队的某台公共的机器上，供所有人来进行跨IE浏览器的各个版本的测试。</p>
+
+<p>这些虚拟机镜像都是虚拟磁盘<code>vmdk</code>文件，因此你需要先安装<a href="(https://www.virtualbox.org/wiki/Downloads">VirtualBox</a>)。</p>
+
+<h4>安装ievms</h4>
+
+<p>安装ievms非常容易，只需要下载一个脚本即可：</p>
+
+<p><code>sh
+$ curl -s https://raw.githubusercontent.com/xdissent/ievms/master/ievms.sh -L
+</code></p>
+
+<p>github会将该请求重定向，所以加上<code>-L</code>参数来跳转到实际的地址。下载之后，执行该脚本：</p>
+
+<p><code>sh
+$ chmod +x ievms.sh
+$ ./ievms.sh
+</code></p>
+
+<p>默认的<code>ievms</code>会下载所有的虚拟机镜像，可以通过参数<code>IEVMS_VERSIONS</code>来选择特定版本的虚拟机：</p>
+
+<p><code>sh
+$ ./ievms.sh IEVMS_VERSIONS="7 8 9"
+</code></p>
+
+<p>当然，也可以将这些命令合并为一行命令：</p>
+
+<p><code>sh
+$ curl -s https://raw.githubusercontent.com/xdissent/ievms/master/ievms.sh -L | IEVMS_VERSIONS="7 8 9" bash
+</code></p>
+
+<h4>用法</h4>
+
+<p>安装之后，一个新的虚拟机会被添加到VirtualBox中，只需要启动这个虚拟机即可：</p>
+
+<p><img src="/images/2014/09/ie8-prepaid-resized.png" alt="image" /></p>
+
+<p>另外，在这个虚拟机中，可以很方便的连接到宿主机。比如在宿主机上的12306端口运行了某个Web应用，那么通过地址：http://10.0.2.2:12306 来访问这个应用。</p>
+
+<p><code>注意</code>: 由于是整个虚拟磁盘的形式发布，因此这些镜像的体积都非常大，所有的镜像安装之后，会占用37G的空间，对于任何一个开发机来说，这个尺寸过于庞大，但是对于整个团队来说，应该还是可以接受的。</p>
+
+<p>官方给出的尺寸列表如下：</p>
+
+<p><code>sh
+$ du -ch *
+ 11G    IE10 - Win7-disk1.vmdk
+ 11G    IE11 - Win7-disk1.vmdk
+1.5G    IE6 - WinXP-disk1.vmdk
+1.6G    IE7 - WinXP-disk1.vmdk
+1.6G    IE8 - WinXP-disk1.vmdk
+ 11G    IE9 - Win7-disk1.vmdk
+ 37G    total
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

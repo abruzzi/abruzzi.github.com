@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-08-25T23:45:26+10:00</updated>
+  <updated>2014-09-01T19:00:05+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,99 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[快速搭建IE测试环境（Virtualbox+ievms）]]></title>
+    <link href="http://abruzzi.github.com/2014/09/setup-ie-series-testing-enviroments/"/>
+    <updated>2014-09-01T18:16:00+10:00</updated>
+    <id>http://abruzzi.github.com/2014/09/setup-ie-series-testing-enviroments</id>
+    <content type="html"><![CDATA[<h3>IE下的测试</h3>
+
+<p>作为一个有追求的程序员，应该尽可能的远离Windows系统。不论从专业开发者的角度，还是仅仅作为最终用户从使用体验上来说，Windows都可以算是垃圾中的战斗机：<code>没有shell</code>、<code>响应极慢</code>（比如从开机到可用需要多久，再对比一下Mac下的体验）、大部分操作都强依赖于鼠标，没有对应的快捷键、各类<code>病毒</code>等等。</p>
+
+<p>但是，最为一个职业的程序员，又很难绕开Windows这个<code>猥琐</code>而又事实上很现实的存在，毕竟Windows在非专业市场上的占有率还是不容小觑的。一般而言，开发人员可以很轻松的使用现代的操作系统，编辑器，开发工具完成实际的业务需求，这部分工作很可能占整个交付工作的40%，但是又不得不在多个浏览器（IE的各个版本）中花费另外的60%。</p>
+
+<p>既然很难抛开，那么我们就需要想办法简化对其的使用，比如将Windows隔离为一个纯粹的测试环境（不安装任何其他的软件，并且一旦<code>感染病毒</code>之后可以快速恢复）。</p>
+
+<ol>
+<li>将Windows安装到虚拟机中</li>
+<li>使用工具将诸如下载镜像，安装系统，安装特定版本的IE等操作简化为一条命令</li>
+<li>可以很容易的创建一个干净，纯粹，稳定的Windows环境</li>
+</ol>
+
+
+<p><a href="https://github.com/xdissent/ievms">ievms</a>正是这样一个工具，它提供安装了各种版本IE的Windows操作系统的镜像，支持IE6到IE11。默认的，用户可以安装从IE6到IE11的所有镜像，但是很可能你无须所有的环境，ievms也提供对应的参数来确保只下载某一个。</p>
+
+<p>不过对于一个团队来讲，可以安装所有的镜像到团队的某台公共的机器上，供所有人来进行跨IE浏览器的各个版本的测试。</p>
+
+<p>这些虚拟机镜像都是虚拟磁盘<code>vmdk</code>文件，因此你需要先安装<a href="(https://www.virtualbox.org/wiki/Downloads">VirtualBox</a>)。</p>
+
+<h4>安装ievms</h4>
+
+<p>安装ievms非常容易，只需要下载一个脚本即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl -s https://raw.githubusercontent.com/xdissent/ievms/master/ievms.sh -L
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>github会将该请求重定向，所以加上<code>-L</code>参数来跳转到实际的地址。下载之后，执行该脚本：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>chmod +x ievms.sh
+</span><span class='line'><span class="nv">$ </span>./ievms.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>默认的<code>ievms</code>会下载所有的虚拟机镜像，可以通过参数<code>IEVMS_VERSIONS</code>来选择特定版本的虚拟机：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>./ievms.sh <span class="nv">IEVMS_VERSIONS</span><span class="o">=</span><span class="s2">&quot;7 8 9&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然，也可以将这些命令合并为一行命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl -s https://raw.githubusercontent.com/xdissent/ievms/master/ievms.sh -L | <span class="nv">IEVMS_VERSIONS</span><span class="o">=</span><span class="s2">&quot;7 8 9&quot;</span> bash
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>用法</h4>
+
+<p>安装之后，一个新的虚拟机会被添加到VirtualBox中，只需要启动这个虚拟机即可：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/09/ie8-prepaid-resized.png" alt="image" /></p>
+
+<p>另外，在这个虚拟机中，可以很方便的连接到宿主机。比如在宿主机上的12306端口运行了某个Web应用，那么通过地址：http://10.0.2.2:12306 来访问这个应用。</p>
+
+<p><code>注意</code>: 由于是整个虚拟磁盘的形式发布，因此这些镜像的体积都非常大，所有的镜像安装之后，会占用37G的空间，对于任何一个开发机来说，这个尺寸过于庞大，但是对于整个团队来说，应该还是可以接受的。</p>
+
+<p>官方给出的尺寸列表如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>du -ch *
+</span><span class='line'> 11G    IE10 - Win7-disk1.vmdk
+</span><span class='line'> 11G    IE11 - Win7-disk1.vmdk
+</span><span class='line'>1.5G    IE6 - WinXP-disk1.vmdk
+</span><span class='line'>1.6G    IE7 - WinXP-disk1.vmdk
+</span><span class='line'>1.6G    IE8 - WinXP-disk1.vmdk
+</span><span class='line'> 11G    IE9 - Win7-disk1.vmdk
+</span><span class='line'> 37G    total
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[SVN中合并分支]]></title>
@@ -3984,223 +4077,6 @@
 
 
 <p>然后加入一些ajax的调用即可。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Common Lisp中的宏(Macro)]]></title>
-    <link href="http://abruzzi.github.com/2013/06/macro-in-common-lisp/"/>
-    <updated>2013-06-15T11:12:00+10:00</updated>
-    <id>http://abruzzi.github.com/2013/06/macro-in-common-lisp</id>
-    <content type="html"><![CDATA[<h4>Lisp与其他语言之区别</h4>
-
-<p>函数式编程，前缀表达式，繁多的括号，奇怪的操作符等等，这些都足以让Lisp和其他编程语言看起来有很大的区别，但是这些区别并非本质上的差异。让Lisp和其他编程语言有本质区别的是它对<code>宏</code>的支持。</p>
-
-<p>C语言中的，被称为<code>宏</code>的预编译系统自有其好处，但是和Lisp中的<code>宏</code>比起来，好比的Notepad和Vim或者Emacs之间的差异。</p>
-
-<h4>数据与代码</h4>
-
-<p>在Lisp中，数据和代码间的差异非常小，<a href="http://icodeit.org/2013/06/common-lisp-basic/">上一篇文章</a>简单讨论了<code>引用</code>的基本概念，其中对数据与代码的差异已经有所涉及。</p>
-
-<h4>宏(Macro)</h4>
-
-<p>简而言之，<code>宏</code>即替换，在Lisp中，可以通过程序生成代码(s-expr)，而这些代码又可以被执行（当然，需要是合法的s-expr）。这一点赋予了<code>宏</code>无限的可能性，比如定义一个新的语法：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro only (condition &rest body)
-</span><span class='line'>  `(if ,condition (progn ,@body)))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lisp中函数macroexpand-1可以用来查看调用时<code>宏</code>是如何展开的：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (macroexpand-1 '(only (&gt; x 10) (format t "big than 10")))   
-</span><span class='line'>
-</span><span class='line'>(IF (&gt; X 10)
-</span><span class='line'>    (PROGN (FORMAT T "big than 10")))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上例中，<code>(&gt; x 10)</code>被作为<code>condition</code>，而<code>(format t "big than 10")</code>作为<code>body</code>传递给了宏。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (macroexpand-1 '(only (&gt; x 10) 
-</span><span class='line'>  (format t "big than 10")
-</span><span class='line'>  (format t "~%")))
-</span><span class='line'>
-</span><span class='line'>(IF (&gt; X 10)
-</span><span class='line'>    (PROGN (FORMAT T "big than 10") (FORMAT T "~%")))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用<code>progn</code>是为了让剩余的多条语句(如果有的话)，逐条执行，并返回最后一条语句的值（正如在函数中那样）。</p>
-
-<h4>可能的陷阱</h4>
-
-<p><a href="http://icodeit.org/2013/06/common-lisp-basic/">上一篇文章</a>中讨论了迭代的通用方式<code>do</code>，虽然很通用，但是三段式的定义略显繁琐。</p>
-
-<p>我们可以编写一个简单的宏<code>ntimes</code>，它接受一个数字参数N和一个代码块Block，并执行N次这个Block：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(ntimes 10 (format t "Hello, world~%"))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>将打印10次<code>Hello, world</code>，<code>宏</code>的定义如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro ntimes (n &rest prog)
-</span><span class='line'>  `(do ((x 0 (1+ x)))
-</span><span class='line'>       ((&gt;= x ,n))
-</span><span class='line'>     ,@prog))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但是这个宏在某些场景下不能如预期般的工作：比如当在使用<code>ntimes</code>的context中，本身有一个变量x，而在代码块Block中，尝试修改这个x，会发生什么呢？</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(let ((x 10))
-</span><span class='line'>    (ntimes 5
-</span><span class='line'>       (format t "~a~%" x)))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>预期的执行结果为打印5次10，但是事实上：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>0
-</span><span class='line'>1
-</span><span class='line'>2
-</span><span class='line'>3
-</span><span class='line'>4</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这是因为<code>宏</code>的内部使用了同名的变量，而由于作用域的原因，外部的let被屏蔽了，事实上宏的设计者貌似无法避免这类事情的发生，因为使用者如何使用是不能预料的，Lisp提供了另一种解决方案(类似于UUID)，使用<code>gensym</code>，以避免这种情况：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (gensym)
-</span><span class='line'>
-</span><span class='line'>#:G778
-</span><span class='line'>&gt; (gensym)
-</span><span class='line'>
-</span><span class='line'>#:G779</span></code></pre></td></tr></table></div></figure>
-
-
-<p>函数<code>gensym</code>每次都会分配一个新的ID作为标示，因此宏的实现可以修改为：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro ntimes (n &rest prog)
-</span><span class='line'>  (let ((g (gensym)))
-</span><span class='line'>    `(do ((,g 0 (+ ,g 1)))
-</span><span class='line'>         ((&gt;= ,g ,n))
-</span><span class='line'>       ,@prog)))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>事实上，这个版本还是有一个隐藏的bug：这里我们预期的n是一个数字，而实际上使用者是可以传入一个表达式如：<code>(setf x (- x 1))</code>，而由于<code>do</code>的特性，迭代中每次都查看测试条件是否满足<code>(&gt;= ,g ,n)</code>，这会使得<code>(setf x (- x 1))</code>会被执行N次。也就是说，当数字N是一个有副作用的表达式时，我们的宏的行为是错误的，可以通过引入额外的临时变量来解决这个问题。</p>
-
-<p>即在最开始的适合对N求值并赋值给一个临时变量，然后每次的测试都是基于这个临时变量而来：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro ntimes (n &rest prog)
-</span><span class='line'>  (let ((g (gensym))
-</span><span class='line'>        (h (gensym)))
-</span><span class='line'>    `(let ((,h ,n))
-</span><span class='line'>       (do ((,g 0 (+ ,g 1)))
-</span><span class='line'>           ((&gt;= ,g ,h))
-</span><span class='line'>         ,@prog))))</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>定义新的语法</h4>
-
-<p>这一小节的一个例子是for循环的<code>宏</code>定义：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro for (var start stop &body body)
-</span><span class='line'>  (let ((gstop (gensym)))
-</span><span class='line'>    `(do ((,var ,start (1+ ,var))
-</span><span class='line'>          (,gstop ,stop))
-</span><span class='line'>         ((&gt; ,var ,gstop))
-</span><span class='line'>       ,@body)))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，可以很方便的使用我们比较熟悉的for语句了：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (for x 1 5
-</span><span class='line'>     (print x))
-</span><span class='line'>
-</span><span class='line'>1 
-</span><span class='line'>2 
-</span><span class='line'>3 
-</span><span class='line'>4 
-</span><span class='line'>5 </span></code></pre></td></tr></table></div></figure>
-
-
-<p>另一个有意思的例子是求平均值的<code>avg</code>宏：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro avg (&rest args)
-</span><span class='line'>  `(/ (+ ,@args) ,(length args)))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>由于Lisp中采取前缀表达式，因此像<code>+</code>这种函数可以很方便的apply到一个列表上，如果是中缀表达式，则这种形式的抽象就变得非常复杂。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (macroexpand-1 '(avg 1 2 3 4 5 6 7 8 9 10))
-</span><span class='line'>(/ (+ 1 2 3 4 5 6 7 8 9 10) 10)
-</span><span class='line'>
-</span><span class='line'>&gt; (avg 1 2 3 4 5 6 7 8 9 10)
-</span><span class='line'>11/2</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<p>附：文中部分代码示例来源于《ANSI Common Lisp》一书。</p>
 ]]></content>
   </entry>
   
