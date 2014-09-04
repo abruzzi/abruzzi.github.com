@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-09-01T19:16:49+10:00</updated>
+  <updated>2014-09-05T00:33:09+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,161 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[一个关于时间的神奇Bug]]></title>
+    <link href="http://abruzzi.github.com/2014/09/a-bug-about-time/"/>
+    <updated>2014-09-04T22:37:00+10:00</updated>
+    <id>http://abruzzi.github.com/2014/09/a-bug-about-time</id>
+    <content type="html"><![CDATA[<h3>一个神奇的Bug</h3>
+
+<p>目前项目是一个非常传统的Web应用，其中有个页面需要用户填写自己的个人信息，包括姓名和出生日期。非常简单的一个小片段，UI看起来是这个样子的：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/09/personal-resized.png" alt="image" /></p>
+
+<p>没有使用线程的<code>datepicker</code>，某个开发人员只是简单的自己收集了一下年，月，日信息，然后在JavaScript中根据填写的值来<code>new</code>了一个Date对象。</p>
+
+<p>然后某天我在做测试的时候，顺手填写了一个日期<code>1986年5月4日</code>，然后奇怪的事情发生了：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/09/invalid-date-resized.png" alt="image" /></p>
+
+<p><strong>WTF?</strong>，这日期怎么会是非法的呢？于是我又尝试了<code>1986年5月3日</code>和<code>1986年5月5日</code>，一切正常！好奇之下，我找到对应的代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">dobDay</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#personal\\.dobDay&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span> <span class="mi">10</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">dobMonth</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#personal\\.dobMonth&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span> <span class="mi">10</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">dobYear</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#personal\\.dobYear&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span> <span class="mi">10</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Note month is not zero based.</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">dob</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">dobDay</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">dobMonth</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">dobYear</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">dob</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">dobYear</span><span class="p">,</span> <span class="nx">dobMonth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">dobDay</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">dob</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">dob</span><span class="p">.</span><span class="nx">getDate</span><span class="p">()</span> <span class="o">!==</span> <span class="nx">dobDay</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">valid</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#dob-error&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">formMessages</span><span class="p">.</span><span class="nx">invalidDate</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从界面上获取用户输入的年，月，日信息，然后根据这三个数字创建一个JavaScript对象。但是奇怪的是，这里有一条判断<code>dob.getDate() !== dobDay</code>。</p>
+
+<h3>JavaScript的日期类</h3>
+
+<p>JavaScript中的日期类比较奇葩，你可以通过将年月日传入<code>new Date()</code>来构造出一个新的日期类型，奇葩之处在于，年和日都是从1开始计数，但是月份是从0开始计数的，比如<code>new Date(2014, 1, 2)</code>表示2014年<strong>2月</strong>2日。</p>
+
+<p>那么，我们可以在Chrome的Console中查看一下神奇的<code>1986年5月4日</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">1986</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</span><span class='line'><span class="nx">Sat</span> <span class="nx">May</span> <span class="mi">03</span> <span class="mi">1986</span> <span class="mi">23</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">0800</span> <span class="p">(</span><span class="nx">CST</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>WTF? 我好好的5月4日怎么变成5月3日了呢？加上时分秒之后，逐步缩小排查范围：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">1986</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'><span class="nx">Sat</span> <span class="nx">May</span> <span class="mi">03</span> <span class="mi">1986</span> <span class="mi">23</span><span class="o">:</span><span class="mi">59</span><span class="o">:</span><span class="mi">59</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">0800</span> <span class="p">(</span><span class="nx">CST</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">1986</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+</span><span class='line'><span class="nx">Sun</span> <span class="nx">May</span> <span class="mi">04</span> <span class="mi">1986</span> <span class="mi">01</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">0900</span> <span class="p">(</span><span class="nx">CDT</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这时候发现，当秒针通过<code>1986年5月3日的23点59分59秒</code>之后，时间就变成了<code>1986年5月4日的1点0分0秒</code>了！这个奇葩至极的问题是由于传说中的<strong>夏令时</strong>所致！</p>
+
+<h3>夏令时</h3>
+
+<p>其实常年和澳洲客户打交道，对日光节约时间(Daylight saving time)已经不陌生，不过澳洲在南半球冬夏正好和中国相反，因此完全没有将其当成日常的一部分。</p>
+
+<p>维基上的解释比较专业：</p>
+
+<blockquote><p>夏时制或夏令时间（英语：Summer time），又称日光节约时制、日光节约时间（英语：Daylight saving time），是一种为节约能源而人为规定地方时间的制度，在这一制度实行期间所采用的统一时间称为“夏令时间”。一般在天亮早的夏季人为将时间提前一小时，可以使人早起早睡，减少照明量，以充分利用光照资源，从而节约照明用电。各个采纳夏时制的国家具体规定不同。</p></blockquote>
+
+<p>即，在夏天的某天（天亮的比较早），将时钟调快一个小时，以便大家起床更早，然后可以节省一些照明用电，然后在冬天的时候（天亮的比较晚）又调回去</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/09/dst.png" alt="image" /></p>
+
+<p>根据百度百科上的描述：</p>
+
+<blockquote><p>1986年至1991年，中华人民共和国在全国范围实行了六年夏令时，每年从4月中旬的第一个星期日2时整（北京时间）到9月中旬第一个星期日的凌晨2时整（北京夏令时）。除1986年因是实行夏令时的第一年，从5月4日开始到9月14日结束外，其它年份均按规定的时段施行。夏令时实施期间，将时间调快一小时。1992年4月5日后不再实行。</p></blockquote>
+
+<p><code>1986年的5月4日</code>这个特别的日期终于显现出了其特殊之处了。</p>
+
+<p>有了这个认识，我将系统时间设置为了澳洲标准时间，然后测试:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'><span class="nx">Sun</span> <span class="nx">Oct</span> <span class="mi">05</span> <span class="mi">2014</span> <span class="mi">01</span><span class="o">:</span><span class="mi">59</span><span class="o">:</span><span class="mi">59</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">1000</span> <span class="p">(</span><span class="nx">EST</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+</span><span class='line'><span class="nx">Sun</span> <span class="nx">Oct</span> <span class="mi">05</span> <span class="mi">2014</span> <span class="mi">03</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">1100</span> <span class="p">(</span><span class="nx">EST</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果观察足够细致的话会发现GMT后边的这个数字的变化，GMT是(Greenwish Mean Time)格林尼治标准时间的缩写，它最初是国际公认的时间基准线，地理上位于其东方的各个时区会加上一个偏移量，比如中国就是GMT+8，而澳洲就是GMT+10，而一旦进入夏令时，由于时钟拨快了一个小时，因此就会变成GMT+9/GMT+11。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">1986</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'><span class="nx">Sat</span> <span class="nx">May</span> <span class="mi">03</span> <span class="mi">1986</span> <span class="mi">23</span><span class="o">:</span><span class="mi">59</span><span class="o">:</span><span class="mi">59</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">0800</span> <span class="p">(</span><span class="nx">CST</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">1986</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+</span><span class='line'><span class="nx">Sun</span> <span class="nx">May</span> <span class="mi">04</span> <span class="mi">1986</span> <span class="mi">01</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">0900</span> <span class="p">(</span><span class="nx">CDT</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>比如今年的巴西：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">19</span><span class="p">)</span>
+</span><span class='line'><span class="nx">Sat</span> <span class="nx">Oct</span> <span class="mi">18</span> <span class="mi">2014</span> <span class="mi">23</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="nx">GMT</span><span class="o">-</span><span class="mi">0300</span> <span class="p">(</span><span class="nx">BRT</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>其他</h3>
+
+<p>大部分实行夏令时的国家都会将这个调整放到凌晨两点，而不是零点，其中的一个原因应该就是避免出现这种状况。但是由于巴西还是将这个调整放到了凌晨，那么这个日期还是会出现<code>非法日期</code>这样的错误：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/09/invalid-date-brasil-resized.png" alt="image" /></p>
+
+<h3>解决方法</h3>
+
+<p>最简单的解决方法就是存储最简单，而且无歧义的年月日字符处，比如&#8217;1986-05-04&#8217;，而不是通过保存成一个JavaScript的Date对象的方式。</p>
+
+<p>或者也可以使用一个Datepicker控件来获取日期字符串，然后保存：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/09/date-picker-resized.png" alt="image" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[快速搭建IE测试环境（Virtualbox+ievms）]]></title>
@@ -3770,313 +3925,6 @@
 
 
 <p>其中参数env将被rack用作HTTP请求对象来传递进来，而函数的返回值与HTTP响应对应：分别为状态码，HTTP头信息以及响应内容。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[逐步编写一个jQuery插件(todoify)]]></title>
-    <link href="http://abruzzi.github.com/2013/07/write-a-jquery-plugin-step-by-step/"/>
-    <updated>2013-07-20T13:04:00+10:00</updated>
-    <id>http://abruzzi.github.com/2013/07/write-a-jquery-plugin-step-by-step</id>
-    <content type="html"><![CDATA[<h3>最终结果</h3>
-
-<p>这篇文章将讨论如何编写一个简单的jQuery插件的基本步骤和实践，最后完成的时候，我们会得到一个管理todo的插件（而且还是一个比较灵活，易于定制的todo插件）。事实上，这个插件可以工作在所有与管理todo类似的应用场景中，比如gmail的搜索框中的token等，豆瓣读书里的tags管理等等。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/07/todo-origin.resized.png" alt="默认设置" /></p>
-
-<p>上例中HTML结构如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;div id="container"&gt;
-</span><span class='line'>    &lt;input type="text" id="input" /&gt;
-</span><span class='line'>    &lt;div id="todos" /&gt;
-</span><span class='line'>&lt;/div&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>下面的JavaScript代码将会找到id为<em>input</em>的输入框，并将它<strong>变为</strong>一个todolist的控制器，并将新加入的内容添加到id为<em>todos</em>的容器中：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$("#input").todoify({
-</span><span class='line'>  container: "#todos"
-</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果需要定制item的外观，可以定义模板并自定义渲染函数：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$("#thing-input").todoify({
-</span><span class='line'>    container: "#thing-todos",
-</span><span class='line'>    template: "&lt;section class='todoItem'&gt;&lt;header&gt;&lt;%= todo %&gt;&lt;/header&gt;&lt;a&gt;remove&lt;/a&gt;&lt;/section&gt;",
-</span><span class='line'>    renderItem: function(item) {
-</span><span class='line'>        var cont = this.renderTemplate(item);
-</span><span class='line'>
-</span><span class='line'>        cont.find("a").click(function(event){
-</span><span class='line'>            cont.remove();
-</span><span class='line'>        });
-</span><span class='line'>
-</span><span class='line'>        return cont;
-</span><span class='line'>    }
-</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/07/todo-customized.resized.png" alt="Item定制" /></p>
-
-<h3>jQuery插件基础知识</h3>
-
-<h4>简单流程</h4>
-
-<p>通常使用jQuery的流程是这样的：通过选择器选择出一个jQuery对象（集合），然后为这个对象应用一些预定义的函数，如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$(".artile .title").mouseover(function(){
-</span><span class='line'>  $(this).css({
-</span><span class='line'>      "background-color": "red",
-</span><span class='line'>      "color": "white"
-</span><span class='line'>  });
-</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们如果要定义自己的插件，预期其被调用的方式和此处的<em>mouseover</em>并无二致。这需要将我们定义的函数attach到jQuery对象的fn属性上：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$.fn.hltitle = function() {
-</span><span class='line'>  this.mouseover(function(){
-</span><span class='line'>      $(this).css({
-</span><span class='line'>          "background-color": "red",
-</span><span class='line'>          "color": "white"
-</span><span class='line'>      })
-</span><span class='line'>  })
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>$('.article .title').hltitle();</span></code></pre></td></tr></table></div></figure>
-
-
-<p>jQuery的一个很明显的特点是其链式操作，即每次调用完成一个函数/插件之后仍然会返回jQuery对象本身，这个需要我们在插件函数的最后一行返回<em>this</em>。这样插件的使用者会像使用其他函数/插件一样很方便的将调用连起来。</p>
-
-<p>另外一个问题是注意命名冲突（$是一个合法的标示符，而且被众多的JavaScript库在使用），所以可以通过匿名执行函数来避免：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(function($){
-</span><span class='line'>  $.fn.hltitle = function() {
-</span><span class='line'>      //...
-</span><span class='line'>  }
-</span><span class='line'>}(jQuery));</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>需要注意的问题</h4>
-
-<p>上面是一个最简单的插件定义，为了插件更加灵活，我们需要尽可能多的将配置项暴露给插件的用户，比如提供一些默认选项，如果用户不提供配置，则插件按照默认配置来工作，但是用户可以通过修改配置来定制插件的行为：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(function($){
-</span><span class='line'>  $.fn.hltitle = function(options) {
-</span><span class='line'>      var defaults = {
-</span><span class='line'>          "background-color": "red",
-</span><span class='line'>          "color": "white"                
-</span><span class='line'>      };
-</span><span class='line'>      
-</span><span class='line'>      var settings = $.extend(defaults, options);
-</span><span class='line'>      
-</span><span class='line'>      return this.mouseover(...);
-</span><span class='line'>  }
-</span><span class='line'>}(jQuery));
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Todoify</h3>
-
-<p>我们的插件是一个遵循上述原则的简单插件，基本的步骤如下：</p>
-
-<ul>
-<li>将给定的input包装成一个jQuery对象</li>
-<li>需要一个默认的放置todolist的容器元素</li>
-<li>为input注册keypress事件（如果用户按Enter，则触发add事件，添加一个新条目到容器）</li>
-</ul>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(function($){
-</span><span class='line'>    $.fn.todoify = function(options) {
-</span><span class='line'>        var settings = $.extend({
-</span><span class='line'>            container: "body",
-</span><span class='line'>            template: "&lt;span class='todo-item'&gt;&lt;%= todo %&gt;&lt;/span&gt;",
-</span><span class='line'>            renderItem: function(item) {
-</span><span class='line'>              return $(_.template(this.template, {todo: item}));
-</span><span class='line'>            }
-</span><span class='line'>        }, options);
-</span><span class='line'>
-</span><span class='line'>        $(this).keypress(function(event){
-</span><span class='line'>            if(event.keyCode == 13) {
-</span><span class='line'>                var item = $(this).val();
-</span><span class='line'>                $(settings.container).append(settings.renderItem(item));
-</span><span class='line'>                $(this).val("").focus();
-</span><span class='line'>            }
-</span><span class='line'>        });
-</span><span class='line'>
-</span><span class='line'>        return this;
-</span><span class='line'>    }
-</span><span class='line'>}(jQuery));</span></code></pre></td></tr></table></div></figure>
-
-
-<p>此处为了防止创建众多的DOM元素，然后依次插入到正确地节点上，我使用了underscore.js的template，不过此处并非重点，略微一提。</p>
-
-<p>如果用户想要更好地定制性，比如用户想要apply自己的class，定义自己的模板，或者注册新的事件（删除一条todo），显然我们需要更多的options：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>var settings = $.extend({
-</span><span class='line'>    data: [],
-</span><span class='line'>    template: "&lt;div class='todo'&gt;&lt;h3&gt;&lt;%= todo %&gt;&lt;/h3&gt;&lt;span&gt;X&lt;/span&gt;&lt;/div&gt;",
-</span><span class='line'>    container: "body",
-</span><span class='line'>    renderTemplate: function(item) {
-</span><span class='line'>        return $(_.template(this.template, {todo: item}));
-</span><span class='line'>    },
-</span><span class='line'>    renderItem: function(item) {
-</span><span class='line'>        var cont = this.renderTemplate(item);
-</span><span class='line'>        cont.find("span").click(function(event) {
-</span><span class='line'>            cont.remove();
-</span><span class='line'>        });
-</span><span class='line'>        return cont;
-</span><span class='line'>    }
-</span><span class='line'>}, options);</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里定义了默认的close事件需要attach到span（定义在模板中）上，如果插件的用户需要自己绘制模板，并且注册事件，那么会像文章开头的那个实例一样：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$("#thing-input").todoify({
-</span><span class='line'>    container: "#thing-todos",
-</span><span class='line'>    template: "&lt;section class='todoItem'&gt;&lt;header&gt;&lt;%= todo %&gt;&lt;/header&gt;&lt;a&gt;remove&lt;/a&gt;&lt;/section&gt;",
-</span><span class='line'>    renderItem: function(item) {
-</span><span class='line'>        var cont = this.renderTemplate(item);
-</span><span class='line'>
-</span><span class='line'>        cont.find("a").click(function(event){
-</span><span class='line'>            cont.remove();
-</span><span class='line'>        });
-</span><span class='line'>
-</span><span class='line'>        return cont;
-</span><span class='line'>    }
-</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>进一步改进</h3>
-
-<p>目前，todoify还没有与后台进行任何的通信，如果可以和后台的RESTFul的API集成的话，这个插件将会有更多的使用场景。</p>
-
-<p>简单来讲，只需要为插件提供更多选项，并提供回调函数即可，比如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$("#input").todoify({
-</span><span class='line'>  restful: 'http://app/todos',
-</span><span class='line'>  onadd: function(item){
-</span><span class='line'>      //...
-</span><span class='line'>  },
-</span><span class='line'>  ondelete: function(item){
-</span><span class='line'>      //...
-</span><span class='line'>  }
-</span><span class='line'>})</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后加入一些ajax的调用即可。</p>
 ]]></content>
   </entry>
   
