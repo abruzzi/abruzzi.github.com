@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: ruby | I code it]]></title>
+  <title><![CDATA[Category: Ruby | I code it]]></title>
   <link href="http://abruzzi.github.com/category/ruby/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-09-05T00:33:09+10:00</updated>
+  <updated>2014-09-18T22:45:28+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,798 +14,162 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Ruby元编程的一个示例：InactiveRecord]]></title>
-    <link href="http://abruzzi.github.com/2013/12/meta-programming-in-ruby/"/>
-    <updated>2013-12-15T15:18:00+11:00</updated>
-    <id>http://abruzzi.github.com/2013/12/meta-programming-in-ruby</id>
-    <content type="html"><![CDATA[<h4>一个场景</h4>
+    <title type="html"><![CDATA[一个简单的午餐推荐脚本]]></title>
+    <link href="http://abruzzi.github.com/2014/09/simple-idea-and-simple-script/"/>
+    <updated>2014-09-18T21:55:00+10:00</updated>
+    <id>http://abruzzi.github.com/2014/09/simple-idea-and-simple-script</id>
+    <content type="html"><![CDATA[<h3>千古谜题 --- 中午吃啥？</h3>
 
-<p>元编程在所有的Lisp系语言中应该都是一个必备的feature，coommon lisp, scheme等包含该功能自然不在话下，而比较主流的编程语言如JavaScript，python之流，也或多或少的受到了lisp得影响，在面向对象的同时，也嵌入了一些元编程的特性。</p>
+<p>如果要列出一些日常最频繁的会问/被问的问题的一个列表，<strong><em>吃啥？</em></strong>绝对会排在前三位，对于程序员来说，一样频繁的还有诸如<strong><em>这是谁写的？</em></strong>，<strong><em>这尼玛啥意思啊？</em></strong>之类。</p>
 
-<p>而元编程在ruby中，虽然不如在lisp的宏那样灵活/强大，但是对于被“主流”编程语言影响很久的程序员 -- 如我，来说，已经非常震撼了。</p>
+<p><strong>吃啥</strong>作为一个每天都会面对的问题，我们自然而言会想很多办法，比如随大流，其他人去哪儿我们跟着就行，但是这种方法最大的问题是：大部分人其实都没有很好的想法，大家都很迷茫。作为程序员，一个非常直观的想法就是找出一个列表，然后随机/伪随机的从这个列表中拿出一条来作为推荐。</p>
 
-<p>很多ruby程序员都是通过rails才慢慢接触到ruby本身的，在rails中，ORM是通过强大到无穷大得<a href="http://guides.rubyonrails.org/active_record_basics.html">ActiveRecord</a>来完成的。</p>
+<h4>基本思路</h4>
 
-<p>一个简单的示例如：</p>
+<p>一个基本的思路是这样的，或者说，要开发的软件应该满足这几个基本的需求</p>
 
-<p><code>
-class Person &lt; ActiveRecord::Base
-end
-</code>
-对应的，数据库中有一个Person的表：</p>
+<ol>
+<li>维护一个饭店/饭菜的列表</li>
+<li>随机的从这个列表中取出一项</li>
+<li>每天定时的触发，比如<strong>11:30</strong>准时提醒</li>
+<li>这个工具最终要以弹出窗口等方式来提醒</li>
+</ol>
 
-<p><code>
-CREATE TABLE person (
-   id int(11) NOT NULL auto_increment,
-   name varchar(255),
-   age int,
-   email varchar(255),
-   PRIMARY KEY  (id)
-);
-</code></p>
 
-<p>这样，在使用模型Person的地方，可以很容易的编写这样的代码：</p>
+<p>饭店/饭菜的列表比较容易，比如一个静态的JSON文件：</p>
 
-<p>```
-juntao = Person.new</p>
+<p>```js
+[</p>
 
-<p>juntao.name = 'juntao'
-juntao.age = 28
-juntao.email = 'juntao.qiu@gmail.com'</p>
+<pre><code>{
+    "name": "关中客大碗面"
+},
+{
+    "name": "王华峰肉夹馍"
+},
+{
+    "name": "傻得帽冒菜"
+},
+{
+    "name": "蒸饺"
+},
+{
+    "name": "樊家肉夹馍"
+},
+{
+    "name": "马奴哈羊肉泡馍"
+},
+{
+    "name": "子午路张记肉夹馍"
+},
+{
+    "name": "东滩水盆"
+}
+</code></pre>
 
-<p>juntao.save
-```</p>
+<p>]</p>
 
-<p>也就是说，开发者仅仅需要简单的创建一个与数据库同名的ruby类，然后这个类(Person)只需要继承自<code>ActiveRecord::Base</code>，那么它就自动的获得了很多的功能。这些神奇的功能就是通过ruby的元编程来完成的。</p>
+<p>```</p>
 
-<h4>一个ActiveRecord的拙劣模仿</h4>
+<p>然后我们需要一个小程序来读取这段JSON，并已随机/伪随机的方式返回一个推荐：</p>
 
-<p>我们在这里将编写一个简单的类<code>InactiveRecord</code>，当有其他类继承自此类时，会完成如<code>ActiveRecord</code>那样的功能，当然第一步我们并没有数据校验之类的功能，只是简单的将数据存储起来即可：</p>
+<p>```ruby</p>
 
-<p>在person.rb文件中</p>
+<h1>encoding: UTF-8</h1>
 
-<p><code>
-class Person &lt; InactiveRecord::Base
-end
-</code></p>
+<p>require 'json'</p>
 
-<p>在address.rb中：</p>
+<p>def first</p>
 
-<p><code>
-class Address &lt; InactiveRecord::Base
-end
-</code></p>
-
-<p>而在使用他们的地方：</p>
-
-<p>```
-require './person'
-require './address'</p>
-
-<p>def test</p>
-
-<pre><code>juntao = Person.new do |p| 
-    p.name = 'Juntao'
-    p.age = 28
-    p.email = 'juntao.qiu@gmail.com'
-end 
-
-juntao.save
-
-nicholas = Person.new
-nicholas.name = 'Nicholas'
-nicholas.email = 'nicholas.ren@gmail.com'
-
-nicholas.save
-
-thougtworks = Address.new do |a| 
-    a.street = 'Jinye 1st Rd'
-    a.city = 'Xian'
-    a.state = 'Shaanxi'
-    a.country = 'China'
-end 
-
-thougtworks.save
+<pre><code>JSON.parse(File.open("food.json").read).shuffle[0]["name"]
 </code></pre>
 
 <p>end</p>
 
-<p>test
-```</p>
-
-<p>预期的，test测试会打印出一下信息：</p>
-
-<p><code>
-$ ruby main.rb
-{"name"=&gt;"Juntao", "age"=&gt;28, "email"=&gt;"juntao.qiu@gmail.com"}
-{"name"=&gt;"Nicholas", "email"=&gt;"nicholas.ren@gmail.com"}
-{"street"=&gt;"Jinye 1st Rd", "city"=&gt;"Xian", "state"=&gt;"Shaanxi", "country"=&gt;"China"}
-</code></p>
-
-<p>这里的save方法仅仅打印出当前对象上的属性即可。</p>
-
-<h4>InactiveRecord的实现</h4>
-
-<p>首先，对于最简单的case：</p>
-
-<p>```
-def test</p>
-
-<pre><code>nicholas = Person.new
-nicholas.name = 'Nicholas'
-nicholas.email = 'nicholas.ren@gmail.com'
-
-nicholas.save
-</code></pre>
-
-<p>end
-```</p>
-
-<p>只需要动态的创建<code>name=</code>或者<code>email=</code>这样的方法即可，这里有个比较trick的地方是，<code>nicholas.name = 'Nicholas'</code>其实是在<code>nicholas</code>对象上调用了一个名叫<code>name=</code>的方法，ruby会将等号和对象间的空格去掉。</p>
-
-<p>此时的实现非常简单，只需要在<code>method_missing</code>时，将调用时的key,value存在一个hash表中即可。这意味着，test中的那些<em>赋值</em>方法其实至始至终都并不存在，当ruby调用<code>name=</code>的时候，发现<code>nicholas</code>对象上并没有这个方法，然后ruby会沿着方法查找链向上追溯，直到顶级对象BasicObject时，还是没有发现，这时候，ruby会fallback到method_missing上，这个时刻，如果我们捕获这个调用，并完成对@attrs的赋值的话，那么这个方法事实上并不存在，但是又不会抛出异常。</p>
-
-<p>当然在这个时刻，我们事实上可以为类动态的定义一些方法，由于这些方法不能通过常规方式看到(类定义中无法看到，而且在对象的methods列表中也无法看到)，因此它被称之为幽灵方法。</p>
-
-<p>```
-module InactiveRecord</p>
-
-<pre><code>class Base
-    def initialize(&amp;block)
-        @attrs = {}
-    end 
-
-    def method_missing(method, *args, &amp;block)
-       attr = method.to_s
-       if attr =~ /=$/
-           @attrs[attr.chop] = args[0]
-       else
-           @attrs[attr]
-       end 
-    end 
-
-    def save
-        p @attrs
-    end 
-end 
-</code></pre>
-
-<p>end
-```</p>
-
-<p>更进一步，对于下边这种形式的创建方式：</p>
-
-<p>```
-juntao = Person.new do |p|</p>
-
-<pre><code>p.name = 'Juntao'
-p.age = 28
-p.email = 'juntao.qiu@gmail.com'
-</code></pre>
-
-<p>end</p>
-
-<p>juntao.save
-```</p>
-
-<p>则需要对<code>InactiveRecord::Base</code>中做一些修改：</p>
-
-<p>```
-def initialize(&amp;block)</p>
-
-<pre><code>@attrs = {}
-if block_given?
-    if block.arity == 1
-        yield self
-    end
-end
-</code></pre>
-
-<p>end
-```</p>
-
-<p>如果调用者传递了一个block(可执行的单元)进来，那么使用<code>yield</code>将对象本身传递给该block。</p>
-
-<h4>专业的spec</h4>
-
-<p><a href="http://nicholasren.github.io/">同事任晓君</a>是一个ruby专家，他为这个InactiveRecord设计了一个spec：</p>
-
-<p>```
-require 'spec_helper'</p>
-
-<p>InactiveRecord::Base.config do |config|
-  config.schemas "spec/fixtures/schema.yml"
-end</p>
-
-<p>class Person &lt; InactiveRecord::Base
-end</p>
-
-<p>describe "InactiveRecord" do
-  context "save attribtues" do</p>
-
-<pre><code>subject {
-  juntao = Person.new do |p|
-    p.name = 'juntao'
-    p.age = 28
-    p.email = 'juntao.qiu@gmail.com'
-  end
-  juntao
-}
-
-it "should read saved attributes " do
-  subject.name.should == 'juntao'
-  subject.age.should == 28
-  subject.email.should == "juntao.qiu@gmail.com"
-end
-</code></pre>
-
-<p>  end</p>
-
-<p>  context "schema validation" do</p>
-
-<pre><code>subject {
-  juntao = Person.new do |p|
-    p.name = 'juntao'
-    p.age = 28
-    p.email = 'juntao.qiu@gmail.com'
-  end
-  juntao
-}
-
-context "change a valid field" do
-  it "should succeed" do
-    subject.age = 29
-    subject.age.should == 29
-  end
-end
-
-context "change a invalid field" do
-  it "should raise error" do
-    expect { subject.weight= 60 }.to raise_error(StandardError)
-  end
-end
-</code></pre>
-
-<p>  end
-end
-```</p>
-
-<p>在<code>spec/fixtures/schema.yml</code>中，定义了Person的schema，<code>ActiveRecord</code>会从数据库中获得元数据，<code>InactiveRecord</code>在一点上大大的简化了：</p>
-
-<h2>```</h2>
-
-<p>Person:
-  Name: String
-  Age: Integer
-  Email: String
-```</p>
-
-<p>预期的运行结果应当是：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/12/rspec.png" alt="image" /></p>
-
-<h4>基于这个spec的进一步实现</h4>
-
-<p>由于加入了对schema的校验，即，对于非法的赋值<code>juntao.weight=60</code>，InactiveRecord会报告一个异常，因为<code>weight</code>并不存在在schema中。</p>
-
-<p>ruby在对象模型中提供了一些hook，当别的类包含一个模块，或者集成一个类时，这些hook会被触发，这个特性被很多ruby框架使用，从而实现很多有趣的代码风格。</p>
-
-<p>由于所有的model都需要继承自<code>InactiveRecord::Base</code>，因此我们可以在该类上注册一个hook：</p>
-
-<p>```
-def inherited(who)</p>
-
-<pre><code>table_name = who.name.downcase
-table = YAML.load_file("./metadata/#{table_name}.yml")
-
-who.class_eval do
-    define_method :schema do
-        table[who.name]
-    end 
-end 
-</code></pre>
-
-<p>end
-```</p>
-
-<p>这样，对于每一个继承自<code>InactiveRecord::Base</code>的类，就动态的添加了一个方法，方法名为schema，这个方法可以获得类名对应的yml文件中定义的shema信息。此处的<code>define_method</code>动态的定义了一个新的方法，方法名为<code>schema</code>，后边的block中定义了方法体，在此处仅仅是返回从yml中读取的schema。</p>
-
-<p>最后，在method_missing中，需要在赋值方法被调用时，查看该方法是否存在于schema中：</p>
-
-<p>```
-def method_missing(method, *args, &amp;block)
-   attr = method.to_s
-   if @attrs.key?(attr)</p>
-
-<pre><code>   @attrs[attr]
-</code></pre>
-
-<p>   elsif attr =~ /=$/</p>
-
-<pre><code>   raise StandardError.new("invalid attribute") 
-   unless valid?(attr.chop)
-   @attrs[attr.chop] = args[0]
-</code></pre>
-
-<p>   else</p>
-
-<pre><code>   super.method_missing(method, args, &amp;block)
-</code></pre>
-
-<p>   end
-end</p>
-
-<p>def valid? attr</p>
-
-<pre><code>schema.keys.map{|key| key.downcase}.include? attr
-</code></pre>
-
-<p>end
-```</p>
-
-<p>如果schema中并不包含赋值字段：</p>
-
-<p><code>
-person.style = "#004c97"
-</code></p>
-
-<p>则会抛出一个错误退出:</p>
-
-<p><code>``
-/Users/twer/develop/tutorial/meta/inactive_record.rb:38:in</code>method_missing': invalid attribute (StandardError)</p>
-
-<pre><code>from main.rb:38:in `test'
-from main.rb:41:in `&lt;main&gt;'
-</code></pre>
-
-<p>```</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用Grape快速开发API]]></title>
-    <link href="http://abruzzi.github.com/2013/08/quick-api-development-by-grape/"/>
-    <updated>2013-08-04T10:29:00+10:00</updated>
-    <id>http://abruzzi.github.com/2013/08/quick-api-development-by-grape</id>
-    <content type="html"><![CDATA[<h3>Grape简介</h3>
-
-<p><a href="http://intridea.github.io/grape">Grape</a>是一个基于Rack的非常轻量级的框架，用于快速的开发API。一般来说，Rails对于单独的API来说，太过于重量级；而Sinatra虽然足够小巧，但是又没有为开发API提供足够的默认支持（如果从可控制性，灵活性上来说，Sinatra可能更好一些，但是如果有专门的更好用的工具，为什么不用呢？）。</p>
-
-<p>安装非常简便：</p>
-
-<p><code>
-$ gem install grape
-</code></p>
-
-<p>或者使用在自己的Gemfile中，与其他的gem一起搭建API:</p>
-
-<p><code>
-gem 'grape'
-</code></p>
-
-<h3>为既有系统添加API</h3>
-
-<h4>简单一试</h4>
-
-<p>之前的一篇介绍<a href="http://icodeit.org/2013/05/using-active-record-as-a-standalone-orm/">ActiveRecord在既有系统中使用</a>的文章中，我使用ActiveRecord为既有的数据库visitor中的三个表(visitor, listGroup, listGroupItem)建立了ruby对应的模型。现在我们可以为这些模型包装一组API，以方便客户端（消费者）可以通过web来访问。</p>
-
-<p>```
-module MySys</p>
-
-<pre><code>class API &lt; Grape::API
-    format :json
-
-    resource :visitors do
-
-        desc "get all visitor information"
-        get do
-            Visitor.limit(20)
-        end
-
-    end
-end
-</code></pre>
-
-<p>end
-```</p>
-
-<p>首先，MySys::API扩展了Grape::API。<code>format</code>定义我们的API会产生JSON格式的输出，resource定义了这一组API是为资源visitors提供的，因此访问API的url为：</p>
-
-<p><code>
-http://localhost:9292/visitors/
-</code></p>
-
-<p>当然，grape提供一个很方便的设置prefix，可以使得API的路径更有意义:</p>
-
-<p><code>
-format :json
-prefix "mysys"
-</code></p>
-
-<p>url则相应地变为:</p>
-
-<p><code>
-http://localhost:9292/mysys/visitors/
-</code></p>
-
-<h4>处理参数</h4>
-
-<p>在对参数的处理上，grape也非常灵活，比如接上例，我们想要获取某一个具体的用户的信息：</p>
-
-<p><code>
-http://localhost:9292/visitors/8a9d82b13b9786e1013b978766150001
-</code></p>
-
-<p>我们可以添加一个新的endpoint：</p>
-
-<p>```
-desc "return a visitor"
-params do</p>
-
-<pre><code>requires :visitor_uid, :type =&gt; String, :desc =&gt; "visitor id"
-</code></pre>
-
-<p>end
-route_param :visitor_uid do</p>
-
-<pre><code>get do
-    Visitor.find(params[:visitor_uid])
-end
-</code></pre>
-
-<p>end
-```</p>
-
-<p>params中要求，需要一个类型为String的参数visitor_uid。然后在handler中，通过params来引用这个参数的值。</p>
-
-<h4>助手函数(Helper)</h4>
-
-<p>Grape允许开发者将编解码，权限校验等等的通用的操作分离出来，放入助手函数，这些Helper可以被所有的API使用:</p>
-
-<p>```
-helpers do</p>
-
-<pre><code>def generate_default_visitor(email, site) 
-    {
-        :visitor_uid =&gt; SecureRandom.hex,
-        :password_expiration =&gt; (Time.now + 60 * 60 * 24),
-        :last_used_timestamp =&gt; (Time.now - 60 * 60 * 24),
-        :visitor_login_id =&gt; email,
-        :site_name =&gt; site
-    }
-end
-</code></pre>
-
-<p>end
-```</p>
-
-<p>使用上边定义的助手函数<code>generate_default_visitor</code>：</p>
-
-<p>```
-desc "create a visitor"
-params do</p>
-
-<pre><code>requires :email, :type =&gt; String, :desc =&gt; "Email address"
-requires :site, :type =&gt; String, :desc =&gt; "Site"
-</code></pre>
-
-<p>end
-post do</p>
-
-<pre><code>attr = generate_default_visitor(params[:email], params[:site])
-visitor = Visitor.new attr
-visitor.visitor_uid = attr[:visitor_uid]
-visitor.save
-</code></pre>
-
-<p>end
-```</p>
-
-<h3>对API进行测试</h3>
-
-<p>通过Web测试API有非常多的方式，比如通过浏览器的插件(POSTMan)，RSpec，但是我最喜欢，也是最轻便的方式是通过命令行工具curl：</p>
-
-<p><code>
-curl http://localhost:9292/visitors/8a9d82b13b9786e1013b978766150001
-</code></p>
-
-<p>或者：</p>
-
-<p><code>
-curl -H "Content-Type: application/json" -X POST -d "{\"email\":\"jtqiu@tw.com\", \"site\":\"mysys\"}" http://localhost:9292/visitors/
-</code></p>
-
-<p>命令行的程序curl是一个非常灵活，强大的工具，可以定制HTTP头信息，User Agent，支持所有的HTTP动词，最重要的是，在命令行很容易将工具们组合在一起，并完成自动化。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[rack it up]]></title>
-    <link href="http://abruzzi.github.com/2013/08/rack-it-up/"/>
-    <updated>2013-08-02T07:38:00+10:00</updated>
-    <id>http://abruzzi.github.com/2013/08/rack-it-up</id>
-    <content type="html"><![CDATA[<h3>Rack it up (proc)</h3>
-
-<p>一个最简单的rack应用程序可以是：一个简单的ruby对象，包含了一个call方法。这个call方法接受一个参数，并返回一个有三个元素的数组即可：</p>
-
-<p>```
-def call(env)</p>
-
-<pre><code>[200, {}, ["content"]]
-</code></pre>
-
-<p>end
-```</p>
-
-<p>其中参数env将被rack用作HTTP请求对象来传递进来，而函数的返回值与HTTP响应对应：分别为状态码，HTTP头信息以及响应内容。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Alfred简介及Alfred扩展编写]]></title>
-    <link href="http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project/"/>
-    <updated>2013-05-18T20:04:00+10:00</updated>
-    <id>http://abruzzi.github.com/2013/05/create-a-alfred-extension-for-create-sinatra-project</id>
-    <content type="html"><![CDATA[<h3>Alfred简介</h3>
-
-<p><a href="http://www.alfredapp.com/">Alfred</a>是Mac下的一个小工具，可以极大的提高使用计算机的效率。Alfred提供非常丰富的功能集，比如：</p>
-
-<ol>
-<li>基本的文件/目录查找功能</li>
-<li>应用程序加载器</li>
-<li>快速的搜索（google，wikipedia）</li>
-</ol>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/05/alfred-find.png" alt="使用Alfred搜索" /></p>
-
-<h4>powerpack</h4>
-
-<p>Alfred本身是免费的，但是一些高级的功能，如：</p>
-
-<ol>
-<li>自定义扩展（<strong>非常有用</strong>）</li>
-<li>剪贴板栈/代码片段管理（<strong>非常有用</strong>）</li>
-<li>iTunes控制</li>
-<li>近期访过的文档</li>
-</ol>
-
-
-<p>提供在<a href="http://www.alfredapp.com/powerpack/">powerpack</a>中，这个功能是要收费的，不过个人觉得绝对的物超所值。这些功能可以极大的提高我对计算机的使用效率，而且剪贴板栈功能可以节省我很多的时间。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/05/alfred-clipboard.png" alt="image" /></p>
-
-<h3>扩展编写</h3>
-
-<p>经常会使用<a href="http://www.sinatrarb.com/">sinatra</a>编写一些简单的Web应用程序，以用作一些showcase和应用程序的原型搭建。但是由于sinatra并不是一个框架，并不会像rails那样自动生成目录结构等，而每个sinatra应用的目录结构和文件依赖都非常相似，因此完全可以考虑将这个过程自动化。</p>
-
-<p>基本思路是：</p>
-
-<ol>
-<li>定义一个目录结构的模板</li>
-<li>每次开始一个sinatra工程时，将个模板目录拷贝到新的工程下</li>
-<li>一些库依赖的下载（bundle install以及JavaScript库的下载）</li>
-<li>在编辑器中打开这个新的目录</li>
-</ol>
-
-
-<h4>一个sinatra工程的原型</h4>
-
-<p>```
-$ pwd
-/Users/twer/develop/templates/sinatra</p>
-
-<p>$ tree -a
-.
-├── .rvmrc
-├── Gemfile
-├── app.rb
-├── config.ru
-├── public
-│   ├── css
-│   └── scripts
-│       ├── app.js
-│       └── libs
-└── views
-```</p>
-
-<h4>Extension shell script</h4>
+<p>puts "今天去吃#{first}吧?"</p>
 
 <p>```</p>
 
-<h1>create the project folder</h1>
+<p>测试一下，将上边这个ruby程序运行几次，可以得到一下结果：</p>
 
-<p>cd ~/develop/ruby &amp;&amp; mkdir -p {query} &amp;&amp; cd {query}</p>
+<p>```sh
+$ ruby lunch.rb
+今天去吃东滩水盆吧?</p>
 
-<h1>cp info to folder</h1>
+<p>$ ruby lunch.rb
+今天去吃子午路张记肉夹馍吧?</p>
 
-<p>cp -R ~/develop/templates/sinatra/ .</p>
+<p>$ ruby lunch.rb
+今天去吃傻得帽冒菜吧?</p>
 
-<h1>grab jquery</h1>
-
-<p>curl http://code.jquery.com/jquery.js > public/scripts/libs/jquery.js</p>
-
-<h1>open the project</h1>
-
-<p>/Applications/MacVim.app/Contents/MacOS/Vim -g .
+<p>$ ruby lunch.rb
+今天去吃马奴哈羊肉泡馍吧?
 ```</p>
 
-<p><img src="http://abruzzi.github.com/images/2013/05/sinatra-ext-result.png" alt="image" /></p>
+<p>效果不错，最起码它可以在控制台上打印比较随机的一个推荐了。</p>
 
-<p>执行完之后，<code>~/develop/ruby</code>下会生成一个新的目录，即<code>note</code>，这个目录中即为一个可以直接开始开发sinatra应用的工作目录了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[在既有数据库中使用ActiveRecord]]></title>
-    <link href="http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm/"/>
-    <updated>2013-05-18T14:56:00+10:00</updated>
-    <id>http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm</id>
-    <content type="html"><![CDATA[<h3>ActiveRecord</h3>
+<h4>界面</h4>
 
-<p>作为rails中的ORM(object relation-db mapping)框架，ActiveRecord在初次出现之时带给了人们以无限的惊喜和热情，也使得很多不堪忍受其他语言中粗糙的ORM框架的开发者转而投入rials的怀抱。而有很多的其他语言也在不断尝试模仿ActiveRecord，比如著名的php框架<a href="http://codeigniter.org.cn/">codeigniter</a>。</p>
+<p>最开始界面当然会考虑用诸如Sinatra做一个Web页面，然后吃饭前大家派代表去摇一下，然后听天由命。但是这样的弊端是不直观，用户需要打开该网站，然后主动的获取信息。</p>
 
-<p>在rails的后期版本中，ActiveRecord可以作为一个独立的库来在rails之外使用，这对使用ruby进行其他数据库应用开发的用户来说非常方便。</p>
+<p>我们更想要的是<strong>推送</strong>的方式来获得这个信息，经过简单的测试，发现Mac系统自带的<code>osascript</code>比较适合，这个工具可以执行苹果的脚本语言<a href="https://developer.apple.com/library/mac/documentation/AppleScript/Conceptual/AppleScriptX/AppleScriptX.html">AppleScript</a>，当然还可以执行<a href="https://developer.apple.com/library/mac/documentation/applescript/conceptual/applescriptx/concepts/osa.html">OSA</a>，不过这篇的重点并不是这个，我们可以在另一篇文件中讨论这个主题。</p>
 
-<h4>在新的项目中使用ActiveRecord</h4>
+<p>比如一个很简单的<code>osascript</code>脚本是这样的：</p>
 
-<p>如果在一个全新的rails应用程序中使用ActiveRecord，那么关于数据库方面的一切都可以托管给它，开发者在初期可能连一行代码都不需要编写就可以让程序“像模像样”的运行起来。</p>
-
-<h4>在已有的数据库上使用ActiveRecord</h4>
-
-<p>现实世界中，最可能遇到的问题是数据库已经存在了（毕竟，对于关系型数据库而言，修改schema的影响太大）。这时候，我们仍然可以使用ActiveRecord来方便的访问数据库，得到ruby对象，而跳过冗长且容易出错的数据库访问层。</p>
-
-<h3>一个例子</h3>
-
-<h4>数据库结构</h4>
-
-<p>数据库中有一个访客表(visitor)：</p>
-
-<p><code>
-+-----------------------+--------------+-----+
-| Field                 | Type         | Key |
-+-----------------------+--------------+-----+
-| visitor_uid           | varchar(32)  | PRI |
-| visitor_login_id      | varchar(128) | MUL |
-| visitor_password      | varchar(32)  |     |
-| visitor_name          | varchar(100) |     |
-| created_timestamp     | timestamp    |     |
-| password_expiration   | timestamp    |     |
-| last_used_timestamp   | timestamp    | MUL |
-| visitor_alias         | varchar(128) | MUL |
-| visitor_password_hash | binary(64)   |     |
-+-----------------------+--------------+-----+
+<p><code>applescript
+display notification "Hello, world"
 </code></p>
 
-<p>有一个访客浏览过的<code>分组</code>表(list_group)：</p>
+<p>在命令行输入：</p>
 
-<p><code>
-+------------------+---------------------+-----+
-| Field            | Type                | Key |
-+------------------+---------------------+-----+
-| list_group_id    | bigint(20) unsigned | PRI |
-| list_type        | varchar(32)         | MUL |
-| visitor_uid      | varchar(32)         | MUL |
-| list_name        | varchar(128)        |     |
-| create_timestamp | timestamp           |     |
-+------------------+---------------------+-----+
+<p><code>sh
+$ osascript hello.osa
 </code></p>
 
-<p>每个<code>分组</code>中，都有一些条目，具体到每个条目(list_group_item)：</p>
+<p>来执行这个脚本，这时你会看到一个弹出窗口：</p>
 
-<p><code>
-+----------------------+---------------------+-----+
-| Field                | Type                | Key |
-+----------------------+---------------------+-----+
-| list_group_item_id   | bigint(20) unsigned | PRI |
-| list_group_id        | bigint(20) unsigned | MUL |
-| item_id              | varchar(128)        | MUL |
-| create_timestamp     | timestamp           |     |
-| last_use_timestamp   | timestamp           |     |
-| note                 | varchar(4000)       |     |
-+----------------------+---------------------+-----+
+<p><img src="/images/2014/09/hello-osa-resized.png" alt="image" /></p>
+
+<p>可以通过指定title来设置弹出窗口的标题：</p>
+
+<p><code>applescript
+display notification "Hello, world" with title "This is Title"
 </code></p>
 
-<p>三张表的关系如下：</p>
+<p><img src="/images/2014/09/hello-osa-with-title-resized.png" alt="image" /></p>
 
-<p><img src="http://abruzzi.github.com/images/2013/05/active_record.png" alt="image" /></p>
+<p>这样我们的实现就比较容易了，一个最简单的版本如下：</p>
 
-<h4>示例程序的目录结构</h4>
+<p>```sh</p>
 
-<p>```
-├── Gemfile
-├── Gemfile.lock
-├── app.rb
-├── config
-│   └── database.yml
-├── debug.log
-└── model</p>
+<h1>!/bin/bash</h1>
 
-<pre><code>├── list_group.rb
-├── list_group_item.rb
-└── visitor.rb
-</code></pre>
-
-<p>```</p>
-
-<h4>models</h4>
-
-<p>使用ActiveRecord，只需要简单的在模块上声明模块见的关系即可：</p>
-
-<p>visitor类的定义，读起来非常自然：</p>
-
-<p>```
-require 'active_record'</p>
-
-<p>class Visitor &lt; ActiveRecord::Base</p>
-
-<pre><code>has_many :groups, 
-    :class_name =&gt; 'ListGroup', 
-    :foreign_key =&gt; 'visitor_uid'
-
-self.table_name  = 'visitor'
-self.primary_key = 'visitor_uid'
-</code></pre>
-
-<p>end
+<p>chisha=<code>ruby lunch.rb</code>
+osascript -e "display notification \"${chisha}\" with title \"Chisha?\""
 ```</p>
 
-<p>ListGroup类的定义：</p>
+<p>首先执行<code>ruby lunch.rb</code>得到一个推荐的饭店，然后将这个饭店名称传入osascript来生成通知：</p>
 
-<p>```
-class ListGroup &lt; ActiveRecord::Base</p>
+<p><img src="/images/2014/09/chisha-resized.png" alt="image" /></p>
 
-<pre><code>self.table_name  = 'list_group'
-self.primary_key  = 'list_group_id'
+<h4>定时任务</h4>
 
-has_many :items, 
-    :class_name =&gt; 'ListGroupItem', 
-    :foreign_key =&gt; 'list_group_id'
+<p>有了这个脚本，我们可以很容易的使用<code>crontab</code>将其作为定时任务，比如将上述的脚本保存为<code>lunch.sh</code>，然后定义一个<code>crontab</code>脚本：</p>
 
-belongs_to :visitor, 
-    :class_name =&gt; 'Visitor', 
-    :foreign_key =&gt; 'visitor_uid'
-</code></pre>
+<p><code>sh
+$ crontab -l
+30 11 * * 1-5 /Users/jtqiu/develop/ruby/chisha/lunch.sh
+</code></p>
 
-<p>end
-```</p>
+<p>这个脚本会在每周的周一到周五的中午11点30分执行一次，对于<a href="http://en.wikipedia.org/wiki/Cron">crontab的语法</a>请参考此处。</p>
 
-<p>最后是ListGroupItem的定义：</p>
+<p>一个直观的图示如下：</p>
 
-<p>```
-class ListGroupItem &lt; ActiveRecord::Base</p>
+<p><img src="/images/2014/09/crontab-syntax.gif" alt="image" /></p>
 
-<pre><code>self.table_name = 'list_group_item'
-self.primary_key = 'list_group_item_id'
+<p>图片来源(http://www.webenabled.com/sites/default/files/crontab-syntax.gif)</p>
 
-belongs_to :list_group, 
-    :class_name =&gt; 'ListGroup', :foreign_key =&gt; 'list_group_id'
-</code></pre>
-
-<p>end
-```</p>
-
-<p>这种比较复杂的层级关系在现实中经常见到，而大部分HelloWorld型的介绍又touch不到，因此就将代码全部列于此处，以便索引。</p>
-
-<h4>使用这些model</h4>
-
-<p>```
-def main</p>
-
-<pre><code>attr = visitor_attr('juntao.qiu#thoughtworks.com')
-visitor = Visitor.new attr
-visitor.visitor_uid = attr[:visitor_uid]
-visitor.save
-
-visitors = Visitor.find(:all)
-visitors.each do |visitor|
-    p visitor[:visitor_login_id]
-end
-</code></pre>
-
-<p>end
-```
-这里即可任意的使用诸如new/save,find等ActiveRecord为我们包装起来的方法了。</p>
+<p>对应的<a href="https://github.com/abruzzi/chisha">代码都放在Github上</a>，而且这个README是我目前写的最详细的一个，:)。</p>
 ]]></content>
   </entry>
   

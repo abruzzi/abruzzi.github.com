@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-09-05T00:33:09+10:00</updated>
+  <updated>2014-09-18T22:45:28+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,209 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[一个简单的午餐推荐脚本]]></title>
+    <link href="http://abruzzi.github.com/2014/09/simple-idea-and-simple-script/"/>
+    <updated>2014-09-18T21:55:00+10:00</updated>
+    <id>http://abruzzi.github.com/2014/09/simple-idea-and-simple-script</id>
+    <content type="html"><![CDATA[<h3>千古谜题 &#8212; 中午吃啥？</h3>
+
+<p>如果要列出一些日常最频繁的会问/被问的问题的一个列表，<strong><em>吃啥？</em></strong>绝对会排在前三位，对于程序员来说，一样频繁的还有诸如<strong><em>这是谁写的？</em></strong>，<strong><em>这尼玛啥意思啊？</em></strong>之类。</p>
+
+<p><strong>吃啥</strong>作为一个每天都会面对的问题，我们自然而言会想很多办法，比如随大流，其他人去哪儿我们跟着就行，但是这种方法最大的问题是：大部分人其实都没有很好的想法，大家都很迷茫。作为程序员，一个非常直观的想法就是找出一个列表，然后随机/伪随机的从这个列表中拿出一条来作为推荐。</p>
+
+<h4>基本思路</h4>
+
+<p>一个基本的思路是这样的，或者说，要开发的软件应该满足这几个基本的需求</p>
+
+<ol>
+<li>维护一个饭店/饭菜的列表</li>
+<li>随机的从这个列表中取出一项</li>
+<li>每天定时的触发，比如<strong>11:30</strong>准时提醒</li>
+<li>这个工具最终要以弹出窗口等方式来提醒</li>
+</ol>
+
+
+<p>饭店/饭菜的列表比较容易，比如一个静态的JSON文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;关中客大碗面&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;王华峰肉夹馍&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;傻得帽冒菜&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;蒸饺&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;樊家肉夹馍&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;马奴哈羊肉泡馍&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;子午路张记肉夹馍&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;东滩水盆&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后我们需要一个小程序来读取这段JSON，并已随机/伪随机的方式返回一个推荐：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># encoding: UTF-8</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">first</span>
+</span><span class='line'>    <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;food.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">)</span><span class="o">.</span><span class="n">shuffle</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="s2">&quot;name&quot;</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;今天去吃</span><span class="si">#{</span><span class="n">first</span><span class="si">}</span><span class="s2">吧?&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>测试一下，将上边这个ruby程序运行几次，可以得到一下结果：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>ruby lunch.rb
+</span><span class='line'>今天去吃东滩水盆吧?
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ruby lunch.rb
+</span><span class='line'>今天去吃子午路张记肉夹馍吧?
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ruby lunch.rb
+</span><span class='line'>今天去吃傻得帽冒菜吧?
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ruby lunch.rb
+</span><span class='line'>今天去吃马奴哈羊肉泡馍吧?
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>效果不错，最起码它可以在控制台上打印比较随机的一个推荐了。</p>
+
+<h4>界面</h4>
+
+<p>最开始界面当然会考虑用诸如Sinatra做一个Web页面，然后吃饭前大家派代表去摇一下，然后听天由命。但是这样的弊端是不直观，用户需要打开该网站，然后主动的获取信息。</p>
+
+<p>我们更想要的是<strong>推送</strong>的方式来获得这个信息，经过简单的测试，发现Mac系统自带的<code>osascript</code>比较适合，这个工具可以执行苹果的脚本语言<a href="https://developer.apple.com/library/mac/documentation/AppleScript/Conceptual/AppleScriptX/AppleScriptX.html">AppleScript</a>，当然还可以执行<a href="https://developer.apple.com/library/mac/documentation/applescript/conceptual/applescriptx/concepts/osa.html">OSA</a>，不过这篇的重点并不是这个，我们可以在另一篇文件中讨论这个主题。</p>
+
+<p>比如一个很简单的<code>osascript</code>脚本是这样的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='applescript'><span class='line'><span class="nb">display</span> <span class="nv">notification</span> <span class="s2">&quot;Hello, world&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在命令行输入：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>osascript hello.osa
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>来执行这个脚本，这时你会看到一个弹出窗口：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/09/hello-osa-resized.png" alt="image" /></p>
+
+<p>可以通过指定title来设置弹出窗口的标题：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='applescript'><span class='line'><span class="nb">display</span> <span class="nv">notification</span> <span class="s2">&quot;Hello, world&quot;</span> <span class="nv">with</span> <span class="na">title</span> <span class="s2">&quot;This is Title&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2014/09/hello-osa-with-title-resized.png" alt="image" /></p>
+
+<p>这样我们的实现就比较容易了，一个最简单的版本如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">chisha</span><span class="o">=</span><span class="sb">`</span>ruby lunch.rb<span class="sb">`</span>
+</span><span class='line'>osascript -e <span class="s2">&quot;display notification \&quot;${chisha}\&quot; with title \&quot;Chisha?\&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先执行<code>ruby lunch.rb</code>得到一个推荐的饭店，然后将这个饭店名称传入osascript来生成通知：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/09/chisha-resized.png" alt="image" /></p>
+
+<h4>定时任务</h4>
+
+<p>有了这个脚本，我们可以很容易的使用<code>crontab</code>将其作为定时任务，比如将上述的脚本保存为<code>lunch.sh</code>，然后定义一个<code>crontab</code>脚本：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>crontab -l
+</span><span class='line'>30 11 * * 1-5 /Users/jtqiu/develop/ruby/chisha/lunch.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个脚本会在每周的周一到周五的中午11点30分执行一次，对于<a href="http://en.wikipedia.org/wiki/Cron">crontab的语法</a>请参考此处。</p>
+
+<p>一个直观的图示如下：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/09/crontab-syntax.gif" alt="image" /></p>
+
+<p>图片来源(http://www.webenabled.com/sites/default/files/crontab-syntax.gif)</p>
+
+<p>对应的<a href="https://github.com/abruzzi/chisha">代码都放在Github上</a>，而且这个README是我目前写的最详细的一个，:)。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[一个关于时间的神奇Bug]]></title>
@@ -24,7 +227,7 @@
 
 <p><img src="http://abruzzi.github.com/images/2014/09/personal-resized.png" alt="image" /></p>
 
-<p>没有使用线程的<code>datepicker</code>，某个开发人员只是简单的自己收集了一下年，月，日信息，然后在JavaScript中根据填写的值来<code>new</code>了一个Date对象。</p>
+<p>没有使用现成的<code>datepicker</code>，某个开发人员只是简单的自己收集了一下年，月，日信息，然后在JavaScript中根据填写的值来<code>new</code>了一个Date对象。</p>
 
 <p>然后某天我在做测试的时候，顺手填写了一个日期<code>1986年5月4日</code>，然后奇怪的事情发生了：</p>
 
@@ -3904,27 +4107,6 @@
 
 
 <p>命令行的程序curl是一个非常灵活，强大的工具，可以定制HTTP头信息，User Agent，支持所有的HTTP动词，最重要的是，在命令行很容易将工具们组合在一起，并完成自动化。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[rack it up]]></title>
-    <link href="http://abruzzi.github.com/2013/08/rack-it-up/"/>
-    <updated>2013-08-02T07:38:00+10:00</updated>
-    <id>http://abruzzi.github.com/2013/08/rack-it-up</id>
-    <content type="html"><![CDATA[<h3>Rack it up (proc)</h3>
-
-<p>一个最简单的rack应用程序可以是：一个简单的ruby对象，包含了一个call方法。这个call方法接受一个参数，并返回一个有三个元素的数组即可：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def call(env)
-</span><span class='line'>  [200, {}, ["content"]]
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中参数env将被rack用作HTTP请求对象来传递进来，而函数的返回值与HTTP响应对应：分别为状态码，HTTP头信息以及响应内容。</p>
 ]]></content>
   </entry>
   

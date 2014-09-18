@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="总的来说，2013年收获颇丰，感谢同事们(特别鸣谢胡凯，张凯峰，以及RCA的各位同事)的帮助，我的第一本技术书籍JavaScript核心概念及实践在今年5月出版了。8月到10月，我和王磊，张久坤两位同事，和ThoughtWorks其他office的同事一起， &hellip;">
+  <meta name="description" content="ThoughtWorks好声音 ThoughtWorks好声音是一个聚合网站，内容来自众ThoughtWorker的博客，我们每周会汇聚一次，从众多的博客中挑选出一些P2(软件卓越)相关的主题，然后编为一辑，再分享出去。 但是从近100个博客中找P2相关的内容，这件事本身非常繁琐， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,158 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2014/01/use-yahoo-pipe-service-to-aggregate-blogs-you-care/">使用 Yahoo Pipes 服务做内容聚合 &#8211; ThoughtWorks好声音</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-01T19:48:00+11:00" pubdate data-updated="true">Jan 1<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>ThoughtWorks好声音</h3>
+
+<p><a href="http://voice.thoughtworkers.org/">ThoughtWorks好声音</a>是一个聚合网站，内容来自众ThoughtWorker的博客，我们每周会汇聚一次，从众多的博客中挑选出一些P2(软件卓越)相关的主题，然后编为一辑，再分享出去。</p>
+
+<p>但是从近100个博客中找P2相关的内容，这件事本身非常繁琐，如果每周都做这个重复劳动的话，那么软件卓越从何谈起呢？作为以解放人类为己任的程序员，我们绝对不能忍受纯体力的劳动。</p>
+
+<h4>获取博客地址列表</h4>
+
+<p>之前郑晔做了一个<a href="https://jinshuju.net/">金数据</a>的统计，请各位同事把自己的名字和博客地址登记在一个金数据的表单上：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/01/blog-colllecting.png" alt="image" /></p>
+
+<p>接下来第一步就是把网页上的所有地址取下来，这一步很容易，从金数据的页面上用jQuery找到表格的第二列，然后将其中的文字取出来：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;table tr td:nth-child(2)&quot;</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">item</span><span class="p">).</span><span class="nx">text</span><span class="p">().</span><span class="nx">trim</span><span class="p">();</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>写到这里突发奇想，能不能用phantomjs去把这个动作自动化？</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">page</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">status</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">status</span> <span class="o">!==</span> <span class="s1">&#39;success&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Unable to access network&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">page</span><span class="p">.</span><span class="nx">injectJs</span><span class="p">(</span><span class="s1">&#39;jquery.js&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">links</span> <span class="o">=</span> <span class="nx">page</span><span class="p">.</span><span class="nx">evaluate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;table tr td:nth-child(2)&quot;</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">).</span><span class="nx">text</span><span class="p">().</span><span class="nx">trim</span><span class="p">();</span>
+</span><span class='line'>            <span class="p">});</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">underscore</span><span class="p">(</span><span class="nx">links</span><span class="p">).</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s1">&#39;^(https|http)&#39;</span><span class="p">).</span><span class="nx">test</span><span class="p">(</span><span class="nx">item</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>                <span class="k">return</span> <span class="s2">&quot;http://&quot;</span> <span class="o">+</span> <span class="nx">item</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">item</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="nx">phantom</span><span class="p">.</span><span class="nx">exit</span><span class="p">();</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，results数组中就包含了所有的博客链接了，而且有的同事比较懒，提供的URL中不包含<code>http</code>，这段代码还顺手给这样的url添加了头尾。</p>
+
+<p>然后<strong>第二步</strong>，我<strong>想象</strong>着应该再写个脚本，在这个数组中得每个url的后边加上诸如<code>rss</code>或者<code>atom.xml</code>之类的后缀，然后去获取每个博客的rss文件，然后根据这些信息做一些事情。吃午饭的过程中我还在想象这个工具分为几个模块，用什么样的语言来做开发等等细节。</p>
+
+<p>吃完午饭，突然想起来之前熊杰貌似发过一个yahoo pipes生成的rss，我在邮件中翻出来之后，失望的发现我自己的博客都不在里边，想想熊杰貌似还在乌干达援助非洲人民，那就自己动手重新定义一个吧。</p>
+
+<h4>Yahoo pipes 服务</h4>
+
+<p><a href="http://pipes.yahoo.com/pipes/">Yahoo pipes</a>是一个用来定制聚合的服务，只需要定义好数据源(通常是rss/atom)，然后定义一些操作，比如排序，去重，联合等等。最后这个pipe会生成一个结果集，这些特性简直就是为我们这个需求定制的：</p>
+
+<ol>
+<li>将博客地址+&#8217;/rss&#8217; / 博客地址+&#8217;/atom.xml&#8217; 添加到一个个的fetcher上</li>
+<li>将这些fetcher联合起来</li>
+<li>将联合的结果排序(按照发表日期/更新日期)</li>
+<li>生成最后的rss</li>
+</ol>
+
+
+<p>yahoo pipes提供的编辑器非常简单易用：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/01/single-pipe.png" alt="image" /></p>
+
+<p>而且在编辑界面底下有一个预览界面：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/01/single-preview.png" alt="image" /></p>
+
+<p>当然，当定义好完整的pipe之后，我们的ThoughtWorks好声音的源看起来是这样的：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/01/tvot-pipe-resized.png" alt="image" /></p>
+
+<p>运行这个pipe之后，得到一个preview的界面：</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/01/tvot-pipe-run-resized.png" alt="image" /></p>
+
+<p>最后，可以将这个pipe公开发布，或者将这个pipe生成的rss订阅到阅读器中，比如<a href="http://www.vienna-rss.org/">vienna</a>:</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/01/vienna-resized.png" alt="image" /></p>
+
+<p>然后就可以一目了然的看到最近有哪些ThoughtWorker更新了自己的博客，又有那些是P2相关的，可以<code>理论上</code>减轻我们编辑很多的工作量。</p>
+
+<h4>结论</h4>
+
+<p>手里是锤子的时候，看着周围的东西都像钉子。有时候，那些又酷又炫的技巧/工具可能并非必须。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2028,54 +2180,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/08/rack-it-up/">Rack It Up</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-02T07:38:00+10:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Rack it up (proc)</h3>
-
-<p>一个最简单的rack应用程序可以是：一个简单的ruby对象，包含了一个call方法。这个call方法接受一个参数，并返回一个有三个元素的数组即可：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def call(env)
-</span><span class='line'>  [200, {}, ["content"]]
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中参数env将被rack用作HTTP请求对象来传递进来，而函数的返回值与HTTP响应对应：分别为状态码，HTTP头信息以及响应内容。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/3/">&larr; Older</a>
@@ -2093,6 +2197,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2014/09/simple-idea-and-simple-script/">一个简单的午餐推荐脚本</a>
+      </li>
+    
+      <li class="post">
         <a href="/2014/09/a-bug-about-time/">一个关于时间的神奇Bug</a>
       </li>
     
@@ -2106,10 +2214,6 @@
     
       <li class="post">
         <a href="/2014/06/my-4w-robot-built-on-top-of-arduino/">我的第一个Arduino机器人</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2014/04/how-web-works-cgi/">Web是怎么工作的: CGI脚本</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Bug | I code it]]></title>
   <link href="http://abruzzi.github.com/category/bug/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-09-05T00:33:09+10:00</updated>
+  <updated>2014-09-18T22:45:28+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -24,7 +24,7 @@
 
 <p><img src="/images/2014/09/personal-resized.png" alt="image" /></p>
 
-<p>没有使用线程的<code>datepicker</code>，某个开发人员只是简单的自己收集了一下年，月，日信息，然后在JavaScript中根据填写的值来<code>new</code>了一个Date对象。</p>
+<p>没有使用现成的<code>datepicker</code>，某个开发人员只是简单的自己收集了一下年，月，日信息，然后在JavaScript中根据填写的值来<code>new</code>了一个Date对象。</p>
 
 <p>然后某天我在做测试的时候，顺手填写了一个日期<code>1986年5月4日</code>，然后奇怪的事情发生了：</p>
 
