@@ -14,7 +14,7 @@ categories:
 
 ![image](/images/2014/09/personal-resized.png)
 
-没有使用线程的`datepicker`，某个开发人员只是简单的自己收集了一下年，月，日信息，然后在JavaScript中根据填写的值来`new`了一个Date对象。
+没有使用现成的`datepicker`，某个开发人员只是简单的自己收集了一下年，月，日信息，然后在JavaScript中根据填写的值来`new`了一个Date对象。
 
 然后某天我在做测试的时候，顺手填写了一个日期`1986年5月4日`，然后奇怪的事情发生了：
 
