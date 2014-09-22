@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "使用node-webkit构建桌面应用程序（node.js+HTML5+CSS3）"
+title: "使用node-webkit构建桌面应用程序"
 date: 2014-09-21 17:12
 comments: true
 categories: 
