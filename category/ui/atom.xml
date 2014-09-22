@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UI | I code it]]></title>
   <link href="http://abruzzi.github.com/category/ui/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-09-22T22:39:56+10:00</updated>
+  <updated>2014-09-22T22:56:29+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -228,6 +228,28 @@ $ open builds/hello-node-webkit/osx/hello-node-webkit.app
 </code></p>
 
 <p>或者在Finder中双击打开即可。</p>
+
+<p>可以看到上例中的应用程序还有浓重的浏览器痕迹，比如地址栏，刷新按钮，甚至还有一个<code>DevTools</code>的按钮。我们可以通过修改<code>package.json</code>来指定：</p>
+
+<p>```js
+{</p>
+
+<pre><code>"name": "hello-node-webkit",
+"version": "0.1.0",
+"main": "index.html",
+"window": {
+    "toolbar": false,
+    "width": 800,
+    "height": 600
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这样的界面就更像是一个桌面应用了：</p>
+
+<p><img src="/images/2014/09/hello-without-address-resized.png" alt="image" /></p>
 
 <p>到目前为止，这个小的<em>应用程序</em>并没有什么有趣的特性，用户界面也毫无美感，但是有了这些基本知识和工具之后，我们就可以开始更进一步的开发。除了使用既有的CSS框架来完成用户界面的美化，我们还会使用node.js访问系统资源来构建真实的应用程序。</p>
 ]]></content>
