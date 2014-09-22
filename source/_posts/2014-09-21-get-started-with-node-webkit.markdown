@@ -191,5 +191,25 @@ $ open builds/hello-node-webkit/osx/hello-node-webkit.app
 
 或者在Finder中双击打开即可。
 
+可以看到上例中的应用程序还有浓重的浏览器痕迹，比如地址栏，刷新按钮，甚至还有一个`DevTools`的按钮。我们可以通过修改`package.json`来指定：
+
+```js
+{
+    "name": "hello-node-webkit",
+    "version": "0.1.0",
+    "main": "index.html",
+    "window": {
+        "toolbar": false,
+        "width": 800,
+        "height": 600
+    }
+}
+```
+
+这样的界面就更像是一个桌面应用了：
+
+![image](/images/2014/09/hello-without-address-resized.png)
+
+
 到目前为止，这个小的*应用程序*并没有什么有趣的特性，用户界面也毫无美感，但是有了这些基本知识和工具之后，我们就可以开始更进一步的开发。除了使用既有的CSS框架来完成用户界面的美化，我们还会使用node.js访问系统资源来构建真实的应用程序。
 
