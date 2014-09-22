@@ -4,7 +4,7 @@
   <title><![CDATA[Category: bootstrap | I code it]]></title>
   <link href="http://abruzzi.github.com/category/bootstrap/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-09-22T22:36:39+10:00</updated>
+  <updated>2014-09-22T22:39:56+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[使用node-webkit构建桌面应用程序（node.js+HTML5+CSS3）]]></title>
+    <title type="html"><![CDATA[使用node-webkit构建桌面应用程序]]></title>
     <link href="http://abruzzi.github.com/2014/09/get-started-with-node-webkit/"/>
     <updated>2014-09-21T17:12:00+10:00</updated>
     <id>http://abruzzi.github.com/2014/09/get-started-with-node-webkit</id>
