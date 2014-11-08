@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: photograph | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/photograph/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2014-11-08T18:05:53+11:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[命令行制作黑白+单色照片]]></title>
+    <link href="http://abruzzi.github.com/2014/11/splash-color-in-black-and-white-photo/"/>
+    <updated>2014-11-08T12:59:00+11:00</updated>
+    <id>http://abruzzi.github.com/2014/11/splash-color-in-black-and-white-photo</id>
+    <content type="html"><![CDATA[<h3>黑白+单色照片</h3>
+
+<p>有很多摄影师通过后期制作出了非常独特的<code>黑白+单色</code>照片，并由此来强调被拍摄主题，绿叶中的红花，紫色花朵的黄色花蕊等；的另一方面，这种照片可以强调背景的灰色，比如雾霾中的交通灯。</p>
+
+<p>比如原图是这样的：</p>
+
+<p><img src="/images/2014/11/flower-resized.jpg" alt="image" /></p>
+
+<p>经过处理之后，最终的效果是这样的：</p>
+
+<p><img src="/images/2014/11/flower-final-resized.jpg" alt="image" /></p>
+
+<p>网络上已经有很多的教程来做到这一点，不过都需要使用<code>photoshop</code>来完成颜色的抽取，反色，灰化等。当然，作为程序员，特别是命令行控，自然会想到的是使用<a href="http://www.imagemagick.org/">图片编辑神器ImageMagick</a>来处理。</p>
+
+<h4>基本原理</h4>
+
+<p>我们都知道，彩色图片都是由3个通道（红，绿，蓝三个）叠加在一起的（如果图片带有透明通道的话，会有4个通道，我们这里略过）形成的。每个通道都是一张灰度图，并且会根据图片实际的色彩，在不同程度上有明暗差异。</p>
+
+<p>比如上图的花朵，如果我们将jpg本身的RGB分离开，就会得到3张不同的灰度图：</p>
+
+<p>红色通道灰度图：</p>
+
+<p><img src="/images/2014/11/flower-red-resized.jpg" alt="red" /></p>
+
+<p>绿色通道灰度图：</p>
+
+<p><img src="/images/2014/11/flower-green-resized.jpg" alt="green" /></p>
+
+<p>蓝色通道灰度图：</p>
+
+<p><img src="/images/2014/11/flower-blue-resized.jpg" alt="blue" /></p>
+
+<p>由于原图绿色和紫红色为主要色彩，所以在红色通道中，花朵比较偏向白色，蓝色通道中花朵也会偏向白色，因为紫红色包含红色和蓝色的亮度都比较高，而在绿色通道中，叶子的颜色则更偏向白色一些。</p>
+
+<h4>图片的加减</h4>
+
+<p>有了灰度图，我们就可以通过不同通道的加减来加强某些色彩，比如蓝色通道和红色通道相减之后，绿色就会被过滤掉，因为绿色在红色和蓝色通道中都表现为灰色：</p>
+
+<p><img src="/images/2014/11/flower-minus-resized.jpg" alt="minus" /></p>
+
+<p>这时候，我们已经有了花瓣的轮廓，但是还是有些模糊，我们还需要将其二值化。这样做出来的图片被称为<code>mask</code>，这个<code>mask</code>和最终的图片叠加之后，才会将我们关注的部位凸现出来。</p>
+
+<p><img src="/images/2014/11/flower-mask-resized.jpg" alt="mask" /></p>
+
+<h3>实现</h3>
+
+<p>ImageMagick提供的命令行工具<code>convert</code>非常强大，我们这里只是用其中很简单的几个：</p>
+
+<pre><code>1.  图片通道的分离
+2.  图片相加减
+3.  叠加多个图片为一个
+</code></pre>
+
+<p>要分离一张RGB的图片，只需要指定：</p>
+
+<p><code>sh
+$ convert flower.jpg -separate flower_rgb_%d.jpg
+</code></p>
+
+<p>这条命令会把图片flower.jpg分离成三张图片，命令中的<code>%d</code>占位符会自动被展开为<code>1,2,3</code>这样的数字，这样这条命令会生成3章图片：flower_rgb_0.jpg,flower_rgb_1.jpg,flower_rgb_2.jpg。</p>
+
+<p>图片的相减也很方便，使用命令：</p>
+
+<p><code>sh
+$ convert flower_rgb_2.jpg flower_rgb_0.jpg -compose minus \
+-composite flower_minus.jpg
+</code></p>
+
+<p>来完成。得到差值文件之后（已经具备了基本轮廓，如果不理想，可以换一个通道试试），就可以进一步二值化了。</p>
+
+<p>命令</p>
+
+<p><code>sh
+$ convert flower_minus.jpg -level 10%,30% flower_mask.jpg
+</code></p>
+
+<p>用来生成<code>mask</code>文件，其中10%表示亮度低于10%的点会被认为是黑色，而30%则表示亮度高于30%的点会被认为是白色，这样的出来的图片就是只有黑白两种颜色了。</p>
+
+<p>最后，我们需要将不同的图片合并在一起，形成最终的结果：</p>
+
+<p><code>sh
+$ convert flower_rgb_2.jpg flower.jpg flower_mask.jpg -composite flower_final.jpg
+</code></p>
+
+<p>注意这里的次序，先是蓝色通道，然后是原图，最后是<code>mask</code>。这样<code>composite</code>的结果就是我们最开始看到的了：</p>
+
+<p><img src="/images/2014/11/flower-final-resized.jpg" alt="image" /></p>
+
+<p>再来看另外一张用同样方式生成的图片：</p>
+
+<p><img src="/images/2014/11/bird-final-resized.jpg" alt="image" /></p>
+]]></content>
+  </entry>
+  
+</feed>
