@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="黑白+单色照片 有很多摄影师通过后期制作出了非常独特的黑白+单色照片，并由此来强调被拍摄主题，绿叶中的红花，紫色花朵的黄色花蕊等；的另一方面，这种照片可以强调背景的灰色，比如雾霾中的交通灯。 比如原图是这样的： 经过处理之后，最终的效果是这样的： 网络上已经有很多的教程来做到这一点， &hellip;">
+  <meta name="description" content="示例的需求描述 今天我们需要完成的需求是这样的： 对于一个给定的字符串，如果其中元音字母数目在整个字符串中的比例超过了30%，则将该元音字母替换成字符串mommy，额外的，在替换时，如果有连续的元音出现，则仅替换一次。 如果用实例化需求(Specification by Example) &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,617 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2014/11/tdd-step-by-step/">从一个小例子学习TDD</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-09T15:07:00+11:00" pubdate data-updated="true">Nov 9<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>示例的需求描述</h3>
+
+<p>今天我们需要完成的需求是这样的：</p>
+
+<p>对于一个给定的字符串，如果其中<code>元音</code>字母数目在整个字符串中的比例超过了30%，则将该<code>元音</code>字母替换成字符串<code>mommy</code>，额外的，在替换时，如果有连续的元音出现，则仅替换一次。</p>
+
+<p>如果用<code>实例化需求</code>(<a href="http://specificationbyexample.com/">Specification by Example</a>)的方式来描述的话，需求可以转换成这样几条实例：</p>
+
+<ol>
+<li><code>hmm</code>经过处理之后，应该保持原状</li>
+<li><code>she</code>经过处理之后，应该被替换为<code>shmommy</code></li>
+<li><code>hear</code>经过处理之后，应该被替换为<code>hmommyr</code></li>
+</ol>
+
+
+<p>当然，也可以加入一些边界值的检测，比如包含数字，大小写混杂的场景来验证，不过我们暂时可以将这些场景抛开，而仅仅关注与TDD本身。</p>
+
+<h4>为什么选择这个<code>奇怪的</code>例子</h4>
+
+<p>我记得在学校的时候，最害怕看到的就是书上举的各种离<code>生活</code>很远的例子，比如国外的书籍经常举汽车的例子，有引擎，有面板，但是作为一个只是能看到街上跑的车的穷学生，实际无法理解其中的关联关系。</p>
+
+<p>其实，另外一种令人不那么舒服的例子是那种纯粹为了示例而编写的例子，现实世界中可能永远都不可能见到这样的代码，比如我们今天用到的例子。</p>
+
+<p>当然，这种纯粹的例子也有其存在的价值：在脱离开复杂的细节之后，尽量的让读者专注于某个方面，从而达到对某方面练习的目的。因为跟现实完全相关的例子往往会变得复杂，很容易让读者转而去考虑复杂性本身，而忽略了对实践/练习的思考。</p>
+
+<h4>TDD步骤</h4>
+
+<p>通常的描述中，<code>TDD</code>有三个步骤：</p>
+
+<ol>
+<li>先编写一个测试，由于此时没有任何实现，因此测试会失败</li>
+<li>编写实现，以最快，最简单的方式，此时测试会通过</li>
+<li>查看实现/测试，有没有改进的余地，如果有的话就用重构的方式来优化，并在重构之后保证测试通过</li>
+</ol>
+
+
+<p><img src="/images/2014/11/tdd.png" alt="tdd" /></p>
+
+<p>它的好处显而易见：</p>
+
+<ol>
+<li>时时关注于实现功能，这样不会跑偏</li>
+<li>每个功能都有测试覆盖，一旦改错，就会有测试失败</li>
+<li>重构时更有信心，不用怕破坏掉已有的功能</li>
+<li>测试即文档，而且是不会过期的文档，因为一旦实现变化，相关测试就会失败</li>
+</ol>
+
+
+<p>使用<code>TDD</code>，一个重要的实践是<code>测试先行</code>。其实在编写任何测试之前，更重要的一个步骤是<code>任务分解</code>(Tasking)。只有当任务分解到恰当的粒度，整个过程才可能变得比较顺畅。</p>
+
+<p>回到我们的例子，我们在知道整个需求的前提下，如何进行任务分解呢？作为<code>实现优先</code>的程序员，很可能会考虑诸如空字符串，元音比例是否到达30%等功能。这当然没有孰是孰非的问题，不过当需求本身就很复杂的情况下，这种直接面向实现的方式可能会导致越走越偏，考虑的越来越复杂，而耗费了几个小时的设计之后发现没有任何的实际进度。</p>
+
+<p>如果是采用<code>TDD</code>的方式，下面的方式是一种可能的任务分解：</p>
+
+<ol>
+<li>输入一个非元音字符，并预期返回字符本身</li>
+<li>输入一个元音，并预期返回<code>mommy</code></li>
+<li>输入一个元音超过30%的字符串，并预期元音被替换</li>
+<li>输入一个元音超过30%，并且存在连续元音的字符串，并预期只被替换一次</li>
+</ol>
+
+
+<p>当然，这个任务分解可能并不是<code>最好的</code>，但是是一个比较清晰的分解。</p>
+
+<h3>实践</h3>
+
+<h4>第一个任务</h4>
+
+<p>在本文中，我们将使用JavaScript来完成该功能的编写，测试框架采用了<a href="http://jasmine.github.io/2.0/introduction.html">Jasmine</a>，这里有一个<a href="https://github.com/abruzzi/tdd-boilerplate">模板项目</a>，使用它你可以快速的启动，并跟着本教程一起实践。</p>
+
+<p>根据任务分解，我们编写的第一个测试是：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">describe</span><span class="p">(</span><span class="s2">&quot;mommify&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should return h when given h&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="s2">&quot;h&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">mommify</span><span class="p">(</span><span class="s2">&quot;h&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个测试中有三行代码，这也是一般测试的标准写法，简称<code>3A</code>：</p>
+
+<ol>
+<li>组织数据（Arrange）</li>
+<li>执行需要被测的函数（Action）</li>
+<li>验证结果（Assertion）</li>
+</ol>
+
+
+<p>运行这个测试，此时由于还没有实现代码，因此Jasmine会报告失败。接下来我们用最快速的方法来编写实现，就目前来看，最简单的方式就是：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="s2">&quot;h&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可能有人觉得这种实现太过狡猾，但是从<code>TDD</code>的角度来说，它确实能够令测试通过。这时候，我们需要编写另外一个测试来<code>驱动</code>出正确的行为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should return m when given m&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">mommify</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，我们的实现就不能仅仅返回一个&#8221;h&#8221;了，就现在来看，最简单的方式是输入什么就返回什么：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>很好，这样我们的第一个<code>任务</code>已经完成了！我们已经经历了<code>失败-成功</code>的循环，这时候需要<code>review</code>一下代码，以保证代码是干净的：实现上来说，并没有可以优化的地方，但是我们发现两个测试用例其实测试的是同一件事情，因此可以删掉一个。</p>
+
+<p>是的，测试代码也是代码，我们需要小心的维护它，以保证所有的代码都是干净的。</p>
+
+<h4>第二个任务</h4>
+
+<p>我们可以开始元音字母的子任务了，很容易想到的一个测试用例为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should return mommy when given a&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">mommify</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>测试失败之后，能想到的最快速的方式是做一个简单的判断：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">word</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样测试又会通过，接下来就是重复5个元音的场景，不过使用JavaScript可以很容易的将这5个场景归为一组：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should return mommy when given a vowel&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">].</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而实现则对一个的会变成（记住，用最简单的方式）：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">word</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span> <span class="o">||</span> <span class="nx">word</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span> <span class="o">||</span> <span class="nx">word</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span> <span class="o">||</span> <span class="nx">word</span> <span class="o">==</span> <span class="s2">&quot;o&quot;</span> <span class="o">||</span> <span class="nx">word</span> <span class="o">==</span> <span class="s2">&quot;u&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>好了，测试通过了。又是进行重构的时间了，现在看看实现，简直不忍卒读，我们使用JavaScript的字符串的<code>indexOf</code>方法可以简化这段代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="s2">&quot;aeiou&quot;</span><span class="p">.</span><span class="nx">indedOf</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>好多了！我想你现在已经或多或少的体会到了<code>TDD</code>中<code>任务分解</code>的好处了：进度可以掌握，而且目标非常明确，每一步都有相应的产出。</p>
+
+<h4>第三个任务</h4>
+
+<p>和之前一样，我们还是从测试开始：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should mommify if the vowels greater than 30%&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="s2">&quot;shmommy&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">mommify</span><span class="p">(</span><span class="s2">&quot;she&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在有一点点挑战了，因为我们的实现上一直都是单一的字符串，现在有多个了，不过没有关系，我们先按照最简单的方式来实现就对了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="s2">&quot;aeiou&quot;</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">count</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">count</span><span class="o">/</span><span class="nx">word</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mf">0.30</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="s2">&quot;aeiou&quot;</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">str</span> <span class="o">+=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">str</span> <span class="o">+=</span> <span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">str</span> <span class="o">=</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>无论如何，测试通过了，我们首先计算了<code>元音</code>所占的比重，如果超过30%，则替换对应的字符，否则直接返回传入的字符串。</p>
+
+<p>从现在来看，函数<code>mommify</code>中已经有了较多的逻辑，而且有一些重复的判断出现了（<code>"aeuio".indedOf</code>），是时候做一些重构了。</p>
+
+<p>首先将相对独立的计算元音比重的部分抽取成一个函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">countVowels</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="s2">&quot;aeiou&quot;</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">count</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">count</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后，将重复的<code>"aeiou".indexOf</code>部分抽取为一个独立函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">isVowel</span><span class="p">(</span><span class="nx">character</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="s2">&quot;aeiou&quot;</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">character</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样本来的代码就被简化成了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="nx">countVowels</span><span class="p">(</span><span class="nx">word</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">count</span><span class="o">/</span><span class="nx">word</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mf">0.30</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nx">isVowel</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">str</span> <span class="o">+=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">str</span> <span class="o">+=</span> <span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">str</span> <span class="o">=</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果细细读下来，就会发现发现对于元音是否超过30%的判断比较突兀，这里确实了一个<code>业务概念</code>，就是说，此处的<code>if</code>判断并不表意，更好的写法是讲它抽取为一个函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">shouldBeMommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="nx">countVowels</span><span class="p">(</span><span class="nx">word</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">count</span><span class="o">/</span><span class="nx">word</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mf">0.30</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>并且，替换元音的部分，我们也可以从主函数中挪出来，得到一个小函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">replace</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">isVowel</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">str</span> <span class="o">+=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">str</span> <span class="o">+=</span> <span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，主函数得到了进一步的简化：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">shouldBeMommify</span><span class="p">(</span><span class="nx">word</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">replace</span><span class="p">(</span><span class="nx">word</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>太好了，现在<code>mommify</code>就更加清晰了，并且每个抽取出来的函数都有了更具意义的名字，更清晰的职责。</p>
+
+<h4>第四个任务</h4>
+
+<p>经过了第三步，相信你已经对如何进行<code>TDD</code>有了很好的认识，而且也更有信心进行下一个任务了。同样，我们需要先编写测试用例：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should not mommify if there are vowels sequences&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="s2">&quot;shmommyr&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">mommify</span><span class="p">(</span><span class="s2">&quot;shear&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在的问题关键是需要判断一个字符串中的前一个是否元音，由于我们之前已经做了足够的重构，现在需要修改的函数就变成了<code>replace</code>子函数，而不是主入口<code>mommify</code>了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">replace</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">isVowel</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">isVowel</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">str</span> <span class="o">+=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">str</span> <span class="o">+=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">str</span> <span class="o">+=</span> <span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>测试通过之后，我们可以大胆的进行重构，抽取新的函数<code>next</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">next</span><span class="p">(</span><span class="nx">current</span><span class="p">,</span> <span class="nx">previous</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">next</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">isVowel</span><span class="p">(</span><span class="nx">current</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">isVowel</span><span class="p">(</span><span class="nx">previous</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">next</span> <span class="o">=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">next</span> <span class="o">=</span> <span class="nx">current</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">next</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">replace</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">str</span> <span class="o">+=</span> <span class="nx">next</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>结束（？）</h4>
+
+<p>重构是一个永无止境的实践，你可以不断的抽取，简化，重组。比如上例中对于常量的使用，对于JavaScript中的for的使用等，都可以更进一步。但是你需要权衡，适可而止，如果不小心做的太过，则可能引起过渡设计：引入太过的概念，过于简化的接口等。</p>
+
+<p><code>TDD</code>是一种容易付诸实践的开发方式，在小的，简单的例子上如此，在大的，复杂的场景下也是如此。它优美且高效的地方在于：不假设任何人可以一次就写出完善的应用，而是鼓励小步前进，快速反馈，快速迭代。而演化到最后，得到的往往就是孜孜以求的优美设计。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2214,358 +2825,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/04/setup-map-server-by-mapnik/">搭建地图服务器（使用Mapnik）</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-04-12T14:07:00+10:00" pubdate data-updated="true">Apr 12<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h4>渲染引擎Mapnik</h4>
-
-<p><a href="http://icodeit.org/2014/04/intro-map-gis/">上一篇文章</a>中大概介绍了<a href="https://github.com/mapnik">Mapnik</a>，它是一个渲染引擎，一般开发中都会使用他的python的bind做开发。</p>
-
-<p>Mapnik的文档写的比较详细，我们这里只是做一些必要的介绍，详细的细节可以参看Mapnik在<a href="https://github.com/mapnik/mapnik/wiki">Github上的文档</a>。</p>
-
-<p>在Mac下，安装Mapnik十分容易，使用brew即可，注意我们在此处带上<code>--with-postgresql</code>选项，使得Mapnik可以通过PostGIS来访问数据库：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>brew install mapnik --with-postgresql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>安装完成之后，可以通过一个小的python脚本来测试：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">mapnik</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">map</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
-</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s">&#39;red&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">zoom_all</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">mapnik</span><span class="o">.</span><span class="n">render_to_file</span><span class="p">(</span><span class="nb">map</span><span class="p">,</span> <span class="s">&#39;red.png&#39;</span><span class="p">,</span> <span class="s">&#39;png&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这段脚本可以在当前目录下生成一个红色的256x256的小图片。好了，有了渲染引擎，我们需要一些数据来进行渲染了。</p>
-
-<h4>数据源</h4>
-
-<p>最通用的数据格式为Shapefiles，目前有很多的免费地理信息供公共下载，我们可以从<a href="http://metro.teczno.com/">Metro的站点</a>上下载一些小的数据文件。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm2pgsql-shapefiles.zip
-</span><span class='line'><span class="nv">$ </span>mkdir chengdu
-</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>chengdu
-</span><span class='line'><span class="nv">$ </span>unzip chengdu.osm2pgsql-shapefiles.zip
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样就得到了一组文件：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>find . -name <span class="s2">&quot;*.shp&quot;</span>
-</span><span class='line'>./chengdu.osm-line.shp
-</span><span class='line'>./chengdu.osm-point.shp
-</span><span class='line'>./chengdu.osm-polygon.shp
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>每一个shp文件都会对应几个其他类型的文件，比如投影信息，属性表等。仅仅查看shp的话，有表示所有点的文件chengdu.osm-line.shp，又表示所有线的chengdu.osm-line.shp，以及表示所有面（区域）的chengdu.osm-polygon.shp文件。</p>
-
-<p>有了这些文件，我们就可以做一些测试了，比如我们首先加载所有的线条，并根据这些线条生成一个图层：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">mapnik</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">map</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
-</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s">&#39;#ffffff&#39;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">style</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Style</span><span class="p">()</span>
-</span><span class='line'><span class="n">rule</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Rule</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">point_symbolizer</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">PointSymbolizer</span><span class="p">()</span>
-</span><span class='line'><span class="n">rule</span><span class="o">.</span><span class="n">symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point_symbolizer</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">style</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">append_style</span><span class="p">(</span><span class="s">&#39;default&#39;</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">ds_point</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Shapefile</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="s">&#39;chengdu.osm-point.shp&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">point</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="s">&#39;point&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">point</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">ds_point</span>
-</span><span class='line'><span class="n">point</span><span class="o">.</span><span class="n">styles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;default&#39;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
-</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">zoom_all</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">mapnik</span><span class="o">.</span><span class="n">render_to_file</span><span class="p">(</span><span class="nb">map</span><span class="p">,</span> <span class="s">&#39;chengdu.png&#39;</span><span class="p">,</span> <span class="s">&#39;png&#39;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>可以得到：</p>
-
-<p><img src="/images/2014/04/chengdu-point.png" alt="points" /></p>
-
-<p>这里介绍一下Mapnik中的一些概念：一个Map可以包含若干个层（Layer），每个层可以独立着色，即可以为每个层定制样式（Style），每个样式由若干个规则组成（Rule）。每个规则由是由若干个符号定制。</p>
-
-<p><img src="/images/2014/04/chengdu-line.png" alt="lines" /></p>
-
-<p>如果将两者重叠，则可以得到：</p>
-
-<p><img src="/images/2014/04/chengdu-point-and-line.png" alt="lines" /></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">polygon_symbolizer</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">PolygonSymbolizer</span><span class="p">(</span><span class="n">mapnik</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s">&#39;#c8102e&#39;</span><span class="p">))</span>
-</span><span class='line'><span class="n">polygon_rule</span><span class="o">.</span><span class="n">symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">polygon_symbolizer</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">ds_polygon</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Shapefile</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="s">&#39;chengdu.osm-polygon.shp&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">polygon</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="s">&#39;polygon&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="n">polygon</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">ds_polygon</span>
-</span><span class='line'><span class="n">polygon</span><span class="o">.</span><span class="n">styles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;polygon&#39;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2014/04/chengdu-polygon.png" alt="image" /></p>
-
-<p>将这三个层叠加在一起，会得到最终的结果：</p>
-
-<p><img src="/images/2014/04/chengdu-point-and-line-and-polygon.png" alt="lines" /></p>
-
-<h4>数据转化</h4>
-
-<p>在进一步之前，我们需要将数据存储在数据库中。我们可以将shapefile通过转化存入到数据库中。PostGIS本身自带了一个用于此作用的工具：<code>shp2pgsql</code>。可以通过这个工具来先将shapefile导入到数据库中。也可以直接导入别的开放数据，比如很多OSM格式的数据源，我们此处仅仅简单的从别的数据源将OSM格式的数据下载并导入到PostGIS中。</p>
-
-<p>创建数据库<code>chengdu</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>createdb chengdu -O gis -E UTF8 -e
-</span><span class='line'>CREATE DATABASE chengdu OWNER gis ENCODING <span class="s1">&#39;UTF8&#39;</span>;
-</span><span class='line'>
-</span><span class='line'><span class="nv">$ </span>psql -U gis -d chengdu
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>登陆PostGres，然后为数据库<code>chengdu</code>启动PostGIS扩展：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="c1">-- Enable PostGIS (includes raster)</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">postgis</span><span class="p">;</span>
-</span><span class='line'><span class="c1">-- Enable Topology</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">postgis_topology</span><span class="p">;</span>
-</span><span class='line'><span class="c1">-- fuzzy matching needed for Tiger</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">fuzzystrmatch</span><span class="p">;</span>
-</span><span class='line'><span class="c1">-- Enable US Tiger Geocoder</span>
-</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">postgis_tiger_geocoder</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm.bz2
-</span><span class='line'><span class="nv">$ </span>bunzip2 -d chengdu.osm.bz2
-</span><span class='line'><span class="nv">$ </span>osm2pgsql -U gis -d chengdu -s -S ./default.style chengdu.osm
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个命令将chengdu.osm导入到了名称为<code>chengdu</code>的数据库中。</p>
-
-<p>可以通过SQL命令查看其中的数据：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">select</span> <span class="n">ST_Extent</span><span class="p">(</span><span class="n">ST_Transform</span><span class="p">(</span><span class="n">way</span><span class="p">,</span><span class="mi">4326</span><span class="p">))</span> <span class="k">from</span> <span class="n">planet_osm_roads</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>结果如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'>                            <span class="n">st_extent</span>
-</span><span class='line'><span class="c1">--------------------------------------------------------------------------</span>
-</span><span class='line'> <span class="n">BOX</span><span class="p">(</span><span class="mi">103</span><span class="p">.</span><span class="mi">564165069794</span> <span class="mi">30</span><span class="p">.</span><span class="mi">3634139134986</span><span class="p">,</span><span class="mi">104</span><span class="p">.</span><span class="mi">554549945024</span> <span class="mi">30</span><span class="p">.</span><span class="mi">9869936005376</span><span class="p">)</span>
-</span><span class='line'><span class="p">(</span><span class="mi">1</span> <span class="k">row</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>WMS服务器</h4>
-
-<p>生成图片之后，我们还需要将这些图片切成瓦片，然后公开给外部以便使用。Mapnik提供了切图的功能，并且还提供一个实现了<a href="https://github.com/mapnik/OGCServer">WMS协议的服务器</a>，以便使用。</p>
-
-<p>安装这个OGCServer服务器非常容易：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git clone git@github.com:mapnik/OGCServer.git
-</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>OGCServer
-</span><span class='line'><span class="nv">$ </span>sudo python setup.py install
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但是OGCServer的启动，需要一个配置XML配置文件，这个配置文件可以由Mapnik提供的工具集生成：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn co http://svn.openstreetmap.org/applications/rendering/mapnik/
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个svn仓库中包含了众多的小工具，generate_xml.py用于生成Mapnik的样式文件，generate_image.py用于生成图片，generate_tiles.py用于生成众多的瓦片。</p>
-
-<p>此处我们将使用<code>generate_xml.py</code>来创建一个地图样式文件，</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">cd </span>svn.openstreetmap.org/applications/rendering/mapnik/
-</span><span class='line'><span class="nv">$ </span>./generate_xml.py osm.xml chengdu.xml --dbname chengdu --user gis --accept-none
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>generate_xml.py根据osm.xml作为模板，生成<code>chengdu.xml</code>。这个文件即可用于测试OGCServer：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>OGCServer chengdu.xml
-</span><span class='line'>Listening at 0.0.0.0:8000....
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后在浏览器中查看：</p>
-
-<p><img src="/images/2014/04/ogcserver-localhost-resized.png" alt="ogcserver" /></p>
-
-<h4>使用OpenLayers测试</h4>
-
-<p>有了一张图片，那么我们就需要有更多的图片组成的瓦片，这就需要使用引入GIS的前端利器OpenLayers了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="k">$(function</span><span class="o">(</span><span class="k">)</span> <span class="o">{</span>
-</span><span class='line'>    var map, layer;
-</span><span class='line'>    <span class="nv">map</span> <span class="o">=</span> new OpenLayers.Map<span class="o">(</span><span class="s1">&#39;map&#39;</span>, <span class="o">{})</span>;
-</span><span class='line'>
-</span><span class='line'>    <span class="nv">layer</span> <span class="o">=</span> new OpenLayers.Layer.WMS<span class="o">(</span><span class="s1">&#39;Tile Cache&#39;</span>,
-</span><span class='line'>        <span class="s1">&#39;http://localhost:8000/?&#39;</span>, <span class="o">{</span>
-</span><span class='line'>            layers: <span class="s1">&#39;__all__&#39;</span>,
-</span><span class='line'>            format: <span class="s1">&#39;image/png&#39;</span>
-</span><span class='line'>        <span class="o">})</span>;
-</span><span class='line'>
-</span><span class='line'>    map.addLayer<span class="o">(</span>layer<span class="o">)</span>;
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span> <span class="o">(</span>!map.getCenter<span class="o">())</span> <span class="o">{</span>
-</span><span class='line'>        map.zoomToMaxExtent<span class="o">()</span>;
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">})</span>;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2014/04/openlayers-chengdu-resized.png" alt="openlayers" /></p>
-
-<p><img src="/images/2014/04/openlayers-chengdu-detail-resized.png" alt="openlayers" /></p>
-
-<p>应该注意的是，此处在OpenLayers中使用了来自与OSM导入的数据，而并非Shapefile中的数据（Shapefile中仅有三个层次，point, line, polygon）。而OSM的数据则丰富的多。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -2581,6 +2840,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2014/11/tdd-step-by-step/">从一个小例子学习TDD</a>
+      </li>
+    
+      <li class="post">
         <a href="/2014/11/splash-color-in-black-and-white-photo/">命令行制作黑白+单色照片</a>
       </li>
     
@@ -2594,10 +2857,6 @@
     
       <li class="post">
         <a href="/2014/09/a-bug-about-time/">一个关于时间的神奇Bug</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2014/09/setup-ie-series-testing-enviroments/">快速搭建IE测试环境（Virtualbox+ievms）</a>
       </li>
     
   </ul>

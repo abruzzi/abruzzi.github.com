@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ThoughtWorks | I code it]]></title>
   <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-11-08T18:05:53+11:00</updated>
+  <updated>2014-11-09T17:27:17+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,467 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[从一个小例子学习TDD]]></title>
+    <link href="http://abruzzi.github.com/2014/11/tdd-step-by-step/"/>
+    <updated>2014-11-09T15:07:00+11:00</updated>
+    <id>http://abruzzi.github.com/2014/11/tdd-step-by-step</id>
+    <content type="html"><![CDATA[<h3>示例的需求描述</h3>
+
+<p>今天我们需要完成的需求是这样的：</p>
+
+<p>对于一个给定的字符串，如果其中<code>元音</code>字母数目在整个字符串中的比例超过了30%，则将该<code>元音</code>字母替换成字符串<code>mommy</code>，额外的，在替换时，如果有连续的元音出现，则仅替换一次。</p>
+
+<p>如果用<code>实例化需求</code>(<a href="http://specificationbyexample.com/">Specification by Example</a>)的方式来描述的话，需求可以转换成这样几条实例：</p>
+
+<ol>
+<li><code>hmm</code>经过处理之后，应该保持原状</li>
+<li><code>she</code>经过处理之后，应该被替换为<code>shmommy</code></li>
+<li><code>hear</code>经过处理之后，应该被替换为<code>hmommyr</code></li>
+</ol>
+
+
+<p>当然，也可以加入一些边界值的检测，比如包含数字，大小写混杂的场景来验证，不过我们暂时可以将这些场景抛开，而仅仅关注与TDD本身。</p>
+
+<h4>为什么选择这个<code>奇怪的</code>例子</h4>
+
+<p>我记得在学校的时候，最害怕看到的就是书上举的各种离<code>生活</code>很远的例子，比如国外的书籍经常举汽车的例子，有引擎，有面板，但是作为一个只是能看到街上跑的车的穷学生，实际无法理解其中的关联关系。</p>
+
+<p>其实，另外一种令人不那么舒服的例子是那种纯粹为了示例而编写的例子，现实世界中可能永远都不可能见到这样的代码，比如我们今天用到的例子。</p>
+
+<p>当然，这种纯粹的例子也有其存在的价值：在脱离开复杂的细节之后，尽量的让读者专注于某个方面，从而达到对某方面练习的目的。因为跟现实完全相关的例子往往会变得复杂，很容易让读者转而去考虑复杂性本身，而忽略了对实践/练习的思考。</p>
+
+<h4>TDD步骤</h4>
+
+<p>通常的描述中，<code>TDD</code>有三个步骤：</p>
+
+<ol>
+<li>先编写一个测试，由于此时没有任何实现，因此测试会失败</li>
+<li>编写实现，以最快，最简单的方式，此时测试会通过</li>
+<li>查看实现/测试，有没有改进的余地，如果有的话就用重构的方式来优化，并在重构之后保证测试通过</li>
+</ol>
+
+
+<p><img src="/images/2014/11/tdd.png" alt="tdd" /></p>
+
+<p>它的好处显而易见：</p>
+
+<ol>
+<li>时时关注于实现功能，这样不会跑偏</li>
+<li>每个功能都有测试覆盖，一旦改错，就会有测试失败</li>
+<li>重构时更有信心，不用怕破坏掉已有的功能</li>
+<li>测试即文档，而且是不会过期的文档，因为一旦实现变化，相关测试就会失败</li>
+</ol>
+
+
+<p>使用<code>TDD</code>，一个重要的实践是<code>测试先行</code>。其实在编写任何测试之前，更重要的一个步骤是<code>任务分解</code>(Tasking)。只有当任务分解到恰当的粒度，整个过程才可能变得比较顺畅。</p>
+
+<p>回到我们的例子，我们在知道整个需求的前提下，如何进行任务分解呢？作为<code>实现优先</code>的程序员，很可能会考虑诸如空字符串，元音比例是否到达30%等功能。这当然没有孰是孰非的问题，不过当需求本身就很复杂的情况下，这种直接面向实现的方式可能会导致越走越偏，考虑的越来越复杂，而耗费了几个小时的设计之后发现没有任何的实际进度。</p>
+
+<p>如果是采用<code>TDD</code>的方式，下面的方式是一种可能的任务分解：</p>
+
+<ol>
+<li>输入一个非元音字符，并预期返回字符本身</li>
+<li>输入一个元音，并预期返回<code>mommy</code></li>
+<li>输入一个元音超过30%的字符串，并预期元音被替换</li>
+<li>输入一个元音超过30%，并且存在连续元音的字符串，并预期只被替换一次</li>
+</ol>
+
+
+<p>当然，这个任务分解可能并不是<code>最好的</code>，但是是一个比较清晰的分解。</p>
+
+<h3>实践</h3>
+
+<h4>第一个任务</h4>
+
+<p>在本文中，我们将使用JavaScript来完成该功能的编写，测试框架采用了<a href="http://jasmine.github.io/2.0/introduction.html">Jasmine</a>，这里有一个<a href="https://github.com/abruzzi/tdd-boilerplate">模板项目</a>，使用它你可以快速的启动，并跟着本教程一起实践。</p>
+
+<p>根据任务分解，我们编写的第一个测试是：</p>
+
+<p>```js
+describe("mommify", function() {</p>
+
+<pre><code>it("should return h when given h", function() {
+    var expected = "h";
+
+    var result = mommify("h");
+
+    expect(result).toEqual(expected);
+});
+</code></pre>
+
+<p>});
+```</p>
+
+<p>这个测试中有三行代码，这也是一般测试的标准写法，简称<code>3A</code>：</p>
+
+<ol>
+<li>组织数据（Arrange）</li>
+<li>执行需要被测的函数（Action）</li>
+<li>验证结果（Assertion）</li>
+</ol>
+
+
+<p>运行这个测试，此时由于还没有实现代码，因此Jasmine会报告失败。接下来我们用最快速的方法来编写实现，就目前来看，最简单的方式就是：</p>
+
+<p>```js
+function mommify() {</p>
+
+<pre><code>return "h";
+</code></pre>
+
+<p>}
+```</p>
+
+<p>可能有人觉得这种实现太过狡猾，但是从<code>TDD</code>的角度来说，它确实能够令测试通过。这时候，我们需要编写另外一个测试来<code>驱动</code>出正确的行为：</p>
+
+<p>```js
+it("should return m when given m", function() {</p>
+
+<pre><code>var expected = "m";
+
+var result = mommify("m");
+
+expect(result).toEqual(expected);
+</code></pre>
+
+<p>});
+```</p>
+
+<p>这样，我们的实现就不能仅仅返回一个"h"了，就现在来看，最简单的方式是输入什么就返回什么：</p>
+
+<p>```js
+function mommify(word) {</p>
+
+<pre><code>return word;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>很好，这样我们的第一个<code>任务</code>已经完成了！我们已经经历了<code>失败-成功</code>的循环，这时候需要<code>review</code>一下代码，以保证代码是干净的：实现上来说，并没有可以优化的地方，但是我们发现两个测试用例其实测试的是同一件事情，因此可以删掉一个。</p>
+
+<p>是的，测试代码也是代码，我们需要小心的维护它，以保证所有的代码都是干净的。</p>
+
+<h4>第二个任务</h4>
+
+<p>我们可以开始元音字母的子任务了，很容易想到的一个测试用例为：</p>
+
+<p>```js
+it("should return mommy when given a", function() {</p>
+
+<pre><code>var expected = "mommy";
+
+var result = mommify("a");
+
+expect(result).toEqual(expected);
+</code></pre>
+
+<p>});
+```</p>
+
+<p>测试失败之后，能想到的最快速的方式是做一个简单的判断：</p>
+
+<p>```js
+function mommify(word) {</p>
+
+<pre><code>if(word == "a") {
+    return "mommy";
+}
+return word;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这样测试又会通过，接下来就是重复5个元音的场景，不过使用JavaScript可以很容易的将这5个场景归为一组：</p>
+
+<p>```js
+it("should return mommy when given a vowel", function() {</p>
+
+<pre><code>var expected = "mommy";
+
+["a", "e", "i", "o", "u"].forEach(function(word) {
+    var result = mommify(word);
+    expect(result).toEqual(expected);
+});
+</code></pre>
+
+<p>});
+```</p>
+
+<p>而实现则对一个的会变成（记住，用最简单的方式）：</p>
+
+<p>```js
+function mommify(word) {</p>
+
+<pre><code>if(word == "a" || word == "e" || word == "i" || word == "o" || word == "u") {
+    return "mommy";
+}
+return word;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>好了，测试通过了。又是进行重构的时间了，现在看看实现，简直不忍卒读，我们使用JavaScript的字符串的<code>indexOf</code>方法可以简化这段代码：</p>
+
+<p>```js
+function mommify(word) {</p>
+
+<pre><code>if("aeiou".indedOf(word) &gt;= 0) {
+    return "mommy";
+}
+return word;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>好多了！我想你现在已经或多或少的体会到了<code>TDD</code>中<code>任务分解</code>的好处了：进度可以掌握，而且目标非常明确，每一步都有相应的产出。</p>
+
+<h4>第三个任务</h4>
+
+<p>和之前一样，我们还是从测试开始：</p>
+
+<p>```js
+it("should mommify if the vowels greater than 30%", function() {</p>
+
+<pre><code>var expected = "shmommy";
+var result = mommify("she");
+
+expect(result).toEqual(expected);
+</code></pre>
+
+<p>});
+```</p>
+
+<p>现在有一点点挑战了，因为我们的实现上一直都是单一的字符串，现在有多个了，不过没有关系，我们先按照最简单的方式来实现就对了：</p>
+
+<p>```js
+function mommify(word) {</p>
+
+<pre><code>var count = 0;
+for(var i = 0; i &lt; word.length; i++) {
+    if("aeiou".indexOf(word[i]) &gt;= 0) {
+        count += 1;
+    }
+}
+
+var str = "";
+
+if(count/word.length &gt;= 0.30) {
+    for(var i = 0; i &lt; word.length; i++) {
+        if("aeiou".indexOf(word[i]) &gt;= 0) {
+            str += "mommy";
+        } else {
+            str += word[i];
+        }
+    }
+} else {
+    str = word;
+}
+
+return str;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>无论如何，测试通过了，我们首先计算了<code>元音</code>所占的比重，如果超过30%，则替换对应的字符，否则直接返回传入的字符串。</p>
+
+<p>从现在来看，函数<code>mommify</code>中已经有了较多的逻辑，而且有一些重复的判断出现了（<code>"aeuio".indedOf</code>），是时候做一些重构了。</p>
+
+<p>首先将相对独立的计算元音比重的部分抽取成一个函数：</p>
+
+<p>```js
+function countVowels(word) {</p>
+
+<pre><code>var count = 0;
+
+for(var i = 0; i &lt; word.length; i++) {
+    if("aeiou".indexOf(word[i]) &gt;= 0) {
+        count += 1;
+    }
+}
+
+return count;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>然后，将重复的<code>"aeiou".indexOf</code>部分抽取为一个独立函数：</p>
+
+<p>```js
+function isVowel(character) {</p>
+
+<pre><code>return "aeiou".indexOf(character) &gt;= 0;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这样本来的代码就被简化成了：</p>
+
+<p>```js
+function mommify(word) {</p>
+
+<pre><code>var count = countVowels(word);
+var str = "";
+
+if(count/word.length &gt;= 0.30) {
+    for(var i = 0; i &lt; word.length; i++) {
+        if(isVowel(word[i])) {
+            str += "mommy";
+        } else {
+            str += word[i];
+        }
+    }
+} else {
+    str = word;
+}
+
+return str;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>如果细细读下来，就会发现发现对于元音是否超过30%的判断比较突兀，这里确实了一个<code>业务概念</code>，就是说，此处的<code>if</code>判断并不表意，更好的写法是讲它抽取为一个函数：</p>
+
+<p>```js
+function shouldBeMommify(word) {</p>
+
+<pre><code>var count = countVowels(word);
+return count/word.length &gt;= 0.30;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>并且，替换元音的部分，我们也可以从主函数中挪出来，得到一个小函数：</p>
+
+<p>```js</p>
+
+<p>function replace(word) {</p>
+
+<pre><code>var str = "";
+
+for(var i = 0; i &lt; word.length; i++) {
+    if(isVowel(word[i])) {
+        str += "mommy";
+    } else {
+        str += word[i];
+    }
+}
+
+return str;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这样，主函数得到了进一步的简化：</p>
+
+<p>```js
+function mommify(word) {</p>
+
+<pre><code>if(shouldBeMommify(word)) {
+    return replace(word);
+} else {
+    return word;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>太好了，现在<code>mommify</code>就更加清晰了，并且每个抽取出来的函数都有了更具意义的名字，更清晰的职责。</p>
+
+<h4>第四个任务</h4>
+
+<p>经过了第三步，相信你已经对如何进行<code>TDD</code>有了很好的认识，而且也更有信心进行下一个任务了。同样，我们需要先编写测试用例：</p>
+
+<p>```js
+it("should not mommify if there are vowels sequences", function() {</p>
+
+<pre><code>var expected = "shmommyr";
+var result = mommify("shear");
+
+expect(result).toEqual(expected);
+</code></pre>
+
+<p>});
+```</p>
+
+<p>现在的问题关键是需要判断一个字符串中的前一个是否元音，由于我们之前已经做了足够的重构，现在需要修改的函数就变成了<code>replace</code>子函数，而不是主入口<code>mommify</code>了：</p>
+
+<p>```js
+function replace(word) {</p>
+
+<pre><code>var str = "";
+
+for(var i = 0; i &lt; word.length; i++) {
+    if(isVowel(word[i])) {
+        if(!isVowel(word[i-1])) {
+            str += "mommy";
+        } else {
+            str += "";
+        }
+    } else {
+        str += word[i];
+    }
+}
+
+return str;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>测试通过之后，我们可以大胆的进行重构，抽取新的函数<code>next</code>：</p>
+
+<p>```js
+function next(current, previous) {</p>
+
+<pre><code>var next = "";
+
+if(isVowel(current)) {
+    if(!isVowel(previous)) {
+        next = "mommy";
+    }
+} else {
+    next = current;
+}
+
+return next;
+</code></pre>
+
+<p>}</p>
+
+<p>function replace(word) {</p>
+
+<pre><code>var str = "";
+
+for(var i = 0; i &lt; word.length; i++) {
+    str += next(word[i], word[i-1]);
+}
+
+return str;
+</code></pre>
+
+<p>}
+```</p>
+
+<h4>结束（？）</h4>
+
+<p>重构是一个永无止境的实践，你可以不断的抽取，简化，重组。比如上例中对于常量的使用，对于JavaScript中的for的使用等，都可以更进一步。但是你需要权衡，适可而止，如果不小心做的太过，则可能引起过渡设计：引入太过的概念，过于简化的接口等。</p>
+
+<p><code>TDD</code>是一种容易付诸实践的开发方式，在小的，简单的例子上如此，在大的，复杂的场景下也是如此。它优美且高效的地方在于：不假设任何人可以一次就写出完善的应用，而是鼓励小步前进，快速反馈，快速迭代。而演化到最后，得到的往往就是孜孜以求的优美设计。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用 Yahoo pipes 服务做内容聚合 -- ThoughtWorks好声音]]></title>
@@ -312,157 +773,6 @@ DataMapper.finalize.auto_upgrade!
 <p>合上电脑，捧起纸质的书籍，世界突然慢了下来，但是却会充盈很多。事实上，放慢脚步，消除网络带来的<strong><em>虚假的紧迫感</em></strong>，反而可以以更快的速度掌握一项技术，一个框架，也可以让印象更加深刻。晚上回家尽量不带电脑，我用trainng经费购买的10本书，现在才读完2.5本，去年5月买的书还有两本没有读完，这些亏欠都需要在脱离电脑的舒服之后才能想起来，也才有可能完成。</p>
 
 <p>慢下来。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用opencv进行数字识别]]></title>
-    <link href="http://abruzzi.github.com/2013/01/basic-digits-recognization/"/>
-    <updated>2013-01-05T22:51:00+11:00</updated>
-    <id>http://abruzzi.github.com/2013/01/basic-digits-recognization</id>
-    <content type="html"><![CDATA[<p>最终的效果图是这样的：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/01/result.resized.png" alt="识别效果" /></p>
-
-<p>图中的一个小的窗口中为resize之后的所有找到的图片的列表，在这个case中，有三个数字。</p>
-
-<p>数字识别即将图片中的数字通过计算机算法识别为文本。如果要从头写一个识别器，可能需要很多的实践，花费很大的精力，而且还需要有良好的数学功底才能完成，不过使用opencv提供的丰富的API和算法实现，可以比较容易的做到，而且也可以得到比较高的精确率。</p>
-
-<p>数字识别是模式识别中的一个特例，我这里要讨论的是一个比较简单的实现，基于最简单也最容易理解的KNN算法(请参看<a href="http://icodeit.org/blog/2013/01/k-nearest-neighbour/">之前的一篇文章</a>)。</p>
-
-<p>数字识别和其他的所有计算机视觉相关的应用都会分为两个步骤：ROI抽取和识别。</p>
-
-<pre><code>1. ROI抽取即将感兴趣的区域从原始图像中分离初来，这个步骤包括二值化，噪点的消除等
-2. 识别即通过一些分类器将第一步中的结果进行分类，事实上属于机器学习的一个典型应用
-</code></pre>
-
-<h3>图像预处理</h3>
-
-<p>原始图片中会有大量与目标无关的信息，比如人脸检测中，背景中往往有诸如桌椅，墙壁上的画，或者在户外的树木，动物等等，这些与目标无关的信息被称为噪音或者噪点，应该在进行分类之前通过一些特定的步骤来消除，不但可以减少计算量，而且还可以提高准确率。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/01/865.origin.png" alt="原始图片" /></p>
-
-<h4>灰度图</h4>
-
-<p>通常的彩色图形由3个(RGB)或者4个(RGBA)通道组成，在计算机看来，一个彩色的图片是由3/4个矩阵组成，每个矩阵中包含若干个点(比如1024x768)，如果每个通道都参与运算的话，会引入太多的计算量，因此通常的做法是将彩色图像转换为灰度图，在opencv中，这一步非常容易：</p>
-
-<p>```
-def grayify(image):</p>
-
-<pre><code>return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-</code></pre>
-
-<p>```</p>
-
-<h4>二值图</h4>
-
-<p>灰度图较之原始图片，将三个维度的矩阵变成了一个维度，已经做了部分简化，但是算法来说，噪音并未消除，灰度图中，每个点仍然有8位来表示，每个点可能的灰度为0-255，二值图即将灰度图转换成黑白图，每个点只有两种可能：非黑即白，这样将大大简化计算。</p>
-
-<p>opencv提供了阈值调节的API，可以将灰度图转换为二值图：高于某一个阈值的点被认为是白色，反之为黑色：</p>
-
-<p>```
-def thresholding_inv(image):</p>
-
-<pre><code>gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-ret, bin = cv2.threshold(gray, 48, 255, cv.CV_THRESH_BINARY_INV)
-bin = cv2.medianBlur(bin, 3)
-
-return bin
-</code></pre>
-
-<p>```
-上面的代码中，48即为阈值，如果灰度高于48，那么改点会被认为是255，否则为0。效果如下：
-<img src="http://abruzzi.github.com/images/2013/01/865.thres.png" alt="二值图" /></p>
-
-<p>由于轮廓检测算法需要从黑色的背景中搜索白色的轮廓，所有此处的<code>threshold</code>最后一项参数为<code>cv.CV_THRESH_BINARY_INV</code>，即反转黑白色。</p>
-
-<h4>轮廓检测</h4>
-
-<p>轮廓检测会将二值图中的可以连通的区域(一个多边形)用一系列的点描述，默认的轮廓检查会返回一个点的序列，比如用四个点描述一个矩形，但是可以通过设置精度来返回更多的点，这里我们只需要返回矩形即可：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/01/865.contours.png" alt="轮廓检查" /></p>
-
-<p>比较有意思的是这里的数字8，由于8这个形状中有两个圆圈，默认的轮廓检查会将这两个圆圈都检测到，那么8就会有三个轮廓，同样还可能出现这种情况的还有数字4,6,9。</p>
-
-<p><code>
-contours, heirs = cv2.findContours(thres.copy(), \
-cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
-</code></p>
-
-<p>因此需要指定<code>findContours</code>函数仅搜索最外层的轮廓，而不关注内部可能出现的任何轮廓：</p>
-
-<p><code>
-contours, heirs = cv2.findContours(thres.copy(), \
-cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-</code></p>
-
-<h3>KNN分类算法</h3>
-
-<p>KNN算法的原理可以参看之前的<a href="http://icodeit.org/blog/2013/01/k-nearest-neighbour/">一篇文章</a>。这里的实现主要参考了opencv的示例程序:</p>
-
-<p>```
-class KNearest(StatModel):</p>
-
-<pre><code>def __init__(self, k = 3):
-    self.k = k
-    self.model = cv2.KNearest()
-
-def train(self, samples, responses):
-    self.model = cv2.KNearest()
-    self.model.train(samples, responses)
-
-def predict(self, samples):
-    retval, results, neigh_resp, dists = \
-    self.model.find_nearest(samples, self.k)
-    return results.ravel()
-</code></pre>
-
-<p>```</p>
-
-<h4>数字的顺序</h4>
-
-<p>另外一个有意思的事情是轮廓检测的时候，算法并不一定按照从左到右，从上到下的方向进行，我开始只是简单的按照迭代的顺序将结果插入到一个list中，但是这样list中的结果是乱的，下午得到了team中有图像处理背景的<a href="http://muggleyoung.info/">杨眉同学</a>的支持：搜索到轮廓的时候，将此时的position信息与轮廓一起记录下来，然后在搜索完成之后，将整个列表按照x坐标排序(卡上的数字是按照从左向右书写)：</p>
-
-<p>```
-class PosImage(object):</p>
-
-<pre><code>def __init__(self, pos, image):
-    self.pos = pos
-    self.image = image
-
-def get_position(self):
-    return self.pos
-
-def get_image(self):
-    return self.image
-</code></pre>
-
-<p>```</p>
-
-<p>然后在迭代中记录position信息：</p>
-
-<p>```</p>
-
-<pre><code>cropped = gray[y:y+h, x:x+w]
-resized = cv2.resize(cropped, (20, 20))
-cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 3)
-pos_image = PosImage((x, y), resized)
-images.append(pos_image)
-</code></pre>
-
-<p>```</p>
-
-<p>最后做一次新的arrange：</p>
-
-<p>```
-def rearrange(images):</p>
-
-<pre><code>return sorted(images, cmp=lambda x, y:
-cmp(x.get_position()[0], y.get_position()[0]))
-</code></pre>
-
-<p>```</p>
 ]]></content>
   </entry>
   

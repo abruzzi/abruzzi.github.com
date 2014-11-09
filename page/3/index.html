@@ -9,8 +9,9 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Grunt简介 Grunt是一个基于JavaScript的构建工具。和其他的构建工具类似，grunt主要用于一些将一些繁琐的工作自动化，比如运行测试，代码的静态检查，压缩JavaScript源代码等等。 安装grunt-cli 要在命令行运行grunt，需要安装grunt的命令行工具： 1
-$ &hellip;">
+  <meta name="description" content="Karma 简介 Karma是一个JavaScript的测试运行器。事实上，Karma更是一个测试环境，使用Karma可以很方便的的运行测试(方便到你感觉不到它的实际存在)。 一般的TDD的开发流程为： 编写测试(一个会失败的case)
+运行测试，并看到这个测试失败
+编写代码(足够让测试通过的代码 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +82,203 @@ $ &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/10/using-karma-as-the-javascript-test-runner/">使用Karma运行JavaScript测试</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-08T10:36:00+11:00" pubdate data-updated="true">Oct 8<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Karma 简介</h3>
+
+<p>Karma是一个JavaScript的测试运行器。事实上，Karma更是一个测试环境，使用Karma可以很方便的的运行测试(方便到你感觉不到它的实际存在)。</p>
+
+<p>一般的TDD的开发流程为：</p>
+
+<ol>
+<li>编写测试(一个会失败的case)</li>
+<li>运行测试，并看到这个测试失败</li>
+<li>编写代码(足够让测试通过的代码)</li>
+<li>运行测试，并看到测试通过</li>
+<li>重构</li>
+<li>运行测试，并看到测试通过</li>
+</ol>
+
+
+<p>然后<strong>如此循环</strong>，而在前端开发中，很长一段时间，这个流程受限于开发环境，比如添加了一个新的JavaScript源文件，开发者需要在HTML中引入相应地文件，以及响应的测试文件，然后刷新页面(有时候还需要清空浏览器缓存)。</p>
+
+<p>在这个过程中，开发者真正关注的就是编写测试，运行测试，编写实现，重构等等，需要不断的重复这个过程。而不是关注如刷新页面，清空缓存，修改HTML对脚本的引用等武馆的工作。</p>
+
+<p>Karma就是这样一个开发环境，开发者指定需要测试的脚本/测试文件，需要运行的浏览器等信息，Karma会在后台自动监控文件的修改，并启动一个浏览器与Karma的服务器连接，这样当源代码或者测试发生修改后，Karma会自动运行测试。</p>
+
+<p>开发者可以指定不同的浏览器，甚至可以跨设备。由于Karma只是一个运行器，你可以使用项目中正在使用的测试框架如Jasmine，QUnit等，甚至可以自定义适配器来支持你自己的测试框架。</p>
+
+<h3>运行Karma</h3>
+
+<p>Karma需要一个配置文件来知道哪些文件需要被加载，需要被监控(当文件内容发生变化时，尝试运行测试)，这个配置文件可以通过Karma自带的参数来生成。</p>
+
+<h4>基本使用</h4>
+
+<p>Karma被实现为一个npm的包，所以可以通过</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g karma</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装之后，可以生成karma需要的配置文件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ karma init my.conf.js</span></code></pre></td></tr></table></div></figure>
+
+
+<p>karma会让你回答一些问题，比如是哪种测试框架，哪些文件需要被测试，哪些浏览器需要被考虑等。生成的配置文件的一个片段是：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>// base path, that will be used to resolve files and exclude
+</span><span class='line'>basePath = ''; 
+</span><span class='line'>
+</span><span class='line'>// list of files / patterns to load in the browser
+</span><span class='line'>files = [ 
+</span><span class='line'>  JASMINE,
+</span><span class='line'>  JASMINE_ADAPTER,
+</span><span class='line'>  'src/**/*.js',
+</span><span class='line'>  'test/**/*spec.js'
+</span><span class='line'>];
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>// web server port
+</span><span class='line'>port = 9876;
+</span><span class='line'>
+</span><span class='line'>// browsers
+</span><span class='line'>browsers = ['Chrome'];
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<p><strong>更新</strong>
+新的配置文件生成脚本会生成更加<strong>模块化</strong>的配置：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module.exports = function(config) {
+</span><span class='line'>  config.set({
+</span><span class='line'>  
+</span><span class='line'>    frameworks: ['jasmine'],
+</span><span class='line'>
+</span><span class='line'>    files: [
+</span><span class='line'>      'src/**/*.js',
+</span><span class='line'>      'test/**/*spec.js'
+</span><span class='line'>    ],
+</span><span class='line'>
+</span><span class='line'>    port: 9876,
+</span><span class='line'>
+</span><span class='line'>    browsers: ['Chrome'],
+</span><span class='line'>
+</span><span class='line'>    singleRun: true
+</span><span class='line'>    
+</span><span class='line'>  });
+</span><span class='line'>};
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<p>生成配置文件之后，可以通过命令来启动Karma服务器，同时指定使用<code>my.conf.js</code>文件作为配置：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ karma start my.conf.js</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/10/karma-run-resized.png" alt="image" /></p>
+
+<h4>调试及其他</h4>
+
+<p>很多时候，我们只想要运行某一个suite中的所有测试用例，而不是整个工程，比如在Jasmine中：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>describe("Controller User", function() {
+</span><span class='line'>  it("add user", function() {});
+</span><span class='line'>  it("search users", function() {});
+</span><span class='line'>  it("delete user", function() {});
+</span><span class='line'>})</span></code></pre></td></tr></table></div></figure>
+
+
+<p>只需要将<code>describe</code>修改为<code>ddescribe</code>即可，类似的，如果只需要运行某一个测试用例，只需要将<code>it</code>修改为<code>iit</code>即可。</p>
+
+<p>这在运行调试某个测试或者某段特定代码时非常好用。另外，Karma还提供了debugger功能，在测试用例中加入：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>debugger;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>即可。由于在运行时，karma实际上会启动一个真实地浏览器，所以可以在浏览器的developer-tool中进行实际的调试。需要注意的是，当进入调试模式时，需要启动developer-tool(在Karma启动的那个浏览器窗口中)。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/10/karma-debug-resized.png" alt="image" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1910,232 +2108,6 @@ $ &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/05/before-and-after-selector-in-css/">CSS中的before和after伪元素及其应用</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-16T15:29:00+10:00" pubdate data-updated="true">May 16<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>before和after伪元素</h3>
-
-<p>所谓伪元素，可以理解为浏览器为某元素附加的元素（根据名字，附加在这个元素之前/之后）。用来完成特定的效果，before/after需要和content属性一起使用：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>.css-class:before {
-</span><span class='line'>  content: " ";
-</span><span class='line'>}
-</span><span class='line'>.css-class:after {
-</span><span class='line'>  content: " ";
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>通过使用before/after伪元素，可以做一些很有意思的效果。<a href="http://css-tricks.com/pseudo-element-roundup/">这里</a>有一些有意思的示例。</p>
-
-<h3>四个三角形</h3>
-
-<p>页面上经常会遇到小三角形这种视觉元素，比如表示一个可以<strong>打开/关闭</strong>的开关（将不会频繁使用的元素隐藏起来，点击可以展开/收起），或者一个模拟消息盒子（纯CSS实现），最早的做法是使用一个小的图片来完成，但是这个事实上可以通过纯CSS来实现。</p>
-
-<p>原理是利用block元素的<code>border</code>属性，当<code>border</code>的值很小的时候，<code>border</code>之间的连接处并无异常，但是当<code>border</code>较大，而元素本身的尺寸小于<code>border</code>自身时，则每一个<code>border</code>都会呈现为梯形，而当元素的<code>width</code>和<code>height</code>都为0时，就会看到一个正方形，而每个边都变成了一个三角形：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>.container .color-box {
-</span><span class='line'>  content: " ";
-</span><span class='line'>  width: 0;
-</span><span class='line'>  height: 0;
-</span><span class='line'>  border: 10px solid transparent;
-</span><span class='line'>  border-left-color: #00ff00;
-</span><span class='line'>  border-right-color: #000000;
-</span><span class='line'>  border-top-color: #ff0000;
-</span><span class='line'>  border-bottom-color: #0000ff;
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/05/color-box.png" alt="image" /></p>
-
-<h3>小三角形</h3>
-
-<p>这时候，如果将其他的三条边隐藏起来（通过将<code>border</code>的颜色置为透明）：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>.container .color-box {
-</span><span class='line'>  content: " ";
-</span><span class='line'>  width: 0;
-</span><span class='line'>  height: 0;
-</span><span class='line'>  border: 10px solid transparent;//朝下的三角形
-</span><span class='line'>  border-top-color: #ff0000;
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/05/triggle.png" alt="image" /></p>
-
-<p>先将所有的边都设置为透明色，然后根据需要显示某一个边，来完成三角形的指向。</p>
-
-<h3>一个普通的消息框</h3>
-
-<p>一个普通的消息框，通过设置<code>box-shadow</code>和<code>border-radius</code>之后，可以变得比较“好看”，但是如果可以给这个消息框加上一个小的三角形（可以指向用户的头像等）。</p>
-
-<p>HTML代码：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> &lt;div class="container"&gt;
-</span><span class='line'>      &lt;div class="chat-box"&gt;
-</span><span class='line'>          &lt;p&gt;
-</span><span class='line'>              Resque (pronounced like "rescue") is a Redis-backed library for creating background jobs, placing those jobs on multiple queues, and processing them later.
-</span><span class='line'>          &lt;/p&gt;
-</span><span class='line'>      &lt;/div&gt;
-</span><span class='line'>  &lt;/div&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>样式如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>.container .chat-box {
-</span><span class='line'>  position: relative;
-</span><span class='line'>  border: 1px solid #6b6b6b;
-</span><span class='line'>  border-radius: 5px;
-</span><span class='line'>  box-shadow: 1px 1px 4px #6b6b6b;
-</span><span class='line'>  width: 300px;
-</span><span class='line'>}
-</span><span class='line'>
-</span><span class='line'>.container .chat-box p {
-</span><span class='line'>  margin: 0;
-</span><span class='line'>  padding: 10px;
-</span><span class='line'>  font-size: 18px;
-</span><span class='line'>  font-family: "Microsoft Yahei";
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/05/box.png" alt="image" /></p>
-
-<h3>更fancy的消息框</h3>
-
-<p>先通过before伪元素，在消息框的底部加上一个小的三角形：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/05/box-triggle-gray.png" alt="image" /></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>.container .chat-box:after, 
-</span><span class='line'>.container .chat-box:before {
-</span><span class='line'>  position: absolute;
-</span><span class='line'>  content: " ";
-</span><span class='line'>  width: 0;
-</span><span class='line'>  height: 0;
-</span><span class='line'>  border: solid transparent;
-</span><span class='line'>  top: 100%;
-</span><span class='line'>  left: 62%;
-</span><span class='line'>} 
-</span><span class='line'>
-</span><span class='line'>.container .chat-box:before {
-</span><span class='line'>  border-width: 10px;
-</span><span class='line'>  border-top-color: #6b6b6b;
-</span><span class='line'>  margin-left: -10px;
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>UPDATE:</strong></p>
-
-<hr />
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>.container .chat-box:after {
-</span><span class='line'>  border-width: 9px;
-</span><span class='line'>  border-top-color: white;
-</span><span class='line'>  margin-left: -9px;
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<p>但是一个实心的灰色三角形比较难看，我们需要再改进一下，即通过在这个伪元素之上，再绘制一个白色（与消息框颜色相同）的伪元素，但是尺寸又小一个单位（单位与消息框本身的尺寸相同，这里为<code>1px</code>）。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/05/box-triggle-both.png" alt="image" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/4/">&larr; Older</a>
@@ -2153,6 +2125,10 @@ $ &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2014/11/tdd-step-by-step/">从一个小例子学习TDD</a>
+      </li>
+    
+      <li class="post">
         <a href="/2014/11/splash-color-in-black-and-white-photo/">命令行制作黑白+单色照片</a>
       </li>
     
@@ -2166,10 +2142,6 @@ $ &hellip;">
     
       <li class="post">
         <a href="/2014/09/a-bug-about-time/">一个关于时间的神奇Bug</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2014/09/setup-ie-series-testing-enviroments/">快速搭建IE测试环境（Virtualbox+ievms）</a>
       </li>
     
   </ul>

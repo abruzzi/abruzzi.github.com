@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-11-08T18:05:53+11:00</updated>
+  <updated>2014-11-09T17:27:17+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,590 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[从一个小例子学习TDD]]></title>
+    <link href="http://abruzzi.github.com/2014/11/tdd-step-by-step/"/>
+    <updated>2014-11-09T15:07:00+11:00</updated>
+    <id>http://abruzzi.github.com/2014/11/tdd-step-by-step</id>
+    <content type="html"><![CDATA[<h3>示例的需求描述</h3>
+
+<p>今天我们需要完成的需求是这样的：</p>
+
+<p>对于一个给定的字符串，如果其中<code>元音</code>字母数目在整个字符串中的比例超过了30%，则将该<code>元音</code>字母替换成字符串<code>mommy</code>，额外的，在替换时，如果有连续的元音出现，则仅替换一次。</p>
+
+<p>如果用<code>实例化需求</code>(<a href="http://specificationbyexample.com/">Specification by Example</a>)的方式来描述的话，需求可以转换成这样几条实例：</p>
+
+<ol>
+<li><code>hmm</code>经过处理之后，应该保持原状</li>
+<li><code>she</code>经过处理之后，应该被替换为<code>shmommy</code></li>
+<li><code>hear</code>经过处理之后，应该被替换为<code>hmommyr</code></li>
+</ol>
+
+
+<p>当然，也可以加入一些边界值的检测，比如包含数字，大小写混杂的场景来验证，不过我们暂时可以将这些场景抛开，而仅仅关注与TDD本身。</p>
+
+<h4>为什么选择这个<code>奇怪的</code>例子</h4>
+
+<p>我记得在学校的时候，最害怕看到的就是书上举的各种离<code>生活</code>很远的例子，比如国外的书籍经常举汽车的例子，有引擎，有面板，但是作为一个只是能看到街上跑的车的穷学生，实际无法理解其中的关联关系。</p>
+
+<p>其实，另外一种令人不那么舒服的例子是那种纯粹为了示例而编写的例子，现实世界中可能永远都不可能见到这样的代码，比如我们今天用到的例子。</p>
+
+<p>当然，这种纯粹的例子也有其存在的价值：在脱离开复杂的细节之后，尽量的让读者专注于某个方面，从而达到对某方面练习的目的。因为跟现实完全相关的例子往往会变得复杂，很容易让读者转而去考虑复杂性本身，而忽略了对实践/练习的思考。</p>
+
+<h4>TDD步骤</h4>
+
+<p>通常的描述中，<code>TDD</code>有三个步骤：</p>
+
+<ol>
+<li>先编写一个测试，由于此时没有任何实现，因此测试会失败</li>
+<li>编写实现，以最快，最简单的方式，此时测试会通过</li>
+<li>查看实现/测试，有没有改进的余地，如果有的话就用重构的方式来优化，并在重构之后保证测试通过</li>
+</ol>
+
+
+<p><img src="http://abruzzi.github.com/images/2014/11/tdd.png" alt="tdd" /></p>
+
+<p>它的好处显而易见：</p>
+
+<ol>
+<li>时时关注于实现功能，这样不会跑偏</li>
+<li>每个功能都有测试覆盖，一旦改错，就会有测试失败</li>
+<li>重构时更有信心，不用怕破坏掉已有的功能</li>
+<li>测试即文档，而且是不会过期的文档，因为一旦实现变化，相关测试就会失败</li>
+</ol>
+
+
+<p>使用<code>TDD</code>，一个重要的实践是<code>测试先行</code>。其实在编写任何测试之前，更重要的一个步骤是<code>任务分解</code>(Tasking)。只有当任务分解到恰当的粒度，整个过程才可能变得比较顺畅。</p>
+
+<p>回到我们的例子，我们在知道整个需求的前提下，如何进行任务分解呢？作为<code>实现优先</code>的程序员，很可能会考虑诸如空字符串，元音比例是否到达30%等功能。这当然没有孰是孰非的问题，不过当需求本身就很复杂的情况下，这种直接面向实现的方式可能会导致越走越偏，考虑的越来越复杂，而耗费了几个小时的设计之后发现没有任何的实际进度。</p>
+
+<p>如果是采用<code>TDD</code>的方式，下面的方式是一种可能的任务分解：</p>
+
+<ol>
+<li>输入一个非元音字符，并预期返回字符本身</li>
+<li>输入一个元音，并预期返回<code>mommy</code></li>
+<li>输入一个元音超过30%的字符串，并预期元音被替换</li>
+<li>输入一个元音超过30%，并且存在连续元音的字符串，并预期只被替换一次</li>
+</ol>
+
+
+<p>当然，这个任务分解可能并不是<code>最好的</code>，但是是一个比较清晰的分解。</p>
+
+<h3>实践</h3>
+
+<h4>第一个任务</h4>
+
+<p>在本文中，我们将使用JavaScript来完成该功能的编写，测试框架采用了<a href="http://jasmine.github.io/2.0/introduction.html">Jasmine</a>，这里有一个<a href="https://github.com/abruzzi/tdd-boilerplate">模板项目</a>，使用它你可以快速的启动，并跟着本教程一起实践。</p>
+
+<p>根据任务分解，我们编写的第一个测试是：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">describe</span><span class="p">(</span><span class="s2">&quot;mommify&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should return h when given h&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="s2">&quot;h&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">mommify</span><span class="p">(</span><span class="s2">&quot;h&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个测试中有三行代码，这也是一般测试的标准写法，简称<code>3A</code>：</p>
+
+<ol>
+<li>组织数据（Arrange）</li>
+<li>执行需要被测的函数（Action）</li>
+<li>验证结果（Assertion）</li>
+</ol>
+
+
+<p>运行这个测试，此时由于还没有实现代码，因此Jasmine会报告失败。接下来我们用最快速的方法来编写实现，就目前来看，最简单的方式就是：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="s2">&quot;h&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可能有人觉得这种实现太过狡猾，但是从<code>TDD</code>的角度来说，它确实能够令测试通过。这时候，我们需要编写另外一个测试来<code>驱动</code>出正确的行为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should return m when given m&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">mommify</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，我们的实现就不能仅仅返回一个&#8221;h&#8221;了，就现在来看，最简单的方式是输入什么就返回什么：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>很好，这样我们的第一个<code>任务</code>已经完成了！我们已经经历了<code>失败-成功</code>的循环，这时候需要<code>review</code>一下代码，以保证代码是干净的：实现上来说，并没有可以优化的地方，但是我们发现两个测试用例其实测试的是同一件事情，因此可以删掉一个。</p>
+
+<p>是的，测试代码也是代码，我们需要小心的维护它，以保证所有的代码都是干净的。</p>
+
+<h4>第二个任务</h4>
+
+<p>我们可以开始元音字母的子任务了，很容易想到的一个测试用例为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should return mommy when given a&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">mommify</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>测试失败之后，能想到的最快速的方式是做一个简单的判断：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">word</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样测试又会通过，接下来就是重复5个元音的场景，不过使用JavaScript可以很容易的将这5个场景归为一组：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should return mommy when given a vowel&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;u&quot;</span><span class="p">].</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而实现则对一个的会变成（记住，用最简单的方式）：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">word</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span> <span class="o">||</span> <span class="nx">word</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span> <span class="o">||</span> <span class="nx">word</span> <span class="o">==</span> <span class="s2">&quot;i&quot;</span> <span class="o">||</span> <span class="nx">word</span> <span class="o">==</span> <span class="s2">&quot;o&quot;</span> <span class="o">||</span> <span class="nx">word</span> <span class="o">==</span> <span class="s2">&quot;u&quot;</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>好了，测试通过了。又是进行重构的时间了，现在看看实现，简直不忍卒读，我们使用JavaScript的字符串的<code>indexOf</code>方法可以简化这段代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="s2">&quot;aeiou&quot;</span><span class="p">.</span><span class="nx">indedOf</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>好多了！我想你现在已经或多或少的体会到了<code>TDD</code>中<code>任务分解</code>的好处了：进度可以掌握，而且目标非常明确，每一步都有相应的产出。</p>
+
+<h4>第三个任务</h4>
+
+<p>和之前一样，我们还是从测试开始：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should mommify if the vowels greater than 30%&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="s2">&quot;shmommy&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">mommify</span><span class="p">(</span><span class="s2">&quot;she&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在有一点点挑战了，因为我们的实现上一直都是单一的字符串，现在有多个了，不过没有关系，我们先按照最简单的方式来实现就对了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="s2">&quot;aeiou&quot;</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">count</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">count</span><span class="o">/</span><span class="nx">word</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mf">0.30</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="s2">&quot;aeiou&quot;</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">str</span> <span class="o">+=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">str</span> <span class="o">+=</span> <span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">str</span> <span class="o">=</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>无论如何，测试通过了，我们首先计算了<code>元音</code>所占的比重，如果超过30%，则替换对应的字符，否则直接返回传入的字符串。</p>
+
+<p>从现在来看，函数<code>mommify</code>中已经有了较多的逻辑，而且有一些重复的判断出现了（<code>"aeuio".indedOf</code>），是时候做一些重构了。</p>
+
+<p>首先将相对独立的计算元音比重的部分抽取成一个函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">countVowels</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="s2">&quot;aeiou&quot;</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">count</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">count</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后，将重复的<code>"aeiou".indexOf</code>部分抽取为一个独立函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">isVowel</span><span class="p">(</span><span class="nx">character</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="s2">&quot;aeiou&quot;</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">character</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样本来的代码就被简化成了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="nx">countVowels</span><span class="p">(</span><span class="nx">word</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">count</span><span class="o">/</span><span class="nx">word</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mf">0.30</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="nx">isVowel</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">str</span> <span class="o">+=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">str</span> <span class="o">+=</span> <span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">str</span> <span class="o">=</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果细细读下来，就会发现发现对于元音是否超过30%的判断比较突兀，这里确实了一个<code>业务概念</code>，就是说，此处的<code>if</code>判断并不表意，更好的写法是讲它抽取为一个函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">shouldBeMommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="nx">countVowels</span><span class="p">(</span><span class="nx">word</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">count</span><span class="o">/</span><span class="nx">word</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mf">0.30</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>并且，替换元音的部分，我们也可以从主函数中挪出来，得到一个小函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">replace</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">isVowel</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">str</span> <span class="o">+=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">str</span> <span class="o">+=</span> <span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，主函数得到了进一步的简化：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">mommify</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">shouldBeMommify</span><span class="p">(</span><span class="nx">word</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">replace</span><span class="p">(</span><span class="nx">word</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">word</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>太好了，现在<code>mommify</code>就更加清晰了，并且每个抽取出来的函数都有了更具意义的名字，更清晰的职责。</p>
+
+<h4>第四个任务</h4>
+
+<p>经过了第三步，相信你已经对如何进行<code>TDD</code>有了很好的认识，而且也更有信心进行下一个任务了。同样，我们需要先编写测试用例：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should not mommify if there are vowels sequences&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="s2">&quot;shmommyr&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">mommify</span><span class="p">(</span><span class="s2">&quot;shear&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在的问题关键是需要判断一个字符串中的前一个是否元音，由于我们之前已经做了足够的重构，现在需要修改的函数就变成了<code>replace</code>子函数，而不是主入口<code>mommify</code>了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">replace</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nx">isVowel</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">isVowel</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">str</span> <span class="o">+=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>              <span class="nx">str</span> <span class="o">+=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">str</span> <span class="o">+=</span> <span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>测试通过之后，我们可以大胆的进行重构，抽取新的函数<code>next</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">next</span><span class="p">(</span><span class="nx">current</span><span class="p">,</span> <span class="nx">previous</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">next</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">isVowel</span><span class="p">(</span><span class="nx">current</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">isVowel</span><span class="p">(</span><span class="nx">previous</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">next</span> <span class="o">=</span> <span class="s2">&quot;mommy&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">next</span> <span class="o">=</span> <span class="nx">current</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">next</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">replace</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">word</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">str</span> <span class="o">+=</span> <span class="nx">next</span><span class="p">(</span><span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">word</span><span class="p">[</span><span class="nx">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">str</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>结束（？）</h4>
+
+<p>重构是一个永无止境的实践，你可以不断的抽取，简化，重组。比如上例中对于常量的使用，对于JavaScript中的for的使用等，都可以更进一步。但是你需要权衡，适可而止，如果不小心做的太过，则可能引起过渡设计：引入太过的概念，过于简化的接口等。</p>
+
+<p><code>TDD</code>是一种容易付诸实践的开发方式，在小的，简单的例子上如此，在大的，复杂的场景下也是如此。它优美且高效的地方在于：不假设任何人可以一次就写出完善的应用，而是鼓励小步前进，快速反馈，快速迭代。而演化到最后，得到的往往就是孜孜以求的优美设计。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[命令行制作黑白+单色照片]]></title>
@@ -3933,176 +4517,6 @@
 <p>grunt-init会让你回答一些问题，比如插件名称，版本号，github链接等。之后，grunt-init会生成一个基本的模板，开发者只需要完成自己插件的逻辑代码即可。逻辑实现在<code>tasks/&lt;plugin-name&gt;.js</code>中即可。</p>
 
 <p>完成后可以通过<code>npm publish</code>来发布，发布之后，你的插件就可以向上边提到的常用插件那样被其他的开发者使用了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用Karma运行JavaScript测试]]></title>
-    <link href="http://abruzzi.github.com/2013/10/using-karma-as-the-javascript-test-runner/"/>
-    <updated>2013-10-08T10:36:00+11:00</updated>
-    <id>http://abruzzi.github.com/2013/10/using-karma-as-the-javascript-test-runner</id>
-    <content type="html"><![CDATA[<h3>Karma 简介</h3>
-
-<p>Karma是一个JavaScript的测试运行器。事实上，Karma更是一个测试环境，使用Karma可以很方便的的运行测试(方便到你感觉不到它的实际存在)。</p>
-
-<p>一般的TDD的开发流程为：</p>
-
-<ol>
-<li>编写测试(一个会失败的case)</li>
-<li>运行测试，并看到这个测试失败</li>
-<li>编写代码(足够让测试通过的代码)</li>
-<li>运行测试，并看到测试通过</li>
-<li>重构</li>
-<li>运行测试，并看到测试通过</li>
-</ol>
-
-
-<p>然后<strong>如此循环</strong>，而在前端开发中，很长一段时间，这个流程受限于开发环境，比如添加了一个新的JavaScript源文件，开发者需要在HTML中引入相应地文件，以及响应的测试文件，然后刷新页面(有时候还需要清空浏览器缓存)。</p>
-
-<p>在这个过程中，开发者真正关注的就是编写测试，运行测试，编写实现，重构等等，需要不断的重复这个过程。而不是关注如刷新页面，清空缓存，修改HTML对脚本的引用等武馆的工作。</p>
-
-<p>Karma就是这样一个开发环境，开发者指定需要测试的脚本/测试文件，需要运行的浏览器等信息，Karma会在后台自动监控文件的修改，并启动一个浏览器与Karma的服务器连接，这样当源代码或者测试发生修改后，Karma会自动运行测试。</p>
-
-<p>开发者可以指定不同的浏览器，甚至可以跨设备。由于Karma只是一个运行器，你可以使用项目中正在使用的测试框架如Jasmine，QUnit等，甚至可以自定义适配器来支持你自己的测试框架。</p>
-
-<h3>运行Karma</h3>
-
-<p>Karma需要一个配置文件来知道哪些文件需要被加载，需要被监控(当文件内容发生变化时，尝试运行测试)，这个配置文件可以通过Karma自带的参数来生成。</p>
-
-<h4>基本使用</h4>
-
-<p>Karma被实现为一个npm的包，所以可以通过</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g karma</span></code></pre></td></tr></table></div></figure>
-
-
-<p>安装之后，可以生成karma需要的配置文件：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ karma init my.conf.js</span></code></pre></td></tr></table></div></figure>
-
-
-<p>karma会让你回答一些问题，比如是哪种测试框架，哪些文件需要被测试，哪些浏览器需要被考虑等。生成的配置文件的一个片段是：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>// base path, that will be used to resolve files and exclude
-</span><span class='line'>basePath = ''; 
-</span><span class='line'>
-</span><span class='line'>// list of files / patterns to load in the browser
-</span><span class='line'>files = [ 
-</span><span class='line'>  JASMINE,
-</span><span class='line'>  JASMINE_ADAPTER,
-</span><span class='line'>  'src/**/*.js',
-</span><span class='line'>  'test/**/*spec.js'
-</span><span class='line'>];
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>// web server port
-</span><span class='line'>port = 9876;
-</span><span class='line'>
-</span><span class='line'>// browsers
-</span><span class='line'>browsers = ['Chrome'];
-</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<p><strong>更新</strong>
-新的配置文件生成脚本会生成更加<strong>模块化</strong>的配置：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>module.exports = function(config) {
-</span><span class='line'>  config.set({
-</span><span class='line'>  
-</span><span class='line'>    frameworks: ['jasmine'],
-</span><span class='line'>
-</span><span class='line'>    files: [
-</span><span class='line'>      'src/**/*.js',
-</span><span class='line'>      'test/**/*spec.js'
-</span><span class='line'>    ],
-</span><span class='line'>
-</span><span class='line'>    port: 9876,
-</span><span class='line'>
-</span><span class='line'>    browsers: ['Chrome'],
-</span><span class='line'>
-</span><span class='line'>    singleRun: true
-</span><span class='line'>    
-</span><span class='line'>  });
-</span><span class='line'>};
-</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<p>生成配置文件之后，可以通过命令来启动Karma服务器，同时指定使用<code>my.conf.js</code>文件作为配置：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ karma start my.conf.js</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/10/karma-run-resized.png" alt="image" /></p>
-
-<h4>调试及其他</h4>
-
-<p>很多时候，我们只想要运行某一个suite中的所有测试用例，而不是整个工程，比如在Jasmine中：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>describe("Controller User", function() {
-</span><span class='line'>  it("add user", function() {});
-</span><span class='line'>  it("search users", function() {});
-</span><span class='line'>  it("delete user", function() {});
-</span><span class='line'>})</span></code></pre></td></tr></table></div></figure>
-
-
-<p>只需要将<code>describe</code>修改为<code>ddescribe</code>即可，类似的，如果只需要运行某一个测试用例，只需要将<code>it</code>修改为<code>iit</code>即可。</p>
-
-<p>这在运行调试某个测试或者某段特定代码时非常好用。另外，Karma还提供了debugger功能，在测试用例中加入：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>debugger;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>即可。由于在运行时，karma实际上会启动一个真实地浏览器，所以可以在浏览器的developer-tool中进行实际的调试。需要注意的是，当进入调试模式时，需要启动developer-tool(在Karma启动的那个浏览器窗口中)。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/10/karma-debug-resized.png" alt="image" /></p>
 ]]></content>
   </entry>
   
