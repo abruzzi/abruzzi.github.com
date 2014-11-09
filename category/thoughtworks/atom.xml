@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ThoughtWorks | I code it]]></title>
   <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-11-09T17:27:17+11:00</updated>
+  <updated>2014-11-09T17:32:11+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -465,6 +465,8 @@ return str;
 
 <p>}
 ```</p>
+
+<p>最后，如果你想看完整的/最新的代码，可以<a href="https://github.com/abruzzi/mommifier">在github上</a>找到。</p>
 
 <h4>结束（？）</h4>
 
