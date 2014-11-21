@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Github | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/github/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2014-11-21T23:31:21+11:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[发布你的Web设计]]></title>
+    <link href="http://abruzzi.github.com/2014/11/publish-your-web-design/"/>
+    <updated>2014-11-21T22:24:00+11:00</updated>
+    <id>http://abruzzi.github.com/2014/11/publish-your-web-design</id>
+    <content type="html"><![CDATA[<h3>Github的<code>主页服务</code></h3>
+
+<p>Github提供了<a href="https://help.github.com/articles/user-organization-and-project-pages/">Github Pages</a>的服务来帮助你为自己的项目提供<code>主页</code>。目前，这种主页服务分为两种：<code>用户主页</code>和<code>项目主页</code>。其中<code>用户主页</code>已经称为广大开发者的标配，有很多的开发者已经将自己的博客迁移到了Github上，其中所用到的核心机制就是<code>Github Pages</code>。</p>
+
+<p>这篇文章主要介绍如何使用<code>项目主页</code>。<code>项目主页</code>，顾名思义，就是你项目的主页，本来设计的初衷是为你的项目编写介绍文档，不过Github只提供对静态内容的托管。如果需要添加评论，可以使用<a href="https://disqus.com/home/">disqus</a>的服务，而和微博，flickr等集成都有现成的JavaScript片段，这里也不做详细讨论。</p>
+
+<p>你现在正在看的我的博客正是托管在Github上，不过我对域名进行了自定义而已，如何做到这一点可以<a href="https://help.github.com/articles/tips-for-configuring-a-cname-record-with-your-dns-provider/">查看此处</a>的文档。</p>
+
+<p>我之前发布的一个<code>我去过的地方</code>就使用了<code>项目主页</code>的服务，该项目的<a href="https://github.com/abruzzi/placesihavebeen">地址在此</a>，<a href="http://icodeit.org/placesihavebeen/">最终的页面</a>在这里。</p>
+
+<p><img src="/images/2014/11/places-i-have-been-resized.png" alt="places I have been" /></p>
+
+<h4>Web设计样板工程</h4>
+
+<p>我在Github上创建了一个<a href="https://github.com/abruzzi/design-boilerplate">设计样板工程</a>，你可以使用这个工程快速的搭建一个完整的样板工程，其中包含了：</p>
+
+<ol>
+<li>一个基本的HTML5的文档</li>
+<li>SCSS环境</li>
+<li>Guard环境，可以与LiveReload集成</li>
+</ol>
+
+
+<p>具体的操作可以<a href="https://github.com/abruzzi/design-boilerplate/blob/master/README.md">参看文档</a>。</p>
+
+<h4>发布你的Web设计</h4>
+
+<p>Github提供的<code>项目主页服务</code>可以帮助你快速将设计发布，你所需要做的就是为项目创建一个名叫<code>gh-pages</code>的分支，然后将<code>HTML/CSS/JS</code>放在这个分支上即可。</p>
+
+<p>假设你在github上的用户名为<code>wumai</code>(一时间想不到好名字，看看窗外，就叫<strong>雾霾</strong>吧)，那么根据惯例，你的Github地址为<code>https://github.com/wumai</code>。这时候，假设你的项目（repo）的名称为<code>design-1</code>，则你的<code>项目主页地址</code>为<code>https://wumai.github.io/design-1</code>。</p>
+
+<p>知道了你的<code>项目主页地址</code>，你就需要为这个页面添加内容了：</p>
+
+<p><code>sh
+$ git clone git@github.com:abruzzi/design-boilerplate.git design-1
+</code></p>
+
+<p>克隆了<code>design-boilerplate</code>之后，</p>
+
+<p><code>sh
+$ cd design-1
+$ git remote -v
+</code></p>
+
+<p>你可以看到当前的项目是和<code>git@github.com:abruzzi/design-boilerplate.git</code>关联的，</p>
+
+<p><code>
+origin  git@github.com:abruzzi/design-boilerplate.git (fetch)
+origin  git@github.com:abruzzi/design-boilerplate.git (push)
+</code></p>
+
+<p>你需要先和这个样板工程解除绑定：</p>
+
+<p><code>sh
+$ git remote remove origin
+</code></p>
+
+<p>然后你需要在Github上创建一个新的Repo，假设命名为<code>design-1</code>，这时候，将这个新创建的Repo作为你本地的remote：</p>
+
+<p><code>sh
+$ git remote add -u origin git@github.com:wumai/design-1.git
+</code></p>
+
+<p>与远程连接之后，我们可以开始实际的设计了，不过在这之前，需要先创建一个<code>gh-pages</code>分支：</p>
+
+<p><code>sh
+$ git checkout -b gh-pages
+</code></p>
+
+<p>这条命令会创建<code>gh-pages</code>分支，并切换到该分支，这样后续的修改都会在该分支进行，这也正是我们想要的。开发调试之后，就可以将这个分支push到Github：</p>
+
+<p><code>sh
+$ git push -u origin gh-pages
+</code></p>
+
+<p>好了，现在打开地址<code>http://wumai.github.io/design-1</code>，应该就可以看到你自己的设计了。</p>
+
+<p><img src="/images/2014/11/web-design-resized.png" alt="web design" /></p>
+]]></content>
+  </entry>
+  
+</feed>

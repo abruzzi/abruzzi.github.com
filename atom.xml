@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-11-09T17:32:11+11:00</updated>
+  <updated>2014-11-21T23:31:21+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,101 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[发布你的Web设计]]></title>
+    <link href="http://abruzzi.github.com/2014/11/publish-your-web-design/"/>
+    <updated>2014-11-21T22:24:00+11:00</updated>
+    <id>http://abruzzi.github.com/2014/11/publish-your-web-design</id>
+    <content type="html"><![CDATA[<h3>Github的<code>主页服务</code></h3>
+
+<p>Github提供了<a href="https://help.github.com/articles/user-organization-and-project-pages/">Github Pages</a>的服务来帮助你为自己的项目提供<code>主页</code>。目前，这种主页服务分为两种：<code>用户主页</code>和<code>项目主页</code>。其中<code>用户主页</code>已经称为广大开发者的标配，有很多的开发者已经将自己的博客迁移到了Github上，其中所用到的核心机制就是<code>Github Pages</code>。</p>
+
+<p>这篇文章主要介绍如何使用<code>项目主页</code>。<code>项目主页</code>，顾名思义，就是你项目的主页，本来设计的初衷是为你的项目编写介绍文档，不过Github只提供对静态内容的托管。如果需要添加评论，可以使用<a href="https://disqus.com/home/">disqus</a>的服务，而和微博，flickr等集成都有现成的JavaScript片段，这里也不做详细讨论。</p>
+
+<p>你现在正在看的我的博客正是托管在Github上，不过我对域名进行了自定义而已，如何做到这一点可以<a href="https://help.github.com/articles/tips-for-configuring-a-cname-record-with-your-dns-provider/">查看此处</a>的文档。</p>
+
+<p>我之前发布的一个<code>我去过的地方</code>就使用了<code>项目主页</code>的服务，该项目的<a href="https://github.com/abruzzi/placesihavebeen">地址在此</a>，<a href="http://icodeit.org/placesihavebeen/">最终的页面</a>在这里。</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/11/places-i-have-been-resized.png" alt="places I have been" /></p>
+
+<h4>Web设计样板工程</h4>
+
+<p>我在Github上创建了一个<a href="https://github.com/abruzzi/design-boilerplate">设计样板工程</a>，你可以使用这个工程快速的搭建一个完整的样板工程，其中包含了：</p>
+
+<ol>
+<li>一个基本的HTML5的文档</li>
+<li>SCSS环境</li>
+<li>Guard环境，可以与LiveReload集成</li>
+</ol>
+
+
+<p>具体的操作可以<a href="https://github.com/abruzzi/design-boilerplate/blob/master/README.md">参看文档</a>。</p>
+
+<h4>发布你的Web设计</h4>
+
+<p>Github提供的<code>项目主页服务</code>可以帮助你快速将设计发布，你所需要做的就是为项目创建一个名叫<code>gh-pages</code>的分支，然后将<code>HTML/CSS/JS</code>放在这个分支上即可。</p>
+
+<p>假设你在github上的用户名为<code>wumai</code>(一时间想不到好名字，看看窗外，就叫<strong>雾霾</strong>吧)，那么根据惯例，你的Github地址为<code>https://github.com/wumai</code>。这时候，假设你的项目（repo）的名称为<code>design-1</code>，则你的<code>项目主页地址</code>为<code>https://wumai.github.io/design-1</code>。</p>
+
+<p>知道了你的<code>项目主页地址</code>，你就需要为这个页面添加内容了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git clone git@github.com:abruzzi/design-boilerplate.git design-1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>克隆了<code>design-boilerplate</code>之后，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">cd </span>design-1
+</span><span class='line'><span class="nv">$ </span>git remote -v
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>你可以看到当前的项目是和<code>git@github.com:abruzzi/design-boilerplate.git</code>关联的，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>origin git@github.com:abruzzi/design-boilerplate.git <span class="o">(</span>fetch<span class="o">)</span>
+</span><span class='line'>origin    git@github.com:abruzzi/design-boilerplate.git <span class="o">(</span>push<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>你需要先和这个样板工程解除绑定：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git remote remove origin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后你需要在Github上创建一个新的Repo，假设命名为<code>design-1</code>，这时候，将这个新创建的Repo作为你本地的remote：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git remote add -u origin git@github.com:wumai/design-1.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>与远程连接之后，我们可以开始实际的设计了，不过在这之前，需要先创建一个<code>gh-pages</code>分支：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git checkout -b gh-pages
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这条命令会创建<code>gh-pages</code>分支，并切换到该分支，这样后续的修改都会在该分支进行，这也正是我们想要的。开发调试之后，就可以将这个分支push到Github：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git push -u origin gh-pages
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>好了，现在打开地址<code>http://wumai.github.io/design-1</code>，应该就可以看到你自己的设计了。</p>
+
+<p><img src="http://abruzzi.github.com/images/2014/11/web-design-resized.png" alt="web design" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[从一个小例子学习TDD]]></title>
@@ -4402,123 +4497,6 @@
 
 
 <p>所有的JavaScript包都被安装到了本地的<code>bower_components</code>目录下，如果有了bower.json文件，那么即使本地的<code>bower_components</code>目录不存在，或者其中的包内容过期了，那么很容易用<code>bower install</code>将其更新。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Grunt的几个常用插件]]></title>
-    <link href="http://abruzzi.github.com/2013/10/grunt-plugins/"/>
-    <updated>2013-10-08T16:42:00+11:00</updated>
-    <id>http://abruzzi.github.com/2013/10/grunt-plugins</id>
-    <content type="html"><![CDATA[<h3>Grunt的几个常用插件</h3>
-
-<h4>grunt-karma 简介</h4>
-
-<p><a href="https://github.com/karma-runner/grunt-karma">grunt-karma</a>是一个karma的Grunt插件，<a href="http://icodeit.org/2013/10/using-karma-as-the-javascript-test-runner/">上一篇文章</a>中已经介绍了karma的基本用法。这里简单介绍如何在Grunt中使用karma。</p>
-
-<p>首先需要安装grunt-karma插件：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install grunt-karma --save-dev</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后在Gruntfile.js中加载该插件：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-karma');</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在使用karma之前，需要生成一个karma的配置文件<code>karma.conf.js</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ karma init karma.conf.js</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后在Gruntfile.js中，加入初始化karma的参数，并指定，karma需要使用<code>karma.conf.js</code>文件作为配置来运行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
-</span><span class='line'>  karma: {
-</span><span class='line'>    unit: {
-</span><span class='line'>      configFile: 'karma.conf.js'
-</span><span class='line'>    }
-</span><span class='line'>  }
-</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
-
-
-<p>大多数情况下，如果要把karma作为CI的一部分，应该启动单次运行模式:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>singleRun: true</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样karma会启动浏览器，运行所有的测试用例，然后退出。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-contrib-jshint');
-</span><span class='line'>grunt.loadNpmTasks('grunt-karma');
-</span><span class='line'>
-</span><span class='line'>grunt.registerTask('default', ['jshint', 'karma']);</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/10/grunt-karma-resized.png" alt="image" /></p>
-
-<p>注意此处的default后边带了一个任务数组，其中每个任务会按照声明的顺序依次被执行。事实上此处的&#8217;default&#8217;是后边整个列表的一个别名(alias)。</p>
-
-<h4>grunt-jshint / grunt-uglify / grunt-concat</h4>
-
-<p><a href="https://github.com/gruntjs/grunt-contrib-jshint">grunt-contrib-jshint</a>是一个用于JavaScript静态语法检查的工具，它会帮助开发者在进行较为严格的语法检查。</p>
-
-<p>和其他的Grunt插件一样，它是以一个npm的包的形式发布的，因此安装非常容易:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install grunt-contrib-jshint --save-dev</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后在Gruntfile.js中加载该插件:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-contrib-jshint');</span></code></pre></td></tr></table></div></figure>
-
-
-<p>即可，类似的还有：用以连接所有JavaScript源代码为一个独立文件的<a href="https://github.com/gruntjs/grunt-contrib-concat">grunt-contrib-concat</a>，以及用以最小化JavaScript源码的<a href="https://github.com/gruntjs/grunt-contrib-uglify">grunt-contrib-uglify</a>。</p>
-
-<h4>自定义插件</h4>
-
-<p><a href="https://github.com/gruntjs/grunt-init">grunt-init</a>是一个帮助开发人员快速搭建基于Grunt项目的工具，比如开发jQuery插件，Gruntfile，或者Grunt插件本身。安装方式很简单，我们需要在其他项目也用到grunt-init，因此安装在全局路径下<code>-g</code>:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g grunt-init</span></code></pre></td></tr></table></div></figure>
-
-
-<p>开发Grunt插件，我们需要一个基本的模板，将这个模板clone到home下的.grunt-init目录下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git clone git://github.com/gruntjs/grunt-init-gruntplugin.git ~/.grunt-init/gruntplugin</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后新建一个目录，并在该目录下运行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ mkdir beautify
-</span><span class='line'>$ cd beautify
-</span><span class='line'>$ grunt-init gruntplugin</span></code></pre></td></tr></table></div></figure>
-
-
-<p>grunt-init会让你回答一些问题，比如插件名称，版本号，github链接等。之后，grunt-init会生成一个基本的模板，开发者只需要完成自己插件的逻辑代码即可。逻辑实现在<code>tasks/&lt;plugin-name&gt;.js</code>中即可。</p>
-
-<p>完成后可以通过<code>npm publish</code>来发布，发布之后，你的插件就可以向上边提到的常用插件那样被其他的开发者使用了。</p>
 ]]></content>
   </entry>
   

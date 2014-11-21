@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="heroku 使用heroku，开发人员可以很容易的将自己的应用程序公开给世界上的其他用户使用，heroku会为你提供一个url，一些预设的空间如数据库（postgresql）等。这对于需要频繁远程showcase的场景提供了非常好的方式， &hellip;">
+  <meta name="description" content="jQuery mobile jQuery Mobile是一个基于jQuery/jQuery-ui的UI库，用于构建基于HTML5的应用程序，当然它主要针对移动设备平台，开发者使用它可以很容易的开发出运行在ios/android/windows phone上的应用，这些应用（尽管运行在不同的硬件/ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,146 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/02/get-started-with-jquery-mobile/">Get Started With jQuery Mobile</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-14T13:50:00+11:00" pubdate data-updated="true">Feb 14<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>jQuery mobile</h3>
+
+<p><a href="http://jquerymobile.com/">jQuery Mobile</a>是一个基于jQuery/jQuery-ui的UI库，用于构建基于HTML5的应用程序，当然它主要针对移动设备平台，开发者使用它可以很容易的开发出运行在ios/android/windows phone上的应用，这些应用（尽管运行在不同的硬件/软件系统上）在界面上看起来几乎一致。</p>
+
+<h3>基本元素</h3>
+
+<h4>页面布局</h4>
+
+<p>在移动设备上，一个页面一般由三部分组成（header区域，content区域，footer区域），当然，有的页面可能会缺失一部分（最常见的如：没有footer的长列表），jQuery Mobile通过在DOM元素上定义data-role来指定元素的归属：</p>
+
+<ul>
+<li>page 整个页面</li>
+<li>header header区域</li>
+<li>content content区域</li>
+<li>footer footer区域</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;div data-role='page'&gt;
+</span><span class='line'>    &lt;div data-role='header'&gt;
+</span><span class='line'>        &lt;h1&gt;This is header&lt;/h1&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>    &lt;div data-role='content'&gt;
+</span><span class='line'>        &lt;p&gt;This is content&lt;/p&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>    &lt;div data-role='footer'&gt;
+</span><span class='line'>        &lt;h1&gt;This is footer&lt;/h1&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>&lt;/div&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/02/jquery-mobile-page.png" alt="image" /></p>
+
+<h4>多个页面</h4>
+
+<p>通常一个应用程序会有多个“页面”，在jQuery Mobile中，所有的“页面”都放在同一个html文件中，通过data-role为page的元素的id来指定一个页面：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;div data-role='page' id='edit-page'&gt;
+</span><span class='line'>    &lt;div data-role='header'&gt;
+</span><span class='line'>        &lt;h1&gt;Edit page&lt;/h1&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>    &lt;div data-role='content'&gt;
+</span><span class='line'>        &lt;form&gt;
+</span><span class='line'>          &lt;label for='desc'&gt;Description: &lt;/label&gt;
+</span><span class='line'>          &lt;input type='text' value='' /&gt;
+</span><span class='line'>        &lt;/form&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>&lt;/div&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在另一个页面中，可以通过link的href来引用这个id：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;a href="#edit-page"&gt;Go to edit page&lt;/a&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/02/jquery-mobile-multi-page.png" alt="image" /></p>
+
+<h4>列表元素</h4>
+
+<p>列表可能是最常见的一种jQuery Mobile元素了，列表由HTML的ul-li组成：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;ul data-role='listview' data-inset='true'&gt;
+</span><span class='line'>  &lt;li&gt; &lt;a href="#"&gt;Tomorrow is another day&lt;/a&gt; &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt; &lt;a href="#"&gt;Michael is leaving&lt;/a&gt; &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt; &lt;a href="#"&gt;Tutorial of jQuery mobile&lt;/a&gt; &lt;/li&gt;
+</span><span class='line'>  &lt;li&gt; &lt;a href="#"&gt;So, if you want something,...&lt;/a&gt; &lt;/li&gt;
+</span><span class='line'>&lt;/ul&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/02/jquery-mobile-list.png" alt="image" /></p>
+
+<h3>一个小例子</h3>
+
+<p>我在最近的一个开源项目<a href="https://github.com/abruzzi/feather">feather</a>中使用了jQuery Mobile来完成ios上的展现。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/02/feather-mobile.png" alt="image" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1158,89 +1298,6 @@ Date:   Mon Nov 5 14:06:16 2012 +0800
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/10/using-ssh-forward-to-get-out-of-stupid-wall/">Using Ssh Forward to Get Out of Stupid Wall</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-25T22:59:00+11:00" pubdate data-updated="true">Oct 25<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Generate the public and private key pair</h2>
-
-<p>This step is quite strightforward, just generate the keys by using ssh-keygen:</p>
-
-<pre><code>$ ssh-keygen #specify the key file name (I use the id_ plus remote site hostname)
-</code></pre>
-
-<p>then you&#8217;ll get 2 keys locally, you can do this step in any place, but people do it
-on their home-dir/.ssh, after the creation, you need to change the mask of the key file:</p>
-
-<pre><code>$ chmod 600 id_site
-</code></pre>
-
-<h2>Put the public key remotely</h2>
-
-<p>Okay, once the key is generated, we can simply put the publick key to remote site, and we
-don&#8217;t need to type password any more:</p>
-
-<pre><code>$ scp id_site.pub user@remote:
-</code></pre>
-
-<p>Note the colon at the end of the command above, login to remote server</p>
-
-<pre><code># cat id_site.pub &gt;&gt; .ssh/authorized_keys
-# rm id_site.pub
-</code></pre>
-
-<p>Then go back local machine, and we&#8217;re done</p>
-
-<h2>SSH forward</h2>
-
-<p>Now we can simply login the remote server by using the private key just generated:</p>
-
-<pre><code>$ ssh -i id_site user@remote
-</code></pre>
-
-<p>You then probably be noticed to add the key to system key chain, it is on Mac. And we now don&#8217;t
-need to type the password manually. So let&#8217;s go a little bit further:</p>
-
-<pre><code>$ ssh -N -i id_site -l 15100:localhost:15100 user@remote
-</code></pre>
-
-<p>Then you can access the localhost:1500 port on remote machine BY using the local port, that&#8217;s why it
-called ssh forward I think.</p>
-
-<p>You may note that I&#8217;m using the port 15100, that&#8217;s the mailcatcher web mananger port, I cannot access
-the mailcatcher running on another machine, but somehow, I can ssh it through ssh port(22), so I asked
-one of my <em>smart</em> colleagues, and got this solution.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/6/">&larr; Older</a>
@@ -1258,6 +1315,10 @@ one of my <em>smart</em> colleagues, and got this solution.</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2014/11/publish-your-web-design/">发布你的Web设计</a>
+      </li>
+    
+      <li class="post">
         <a href="/2014/11/tdd-step-by-step/">从一个小例子学习TDD</a>
       </li>
     
@@ -1271,10 +1332,6 @@ one of my <em>smart</em> colleagues, and got this solution.</p>
     
       <li class="post">
         <a href="/2014/09/simple-idea-and-simple-script/">一个简单的午餐推荐脚本</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2014/09/a-bug-about-time/">一个关于时间的神奇Bug</a>
       </li>
     
   </ul>

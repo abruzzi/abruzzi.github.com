@@ -1,0 +1,423 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>发布你的Web设计 - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="Github的主页服务 Github提供了Github Pages的服务来帮助你为自己的项目提供主页。目前，这种主页服务分为两种：用户主页和项目主页。其中用户主页已经称为广大开发者的标配，有很多的开发者已经将自己的博客迁移到了Github上，其中所用到的核心机制就是Github Pages。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2014/11/publish-your-web-design">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">文章</a></li>
+  <li><a href="/about-me">关于我</a></li>
+  <li><a href="/jsccp">JavaScript核心概念及实践</a></li>
+  <li><a href="/lwweb">轻量级Web应用开发</a></li>
+</ul>
+
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">发布你的Web设计</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-21T22:24:00+11:00" pubdate data-updated="true">Nov 21<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>Github的<code>主页服务</code></h3>
+
+<p>Github提供了<a href="https://help.github.com/articles/user-organization-and-project-pages/">Github Pages</a>的服务来帮助你为自己的项目提供<code>主页</code>。目前，这种主页服务分为两种：<code>用户主页</code>和<code>项目主页</code>。其中<code>用户主页</code>已经称为广大开发者的标配，有很多的开发者已经将自己的博客迁移到了Github上，其中所用到的核心机制就是<code>Github Pages</code>。</p>
+
+<p>这篇文章主要介绍如何使用<code>项目主页</code>。<code>项目主页</code>，顾名思义，就是你项目的主页，本来设计的初衷是为你的项目编写介绍文档，不过Github只提供对静态内容的托管。如果需要添加评论，可以使用<a href="https://disqus.com/home/">disqus</a>的服务，而和微博，flickr等集成都有现成的JavaScript片段，这里也不做详细讨论。</p>
+
+<p>你现在正在看的我的博客正是托管在Github上，不过我对域名进行了自定义而已，如何做到这一点可以<a href="https://help.github.com/articles/tips-for-configuring-a-cname-record-with-your-dns-provider/">查看此处</a>的文档。</p>
+
+<p>我之前发布的一个<code>我去过的地方</code>就使用了<code>项目主页</code>的服务，该项目的<a href="https://github.com/abruzzi/placesihavebeen">地址在此</a>，<a href="http://icodeit.org/placesihavebeen/">最终的页面</a>在这里。</p>
+
+<p><img src="/images/2014/11/places-i-have-been-resized.png" alt="places I have been" /></p>
+
+<h4>Web设计样板工程</h4>
+
+<p>我在Github上创建了一个<a href="https://github.com/abruzzi/design-boilerplate">设计样板工程</a>，你可以使用这个工程快速的搭建一个完整的样板工程，其中包含了：</p>
+
+<ol>
+<li>一个基本的HTML5的文档</li>
+<li>SCSS环境</li>
+<li>Guard环境，可以与LiveReload集成</li>
+</ol>
+
+
+<p>具体的操作可以<a href="https://github.com/abruzzi/design-boilerplate/blob/master/README.md">参看文档</a>。</p>
+
+<h4>发布你的Web设计</h4>
+
+<p>Github提供的<code>项目主页服务</code>可以帮助你快速将设计发布，你所需要做的就是为项目创建一个名叫<code>gh-pages</code>的分支，然后将<code>HTML/CSS/JS</code>放在这个分支上即可。</p>
+
+<p>假设你在github上的用户名为<code>wumai</code>(一时间想不到好名字，看看窗外，就叫<strong>雾霾</strong>吧)，那么根据惯例，你的Github地址为<code>https://github.com/wumai</code>。这时候，假设你的项目（repo）的名称为<code>design-1</code>，则你的<code>项目主页地址</code>为<code>https://wumai.github.io/design-1</code>。</p>
+
+<p>知道了你的<code>项目主页地址</code>，你就需要为这个页面添加内容了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git clone git@github.com:abruzzi/design-boilerplate.git design-1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>克隆了<code>design-boilerplate</code>之后，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">cd </span>design-1
+</span><span class='line'><span class="nv">$ </span>git remote -v
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>你可以看到当前的项目是和<code>git@github.com:abruzzi/design-boilerplate.git</code>关联的，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>origin git@github.com:abruzzi/design-boilerplate.git <span class="o">(</span>fetch<span class="o">)</span>
+</span><span class='line'>origin    git@github.com:abruzzi/design-boilerplate.git <span class="o">(</span>push<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>你需要先和这个样板工程解除绑定：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git remote remove origin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后你需要在Github上创建一个新的Repo，假设命名为<code>design-1</code>，这时候，将这个新创建的Repo作为你本地的remote：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git remote add -u origin git@github.com:wumai/design-1.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>与远程连接之后，我们可以开始实际的设计了，不过在这之前，需要先创建一个<code>gh-pages</code>分支：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git checkout -b gh-pages
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这条命令会创建<code>gh-pages</code>分支，并切换到该分支，这样后续的修改都会在该分支进行，这也正是我们想要的。开发调试之后，就可以将这个分支push到Github：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git push -u origin gh-pages
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>好了，现在打开地址<code>http://wumai.github.io/design-1</code>，应该就可以看到你自己的设计了。</p>
+
+<p><img src="/images/2014/11/web-design-resized.png" alt="web design" /></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-21T22:24:00+11:00" pubdate data-updated="true">Nov 21<span>st</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/github/'>Github</a>, <a class='category' href='/category/web-design/'>Web Design</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2014/11/tdd-step-by-step/" title="Previous Post: 从一个小例子学习TDD">&laquo; 从一个小例子学习TDD</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2014/11/publish-your-web-design/">发布你的Web设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2014/11/tdd-step-by-step/">从一个小例子学习TDD</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2014/11/splash-color-in-black-and-white-photo/">命令行制作黑白+单色照片</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2014/09/get-started-with-node-webkit/">使用node-webkit构建桌面应用程序</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2014/09/simple-idea-and-simple-script/">一个简单的午餐推荐脚本</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中...)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/abruzzi">@abruzzi</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'abruzzi',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2014/11/publish-your-web-design/';
+        var disqus_url = 'http://abruzzi.github.com/2014/11/publish-your-web-design/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
