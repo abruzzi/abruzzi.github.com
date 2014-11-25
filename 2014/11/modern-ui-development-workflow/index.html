@@ -1,0 +1,467 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>现代Web页面开发流程 - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="现代Web页面开发流程 通常来说，Web页面开发的流程大致是这样的：设计师（设计师不是美工，就像程序员不是码农一样）提供设计稿，通常是图片格式。然后前端的开发人员（在ThoughtWorks我们称之为UI Dev）来手工的将图片转换为对应的HTML+CSS，往往还需要在各个浏览器中调试等。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2014/11/modern-ui-development-workflow">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">文章</a></li>
+  <li><a href="/about-me">关于我</a></li>
+  <li><a href="/jsccp">JavaScript核心概念及实践</a></li>
+  <li><a href="/lwweb">轻量级Web应用开发</a></li>
+</ul>
+
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">现代Web页面开发流程</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-25T14:11:00+11:00" pubdate data-updated="true">Nov 25<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>现代Web页面开发流程</h3>
+
+<p>通常来说，Web页面开发的流程大致是这样的：设计师（设计师不是美工，就像程序员不是码农一样）提供设计稿，通常是图片格式。然后前端的开发人员（在ThoughtWorks我们称之为UI Dev）来手工的将图片转换为对应的HTML+CSS，往往还需要在各个浏览器中调试等。</p>
+
+<p>大多数时候，设计师会提供色卡，或者至少前景色/背景色/高亮色的值给开发人员。如果没有的话，开发人员会用到一些工具如<code>colorpicker</code>, <code>ruler</code>之类来确保最终的效果和设计稿是一致的。</p>
+
+<p>如果你观察过UI Dev的工作流程的话，你会发现基本的上是这样的：使用编辑器（或者IDE）编写HTML代码，CSS代码，保存修改内容，切换到浏览器窗口，按<code>F5</code>或者<code>Ctrl-R</code>刷新，然后对比设计稿和实现，如果发现不一致的地方，再切换到编辑器中修改代码，如是往复。</p>
+
+<h4>避免手工劳动</h4>
+
+<p>纯手工的方式来编辑HTML/CSS会非常耗时，特别是作为标记语言的HTML，开发者需要时刻关注关闭已经打开的标签。比如一个标题元素，你需要：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;h1&gt;</span>This is the page title<span class="nt">&lt;/h1&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>几乎从一开始，人们就想到了各种办法来避免自己重复的键入，比如Vim的<a href="https://github.com/ervandew/supertab">SuperTab</a>以及<a href="https://github.com/garbas/vim-snipmate">Snipmate</a>插件，可以通过输入<code>标签名</code>+<code>Tab</code>来补全所有的标签等，又或者DreamWaver提供的<code>代码生成</code>的方式来简化这一流程。</p>
+
+<p>Sublime的编辑器上的著名插件<a href="https://sublime.wbond.net/packages/Emmet">Emmet</a>可以帮助开发人员飞速的开发HTML/CSS，这里有一个小例子。假设我们需要实现的页面是这样的：</p>
+
+<p><img src="/images/2014/11/web-design-resized.png" alt="web design" /></p>
+
+<p>那么对应的HTML结构可能会是：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;ul&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;feature&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;number&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;i&gt;&lt;/i&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;h4&gt;&lt;/h4&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;p&gt;&lt;/p&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    ...
+</span><span class='line'><span class="nt">&lt;/ul&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用Emmet，则只需要给出表达式，然后按一下<code>Tab</code>键就可以补全为上述的结构了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>ul&gt;li*3&gt;.feature&gt;span.number+i+h4+p
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上边的这条命令可以读作：&#8221;创建一个UL，该UL下有3个LI，每个LI下有一个class为feature的DIV（不指定元素名称的话，默认生成div），每个DIV内，有一个类为.number的SPAN，一个i元素，一个H4元素和一个P元素&#8221;</p>
+
+<p>完整的技巧可以参看<a href="http://docs.emmet.io/cheat-sheet/">官方文档</a>。</p>
+
+<h4>避免重复劳动</h4>
+
+<p>上边提到的频繁的F5刷新，可以通过<code>LiveReload+Guard</code>两个工具的组合来解决。<a href="https://chrome.google.com/webstore/detail/livereload/jnihajbhpnppcggbcgedagnkighmdlei">LiveReload</a>是一个浏览器的插件，通过协议与后台的服务器进行通信。当后台文件发生变化时，LiveReload会自动刷新页面。</p>
+
+<p><a href="https://github.com/guard/guard">Guard</a>会使用操作系统的API来感知本地文件的变化，当文件变化后，它可以通知LiveReload进行刷新，当然Guard可以做其他一些事情，比如等SCSS发生变化时，自动编译CSS等。</p>
+
+<p>两者结合之后，就可以节省我们大量的时间，而把精力主要投放在开发这件事情本身上。</p>
+
+<h4>样板工程</h4>
+
+<p>我在Github上公开了一个样板工程，这是一个开箱即用的工程，其中提供了这样一些配置：</p>
+
+<ol>
+<li>SCSS的编译环境（使用compass）</li>
+<li>Guard配置（当你的SCSS文件或者HTML文件修改之后，自动通知LiveReload来刷新浏览器）</li>
+<li>一个标准的HTML5样板文档</li>
+<li>一个基本的style.scss</li>
+</ol>
+
+
+<p>Guardfile的配置中，如果<code>index.html</code>发生变化，或者<code>stylesheets</code>中的css文件发生变化，或者<code>scripts</code>目录中的js文件发生变化，都会触发<code>livereload</code>任务（通知浏览器）。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">guard</span> <span class="s1">&#39;livereload&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">watch</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{stylesheets/.+\.(css)}</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{scripts/.+\.(js)}</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">guard</span> <span class="ss">:compass</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>你只需要简单的将这个工程克隆到本地：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git clone git@github.com:abruzzi/design-boilerplate.git mydesign
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在该目录中执行<code>bundle install</code>即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">cd </span>mydesign
+</span><span class='line'><span class="nv">$ </span>bundle install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里有两点假设：
+1.  你已经安装了<a href="http://rvm.io/">rvm</a>
+2.  你已经使用rvm安装了某个版本的ruby，即<code>bundler</code>这个gem</p>
+
+<h4>开发流程</h4>
+
+<p>我通常会启动两个终端，一个用来运行<code>Guard</code>，另一个用来运行<code>HTTP Server</code>，然后是一个浏览器：</p>
+
+<p><img src="/images/2014/11/workflow-resized.png" alt="workflow" /></p>
+
+<p>当在编辑器中进行编辑之后，保存文件，浏览器会自动刷新，这样的快速反馈可以告诉我下一步应该如何修改：将背景色调整的再淡一点，还是把会h2的字体变得更大，或者图片和文字的上边缘没有对齐等等。</p>
+
+<p>这种开发流程和后台开发人员进行TDD的方式非常类似：<code>实时反馈，小步前进</code>！如果你的桌子上有两个显示器的话，那就更好了，你可以在一台显示器上显示设计稿，另一台上分屏显示编辑器和浏览器，这样就可以非常舒服的进行UI开发了：</p>
+
+<p><img src="/images/2014/11/two-displays-resized.png" alt="two displays" /></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-25T14:11:00+11:00" pubdate data-updated="true">Nov 25<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/frontend/'>Frontend</a>, <a class='category' href='/category/web-design/'>Web Design</a>, <a class='category' href='/category/workflow/'>Workflow</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2014/11/publish-your-web-design/" title="Previous Post: 发布你的Web设计">&laquo; 发布你的Web设计</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2014/11/modern-ui-development-workflow/">现代Web页面开发流程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2014/11/publish-your-web-design/">发布你的Web设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2014/11/tdd-step-by-step/">从一个小例子学习TDD</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2014/11/splash-color-in-black-and-white-photo/">命令行制作黑白+单色照片</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2014/09/get-started-with-node-webkit/">使用node-webkit构建桌面应用程序</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+    <h1>My Books</h1>
+    <ul id="mybooks">
+        <li>
+            <a href="http://icodeit.org/jsccp/">
+                <img src="http://abruzzi.github.com/images/2013/04/jscp.preview.jpg" alt="javascript core concepts and practices" />
+                <div>JavaScript核心概念及实践</div>
+            </a> 
+        </li>
+        <li>
+            <a href="http://icodeit.org/lwweb/">
+                <div>轻量级Web应用开发(工作中...)</div>
+            </a> 
+        </li>
+    </ul>
+</section>
+
+<section>
+  <h1>新浪微博</h1>
+  <ul id="weibo">
+    <li>
+    <iframe 
+        width="100%" 
+        height="550" 
+        class="share_self"  
+        frameborder="0" 
+        scrolling="no" 
+        src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=0&skin=1&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=2624277973&verifier=a98ab59c&dpc=1"></iframe>
+    </li>
+  </ul>
+  </section>
+
+
+<section>
+<h2>豆瓣阅读</h2>
+<div>
+    <script type="text/javascript" src="http://www.douban.com/service/badge/4023370/?show=collection&amp;n=8&amp;columns=2" ></script>
+</div>
+</section>
+
+
+<section class="flickr">
+<h1>My Flickr</h1>
+<!-- Start of Flickr Badge -->
+<style type="text/css">
+
+/*
+Images are wrapped in divs classed "flickr_badge_image" with ids "flickr_badge_imageX" where "X" is an integer specifying ordinal position. Below are some styles to get you started!
+*/
+
+#flickr_badge_wrapper {padding:10px 0 10px 0;}
+.flickr_badge_image {margin: 0 9px 8px 0px;display: inline-block;}
+
+</style>
+
+<div id="flickr_badge_uber_wrapper"><div id="flickr_badge_wrapper">
+<script type="text/javascript" src="http://www.flickr.com/badge_code_v2.gne?count=6&display=latest&size=s&layout=x&source=user&user=59497912@N08"></script>
+</div></div>
+<!-- End of Flickr Badge -->
+</section>
+
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/abruzzi">@abruzzi</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'abruzzi',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2014/11/modern-ui-development-workflow/';
+        var disqus_url = 'http://abruzzi.github.com/2014/11/modern-ui-development-workflow/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

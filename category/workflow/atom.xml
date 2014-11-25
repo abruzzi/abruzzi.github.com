@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Workflow | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/workflow/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2014-11-25T17:59:46+11:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[现代Web页面开发流程]]></title>
+    <link href="http://abruzzi.github.com/2014/11/modern-ui-development-workflow/"/>
+    <updated>2014-11-25T14:11:00+11:00</updated>
+    <id>http://abruzzi.github.com/2014/11/modern-ui-development-workflow</id>
+    <content type="html"><![CDATA[<h3>现代Web页面开发流程</h3>
+
+<p>通常来说，Web页面开发的流程大致是这样的：设计师（设计师不是美工，就像程序员不是码农一样）提供设计稿，通常是图片格式。然后前端的开发人员（在ThoughtWorks我们称之为UI Dev）来手工的将图片转换为对应的HTML+CSS，往往还需要在各个浏览器中调试等。</p>
+
+<p>大多数时候，设计师会提供色卡，或者至少前景色/背景色/高亮色的值给开发人员。如果没有的话，开发人员会用到一些工具如<code>colorpicker</code>, <code>ruler</code>之类来确保最终的效果和设计稿是一致的。</p>
+
+<p>如果你观察过UI Dev的工作流程的话，你会发现基本的上是这样的：使用编辑器（或者IDE）编写HTML代码，CSS代码，保存修改内容，切换到浏览器窗口，按<code>F5</code>或者<code>Ctrl-R</code>刷新，然后对比设计稿和实现，如果发现不一致的地方，再切换到编辑器中修改代码，如是往复。</p>
+
+<h4>避免手工劳动</h4>
+
+<p>纯手工的方式来编辑HTML/CSS会非常耗时，特别是作为标记语言的HTML，开发者需要时刻关注关闭已经打开的标签。比如一个标题元素，你需要：</p>
+
+<p>```html</p>
+
+<h1>This is the page title</h1>
+
+
+<p>```</p>
+
+<p>几乎从一开始，人们就想到了各种办法来避免自己重复的键入，比如Vim的<a href="https://github.com/ervandew/supertab">SuperTab</a>以及<a href="https://github.com/garbas/vim-snipmate">Snipmate</a>插件，可以通过输入<code>标签名</code>+<code>Tab</code>来补全所有的标签等，又或者DreamWaver提供的<code>代码生成</code>的方式来简化这一流程。</p>
+
+<p>Sublime的编辑器上的著名插件<a href="https://sublime.wbond.net/packages/Emmet">Emmet</a>可以帮助开发人员飞速的开发HTML/CSS，这里有一个小例子。假设我们需要实现的页面是这样的：</p>
+
+<p><img src="/images/2014/11/web-design-resized.png" alt="web design" /></p>
+
+<p>那么对应的HTML结构可能会是：</p>
+
+<p>```html</p>
+
+<ul>
+    <li>
+        <div class="feature">
+            <span class="number"></span>
+            <i></i>
+            <h4></h4>
+            <p></p>
+        </div>
+    </li>
+    ...
+</ul>
+
+
+<p>```</p>
+
+<p>使用Emmet，则只需要给出表达式，然后按一下<code>Tab</code>键就可以补全为上述的结构了：</p>
+
+<p><code>
+ul&gt;li*3&gt;.feature&gt;span.number+i+h4+p
+</code></p>
+
+<p>上边的这条命令可以读作："创建一个UL，该UL下有3个LI，每个LI下有一个class为feature的DIV（不指定元素名称的话，默认生成div），每个DIV内，有一个类为.number的SPAN，一个i元素，一个H4元素和一个P元素"</p>
+
+<p>完整的技巧可以参看<a href="http://docs.emmet.io/cheat-sheet/">官方文档</a>。</p>
+
+<h4>避免重复劳动</h4>
+
+<p>上边提到的频繁的F5刷新，可以通过<code>LiveReload+Guard</code>两个工具的组合来解决。<a href="https://chrome.google.com/webstore/detail/livereload/jnihajbhpnppcggbcgedagnkighmdlei">LiveReload</a>是一个浏览器的插件，通过协议与后台的服务器进行通信。当后台文件发生变化时，LiveReload会自动刷新页面。</p>
+
+<p><a href="https://github.com/guard/guard">Guard</a>会使用操作系统的API来感知本地文件的变化，当文件变化后，它可以通知LiveReload进行刷新，当然Guard可以做其他一些事情，比如等SCSS发生变化时，自动编译CSS等。</p>
+
+<p>两者结合之后，就可以节省我们大量的时间，而把精力主要投放在开发这件事情本身上。</p>
+
+<h4>样板工程</h4>
+
+<p>我在Github上公开了一个样板工程，这是一个开箱即用的工程，其中提供了这样一些配置：</p>
+
+<ol>
+<li>SCSS的编译环境（使用compass）</li>
+<li>Guard配置（当你的SCSS文件或者HTML文件修改之后，自动通知LiveReload来刷新浏览器）</li>
+<li>一个标准的HTML5样板文档</li>
+<li>一个基本的style.scss</li>
+</ol>
+
+
+<p>Guardfile的配置中，如果<code>index.html</code>发生变化，或者<code>stylesheets</code>中的css文件发生变化，或者<code>scripts</code>目录中的js文件发生变化，都会触发<code>livereload</code>任务（通知浏览器）。</p>
+
+<p>```rb
+guard 'livereload' do
+  watch('index.html')
+  watch(%r{stylesheets/.+.(css)})
+  watch(%r{scripts/.+.(js)})
+end</p>
+
+<p>guard :compass
+```</p>
+
+<p>你只需要简单的将这个工程克隆到本地：</p>
+
+<p><code>sh
+$ git clone git@github.com:abruzzi/design-boilerplate.git mydesign
+</code></p>
+
+<p>然后在该目录中执行<code>bundle install</code>即可：</p>
+
+<p><code>sh
+$ cd mydesign
+$ bundle install
+</code></p>
+
+<p>这里有两点假设：
+1.  你已经安装了<a href="http://rvm.io/">rvm</a>
+2.  你已经使用rvm安装了某个版本的ruby，即<code>bundler</code>这个gem</p>
+
+<h4>开发流程</h4>
+
+<p>我通常会启动两个终端，一个用来运行<code>Guard</code>，另一个用来运行<code>HTTP Server</code>，然后是一个浏览器：</p>
+
+<p><img src="/images/2014/11/workflow-resized.png" alt="workflow" /></p>
+
+<p>当在编辑器中进行编辑之后，保存文件，浏览器会自动刷新，这样的快速反馈可以告诉我下一步应该如何修改：将背景色调整的再淡一点，还是把会h2的字体变得更大，或者图片和文字的上边缘没有对齐等等。</p>
+
+<p>这种开发流程和后台开发人员进行TDD的方式非常类似：<code>实时反馈，小步前进</code>！如果你的桌子上有两个显示器的话，那就更好了，你可以在一台显示器上显示设计稿，另一台上分屏显示编辑器和浏览器，这样就可以非常舒服的进行UI开发了：</p>
+
+<p><img src="/images/2014/11/two-displays-resized.png" alt="two displays" /></p>
+]]></content>
+  </entry>
+  
+</feed>

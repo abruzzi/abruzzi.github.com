@@ -9,7 +9,9 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="ActiveRecord 作为rails中的ORM(object relation-db mapping)框架，ActiveRecord在初次出现之时带给了人们以无限的惊喜和热情，也使得很多不堪忍受其他语言中粗糙的ORM框架的开发者转而投入rials的怀抱。 &hellip;">
+  <meta name="description" content="Alfred简介 Alfred是Mac下的一个小工具，可以极大的提高使用计算机的效率。Alfred提供非常丰富的功能集，比如： 基本的文件/目录查找功能
+应用程序加载器
+快速的搜索（google，wikipedia） powerpack Alfred本身是免费的，但是一些高级的功能，如： &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +82,147 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/05/create-a-alfred-extension-for-create-sinatra-project/">Alfred简介及Alfred扩展编写</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-18T20:04:00+10:00" pubdate data-updated="true">May 18<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Alfred简介</h3>
+
+<p><a href="http://www.alfredapp.com/">Alfred</a>是Mac下的一个小工具，可以极大的提高使用计算机的效率。Alfred提供非常丰富的功能集，比如：</p>
+
+<ol>
+<li>基本的文件/目录查找功能</li>
+<li>应用程序加载器</li>
+<li>快速的搜索（google，wikipedia）</li>
+</ol>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/05/alfred-find.png" alt="使用Alfred搜索" /></p>
+
+<h4>powerpack</h4>
+
+<p>Alfred本身是免费的，但是一些高级的功能，如：</p>
+
+<ol>
+<li>自定义扩展（<strong>非常有用</strong>）</li>
+<li>剪贴板栈/代码片段管理（<strong>非常有用</strong>）</li>
+<li>iTunes控制</li>
+<li>近期访过的文档</li>
+</ol>
+
+
+<p>提供在<a href="http://www.alfredapp.com/powerpack/">powerpack</a>中，这个功能是要收费的，不过个人觉得绝对的物超所值。这些功能可以极大的提高我对计算机的使用效率，而且剪贴板栈功能可以节省我很多的时间。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/05/alfred-clipboard.png" alt="image" /></p>
+
+<h3>扩展编写</h3>
+
+<p>经常会使用<a href="http://www.sinatrarb.com/">sinatra</a>编写一些简单的Web应用程序，以用作一些showcase和应用程序的原型搭建。但是由于sinatra并不是一个框架，并不会像rails那样自动生成目录结构等，而每个sinatra应用的目录结构和文件依赖都非常相似，因此完全可以考虑将这个过程自动化。</p>
+
+<p>基本思路是：</p>
+
+<ol>
+<li>定义一个目录结构的模板</li>
+<li>每次开始一个sinatra工程时，将个模板目录拷贝到新的工程下</li>
+<li>一些库依赖的下载（bundle install以及JavaScript库的下载）</li>
+<li>在编辑器中打开这个新的目录</li>
+</ol>
+
+
+<h4>一个sinatra工程的原型</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ pwd
+</span><span class='line'>/Users/twer/develop/templates/sinatra
+</span><span class='line'>
+</span><span class='line'>$ tree -a
+</span><span class='line'>.
+</span><span class='line'>├── .rvmrc
+</span><span class='line'>├── Gemfile
+</span><span class='line'>├── app.rb
+</span><span class='line'>├── config.ru
+</span><span class='line'>├── public
+</span><span class='line'>│   ├── css
+</span><span class='line'>│   └── scripts
+</span><span class='line'>│       ├── app.js
+</span><span class='line'>│       └── libs
+</span><span class='line'>└── views</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Extension shell script</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># create the project folder
+</span><span class='line'>cd ~/develop/ruby && mkdir -p {query} && cd {query}
+</span><span class='line'>
+</span><span class='line'># cp info to folder
+</span><span class='line'>cp -R ~/develop/templates/sinatra/ .
+</span><span class='line'>
+</span><span class='line'># grab jquery
+</span><span class='line'>curl http://code.jquery.com/jquery.js &gt; public/scripts/libs/jquery.js
+</span><span class='line'>
+</span><span class='line'># open the project
+</span><span class='line'>/Applications/MacVim.app/Contents/MacOS/Vim -g .</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/05/sinatra-ext-result.png" alt="image" /></p>
+
+<p>执行完之后，<code>~/develop/ruby</code>下会生成一个新的目录，即<code>note</code>，这个目录中即为一个可以直接开始开发sinatra应用的工作目录了。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1146,98 +1289,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os/">Install Powerline (Fancy Status Line) for Vim in Mac OS</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-19T10:53:00+11:00" pubdate data-updated="true">Feb 19<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Powerline</h3>
-
-<p><a href="https://github.com/Lokaltog/powerline">powerline</a>会将vim的status line变的非常漂亮，看起来像一个“主流”的编辑器那样，而又不会引入额外的“重量”。基本原理是使用字体将特殊字符展现成特殊形状（如三角形），额外的有一些漂亮的配色。</p>
-
-<h4>效果</h4>
-
-<p><img src="http://abruzzi.github.com/images/2013/02/vim-power-line-resized.png" alt="image" /></p>
-
-<h4>安装</h4>
-
-<p>有几个额外的点需要确保：</p>
-
-<h5>保证你的vim包含了对python的支持</h5>
-
-<p><code>vim --version | grep python</code>的结果应该包含<code>+python</code>，如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>+path_extra -perl +persistent_undo +postscript +printer -profile +python/dyn </span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果没有的话，需要将vim重新编译，比如在Mac OS下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>brew install macvim --env-std --override-system-vim</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>安装powerline</h5>
-
-<p>最简单的方式是直接clone到本地，比如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>git clone git://github.com/Lokaltog/powerline.git ~/PowerLine/</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>配置.vimrc</h5>
-
-<p>为你的vimrc添加下面的配置：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>set rtp+={path_to_powerline}/powerline/bindings/vim
-</span><span class='line'>set laststatus=2
-</span><span class='line'>set noshowmode</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这时，如果你启动vim，应该已经可以看到powerline了，但是有可能有“乱码”的问题，幸运的是，已经有很多的预定义字体。</p>
-
-<h3>Fonts</h3>
-
-<p><a href="https://github.com/Lokaltog/powerline-fonts">这里</a>有许多额外的预定义fonts。选中需要的字体，安装到本地即可（双击字体文件或者拷贝到<code>~/Library/Fonts</code>下）。然后在.vimrc中使用这个字体，比如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>set encoding=utf-8
-</span><span class='line'>set guifont=Menlo\ for\ Powerline:h14</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/5/">&larr; Older</a>
@@ -1255,6 +1306,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2014/11/modern-ui-development-workflow/">现代Web页面开发流程</a>
+      </li>
+    
+      <li class="post">
         <a href="/2014/11/publish-your-web-design/">发布你的Web设计</a>
       </li>
     
@@ -1268,10 +1323,6 @@
     
       <li class="post">
         <a href="/2014/09/get-started-with-node-webkit/">使用node-webkit构建桌面应用程序</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2014/09/simple-idea-and-simple-script/">一个简单的午餐推荐脚本</a>
       </li>
     
   </ul>
