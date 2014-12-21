@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-11-25T18:07:01+11:00</updated>
+  <updated>2014-12-21T19:36:47+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,88 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[在Sublime Text中设置JavaScript构建]]></title>
+    <link href="http://abruzzi.github.com/2014/12/setup-sublime-as-javascript-development-env/"/>
+    <updated>2014-12-21T18:52:00+11:00</updated>
+    <id>http://abruzzi.github.com/2014/12/setup-sublime-as-javascript-development-env</id>
+    <content type="html"><![CDATA[<p>我在编写<a href="http://book.douban.com/subject/24165880/">《JavaScript核心概念及实践》</a>一书的时候，为了保证读者学习时可以比较专注语言本身，专门用Swing开发了一个小工具<a href="https://github.com/abruzzi/jsevaluator">JSEvaluator</a>。</p>
+
+<p>这个工具可以当做JavaScript的简单的IDE，有一个编辑区域，有一些按钮(打开，保存，执行等)，执行之后还可以将结果显示在一个面板上。书出版后不断有读者问我如何将这个工具运行起来（我自己写这个工具的时候，并没有release的概念，而且最初的几个版本可用之后，就再也没有花心思维护），单独回复比较耗时，今天早上又收到一位热心读者的邮件，就在这里统一回复一下。</p>
+
+<p>其实JSEvaluator的思想和其他的IDE一样：将一个编辑器和命令行工具结合在一起，编辑器提供编辑功能，然后IDE可以将编辑器中的文本发送给命令行工具执行（使用Rhino），将结果重定向到界面上。</p>
+
+<p><a href="http://www.sublimetext.com/3">Sublime Text</a>提供的<code>Build</code>功能也可以做到这一点，并且可以使用它更加强大的其他编辑特性，因此推荐各位读者使用这里介绍的方式。</p>
+
+<h3>Sublime Text编辑器</h3>
+
+<p><a href="http://www.sublimetext.com/3">Sublime Text</a>是一个文本编辑器，非常轻量级，并且有丰富的插件机制。虽然它不是一个免费软件，但是如果不注册还是可以无限试用下去，除了不定时的弹出一个对话框之外。它在现在的前端开发中非常流行，我作为一个<code>Vim</code>的忠实粉丝，也已经花费了很多时间在Sublime Text上了。</p>
+
+<p>在写书的时候，JavaScript已经比较火了，但是更多的是在Web端。在本地开发的支持上还是比较薄弱。但是现在就不一样了，各个操作系统平台上都已经有了许多本地的JavaScript执行环境。比如Mac自带的<code>jsc</code>，跨平台的<a href="http://nodejs.org/">node</a>等。</p>
+
+<h4>准备工作</h4>
+
+<p>如果你在使用Mac OS X，请直接跳到下一步。如果你在使用Windows，请先安装node.js的Windows版本，然后保证<code>node.exe</code>在系统的PATH环境变量中。</p>
+
+<h4>自定义build</h4>
+
+<p>在Sublime Text中，点击<code>Tools</code> -> <code>Build System</code> -> <code>New build system...</code>，Sublime会打开一个文件，我们来编辑这个文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">&quot;cmd&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;jsc&quot;</span><span class="p">,</span> <span class="s2">&quot;$file&quot;</span><span class="p">],</span>
+</span><span class='line'>  <span class="nt">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;source.js&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上边这个命令指定了这个build使用的命令是<code>jsc</code>。如果你在Windows下使用<code>node</code>，那么对应的这个文件应该写成：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">&quot;cmd&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">,</span> <span class="s2">&quot;$file&quot;</span><span class="p">],</span>
+</span><span class='line'>  <span class="nt">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;source.js&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果<code>node.exe</code>不在环境变量PATH中，请保证将其加入。完成这个文件的编辑之后，将其保存为<code>JavaScript.sublime-build</code>文件（Sublime会提示你输入文件名，因此输入JavaScript即可）。</p>
+
+<h4>开始开发</h4>
+
+<p>接下来你就可以在Sublime中开发并编译JavaScript代码了，应该注意的是，如果你使用的是<code>jsc</code>，那么<code>console.log</code>这样的函数式不能直接使用的，不过你可以很容易的将其重新定义：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">console</span> <span class="o">=</span> <span class="nx">console</span> <span class="o">||</span> <span class="p">{};</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="o">=</span> <span class="nx">debug</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里的<code>debug</code>是<code>Sublime</code>提供的输出函数，它将会把结果输出在Sublime的控制台上。</p>
+
+<p><img src="images/2014/12/sublime-text-jsc-resized.png" alt="Sublime Text Build JavaScript" /></p>
+
+<p>运行构建的快捷键，在Mac OS X下为(<code>Cmd+B</code>)，Windows下为(<code>Ctrl+B</code>)。运行之后，可以看到在编辑器的底部会有一个小的窗口打开，里边的内容就是执行结果了。</p>
+
+<h4>其他资料</h4>
+
+<ol>
+<li>这里有一个<a href="http://calebgrove.com/articles/js-console-sublime-text">英文版</a>，这里是<a href="http://www.wikihow.com/Create-a-Javascript-Console-in-Sublime-Text">另一个</a></li>
+<li>这里有一个<a href="https://cnodejs.org/topic/51ee453af4963ade0ebde85e">中文版</a>，以及它的<a href="http://www.hacke2.cn/nodeJS-sublime-3/">补充</a></li>
+</ol>
+
+
+<p>Note：由于我自己不使用<code>Windows</code>平台，也不推荐其他开发者使用，因此关于Windows的部分并没有经过认真测试。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[现代Web页面开发流程]]></title>
@@ -4409,142 +4491,6 @@
 </span><span class='line'>  from main.rb:38:in `test'
 </span><span class='line'>  from main.rb:41:in `&lt;main&gt;'</span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用expect来自动化交互式命令]]></title>
-    <link href="http://abruzzi.github.com/2013/12/expect-how-to-make-yourself-more-efficient/"/>
-    <updated>2013-12-14T17:40:00+11:00</updated>
-    <id>http://abruzzi.github.com/2013/12/expect-how-to-make-yourself-more-efficient</id>
-    <content type="html"><![CDATA[<h3>一个实际的场景</h3>
-
-<p>大部分命令行程序都被设计成了可以被管道连接起来的，这样在命令行里可以很容易的讲很多命令串起来，从而完成极为强大的功能。比如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ find . -name "*.js" | xargs basename | uniq | wc -l</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个命令会递归的查找当前目录下所有的JavaScript文件，然后用<code>basename</code>去掉可能存在的路径字符串(比如，<code>basename path/to/file</code>会返回<code>file</code>)，然后我们使用uniq来保证查找列表中得每个条目都是唯一的，最后用<code>wc -l</code>来统计行数。</p>
-
-<p>但是并非所有场景都不需要人的干预，比如一个<strong>vpn</strong>链接的建立过程：</p>
-
-<ol>
-<li>选择vpn的Group名称</li>
-<li>填写用户名</li>
-<li>填写密码</li>
-<li>等待连接建立，然后程序退出</li>
-</ol>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/12/vpnlogin.png" alt="image" /></p>
-
-<p>像这种需要用户交互操作的程序，是无法通过常规的方式来完成自动化的。如果你经常需要做这样的操作，比如网络环境并不稳定，每天需要连接2-3次，那也是一个非常烦人的事情。</p>
-
-<p><a href="http://expect.sourceforge.net/">Expect</a>正是为这种场景设计的。</p>
-
-<h3>Expect简介</h3>
-
-<p><a href="http://expect.sourceforge.net/">Expect</a>用来自动化这些<code>交互式</code>的命令行程序，比如telnet, ftp等。</p>
-
-<p>Expect脚本非常简单，基本的模式是：</p>
-
-<ol>
-<li>启动一个命令A</li>
-<li>当命令的输出中包含字符串X的话</li>
-<li>输入Y</li>
-</ol>
-
-
-<p>用expect的脚本来表示的话，代码如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/expect
-</span><span class='line'>
-</span><span class='line'>spawn A
-</span><span class='line'>expect "X"
-</span><span class='line'>send "Y"</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>spawn</code>会启动一个进程，<code>expect</code>会负责和这个进程来交互。如果没有匹配到指定的字符串，则在一个超时时间内expect就会退出。当然可以通过<code>set timeout -1</code>来让程序expect永远等待下去。</p>
-
-<h3>两个小例子</h3>
-
-<h4>自动的登录到vpn服务器上</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/expect
-</span><span class='line'>
-</span><span class='line'>set addr "vpn.service.com.au"
-</span><span class='line'>set user "qiu.juntao"
-</span><span class='line'>set pass "mypassword"
-</span><span class='line'>
-</span><span class='line'>set timeout -1 
-</span><span class='line'>spawn /opt/cisco/anyconnect/bin/vpn connect $addr
-</span><span class='line'>
-</span><span class='line'>expect "Group: "
-</span><span class='line'>send "1\r"
-</span><span class='line'>
-</span><span class='line'>expect "Username: " 
-</span><span class='line'>send "$user\r"
-</span><span class='line'>
-</span><span class='line'>expect "Password: " 
-</span><span class='line'>send "$pass\r"
-</span><span class='line'>
-</span><span class='line'>expect "&gt;&gt; state: Connected"</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>自动通过ssh登录到远程</h4>
-
-<p>另外一个问题是，如果需要这个session保持下去，比如需要自动<code>ssh</code>到一个远程的服务器上，但是又不想每次都输入认证信息，则可以进入<code>inactive</code>模式：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/expect
-</span><span class='line'>
-</span><span class='line'>set pass "mypassword"
-</span><span class='line'>
-</span><span class='line'>set timeout -1 
-</span><span class='line'>spawn ssh user@remote.dev.env.com
-</span><span class='line'>
-</span><span class='line'>expect "Password:"
-</span><span class='line'>send "$pass\r"
-</span><span class='line'>
-</span><span class='line'>interact</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样就可以完成自动登录了，而expect回一直等到你从ssh中退出。</p>
 ]]></content>
   </entry>
   
