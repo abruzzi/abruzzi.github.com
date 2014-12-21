@@ -55,7 +55,7 @@ console.log = debug;
 
 这里的`debug`是`Sublime`提供的输出函数，它将会把结果输出在Sublime的控制台上。
 
-![Sublime Text Build JavaScript](images/2014/12/sublime-text-jsc-resized.png)
+![Sublime Text Build JavaScript](/images/2014/12/sublime-text-jsc-resized.png)
 
 运行构建的快捷键，在Mac OS X下为(`Cmd+B`)，Windows下为(`Ctrl+B`)。运行之后，可以看到在编辑器的底部会有一个小的窗口打开，里边的内容就是执行结果了。
 
