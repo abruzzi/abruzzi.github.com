@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-12-21T19:36:47+11:00</updated>
+  <updated>2014-12-21T19:40:46+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -79,7 +79,7 @@
 
 <p>这里的<code>debug</code>是<code>Sublime</code>提供的输出函数，它将会把结果输出在Sublime的控制台上。</p>
 
-<p><img src="images/2014/12/sublime-text-jsc-resized.png" alt="Sublime Text Build JavaScript" /></p>
+<p><img src="http://abruzzi.github.com/images/2014/12/sublime-text-jsc-resized.png" alt="Sublime Text Build JavaScript" /></p>
 
 <p>运行构建的快捷键，在Mac OS X下为(<code>Cmd+B</code>)，Windows下为(<code>Ctrl+B</code>)。运行之后，可以看到在编辑器的底部会有一个小的窗口打开，里边的内容就是执行结果了。</p>
 
