@@ -1,0 +1,75 @@
+---
+layout: post
+title: "我的2014"
+date: 2014-12-27 23:56
+comments: true
+categories: 
+- ThoughtWorks
+- Life
+---
+依照惯例，我每年在元旦时候都会写一篇回顾，总结过去，展望未来。不过很少跟上一年指定的`计划`真正去比较，一般都是列举一下这一年做的事情。
+
+大致分下来，可以分为上半年和下半年两部分，这当然不是废话。因为上半年和下半年分别在两个完全不同的项目上工作。
+
+### 技术咨询项目
+上半年在一个国内咨询项目上，主要做的事情有（其实我是作为前端专家加入的，不过后来工作重心发生了改变）：
+
+1.	GIS平台
+2.	大数据平台
+
+关于GIS最后的产出是一系列博客，而且还在[InfoQ](http://www.infoq.com/cn/articles/visualization-of-the-global-seismic-system)上发表了一篇。
+
+![earthquake](/images/2014/04/openlayers-earthquake-resized.png)
+
+而后来我又根据我iPhone上照片的经纬度信息，汇总出了一个热力图（使用[QGis](http://qgis.org/en/site/)）：
+
+![heat map](/images/2014/12/places-resized.png)
+
+大数据相关的所有东西都在[我的gist上](https://gist.github.com/abruzzi)，还没有时间整理。
+
+### 硬件
+
+回到办公室之后，发现了硬件小组提供的一大堆有意思的工具和器件，包括`3D打印机`，`Arduino`的一些芯片等，为了纪念我的GIS项目，我还打印了一个瓦片：
+
+![tile](/images/2014/12/tile-resized.png)
+
+不断将我拖延了4年的机器小车组装了起来，而且还使用舵机，蓝牙，超声波等模块制作了一个实际的雷达：
+
+![radar](/images/2014/12/radar-resized.png)
+
+### Sessions & Workshop
+5月底回到办公室后，我发现Office的气氛其实比我来的时候低落了很多，ThoughtWorks的感觉非常淡了。
+
+一方面是新人太多，而来新的项目所在的11楼由于客户的关系（我自以为），同事们的积极性极低。一个最容易看到的信号就是Session变得很少，我尝试做一些改变。
+
+分别做了一些关于自动化测试，JavaScript方面的Session和Workshop，下面是《可测试的JavaScript》的Workshop。这是我第一次组织比较大的，而且时间比较长的Workshop。
+
+![testable-javascript](/images/2014/12/testable-javascript-resized.png)
+
+有了上一次的Feedback，在年底的时候，我又组织了一次为期3周的Workshop，受众更是扩大到了各种角色，包括BA，UX，UIDev，QA等等。
+
+![3 pages](/images/2014/12/3-pages-resized.png)
+
+### 写作
+
+今年的博客数量减少了，一个原因是我在编写我的第二本书[《轻量级Web应用开发》](http://icodeit.org/lwweb/)，经过几个月的坚持和努力，这本书已经编写完成，应该会在明年(2015年)年初与读者见面。
+
+另外，在休年假的时候（3周3页面之后），我将Workshop的内容做了整理，并加入了一些`设计`相关的内容，形成了一本电子书，名为[《3 web designs in 3 weeks》](juntao.gitbooks.io/3-web-designs-in-3-weeks/)。
+
+
+### 其他
+
+我正在努力的向`UX`角色的转变，所谓`千里之行，始于足下`。我在休年假器件，买了一大堆UX相关的书籍。目前正在努力学习画画：
+
+![两点透视](/images/2014/12/drawing-resized.png)
+
+在今天的CST的创新课上，我们一起设想了几个场景，下面是我自己画的图：
+
+![场景](/images/2014/12/scenario-resized.png)
+
+最后是一张我自己设计的自己的名片：
+
+![name card](/images/2014/12/my-card-resized.png)
+
+希望来年可以在自己努力的路上看到一些成果吧。
+
