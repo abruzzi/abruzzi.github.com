@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ThoughtWorks | I code it]]></title>
   <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-12-21T19:40:46+11:00</updated>
+  <updated>2014-12-28T01:02:19+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,83 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[我的2014]]></title>
+    <link href="http://abruzzi.github.com/2014/12/my-2014/"/>
+    <updated>2014-12-27T23:56:00+11:00</updated>
+    <id>http://abruzzi.github.com/2014/12/my-2014</id>
+    <content type="html"><![CDATA[<p>依照惯例，我每年在元旦时候都会写一篇回顾，总结过去，展望未来。不过很少跟上一年指定的<code>计划</code>真正去比较，一般都是列举一下这一年做的事情。</p>
+
+<p>大致分下来，可以分为上半年和下半年两部分，这当然不是废话。因为上半年和下半年分别在两个完全不同的项目上工作。</p>
+
+<h3>技术咨询项目</h3>
+
+<p>上半年在一个国内咨询项目上，主要做的事情有（其实我是作为前端专家加入的，不过后来工作重心发生了改变）：</p>
+
+<ol>
+<li>GIS平台</li>
+<li>大数据平台</li>
+</ol>
+
+
+<p>关于GIS最后的产出是一系列博客，而且还在<a href="http://www.infoq.com/cn/articles/visualization-of-the-global-seismic-system">InfoQ</a>上发表了一篇。</p>
+
+<p><img src="/images/2014/04/openlayers-earthquake-resized.png" alt="earthquake" /></p>
+
+<p>而后来我又根据我iPhone上照片的经纬度信息，汇总出了一个热力图（使用<a href="http://qgis.org/en/site/">QGis</a>）：</p>
+
+<p><img src="/images/2014/12/places-resized.png" alt="heat map" /></p>
+
+<p>大数据相关的所有东西都在<a href="https://gist.github.com/abruzzi">我的gist上</a>，还没有时间整理。</p>
+
+<h3>硬件</h3>
+
+<p>回到办公室之后，发现了硬件小组提供的一大堆有意思的工具和器件，包括<code>3D打印机</code>，<code>Arduino</code>的一些芯片等，为了纪念我的GIS项目，我还打印了一个瓦片：</p>
+
+<p><img src="/images/2014/12/tile-resized.png" alt="tile" /></p>
+
+<p>不断将我拖延了4年的机器小车组装了起来，而且还使用舵机，蓝牙，超声波等模块制作了一个实际的雷达：</p>
+
+<p><img src="/images/2014/12/radar-resized.png" alt="radar" /></p>
+
+<h3>Sessions &amp; Workshop</h3>
+
+<p>5月底回到办公室后，我发现Office的气氛其实比我来的时候低落了很多，ThoughtWorks的感觉非常淡了。</p>
+
+<p>一方面是新人太多，而来新的项目所在的11楼由于客户的关系（我自以为），同事们的积极性极低。一个最容易看到的信号就是Session变得很少，我尝试做一些改变。</p>
+
+<p>分别做了一些关于自动化测试，JavaScript方面的Session和Workshop，下面是《可测试的JavaScript》的Workshop。这是我第一次组织比较大的，而且时间比较长的Workshop。</p>
+
+<p><img src="/images/2014/12/testable-javascript-resized.png" alt="testable-javascript" /></p>
+
+<p>有了上一次的Feedback，在年底的时候，我又组织了一次为期3周的Workshop，受众更是扩大到了各种角色，包括BA，UX，UIDev，QA等等。</p>
+
+<p><img src="/images/2014/12/3-pages-resized.png" alt="3 pages" /></p>
+
+<h3>写作</h3>
+
+<p>今年的博客数量减少了，一个原因是我在编写我的第二本书<a href="http://icodeit.org/lwweb/">《轻量级Web应用开发》</a>，经过几个月的坚持和努力，这本书已经编写完成，应该会在明年(2015年)年初与读者见面。</p>
+
+<p>另外，在休年假的时候（3周3页面之后），我将Workshop的内容做了整理，并加入了一些<code>设计</code>相关的内容，形成了一本电子书，名为<a href="juntao.gitbooks.io/3-web-designs-in-3-weeks/">《3 web designs in 3 weeks》</a>。</p>
+
+<h3>其他</h3>
+
+<p>我正在努力的向<code>UX</code>角色的转变，所谓<code>千里之行，始于足下</code>。我在休年假器件，买了一大堆UX相关的书籍。目前正在努力学习画画：</p>
+
+<p><img src="/images/2014/12/drawing-resized.png" alt="两点透视" /></p>
+
+<p>在今天的CST的创新课上，我们一起设想了几个场景，下面是我自己画的图：</p>
+
+<p><img src="/images/2014/12/scenario-resized.png" alt="场景" /></p>
+
+<p>最后是一张我自己设计的自己的名片：</p>
+
+<p><img src="/images/2014/12/my-card-resized.png" alt="name card" /></p>
+
+<p>希望来年可以在自己努力的路上看到一些成果吧。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[从一个小例子学习TDD]]></title>
@@ -748,33 +825,6 @@ DataMapper.finalize.auto_upgrade!
 ```</p>
 
 <p>我的应用在本地使用sqlite，而在heroku中使用其提供的postgresql。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[是时候慢下来了]]></title>
-    <link href="http://abruzzi.github.com/2013/01/where-am-i/"/>
-    <updated>2013-01-09T20:56:00+11:00</updated>
-    <id>http://abruzzi.github.com/2013/01/where-am-i</id>
-    <content type="html"><![CDATA[<p>某个晚上，我在网上为自己挑选一个适合出差的行李箱，两个小时之后，我突然发现我停留在了一个瑞士军刀的淘宝店里；本来计划晚上看看AppleScript的资料，结果一个小时之后，我在用python写一个opencv的小程序，又过了一个小时，我停留在Alfred的powerpack的支付页面，面对着15英镑的价格陷入沉思。</p>
-
-<p>而且周围好像每个人都有这样类似的经历。我咨询其他同事遇到类似的情况怎么处理，有人推荐使用Todo列表，而且Todo最好列在纸上。当列表中的Todo被消灭时，会激发你去写下更多的task。这当然是个好办法，我很早的时候就写过一个软件来完成Todo管理：<a href="http://code.google.com/p/stodo/">sTodo</a>。但是当打开电脑之后，时间就完全不受控制了，网络上总是有各种各样好玩的东西，新的框架，新的语言，某种颠覆式的CSS框架，新奇而好用的软件，可以大大提高用户体验的UI库，太多了……。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/01/stodo_edit.png" alt="sTodo" /></p>
-
-<p>上周三的晚上，回家之后打开电脑，开始了“学习”，事实上是很盲目的在网络上游荡，当我意识到又要重蹈覆辙的时候，我毅然的合起了电脑，然后拿起一本纸质的《JavaScript: The good parts》。最后当我要睡觉时才发现，读了大概30多页，而且以前的一些概念也更加清楚了。而且事实上我并未因为没有打开计算机而有什么实质性的损失。</p>
-
-<p>然后我突然意识到我之前的所谓的学习的方式有很大的问题，网络当然可以为你提供大量的信息，但是很多时候，这些呈碎片装的信息的作用并不如预期般的大。它会帮你解决手头的小问题，但是阻挡了你的视线，你本可以走的更远！</p>
-
-<p>在网络上看资料，总是有一种紧迫感：这么多的东西都不会，落后于时代好多年。打开电脑，一个晚上过去了，你可能读了很多的东西，但是记下来的非常少，因为总是会被各种链接，图片等干扰，这个看似在学习的过程事实上完全是在浪费实践，一天之后，你前一个晚上看到的东西几乎被完全遗忘，然后周而复始。</p>
-
-<p>所以，是时候慢下来，你不会因为没有浏览几个网页，或者少读几篇文章而落后于时代几十年的，你需要好多年才能积累起来的知识，别人同样需要好多年。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/01/todos.png" alt="image" /></p>
-
-<p>合上电脑，捧起纸质的书籍，世界突然慢了下来，但是却会充盈很多。事实上，放慢脚步，消除网络带来的<strong><em>虚假的紧迫感</em></strong>，反而可以以更快的速度掌握一项技术，一个框架，也可以让印象更加深刻。晚上回家尽量不带电脑，我用trainng经费购买的10本书，现在才读完2.5本，去年5月买的书还有两本没有读完，这些亏欠都需要在脱离电脑的舒服之后才能想起来，也才有可能完成。</p>
-
-<p>慢下来。</p>
 ]]></content>
   </entry>
   
