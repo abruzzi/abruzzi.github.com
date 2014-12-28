@@ -54,12 +54,12 @@ categories:
 
 今年的博客数量减少了，一个原因是我在编写我的第二本书[《轻量级Web应用开发》](http://icodeit.org/lwweb/)，经过几个月的坚持和努力，这本书已经编写完成，应该会在明年(2015年)年初与读者见面。
 
-另外，在休年假的时候（3周3页面之后），我将Workshop的内容做了整理，并加入了一些`设计`相关的内容，形成了一本电子书，名为[《3 web designs in 3 weeks》](juntao.gitbooks.io/3-web-designs-in-3-weeks/)。
+另外，在休年假的时候（3周3页面之后），我将Workshop的内容做了整理，并加入了一些`设计`相关的内容，形成了一本电子书，名为[《3 web designs in 3 weeks》](http://juntao.gitbooks.io/3-web-designs-in-3-weeks/)。
 
 
 ### 其他
 
-我正在努力的向`UX`角色的转变，所谓`千里之行，始于足下`。我在休年假器件，买了一大堆UX相关的书籍。目前正在努力学习画画：
+我正在努力的向`UX`角色的转变，所谓`千里之行，始于足下`。我在休年假期间，买了一大堆UX相关的书籍。目前正在努力学习画画：
 
 ![两点透视](/images/2014/12/drawing-resized.png)
 
