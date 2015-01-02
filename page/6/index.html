@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="为什么每个开发人员都应该使用Mac系统 在使用了Mac系统大概10个月之后，我已经深深的喜欢上了在其上做开发的体验，精美的界面，人性化的设计，强大的硬件系统，安全而稳定的软件系统，下面我将会用Mac系统和Windows做一个简单的对比，最后会有一些推荐的工具列表。 Mac系统的一些好处 1. &hellip;">
+  <meta name="description" content="background 元旦放假前，team的同事们想要一起学习一些技术，然后一起做些小东西，有人提到将物理墙上的卡，通过手机拍照，识别出其中的卡号，然后与电子墙同步状态。这是一个非常有意思的主题，会涉及到很多方面的知识，其实有好几个topic，只不过我对人工智能/机器学习等比较有兴趣而已， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,195 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/01/k-nearest-neighbour/">K-nearest-neighbour算法简介及示例</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-03T15:46:00+11:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>background</h3>
+
+<p>元旦放假前，team的同事们想要一起学习一些技术，然后一起做些小东西，有人提到将物理墙上的卡，通过手机拍照，识别出其中的卡号，然后与电子墙同步状态。这是一个非常有意思的主题，会涉及到很多方面的知识，其实有好几个topic，只不过我对人工智能/机器学习等比较有兴趣而已，所以就先自己研究下。</p>
+
+<p>几天下来，关于数字识别的基本的流程已经清晰了，关于图片的预处理及边界标定等都差不多就绪了，剩下比较重要的是<strong>识别</strong>本身了。在这个过程中，遇到了一些很有意思的算法，我自己也花费了好几天才弄明白，所以整理了一下，这一篇先介绍下第一个，也是最简单最好用的KNN算法。</p>
+
+<h3>K-nearest-neighbour简介</h3>
+
+<p>KNN是机器学习中<strong>最简单</strong>的一种无值守的学习方法，但是在实际场景中，效果却经常<strong>非常好</strong>。一般来说，在样本较多，分布均匀的空间中，KNN会收到很好的效果。但是由于KNN会计算空间中的每个点与需要标定的点的距离(甚至需要计算额外的权重信息)，所以计算量会较大。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>假设所有的点都均匀的分布在一个平面内，此时的平面密度(单位范围内的点的个数)非常大，而每个子平面内的点的分布与所有点在整个平面内的分布相当。在子平面S中，有一个点Y，则离点X(to be classified)最近的Y很可能与Y同在子平面S中。</span></code></pre></td></tr></table></div></figure>
+
+
+<p>比如取出空间中与X距离最近的有5个点(K=5)，其中3个属于C1类，2个属于C2类，则根据少数服从多数原则，X点被归类为C1.这样的一个缺点就是如果空间内的点分布不均匀，那么会有一些误差，如果上面这个场景经常出现，那么分类会越来越偏离(有一个偏心的硬币，投掷100,000次，有90,000次正面)。这样就有引入了对KNN的另一个扩展方式，加入权重的KNN：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>当然这种形式的KNN不是很精确，由此引申出了带权重的KNN：可以为每个点都赋予一个权值，每个权值与新的点X的距离有关，通常会取距离的倒数，这样与X最近的点有较高的权重，而较远的点具有较低的权重，这样在投票(voting)阶段可以相对的提高精确度</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>KNN的一个python版本示例</h3>
+
+<h4>背景(高斯分布)</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import random
+</span><span class='line'>
+</span><span class='line'>def gauss_list(mu, sigma, count=100):
+</span><span class='line'>    return [random.gauss(mu, sigma) for _ in range(count)]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>生成一个随机数数组，数组中的元素符合高斯分布，如</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ran = gauss_list(-2, 1, 10)
+</span><span class='line'>print ran</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行结果如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[-1.3277188634970218, -2.1034487392146817, -0.5924407591392826, -0.30376289085064045, -2.191337071105794, -1.9781081550478732, -3.7937155472105673, -2.538102349796847, -1.3728510997834549, -2.766669661625006]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>更进一步，我们可以用这种方式生成平面中的一些点，这些点可以根据分布情况分为两组，一组是以(-4,0)为重心的500个点，另一组是以(4,0)为重心的500个点：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def gauss_cluster(center, stdDev, count=500):
+</span><span class='line'>    return [(random.gauss(center[0], stdDev),
+</span><span class='line'>             random.gauss(center[1], stdDev)) for _ in range(count)]
+</span><span class='line'>
+</span><span class='line'>def make_random_data():
+</span><span class='line'>    return gauss_cluster((-4, 0), 1) + gauss_cluster((4, 0), 1)
+</span><span class='line'>
+</span><span class='line'>data = make_random_data()
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>绘制高斯分布</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>data = make_random_data()
+</span><span class='line'>
+</span><span class='line'>x = map(lambda x: x[0], data)
+</span><span class='line'>y = map(lambda x: x[1], data)
+</span><span class='line'>
+</span><span class='line'>plt.clf()
+</span><span class='line'>
+</span><span class='line'>plt.scatter(x, y, c=x, vmin=0, vmax=20, s=35, alpha=0.75)
+</span><span class='line'>plt.colorbar()
+</span><span class='line'>plt.grid(True)
+</span><span class='line'>
+</span><span class='line'>plt.show()</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过使用matplotlib的绘图功能，将make_random_data生成的点通过图形的方式展现，效果更加直观，图中的两个点集分别表示两个不同的类别。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/01/gauss-distribution-resized.png" alt="image" /></p>
+
+<h4>KNN</h4>
+
+<p>我们定义KNN分类器，其中两点间的距离按照欧氏公式来求，先计算点集中离x点最近的k个点，然后取得对应的k个label，再按照label个数球max。</p>
+
+<p>比如k=5时，求的的label集合为[&#8216;O&#8217;, &#8216;O&#8217;, &#8216;A&#8217;, &#8216;A&#8217;, &#8216;A&#8217;]，则我们认为这个点应该被分类为A(少数服从多数)。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def euclidean_distance(x, y):
+</span><span class='line'>    return math.sqrt(sum([(a-b)**2 for (a,b) in zip(x,y)]))
+</span><span class='line'>
+</span><span class='line'>def makeKNNClassifier(data, labels, k, distance):
+</span><span class='line'>    def classify(x):
+</span><span class='line'>        closestPoints = heapq.nsmallest(k, enumerate(data),
+</span><span class='line'>                                        key=lambda y: distance(x, y[1]))
+</span><span class='line'>        closestLabels = [labels[i] for (i, pt) in closestPoints]
+</span><span class='line'>        return max(set(closestLabels), key=closestLabels.count)
+</span><span class='line'>
+</span><span class='line'>    return classify</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>测试一下</h4>
+
+<p>创建1000个随机点，前500个分类为A(Apple)，后500个分类为O(Orange)，k值为3。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>data = make_random_data()
+</span><span class='line'>labels = ['A'] * 500 + ['O'] * 500
+</span><span class='line'>
+</span><span class='line'>fitter = makeKNNClassifier(data, labels, 3, euclidean_distance)
+</span><span class='line'>
+</span><span class='line'>print fitter((-3, 1))
+</span><span class='line'>print fitter((4, 2))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>图中的两个红色的点分别为P1(-3, 1)和P2(4, 2)。它们都已经被正确的分类。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/01/knn-plant-resized.png" alt="image" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1095,47 +1284,6 @@ bundle install
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/08/%E4%B8%80%E4%B8%AA%E8%8B%B1%E8%AF%AD%E5%AD%A6%E4%B9%A0%E7%AB%99%E7%82%B9%E5%92%8C%E4%B8%80%E4%B8%AA%E5%B0%8F%E8%84%9A%E6%9C%AC/">一个英语学习站点和一个小脚本</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-20T00:00:00+10:00" pubdate data-updated="true">Aug 20<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><p>英语事实上已经成为了一个优秀程序员的必须掌握的工具，如同编辑器，调试工具等一样，甚至更重要。因为我们的新知识的很多都是通过阅读，收听其他优秀的资源而获得，而英文是一个计算机界通用的语言，其重要性毋庸赘言。</p> <p>我的英文水平大约在CET4级，而读写能力可能稍微好一点，听说则一塌糊涂。但是我意识到这是个问题的时候，就需要采取一些actions来解决这个问题。目前在的这个项目，客户是澳洲的，所以就从澳大利亚英语开始(澳洲英语与我们从中学到大学学习的美式英语还是有一些差异的，发音，惯用语等等)。</p> <p>这里推荐一个比较好的资源，<a href="http://australianetwork.com/learningenglish/default.htm">australianetwork</a>,其中有很多之前的资源可供下载。你可以根据自己的需求下载不同的资源，比如BusinessEnglish，Passport等。<a href="http://australianetwork.com/learningenglish/vodcast.htm">下载链接在这里</a>。</p> <p>可能你已经注意到了，下载到的是xml格式的文件(rss)，我用python写了一个小脚本，用来抽取xml中的真是url，并调用wget下载到本地，脚本很简单：</p> <div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> <span style="color: #0000ff">import</span> os</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span> <span style="color: #0000ff">import</span> sys </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span> <span style="color: #0000ff">import</span> threading</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span> from elementtree.ElementTree <span style="color: #0000ff">import</span> parse</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span> <span style="color: #0000ff">class</span> ViedoDownloader(threading.Thread):</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span>     def __init__(self, url):</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span>         threading.Thread.__init__(self)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum10">  10:</span>         self.url = url </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum11">  11:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum12">  12:</span>     def run(self):</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum13">  13:</span>         os.system(<span style="color: #006080">'wget '</span> + self.url)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum14">  14:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum15">  15:</span> <span style="color: #0000ff">if</span> __name__ == <span style="color: #006080">"__main__"</span>:</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum16">  16:</span>     <span style="color: #0000ff">if</span> not len(sys.argv) == 2:</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum17">  17:</span>         sys.exit(-1)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum18">  18:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum19">  19:</span>     rssfile = sys.argv[1]</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum20">  20:</span>     print <span style="color: #006080">"extract urls from "</span> + rssfile</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum21">  21:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum22">  22:</span>     rss = parse(rssfile)</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum23">  23:</span>     <span style="color: #0000ff">for</span> element in rss.findall(<span style="color: #006080">'channel/item/enclosure'</span>):</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum24">  24:</span>         th = ViedoDownloader(element.get(<span style="color: #006080">'url'</span>))</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum25">  25:</span>         th.start()</pre><!--CRLF--></div></div>
-<p>&nbsp;</p>
-<p>当一个xml中资源非常多的时候，我想使用多个线程，每个线程启动一个wget来分别下载，但是它并没有像我预期的那样工作。</p>
-<p>如果你发现了什么问题，请告诉我，但是这个脚本确实是一个可以工作的脚本：</p>
-<div id="codeSnippetWrapper">
-<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> python extract.py resourse.xml</pre><!--CRLF--></div></div></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/7/">&larr; Older</a>
@@ -1153,6 +1301,10 @@ bundle install
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/01/page-object-with-site-prism/">编写体面的UI测试</a>
+      </li>
+    
+      <li class="post">
         <a href="/2014/12/my-2014/">我的2014</a>
       </li>
     
@@ -1168,10 +1320,6 @@ bundle install
         <a href="/2014/11/publish-your-web-design/">发布你的Web设计</a>
       </li>
     
-      <li class="post">
-        <a href="/2014/11/tdd-step-by-step/">从一个小例子学习TDD</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -1181,7 +1329,7 @@ bundle install
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - Qiu Juntao -
+  Copyright &copy; 2015 - Qiu Juntao -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
 </p>
 

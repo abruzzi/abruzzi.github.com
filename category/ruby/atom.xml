@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ruby | I code it]]></title>
   <link href="http://abruzzi.github.com/category/ruby/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2014-12-28T23:33:39+11:00</updated>
+  <updated>2015-01-02T15:51:53+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,299 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[编写体面的UI测试]]></title>
+    <link href="http://abruzzi.github.com/2015/01/page-object-with-site-prism/"/>
+    <updated>2015-01-02T13:58:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/01/page-object-with-site-prism</id>
+    <content type="html"><![CDATA[<h3>PageObject简介</h3>
+
+<p><code>PageObject</code>是编写UI测试时的<a href="http://martinfowler.com/bliki/PageObject.html">一种模式</a>。简而言之，你可以将所有知道页面细节的部分放入到这个对象上，对于编写测试的人来说，一个<code>PageObject</code>代表了一个页面，或者页面上的一个区域（比如搜索框，搜索结果，侧边栏等都可能是一个独立的<code>Object</code>）。这样做的好处分为两个方面：</p>
+
+<ol>
+<li>封装了所有的实现细节（内部的HTML是如何组织的）</li>
+<li>对外的接口非常清晰，从而代码更加语义化</li>
+</ol>
+
+
+<p>我们这里列举一个简单的例子来说明：</p>
+
+<p>我们要测试的场景是：我们在一个搜索应用中，用户输入了<code>ThoughtWorks</code>，我们来判断搜索结果的第一页有<code>10</code>条结果。如果使用原生的<code>capybara</code>，代码大致会如下：</p>
+
+<p>```rb
+visit '/search'</p>
+
+<p>fill_in 'Search', :with => 'ThoughtWorks'
+click_button '#search'</p>
+
+<p>expect(find('#result').find('.tips')).to have_content("10")
+```</p>
+
+<p>首先我们进入<code>/search</code>页面，然后在<code>Search</code>中输入了<code>ThoughtWorks</code>关键字，然后点击<code>#search</code>按钮，最后判断<code>#result .tips</code>下有<code>10</code>的字样。</p>
+
+<p>如果使用<code>PageObject</code>，代码则会变成（<em>这个是伪代码</em>）：</p>
+
+<p>```rb
+search = SearchBox.new
+result = SearchResult.new</p>
+
+<p>search.type "ThoughtWorks"
+expect(result.count).to eq(10)
+```</p>
+
+<h3>site_prism 简介</h3>
+
+<p><a href="https://github.com/natritmeyer/site_prism">site_prism</a>是一个构建在<a href="https://github.com/jnicklas/capybara">capybara</a>之上的用于建模<code>Page Object</code>的gem。使用<code>site_prism</code>可以很语义化的编写<code>Page Object</code>，可以使代码非常易读。</p>
+
+<p>位于<code>顶层</code>的<code>Page</code>对象可以拥有多个<code>Section</code>对象，每个<code>Section</code>可以对应页面上的一些逻辑上的块，比如内容区域，边栏等。对于现在流行的<code>SPA</code>，我们只需要一个<code>Page</code>和若干个<code>Section</code>就足够了。</p>
+
+<p>```rb
+class MovingHome &lt; SitePrism::Page</p>
+
+<pre><code>set_url 'http://localhost:8100/bundles/moving-home'
+
+element :container, "#tmsCheckout"
+
+section :personal, PersonalSection, "#acc-personal"
+section :contact, ContactSection, "#acc-contact"
+</code></pre>
+
+<p>end
+```</p>
+
+<p><code>set_url</code>方法制定了如何到达当前页，也是<code>webdriver</code>会实际发送请求的<code>URL</code>。页面本身上可以用<code>element</code>方法来声明一个元素，以及该元素对应的CSS选择器，这样就可以通过元素的名称来访问该选择器对应的HTML元素了。</p>
+
+<p>比如上例中的<code>container</code>，我们在测试中就可以这样来访问它：</p>
+
+<p>```rb
+@moving = MovingHome.new
+@moving.load</p>
+
+<p>@moving.container.should be_visible
+```</p>
+
+<p>而对应的<code>section</code>元素，则声明了一个块的名称，块的类和块的选择器。这样我们就可以通过名称来应用该块了：</p>
+
+<p>```rb
+@moving.personal.name.set "Juntao"</p>
+
+<p>expect(@moving).to have_personal
+expect(@moving).to have_contact</p>
+
+<p>```</p>
+
+<p><code>have_</code>前缀加块的名称，用来判断该块是否可见（比如display: block）。</p>
+
+<h3>一个项目上的实例</h3>
+
+<p>目前项目上有一个页面需要添加一些新的特性，对应的需要添加一些UI测试。之前的所有代码都是面向过程的，代码非常多，重复代码都通过抽成一个函数来组织，无法和实际的页面模块对应起来。因此我使用<code>site_prism</code>做了一些尝试。</p>
+
+<p>业务场景是这样的：用户想要办理移机业务（比如搬家了，相应的宽带/有线电视要办理移机），这时候用户需要填写一些个人信息，联系方式，老地址，新地址等，这样我们就可以联系到他并帮他完成移机。而目前的页面也已经按照这些信息的关联度组织成了这样的形式：</p>
+
+<p><img src="/images/2015/01/moving-home-resized.png" alt="moving home" /></p>
+
+<p>可以看到，页面本身的组织已经比较清晰了，这非常方便我们抽取<code>PageObject</code>：每一个<code>块</code>都可以抽取为一个<code>Section</code>类的子类。</p>
+
+<h4>第一次尝试</h4>
+
+<p>比如对于个人信息这一个块：</p>
+
+<p><img src="/images/2015/01/personal-resized.png" alt="personal" /></p>
+
+<p>这个块包含称呼，姓名，出生日期等几部分，我们可以很容易找到对应的页面元素，并抽取为：</p>
+
+<p>```rb
+class PersonalSection &lt; SitePrism::Section</p>
+
+<pre><code>element :myservice, "#personal-my-services"
+
+element :title, "#personal\\.title"
+element :first, "#personal\\.firstName"
+element :last, "#personal\\.lastName"
+
+element :dob_day, "#personal\\.dobDay"
+element :dob_month, "#personal\\.dobMonth"
+element :dob_year, "#personal\\.dobYear"
+
+element :summary, ".tms-accordion-summary-content"
+element :next, ".tms-btn-next"
+</code></pre>
+
+<p>end
+```</p>
+
+<p>最直接的使用方法就是直接调用<code>set</code>方法：</p>
+
+<p>```rb
+def fulfill_personal</p>
+
+<pre><code>@moving.personal.myservice.set "MINE"
+@moving.personal.title.select "Mr"
+@moving.personal.first.set "Juntao"
+@moving.personal.last.set "Qiu"
+
+@moving.personal.dob_day.select "21"
+@moving.personal.dob_month.select "Jan"
+@moving.personal.dob_year.select "1985"
+
+@moving.personal.next.click
+</code></pre>
+
+<p>end
+```</p>
+
+<p>这样在<code>Cucumber</code>测试中就可以写成：</p>
+
+<p>```rb
+Given /I am on moving home page/ do</p>
+
+<pre><code>@moving = MovingHome.new
+@moving.load
+</code></pre>
+
+<p>end</p>
+
+<p>When /I fulfill my personal information/ do</p>
+
+<pre><code>fulfill_personal
+</code></pre>
+
+<p>end
+```</p>
+
+<h4>面向对象</h4>
+
+<p>这样的代码事实上已经沦为了面向过程的方式了，更好的做法是讲fulfill_personal放入<code>Personal</code>本身中：</p>
+
+<p>```rb
+def fulfill(personal)</p>
+
+<pre><code>myservice.set personal["myservice"]
+title.select personal["title"]
+first.set personal["first"]
+last.set personal["last"]
+dob_day.select personal["dob_day"]
+dob_month.select personal["dob_month"]
+dob_year.select personal["dob_year"]
+
+next_button.click
+</code></pre>
+
+<p>end
+```</p>
+
+<p>这样，外部的使用者只需要调用即可：</p>
+
+<p><code>rb
+fixture = YAML::load_file('fixtures/moving.yml')
+@moving.personal.fulfill(fixture["personal"])
+</code></p>
+
+<p>对应的<code>moving.yml</code>文件定义如下：</p>
+
+<p>```yml
+personal:</p>
+
+<pre><code>myservice: "MINE"
+title: "Mr"
+first: "Juntao"
+last: "Qiu"
+dob_day: "1"
+dob_month: "Jan"
+dob_year: "1985"
+</code></pre>
+
+<p>```</p>
+
+<h4>Misc</h4>
+
+<p>为了达到视觉效果，UI上通常会有一些延迟的效果。比如点击一个按钮，在100ms之后弹出一个对话框，但是这种效果会导致测试的<code>随机</code>失败。</p>
+
+<p>为了解决这个问题，我们可以通过给元素添加<code>wait_until_</code>前缀来等待。比如我们的测试中，在点击了下一步的按钮之后，预期有一个<code>查看收费详情</code>的对话框出现。根据一般的实现方式，这个对话框是预先写在页面上的，然后在合适的实际通过<code>JavaScript</code>将其显示在页面上（这样我们就不能通过查看该元素<em>是否存在</em>在页面上来编写断言了）。</p>
+
+<p><img src="/images/2015/01/lightbox-resized.png" alt="lightbox" /></p>
+
+<p><code>rb
+element :lightbox_view_fees, "#tmsLBViewFees"
+</code></p>
+
+<p>```rb
+Then /I can see the lightbox View Fees shows up/ do</p>
+
+<pre><code>@moving.wait_until_lightbox_view_fees_visible
+</code></pre>
+
+<p>end
+```</p>
+
+<h3>最后的结论</h3>
+
+<p>通常，我们的UI测试会和<code>特性描述</code>写在一起，以<code>Cucumber</code>为例，在<code>feature</code>文件中，我们会编写诸如这样的描述：</p>
+
+<p>```rb
+Feature: Platinum Move</p>
+
+<pre><code>Scenario: Platinum Move
+    Given I am on moving home page
+    When I select to move my service "Foxtel from Telstra"
+    And I select a "Telstra technician install"
+    Then I can see the lightbox "View Fees" shows up
+</code></pre>
+
+<p>```</p>
+
+<p>而一个良好的<code>实现</code>，我是说，像<code>feature</code>描述一样清晰的实现，可能是这样的：</p>
+
+<p>```rb
+Given /I am on moving home page/ do</p>
+
+<pre><code>@moving = MovingHome.new
+@moving.load
+</code></pre>
+
+<p>end</p>
+
+<p>When /I select to move my telstra service "([<sup>"]*)"/</sup> do |selected|</p>
+
+<pre><code>setup_data
+@moving.service.fulfill selected
+</code></pre>
+
+<p>end</p>
+
+<p>Then /I can see the installation form/ do</p>
+
+<pre><code>expect(@moving).to have_move_service
+</code></pre>
+
+<p>end</p>
+
+<p>Then /I cannot see the installation form/ do</p>
+
+<pre><code>@moving.move_service.should_not be_visible
+</code></pre>
+
+<p>end</p>
+
+<p>And /I select a "([<sup>"]*)"/</sup> do |install|</p>
+
+<pre><code>@moving.move_service.select_install install
+</code></pre>
+
+<p>end</p>
+
+<p>Then /I can see the lightbox "([<sup>"]*)"</sup> shows up/ do |name|</p>
+
+<pre><code>@moving.lightbox(name).should be_visible
+</code></pre>
+
+<p>end
+```</p>
+
+<p>基本上，每个<code>step</code>仅仅对应1行（或者很少的几行）代码，而这些代码背后有一组组织良好的<code>PageObject</code>。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[一个简单的午餐推荐脚本]]></title>
