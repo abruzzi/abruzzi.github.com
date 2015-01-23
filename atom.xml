@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-01-02T15:51:53+11:00</updated>
+  <updated>2015-01-24T01:19:47+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,281 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[高亮剪贴板里的代码片段]]></title>
+    <link href="http://abruzzi.github.com/2015/01/copy-code-with-style/"/>
+    <updated>2015-01-24T00:17:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/01/copy-code-with-style</id>
+    <content type="html"><![CDATA[<h3>高亮剪贴板里的代码片段</h3>
+
+<p>我前几天在准备一个培训的slides的时候，想在Keynote中粘贴一段代码，默认的粘贴板中的内容并没有样式，粘进去之后就是纯文本，没有语法高亮不说，默认的，代码的字体会采用Keynote默认的字体，非常难看。</p>
+
+<p>之前在Intellij中有个插件<code>'Copy' on steroids</code>，这个插件可以将Intellij的编辑器中的高亮过的文本拷贝到剪贴板，然后就可以在Keynote中使用了。</p>
+
+<p>我就想能不能有对应的命令行工具，结果还真的找到一个，就叫<code>highlight</code>，<a href="http://www.andre-simon.de/doku/highlight/en/highlight.php">主页在这里</a>。（这里略微吐槽一下，这个官方页面的风格以今天的眼光来看，无论是配色还是样式布局等，都非常难看，完全是10年前的风格，不过这个小工具确实很好用）。</p>
+
+<h4>基本使用</h4>
+
+<p>在Mac下，安装非常简单：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>brew install highlight
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>highlight</code>支持很多格式，<code>HTML</code>，<code>RTF</code>甚至还有<code>LaTeX</code>。不过如果要在Keynote或者PowerPoint中使用，用<code>RTF</code>(Rich Text Format)就可以了。</p>
+
+<p>选择要高亮的文件，比如<code>app.rb</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="nb">require</span> <span class="s1">&#39;sinatra&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;rack/contrib&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;active_record&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;./model/plants&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">FrontendApplication</span> <span class="o">&lt;</span> <span class="no">Sinatra</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>    <span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
+</span><span class='line'>        <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后使用命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>highlight -O rtf app.rb | pbcopy
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>即可将高亮过的内容复制到剪切板中，然后只需要<code>CMD+V</code>就可以粘贴了：</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/01/ruby-highlight-resized.png" alt="app.rb" /></p>
+
+<p>如果要生成HTML格式，只需要指定:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>highlight -O html app.rb &gt; app.rb.html
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>自定义语言（扩展）</h4>
+
+<p>如果遇到不支持的语言时，默认的<code>highlight</code>会报错，要查看所有支持的语言，可以使用</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>highlight -p
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所有的<code>highlight</code>内置的语言高亮配置都存储在本地的一个目录中，比如在我的机器上，存储位置为<code>/usr/local/Cellar/highlight/3.18_1/share/highlight/langDefs/</code>。</p>
+
+<p>还以Java为例，该目录下会有一个文件，名为<code>java.lang</code>，内容如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">Description</span><span class="o">=</span><span class="s2">&quot;Java&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Keywords</span><span class="o">={</span>
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>1,
+</span><span class='line'>    <span class="nv">List</span><span class="o">={</span><span class="s2">&quot;abstract&quot;</span>, <span class="s2">&quot;default&quot;</span>, <span class="s2">&quot;if&quot;</span>, <span class="s2">&quot;private&quot;</span>, <span class="s2">&quot;this&quot;</span>, <span class="s2">&quot;do&quot;</span>, <span class="s2">&quot;implements&quot;</span>,
+</span><span class='line'><span class="s2">&quot;protected&quot;</span>, <span class="s2">&quot;throw&quot;</span>, <span class="s2">&quot;break&quot;</span>, <span class="s2">&quot;import&quot;</span>, <span class="s2">&quot;public&quot;</span>, <span class="s2">&quot;throws&quot;</span>, <span class="s2">&quot;else&quot;</span>,
+</span><span class='line'><span class="s2">&quot;instanceof&quot;</span>, <span class="s2">&quot;return&quot;</span>, <span class="s2">&quot;transient&quot;</span>, <span class="s2">&quot;case&quot;</span>, <span class="s2">&quot;extends&quot;</span>, <span class="s2">&quot;try&quot;</span>, <span class="s2">&quot;catch&quot;</span>, <span class="s2">&quot;final&quot;</span>,
+</span><span class='line'><span class="s2">&quot;interface&quot;</span>, <span class="s2">&quot;static&quot;</span>, <span class="s2">&quot;finally&quot;</span>, <span class="s2">&quot;strictfp&quot;</span>, <span class="s2">&quot;volatile&quot;</span>, <span class="s2">&quot;class&quot;</span>, <span class="s2">&quot;native&quot;</span>,
+</span><span class='line'><span class="s2">&quot;super&quot;</span>, <span class="s2">&quot;while&quot;</span>, <span class="s2">&quot;const&quot;</span>, <span class="s2">&quot;for&quot;</span>, <span class="s2">&quot;new&quot;</span>, <span class="s2">&quot;switch&quot;</span>, <span class="s2">&quot;continue&quot;</span>, <span class="s2">&quot;goto&quot;</span>,
+</span><span class='line'><span class="s2">&quot;package&quot;</span>, <span class="s2">&quot;synchronized&quot;</span>, <span class="s2">&quot;as&quot;</span>, <span class="s2">&quot;in&quot;</span>, <span class="s2">&quot;def&quot;</span>, <span class="s2">&quot;property&quot;</span><span class="o">}</span>, <span class="o">}</span>,
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>2,
+</span><span class='line'>    <span class="nv">List</span><span class="o">={</span><span class="s2">&quot;boolean&quot;</span>, <span class="s2">&quot;double&quot;</span>, <span class="s2">&quot;byte&quot;</span>, <span class="s2">&quot;int&quot;</span>, <span class="s2">&quot;short&quot;</span>, <span class="s2">&quot;void&quot;</span>, <span class="s2">&quot;char&quot;</span>, <span class="s2">&quot;long&quot;</span>, <span class="s2">&quot;float&quot;</span><span class="o">}</span>,
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'> <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>3,
+</span><span class='line'>    <span class="nv">Regex</span><span class="o">=[[</span>@<span class="se">\w</span>+<span class="o">]]</span>,
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>4,
+</span><span class='line'>    <span class="nv">Regex</span><span class="o">=[[(</span><span class="se">\w</span>+<span class="o">)</span><span class="se">\s</span>*<span class="se">\(</span><span class="o">]]</span>,
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Strings</span><span class="o">={</span>
+</span><span class='line'>  <span class="nv">Delimiter</span><span class="o">=[[</span><span class="err">&quot;</span>|<span class="err">&#39;</span><span class="o">]]</span>,
+</span><span class='line'>  <span class="nv">Escape</span> <span class="o">=</span> <span class="o">[[</span> <span class="se">\\</span>u<span class="se">\d</span><span class="o">{</span>4<span class="o">}</span>|<span class="se">\\</span>x?<span class="se">\d</span><span class="o">{</span>3<span class="o">}</span>|<span class="se">\\\w</span>|<span class="se">\\</span><span class="o">[</span><span class="se">\&#39;\\\&quot;</span><span class="o">]</span> <span class="o">]]</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">IgnoreCase</span><span class="o">=</span><span class="nb">false</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Comments</span><span class="o">={</span>
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Block</span><span class="o">=</span><span class="nb">false</span>,
+</span><span class='line'>    <span class="nv">Delimiter</span><span class="o">=</span> <span class="o">{</span> <span class="o">[[</span><span class="se">\/\/</span><span class="o">]]</span> <span class="o">}</span>,
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Block</span><span class="o">=</span><span class="nb">true</span>,
+</span><span class='line'>    <span class="nv">Nested</span><span class="o">=</span><span class="nb">false</span>,
+</span><span class='line'>    <span class="nv">Delimiter</span><span class="o">=</span> <span class="o">{</span> <span class="o">[[</span><span class="se">\/\*</span><span class="o">]]</span>,<span class="o">[[</span><span class="se">\*\/</span><span class="o">]]</span>,<span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Operators</span><span class="o">=[[</span><span class="se">\(</span>|<span class="se">\)</span>|<span class="se">\[</span>|<span class="se">\]</span>|<span class="se">\{</span>|<span class="se">\}</span>|<span class="se">\,</span>|<span class="se">\;</span>|<span class="se">\.</span>|<span class="se">\:</span>|<span class="se">\&amp;</span>|&lt;|&gt;|<span class="se">\!</span>|<span class="se">\=</span>|<span class="se">\/</span>|<span class="se">\*</span>|<span class="se">\%</span>|<span class="se">\+</span>|<span class="se">\-</span>|<span class="se">\|</span><span class="o">]]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">EnableIndentation</span><span class="o">=</span><span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>基本上，这些配置都是自解释的，比如关键字列表的定义，字符串的正则pattern，是否区分大小写，注释的格式，操作符的格式，是否启用缩进等。</p>
+
+<p>我在准备Slide的时候，想要加入一段<code>Cucumber</code>的feature文件，然后发现并不支持，于是就参照着Java的定义新建了一个文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">Description</span><span class="o">=</span><span class="s2">&quot;Gherkin&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Keywords</span><span class="o">={</span>
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>1,
+</span><span class='line'>    <span class="nv">List</span><span class="o">={</span><span class="s2">&quot;Feature&quot;</span>, <span class="s2">&quot;Scenario&quot;</span>, <span class="s2">&quot;Given&quot;</span>, <span class="s2">&quot;When&quot;</span>, <span class="s2">&quot;Then&quot;</span>, <span class="s2">&quot;And&quot;</span>, <span class="s2">&quot;World&quot;</span>, <span class="s2">&quot;Outline&quot;</span><span class="o">}</span>,
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Strings</span><span class="o">={</span>
+</span><span class='line'>  <span class="nv">Delimiter</span><span class="o">=[[</span><span class="err">&quot;</span>|<span class="err">&#39;</span><span class="o">]]</span>,
+</span><span class='line'>  <span class="nv">Escape</span> <span class="o">=</span> <span class="o">[[</span> <span class="se">\\</span>u<span class="se">\d</span><span class="o">{</span>4<span class="o">}</span>|<span class="se">\\</span>x?<span class="se">\d</span><span class="o">{</span>3<span class="o">}</span>|<span class="se">\\\w</span>|<span class="se">\\</span><span class="o">[</span><span class="se">\&#39;\\\&quot;</span><span class="o">]</span> <span class="o">]]</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Comments</span><span class="o">={</span>
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Block</span><span class="o">=</span><span class="nb">false</span>,
+</span><span class='line'>    <span class="nv">Delimiter</span><span class="o">=</span> <span class="o">{</span> <span class="o">[[</span><span class="c">#]] },</span>
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">IgnoreCase</span><span class="o">=</span><span class="nb">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将这个文件保存为<code>feature.lang</code>，这样我们就可以高亮下面这个<code>cucumber</code>的feature文件了（其实feature文件本身是有一个叫做Gherkin的语言编写的）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='gherkin'><span class='line'><span class="k">Feature:</span><span class="nf">  Connected Home Purchase</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf"> </span><span class="k">Scenario:</span><span class="nf"> Purchase T-Broadband</span>
+</span><span class='line'><span class="k">      Given </span><span class="nf">I am purchasing &quot;</span><span class="s">T-BROADBAND-50GB</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">     </span><span class="k">When </span><span class="nf">I go to checkout page</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I am an existing telstra broadband customer</span>
+</span><span class='line'><span class="nf">     </span><span class="k">When </span><span class="nf">I select &quot;</span><span class="s">Professional Installation</span><span class="nf">&quot; in Premium service and support</span>
+</span><span class='line'><span class="nf">     </span><span class="c"># And I select &quot;None&quot; in Community Wifi</span><span class="nf"></span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I select &quot;</span><span class="s">None</span><span class="nf">&quot; in Optional extras</span>
+</span><span class='line'><span class="nf">     </span><span class="k">Then </span><span class="nf">I should see &quot;</span><span class="s">Telstra Broadband 50GB</span><span class="nf">&quot; in my shopping cart</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I should see &quot;</span><span class="s">Professional Installation</span><span class="nf">&quot; in add on list</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I should see the total price is &quot;</span><span class="s">$72.00</span><span class="nf">&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf"> </span><span class="k">Scenario:</span><span class="nf"> Purchase Entertainerment Bundle</span>
+</span><span class='line'><span class="k">      Given </span><span class="nf">I am purchasing &quot;</span><span class="s">Telstra Entertainer Supreme Bundle M</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">     </span><span class="k">When </span><span class="nf">I go to checkout page</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I am an existing telstra broadband customer</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I select &quot;</span><span class="s">Foxtel iQ3 ($125 one-off)</span><span class="nf">&quot; in Inclusions</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I select &quot;</span><span class="s">Professional Installation</span><span class="nf">&quot; in Premium service and support</span>
+</span><span class='line'><span class="nf">     </span><span class="c"># And I select &quot;None&quot; in Community Wifi</span><span class="nf"></span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I select &quot;</span><span class="s">None</span><span class="nf">&quot; in Optional extras</span>
+</span><span class='line'><span class="nf">     </span><span class="k">Then </span><span class="nf">I should see &quot;</span><span class="s">Telstra Entertainer Supreme Bundle Entertainment M</span><span class="nf">&quot; in my shopping cart</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I should see &quot;</span><span class="s">Professional Installation</span><span class="nf">&quot; in add on list</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I should see the total price is &quot;</span><span class="s">$120.00</span><span class="nf">&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2015/01/feature-highlight-resized.png" alt="cucumber feature" /></p>
+
+<p>如果你经常写代码，喜欢分享自己学到的，并且喜欢以简短的代码来举例子，那么这个工具非常适合你。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[编写体面的UI测试]]></title>
@@ -4142,85 +4417,6 @@
 <h4>结论</h4>
 
 <p>手里是锤子的时候，看着周围的东西都像钉子。有时候，那些又酷又炫的技巧/工具可能并非必须。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[我的2013]]></title>
-    <link href="http://abruzzi.github.com/2013/12/by-the-end-of-2013/"/>
-    <updated>2013-12-29T16:56:00+11:00</updated>
-    <id>http://abruzzi.github.com/2013/12/by-the-end-of-2013</id>
-    <content type="html"><![CDATA[<p>总的来说，2013年收获颇丰，感谢同事们(特别鸣谢胡凯，张凯峰，以及RCA的各位同事)的帮助，我的第一本技术书籍<a href="http://icodeit.org/jsccp/">JavaScript核心概念及实践</a>在今年5月出版了。8月到10月，我和王磊，张久坤两位同事，和ThoughtWorks其他office的同事一起，在印度为来自世界各地的毕业生上了近两个月的课。12月从第一个项目上roll off下来，然后加入自己的第一个咨询项目。</p>
-
-<p>在期间还去西电给学生<a href="http://blog.csdn.net/gy0305/article/details/9117859">讲过一次session</a>，<a href="http://www.csdn.net/article/2013-05-29/2815458">接受了CSDN的一次采访</a>，本来打算赶10月份的校园招聘去学校讲点东西，后来由于出差耽搁了。但是感谢王欢给了我一个在郑大晔校上课的机会，我们每周六会对准ThoughtWorker们讲一些软件开发得session(TDD, Refactor, Pair Programming等)。</p>
-
-<p>总之，2013过的充实而紧张，希望来年能更加的充实，也希望可以跟大家分享更多的有意思的session和博客。</p>
-
-<h4>在TWU(ThoughtWorks University) 当老师</h4>
-
-<p>2013年，最大的收获，应该是自己对于<strong>压力</strong>的新的认识。有一回和胡凯聊压力这个事儿，我说我自己是认可平时带着些压力去学习、工作的，胡凯的看法则是不应该是“带着些”，而是带着最大的压力。他给我举了个游泳的例子，说你在岸边是学不会的，只有被被人踢到水里，才有可能学会。</p>
-
-<p>我觉得挺有道理，8月去印度参加TWU，当然有很多困难了，比如语言问题本身；和其他国家来的trainer一起交流的问题；给一群来自世界各地的学生用英文上课的问题；我周五从项目上下来，周六飞去印度普内，周日早上到达休息了半天，然后周三就要给其他国家的trainer用英文讲一个关于社会公正的演讲，而且形式限定在<a href="http://www.pechakucha.org/">pecha kucha</a>上，在这种压力下，我不止一次的后悔为什么把自己逼的这么紧？我的真实想法是把胡凯踢到水里学游泳，我自己回西安的项目继续每天做story。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/12/twu-prepare-resized.png" alt="image" /></p>
-
-<p>但是周三过去了，我的演讲虽然也不至于震惊四座，但是不论是英文，还是主题，还是演讲技巧本身，都得到了比较正常的feedback。我存活了下来！</p>
-
-<p>如果说这个小范围的，面向trainer的，带有彩排性质的演讲的压力值为100的话，那么下一周，面对着二十多个来自世界各地的毕业生，给他们讲一个关于如何给别人feedback的session，压力值至少为500+。即使是来自墨尔本、伦敦、巴西的trainer都开始表情凝重的备课，我自己的心情就更不用说了。还有人开导我说，不论你有多紧张，坐在底下的那些家伙都比你紧张100倍。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/12/twu-discuss-resized.png" alt="image" /></p>
-
-<p>我清楚的记得，第一天结束后，我们互相击掌，还去酒吧喝了一杯来庆祝，当然，8点就赶紧撤回住处，准备第二天的session了，但是不管怎样，我又一次的存活下来了！</p>
-
-<p>压力，必须压到自己要放弃，要退缩的那种程度，才能收获最多。一咬牙过去了，就海阔天空，进入一个新境界了。很多时候，自己总会给自己找很多借口，然后自己就把自己荒废了。李仲轩老人讲，练拳也一样，有人一听说有捷径，有了贼心，就不会出功夫了。</p>
-
-<h4>练拳</h4>
-
-<p>我虽然不能算是“自幼喜欢舞刀弄枪”，但是也一直对武术比较感兴趣，只是没有耐心去吃苦练而已。小时候只是跟父亲学过一点小擒拿之类，后来从家中找到一本《少林罗汉十八手》，自学未果，倒是记得一些招式的名字，如<strong>巧纫针，披身捶，僧推门，僧伏虎</strong>之类。2006年，看到了《逝去的武林》后，对内家拳产生了浓厚的兴趣，但是苦于没有老师，倒是我的兄长在石家庄，近水楼台先得月，找到一位教授他练习形意拳的老师，我跟着站了几天三体式，学了个劈拳和崩拳。</p>
-
-<p>但是我自己也知道，那跟没练是一样的，练外行都骗不了。</p>
-
-<p>2007年暑假，我跟<a href="http://v.youku.com/v_show/id_XMjIzNTIyMjY0.html">李林京老师</a>在石家庄学过一段时间的意拳。但是开学之后回到昆明，就开始三天打鱼两天撒网，后来干脆练网也撤了，借口是内家拳练习得有老师，不然十分危险，一旦受伤则后患无穷。武林盛传“练拳容易改拳难”，一旦练错，再来纠正就非常困难，不如不练。</p>
-
-<p>毕业之后，就再也没有练过，但是见过高山，也知道其中的一些窍要，就是不困下功夫练，今年年初开始感觉颈椎不舒服，上班也感觉挺累的，就又开始站站桩休息脊椎。结果一周之内，隐疾全消，而且渐渐觉得精神比以前好一些了，然后就一直坚持站桩，技击桩怕练偏，就站平步桩。</p>
-
-<p>截止今天为止，除了7月份去伦敦的飞机上没站以外（下了飞机赶到酒店赶紧补上），每天都在站。夏天有一次和同事分享任忠信先生的形意拳，有人怀疑是假的，我给他们试了下，虽然没有搭手即飞，发人丈外那么神奇，但是吓吓外行的效果已经有了。</p>
-
-<p>明年一定要抽时间去石家庄找李老师好好学习一段时间。练拳不但在身体上可以让人强健，而且在精神上也有很多的好处。</p>
-
-<p>其实传统武术，最重要的是锻炼脊椎，腰杆挺直之后，内力渐生，丹田气满之后自然中气充足，精神也会变好，再加上老是有一种别人打不过你的优势，自然容易产生自信（大不了打一架嘛，咱不怯）。蔡元培当年说过，要文明其精神，野蛮其体魄，就是这个意思。</p>
-
-<h4>项目</h4>
-
-<p>今年的12月中旬，我从RCA项目上正式Roll off，从2012年4月加入ThoughtWorks之后，就一直在这个项目上。在这个项目上主要关注在软件交付上，和所有的BAU项目一样，在RCA，能学到一个成熟的框架是怎么实实在在运行的，从开发，测试，仿真，生产环境都是通的，如果有心的话，可以接触到自动部署，负载均衡，数据库的主备配置，各级缓存等生产上才会遇到的问题，但是很多时候又会比较无聊，因为可能更多的是在做老代码的维护，bug的修复，新功能的开发可能较少。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/12/rca-family-resized.png" alt="image" /></p>
-
-<p>RCA总的来说，有经验的人居多，所以交付压力来说要小一些，而且带新人方面也没有太大压力。所以时间长了，大家都会觉得有点疲。我们会定期举行CBS(Come Build Something)，或者CSS(Come Share Something)这样的活动来刺激一下。我们团队上一般有8个人，每次CBS都是有3-4个ideas，然后结对去做，虽然不会产出什么划时代/跨世纪的产品，但是每次也都会有一些产出。可惜在坚持方面做的并不好。从项目上Roll off的当天，团队送我了一本书《人与神话》(据说排在<strong>程序员谎称读过</strong>的经典书籍排行榜的榜首，不过实话实说，当时非常感动，谢谢我们team和我并肩作战近两年的同事+朋友)：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/12/rca-memory-resized.png" alt="image" /></p>
-
-<p>从项目上roll off之后，加入了西安本地的一个咨询项目，以前端工程师的身份加入，新项目的人对前端开发的经验相对来说都比较少，但是有很强烈的学习愿望，而且动力也很足。新项目本身做起来也比较有意思，各种前端的比较现代的技术(测试，本地构建，CI)，框架(AngularJS, Jasmine)都可以很好的进行实践。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/12/gis-front-end-resized.png" alt="image" /></p>
-
-<p>刚开始的时候，也是压力巨大，但是咬牙挺过前三天之后，就容易多了。单元在新的一年，可以和新的团队一起将这个项目做好。</p>
-
-<h4>旅游</h4>
-
-<p>年初和老婆去了次厦门，纯粹度假的方式，无计划，无目的，在鼓浪屿上住了两天：</p>
-
-<p>7月份，我和学海兄参加了欧洲的AwayDay，本来准备讲一个关于轻量级web应用开发的session，但是后来由于session太多，我的就被cancel了。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/12/london-eye-resized.png" alt="image" /></p>
-
-<p>在印度正好赶上印度的AwayDay:</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/12/india-away-day-resized.png" alt="image" /></p>
-
-<p>在普内周边的一个古堡上：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/12/india-hiking-resized.png" alt="image" /></p>
 ]]></content>
   </entry>
   

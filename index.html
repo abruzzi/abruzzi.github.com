@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="PageObject简介 PageObject是编写UI测试时的一种模式。简而言之，你可以将所有知道页面细节的部分放入到这个对象上，对于编写测试的人来说，一个PageObject代表了一个页面，或者页面上的一个区域（比如搜索框，搜索结果，侧边栏等都可能是一个独立的Object）。 &hellip;">
+  <meta name="description" content="高亮剪贴板里的代码片段 我前几天在准备一个培训的slides的时候，想在Keynote中粘贴一段代码，默认的粘贴板中的内容并没有样式，粘进去之后就是纯文本，没有语法高亮不说，默认的，代码的字体会采用Keynote默认的字体，非常难看。 之前在Intellij中有个插件'Copy' on &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,308 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/01/copy-code-with-style/">高亮剪贴板里的代码片段</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-24T00:17:00+11:00" pubdate data-updated="true">Jan 24<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>高亮剪贴板里的代码片段</h3>
+
+<p>我前几天在准备一个培训的slides的时候，想在Keynote中粘贴一段代码，默认的粘贴板中的内容并没有样式，粘进去之后就是纯文本，没有语法高亮不说，默认的，代码的字体会采用Keynote默认的字体，非常难看。</p>
+
+<p>之前在Intellij中有个插件<code>'Copy' on steroids</code>，这个插件可以将Intellij的编辑器中的高亮过的文本拷贝到剪贴板，然后就可以在Keynote中使用了。</p>
+
+<p>我就想能不能有对应的命令行工具，结果还真的找到一个，就叫<code>highlight</code>，<a href="http://www.andre-simon.de/doku/highlight/en/highlight.php">主页在这里</a>。（这里略微吐槽一下，这个官方页面的风格以今天的眼光来看，无论是配色还是样式布局等，都非常难看，完全是10年前的风格，不过这个小工具确实很好用）。</p>
+
+<h4>基本使用</h4>
+
+<p>在Mac下，安装非常简单：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>brew install highlight
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>highlight</code>支持很多格式，<code>HTML</code>，<code>RTF</code>甚至还有<code>LaTeX</code>。不过如果要在Keynote或者PowerPoint中使用，用<code>RTF</code>(Rich Text Format)就可以了。</p>
+
+<p>选择要高亮的文件，比如<code>app.rb</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="nb">require</span> <span class="s1">&#39;sinatra&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;rack/contrib&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;active_record&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;./model/plants&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">FrontendApplication</span> <span class="o">&lt;</span> <span class="no">Sinatra</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>    <span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
+</span><span class='line'>        <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后使用命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>highlight -O rtf app.rb | pbcopy
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>即可将高亮过的内容复制到剪切板中，然后只需要<code>CMD+V</code>就可以粘贴了：</p>
+
+<p><img src="/images/2015/01/ruby-highlight-resized.png" alt="app.rb" /></p>
+
+<p>如果要生成HTML格式，只需要指定:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>highlight -O html app.rb &gt; app.rb.html
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>自定义语言（扩展）</h4>
+
+<p>如果遇到不支持的语言时，默认的<code>highlight</code>会报错，要查看所有支持的语言，可以使用</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>highlight -p
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所有的<code>highlight</code>内置的语言高亮配置都存储在本地的一个目录中，比如在我的机器上，存储位置为<code>/usr/local/Cellar/highlight/3.18_1/share/highlight/langDefs/</code>。</p>
+
+<p>还以Java为例，该目录下会有一个文件，名为<code>java.lang</code>，内容如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">Description</span><span class="o">=</span><span class="s2">&quot;Java&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Keywords</span><span class="o">={</span>
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>1,
+</span><span class='line'>    <span class="nv">List</span><span class="o">={</span><span class="s2">&quot;abstract&quot;</span>, <span class="s2">&quot;default&quot;</span>, <span class="s2">&quot;if&quot;</span>, <span class="s2">&quot;private&quot;</span>, <span class="s2">&quot;this&quot;</span>, <span class="s2">&quot;do&quot;</span>, <span class="s2">&quot;implements&quot;</span>,
+</span><span class='line'><span class="s2">&quot;protected&quot;</span>, <span class="s2">&quot;throw&quot;</span>, <span class="s2">&quot;break&quot;</span>, <span class="s2">&quot;import&quot;</span>, <span class="s2">&quot;public&quot;</span>, <span class="s2">&quot;throws&quot;</span>, <span class="s2">&quot;else&quot;</span>,
+</span><span class='line'><span class="s2">&quot;instanceof&quot;</span>, <span class="s2">&quot;return&quot;</span>, <span class="s2">&quot;transient&quot;</span>, <span class="s2">&quot;case&quot;</span>, <span class="s2">&quot;extends&quot;</span>, <span class="s2">&quot;try&quot;</span>, <span class="s2">&quot;catch&quot;</span>, <span class="s2">&quot;final&quot;</span>,
+</span><span class='line'><span class="s2">&quot;interface&quot;</span>, <span class="s2">&quot;static&quot;</span>, <span class="s2">&quot;finally&quot;</span>, <span class="s2">&quot;strictfp&quot;</span>, <span class="s2">&quot;volatile&quot;</span>, <span class="s2">&quot;class&quot;</span>, <span class="s2">&quot;native&quot;</span>,
+</span><span class='line'><span class="s2">&quot;super&quot;</span>, <span class="s2">&quot;while&quot;</span>, <span class="s2">&quot;const&quot;</span>, <span class="s2">&quot;for&quot;</span>, <span class="s2">&quot;new&quot;</span>, <span class="s2">&quot;switch&quot;</span>, <span class="s2">&quot;continue&quot;</span>, <span class="s2">&quot;goto&quot;</span>,
+</span><span class='line'><span class="s2">&quot;package&quot;</span>, <span class="s2">&quot;synchronized&quot;</span>, <span class="s2">&quot;as&quot;</span>, <span class="s2">&quot;in&quot;</span>, <span class="s2">&quot;def&quot;</span>, <span class="s2">&quot;property&quot;</span><span class="o">}</span>, <span class="o">}</span>,
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>2,
+</span><span class='line'>    <span class="nv">List</span><span class="o">={</span><span class="s2">&quot;boolean&quot;</span>, <span class="s2">&quot;double&quot;</span>, <span class="s2">&quot;byte&quot;</span>, <span class="s2">&quot;int&quot;</span>, <span class="s2">&quot;short&quot;</span>, <span class="s2">&quot;void&quot;</span>, <span class="s2">&quot;char&quot;</span>, <span class="s2">&quot;long&quot;</span>, <span class="s2">&quot;float&quot;</span><span class="o">}</span>,
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'> <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>3,
+</span><span class='line'>    <span class="nv">Regex</span><span class="o">=[[</span>@<span class="se">\w</span>+<span class="o">]]</span>,
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>4,
+</span><span class='line'>    <span class="nv">Regex</span><span class="o">=[[(</span><span class="se">\w</span>+<span class="o">)</span><span class="se">\s</span>*<span class="se">\(</span><span class="o">]]</span>,
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Strings</span><span class="o">={</span>
+</span><span class='line'>  <span class="nv">Delimiter</span><span class="o">=[[</span><span class="err">&quot;</span>|<span class="err">&#39;</span><span class="o">]]</span>,
+</span><span class='line'>  <span class="nv">Escape</span> <span class="o">=</span> <span class="o">[[</span> <span class="se">\\</span>u<span class="se">\d</span><span class="o">{</span>4<span class="o">}</span>|<span class="se">\\</span>x?<span class="se">\d</span><span class="o">{</span>3<span class="o">}</span>|<span class="se">\\\w</span>|<span class="se">\\</span><span class="o">[</span><span class="se">\&#39;\\\&quot;</span><span class="o">]</span> <span class="o">]]</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">IgnoreCase</span><span class="o">=</span><span class="nb">false</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Comments</span><span class="o">={</span>
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Block</span><span class="o">=</span><span class="nb">false</span>,
+</span><span class='line'>    <span class="nv">Delimiter</span><span class="o">=</span> <span class="o">{</span> <span class="o">[[</span><span class="se">\/\/</span><span class="o">]]</span> <span class="o">}</span>,
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Block</span><span class="o">=</span><span class="nb">true</span>,
+</span><span class='line'>    <span class="nv">Nested</span><span class="o">=</span><span class="nb">false</span>,
+</span><span class='line'>    <span class="nv">Delimiter</span><span class="o">=</span> <span class="o">{</span> <span class="o">[[</span><span class="se">\/\*</span><span class="o">]]</span>,<span class="o">[[</span><span class="se">\*\/</span><span class="o">]]</span>,<span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Operators</span><span class="o">=[[</span><span class="se">\(</span>|<span class="se">\)</span>|<span class="se">\[</span>|<span class="se">\]</span>|<span class="se">\{</span>|<span class="se">\}</span>|<span class="se">\,</span>|<span class="se">\;</span>|<span class="se">\.</span>|<span class="se">\:</span>|<span class="se">\&amp;</span>|&lt;|&gt;|<span class="se">\!</span>|<span class="se">\=</span>|<span class="se">\/</span>|<span class="se">\*</span>|<span class="se">\%</span>|<span class="se">\+</span>|<span class="se">\-</span>|<span class="se">\|</span><span class="o">]]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">EnableIndentation</span><span class="o">=</span><span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>基本上，这些配置都是自解释的，比如关键字列表的定义，字符串的正则pattern，是否区分大小写，注释的格式，操作符的格式，是否启用缩进等。</p>
+
+<p>我在准备Slide的时候，想要加入一段<code>Cucumber</code>的feature文件，然后发现并不支持，于是就参照着Java的定义新建了一个文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">Description</span><span class="o">=</span><span class="s2">&quot;Gherkin&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Keywords</span><span class="o">={</span>
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>1,
+</span><span class='line'>    <span class="nv">List</span><span class="o">={</span><span class="s2">&quot;Feature&quot;</span>, <span class="s2">&quot;Scenario&quot;</span>, <span class="s2">&quot;Given&quot;</span>, <span class="s2">&quot;When&quot;</span>, <span class="s2">&quot;Then&quot;</span>, <span class="s2">&quot;And&quot;</span>, <span class="s2">&quot;World&quot;</span>, <span class="s2">&quot;Outline&quot;</span><span class="o">}</span>,
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Strings</span><span class="o">={</span>
+</span><span class='line'>  <span class="nv">Delimiter</span><span class="o">=[[</span><span class="err">&quot;</span>|<span class="err">&#39;</span><span class="o">]]</span>,
+</span><span class='line'>  <span class="nv">Escape</span> <span class="o">=</span> <span class="o">[[</span> <span class="se">\\</span>u<span class="se">\d</span><span class="o">{</span>4<span class="o">}</span>|<span class="se">\\</span>x?<span class="se">\d</span><span class="o">{</span>3<span class="o">}</span>|<span class="se">\\\w</span>|<span class="se">\\</span><span class="o">[</span><span class="se">\&#39;\\\&quot;</span><span class="o">]</span> <span class="o">]]</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">Comments</span><span class="o">={</span>
+</span><span class='line'>  <span class="o">{</span> <span class="nv">Block</span><span class="o">=</span><span class="nb">false</span>,
+</span><span class='line'>    <span class="nv">Delimiter</span><span class="o">=</span> <span class="o">{</span> <span class="o">[[</span><span class="c">#]] },</span>
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">IgnoreCase</span><span class="o">=</span><span class="nb">false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将这个文件保存为<code>feature.lang</code>，这样我们就可以高亮下面这个<code>cucumber</code>的feature文件了（其实feature文件本身是有一个叫做Gherkin的语言编写的）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='gherkin'><span class='line'><span class="k">Feature:</span><span class="nf">  Connected Home Purchase</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf"> </span><span class="k">Scenario:</span><span class="nf"> Purchase T-Broadband</span>
+</span><span class='line'><span class="k">      Given </span><span class="nf">I am purchasing &quot;</span><span class="s">T-BROADBAND-50GB</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">     </span><span class="k">When </span><span class="nf">I go to checkout page</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I am an existing telstra broadband customer</span>
+</span><span class='line'><span class="nf">     </span><span class="k">When </span><span class="nf">I select &quot;</span><span class="s">Professional Installation</span><span class="nf">&quot; in Premium service and support</span>
+</span><span class='line'><span class="nf">     </span><span class="c"># And I select &quot;None&quot; in Community Wifi</span><span class="nf"></span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I select &quot;</span><span class="s">None</span><span class="nf">&quot; in Optional extras</span>
+</span><span class='line'><span class="nf">     </span><span class="k">Then </span><span class="nf">I should see &quot;</span><span class="s">Telstra Broadband 50GB</span><span class="nf">&quot; in my shopping cart</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I should see &quot;</span><span class="s">Professional Installation</span><span class="nf">&quot; in add on list</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I should see the total price is &quot;</span><span class="s">$72.00</span><span class="nf">&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf"> </span><span class="k">Scenario:</span><span class="nf"> Purchase Entertainerment Bundle</span>
+</span><span class='line'><span class="k">      Given </span><span class="nf">I am purchasing &quot;</span><span class="s">Telstra Entertainer Supreme Bundle M</span><span class="nf">&quot;</span>
+</span><span class='line'><span class="nf">     </span><span class="k">When </span><span class="nf">I go to checkout page</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I am an existing telstra broadband customer</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I select &quot;</span><span class="s">Foxtel iQ3 ($125 one-off)</span><span class="nf">&quot; in Inclusions</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I select &quot;</span><span class="s">Professional Installation</span><span class="nf">&quot; in Premium service and support</span>
+</span><span class='line'><span class="nf">     </span><span class="c"># And I select &quot;None&quot; in Community Wifi</span><span class="nf"></span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I select &quot;</span><span class="s">None</span><span class="nf">&quot; in Optional extras</span>
+</span><span class='line'><span class="nf">     </span><span class="k">Then </span><span class="nf">I should see &quot;</span><span class="s">Telstra Entertainer Supreme Bundle Entertainment M</span><span class="nf">&quot; in my shopping cart</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I should see &quot;</span><span class="s">Professional Installation</span><span class="nf">&quot; in add on list</span>
+</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I should see the total price is &quot;</span><span class="s">$120.00</span><span class="nf">&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2015/01/feature-highlight-resized.png" alt="cucumber feature" /></p>
+
+<p>如果你经常写代码，喜欢分享自己学到的，并且喜欢以简短的代码来举例子，那么这个工具非常适合你。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2266,188 +2568,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/09/a-bug-about-time/">一个关于时间的神奇Bug</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-04T22:37:00+10:00" pubdate data-updated="true">Sep 4<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>一个神奇的Bug</h3>
-
-<p>目前项目是一个非常传统的Web应用，其中有个页面需要用户填写自己的个人信息，包括姓名和出生日期。非常简单的一个小片段，UI看起来是这个样子的：</p>
-
-<p><img src="/images/2014/09/personal-resized.png" alt="image" /></p>
-
-<p>没有使用现成的<code>datepicker</code>，某个开发人员只是简单的自己收集了一下年，月，日信息，然后在JavaScript中根据填写的值来<code>new</code>了一个Date对象。</p>
-
-<p>然后某天我在做测试的时候，顺手填写了一个日期<code>1986年5月4日</code>，然后奇怪的事情发生了：</p>
-
-<p><img src="/images/2014/09/invalid-date-resized.png" alt="image" /></p>
-
-<p><strong>WTF?</strong>，这日期怎么会是非法的呢？于是我又尝试了<code>1986年5月3日</code>和<code>1986年5月5日</code>，一切正常！好奇之下，我找到对应的代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">dobDay</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#personal\\.dobDay&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span> <span class="mi">10</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">dobMonth</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#personal\\.dobMonth&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span> <span class="mi">10</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">dobYear</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#personal\\.dobYear&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span> <span class="mi">10</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// Note month is not zero based.</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">dob</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">dobDay</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">dobMonth</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">dobYear</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">dob</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="nx">dobYear</span><span class="p">,</span> <span class="nx">dobMonth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">dobDay</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="nx">dob</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">dob</span><span class="p">.</span><span class="nx">getDate</span><span class="p">()</span> <span class="o">!==</span> <span class="nx">dobDay</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">valid</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#dob-error&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">formMessages</span><span class="p">.</span><span class="nx">invalidDate</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>从界面上获取用户输入的年，月，日信息，然后根据这三个数字创建一个JavaScript对象。但是奇怪的是，这里有一条判断<code>dob.getDate() !== dobDay</code>。</p>
-
-<h3>JavaScript的日期类</h3>
-
-<p>JavaScript中的日期类比较奇葩，你可以通过将年月日传入<code>new Date()</code>来构造出一个新的日期类型，奇葩之处在于，年和日都是从1开始计数，但是月份是从0开始计数的，比如<code>new Date(2014, 1, 2)</code>表示2014年<strong>2月</strong>2日。</p>
-
-<p>那么，我们可以在Chrome的Console中查看一下神奇的<code>1986年5月4日</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">1986</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-</span><span class='line'><span class="nx">Sat</span> <span class="nx">May</span> <span class="mi">03</span> <span class="mi">1986</span> <span class="mi">23</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">0800</span> <span class="p">(</span><span class="nx">CST</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>WTF? 我好好的5月4日怎么变成5月3日了呢？加上时分秒之后，逐步缩小排查范围：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">1986</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'><span class="nx">Sat</span> <span class="nx">May</span> <span class="mi">03</span> <span class="mi">1986</span> <span class="mi">23</span><span class="o">:</span><span class="mi">59</span><span class="o">:</span><span class="mi">59</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">0800</span> <span class="p">(</span><span class="nx">CST</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">1986</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
-</span><span class='line'><span class="nx">Sun</span> <span class="nx">May</span> <span class="mi">04</span> <span class="mi">1986</span> <span class="mi">01</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">0900</span> <span class="p">(</span><span class="nx">CDT</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这时候发现，当秒针通过<code>1986年5月3日的23点59分59秒</code>之后，时间就变成了<code>1986年5月4日的1点0分0秒</code>了！这个奇葩至极的问题是由于传说中的<strong>夏令时</strong>所致！</p>
-
-<h3>夏令时</h3>
-
-<p>其实常年和澳洲客户打交道，对日光节约时间(Daylight saving time)已经不陌生，不过澳洲在南半球冬夏正好和中国相反，因此完全没有将其当成日常的一部分。</p>
-
-<p>维基上的解释比较专业：</p>
-
-<blockquote><p>夏时制或夏令时间（英语：Summer time），又称日光节约时制、日光节约时间（英语：Daylight saving time），是一种为节约能源而人为规定地方时间的制度，在这一制度实行期间所采用的统一时间称为“夏令时间”。一般在天亮早的夏季人为将时间提前一小时，可以使人早起早睡，减少照明量，以充分利用光照资源，从而节约照明用电。各个采纳夏时制的国家具体规定不同。</p></blockquote>
-
-<p>即，在夏天的某天（天亮的比较早），将时钟调快一个小时，以便大家起床更早，然后可以节省一些照明用电，然后在冬天的时候（天亮的比较晚）又调回去</p>
-
-<p><img src="/images/2014/09/dst.png" alt="image" /></p>
-
-<p>根据百度百科上的描述：</p>
-
-<blockquote><p>1986年至1991年，中华人民共和国在全国范围实行了六年夏令时，每年从4月中旬的第一个星期日2时整（北京时间）到9月中旬第一个星期日的凌晨2时整（北京夏令时）。除1986年因是实行夏令时的第一年，从5月4日开始到9月14日结束外，其它年份均按规定的时段施行。夏令时实施期间，将时间调快一小时。1992年4月5日后不再实行。</p></blockquote>
-
-<p><code>1986年的5月4日</code>这个特别的日期终于显现出了其特殊之处了。</p>
-
-<p>有了这个认识，我将系统时间设置为了澳洲标准时间，然后测试:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'><span class="nx">Sun</span> <span class="nx">Oct</span> <span class="mi">05</span> <span class="mi">2014</span> <span class="mi">01</span><span class="o">:</span><span class="mi">59</span><span class="o">:</span><span class="mi">59</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">1000</span> <span class="p">(</span><span class="nx">EST</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
-</span><span class='line'><span class="nx">Sun</span> <span class="nx">Oct</span> <span class="mi">05</span> <span class="mi">2014</span> <span class="mi">03</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">1100</span> <span class="p">(</span><span class="nx">EST</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果观察足够细致的话会发现GMT后边的这个数字的变化，GMT是(Greenwish Mean Time)格林尼治标准时间的缩写，它最初是国际公认的时间基准线，地理上位于其东方的各个时区会加上一个偏移量，比如中国就是GMT+8，而澳洲就是GMT+10，而一旦进入夏令时，由于时钟拨快了一个小时，因此就会变成GMT+9/GMT+11。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">1986</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class='line'><span class="nx">Sat</span> <span class="nx">May</span> <span class="mi">03</span> <span class="mi">1986</span> <span class="mi">23</span><span class="o">:</span><span class="mi">59</span><span class="o">:</span><span class="mi">59</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">0800</span> <span class="p">(</span><span class="nx">CST</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">1986</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
-</span><span class='line'><span class="nx">Sun</span> <span class="nx">May</span> <span class="mi">04</span> <span class="mi">1986</span> <span class="mi">01</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="nx">GMT</span><span class="o">+</span><span class="mi">0900</span> <span class="p">(</span><span class="nx">CDT</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>比如今年的巴西：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="o">&gt;</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">19</span><span class="p">)</span>
-</span><span class='line'><span class="nx">Sat</span> <span class="nx">Oct</span> <span class="mi">18</span> <span class="mi">2014</span> <span class="mi">23</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="nx">GMT</span><span class="o">-</span><span class="mi">0300</span> <span class="p">(</span><span class="nx">BRT</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>其他</h3>
-
-<p>大部分实行夏令时的国家都会将这个调整放到凌晨两点，而不是零点，其中的一个原因应该就是避免出现这种状况。但是由于巴西还是将这个调整放到了凌晨，那么这个日期还是会出现<code>非法日期</code>这样的错误：</p>
-
-<p><img src="/images/2014/09/invalid-date-brasil-resized.png" alt="image" /></p>
-
-<h3>解决方法</h3>
-
-<p>最简单的解决方法就是存储最简单，而且无歧义的年月日字符处，比如&#8217;1986-05-04&#8217;，而不是通过保存成一个JavaScript的Date对象的方式。</p>
-
-<p>或者也可以使用一个Datepicker控件来获取日期字符串，然后保存：</p>
-
-<p><img src="/images/2014/09/date-picker-resized.png" alt="image" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -2463,6 +2583,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/01/copy-code-with-style/">高亮剪贴板里的代码片段</a>
+      </li>
+    
+      <li class="post">
         <a href="/2015/01/page-object-with-site-prism/">编写体面的UI测试</a>
       </li>
     
@@ -2476,10 +2600,6 @@
     
       <li class="post">
         <a href="/2014/11/modern-ui-development-workflow/">现代Web页面开发流程</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2014/11/publish-your-web-design/">发布你的Web设计</a>
       </li>
     
   </ul>

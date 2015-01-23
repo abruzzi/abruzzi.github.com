@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Tool | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/tool/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2015-01-24T01:19:47+11:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[高亮剪贴板里的代码片段]]></title>
+    <link href="http://abruzzi.github.com/2015/01/copy-code-with-style/"/>
+    <updated>2015-01-24T00:17:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/01/copy-code-with-style</id>
+    <content type="html"><![CDATA[<h3>高亮剪贴板里的代码片段</h3>
+
+<p>我前几天在准备一个培训的slides的时候，想在Keynote中粘贴一段代码，默认的粘贴板中的内容并没有样式，粘进去之后就是纯文本，没有语法高亮不说，默认的，代码的字体会采用Keynote默认的字体，非常难看。</p>
+
+<p>之前在Intellij中有个插件<code>'Copy' on steroids</code>，这个插件可以将Intellij的编辑器中的高亮过的文本拷贝到剪贴板，然后就可以在Keynote中使用了。</p>
+
+<p>我就想能不能有对应的命令行工具，结果还真的找到一个，就叫<code>highlight</code>，<a href="http://www.andre-simon.de/doku/highlight/en/highlight.php">主页在这里</a>。（这里略微吐槽一下，这个官方页面的风格以今天的眼光来看，无论是配色还是样式布局等，都非常难看，完全是10年前的风格，不过这个小工具确实很好用）。</p>
+
+<h4>基本使用</h4>
+
+<p>在Mac下，安装非常简单：</p>
+
+<p><code>sh
+$ brew install highlight
+</code></p>
+
+<p><code>highlight</code>支持很多格式，<code>HTML</code>，<code>RTF</code>甚至还有<code>LaTeX</code>。不过如果要在Keynote或者PowerPoint中使用，用<code>RTF</code>(Rich Text Format)就可以了。</p>
+
+<p>选择要高亮的文件，比如<code>app.rb</code></p>
+
+<p>```rb
+require 'sinatra'
+require 'rack/contrib'
+require 'active_record'
+require 'json'</p>
+
+<p>require './model/plants'</p>
+
+<p>class FrontendApplication &lt; Sinatra::Base</p>
+
+<pre><code>get '/' do
+    File.open('index.html').read
+end
+</code></pre>
+
+<p>end
+```</p>
+
+<p>然后使用命令：</p>
+
+<p><code>sh
+$ highlight -O rtf app.rb | pbcopy
+</code></p>
+
+<p>即可将高亮过的内容复制到剪切板中，然后只需要<code>CMD+V</code>就可以粘贴了：</p>
+
+<p><img src="/images/2015/01/ruby-highlight-resized.png" alt="app.rb" /></p>
+
+<p>如果要生成HTML格式，只需要指定:</p>
+
+<p><code>sh
+$ highlight -O html app.rb &gt; app.rb.html
+</code></p>
+
+<h4>自定义语言（扩展）</h4>
+
+<p>如果遇到不支持的语言时，默认的<code>highlight</code>会报错，要查看所有支持的语言，可以使用</p>
+
+<p><code>sh
+$ highlight -p
+</code></p>
+
+<p>所有的<code>highlight</code>内置的语言高亮配置都存储在本地的一个目录中，比如在我的机器上，存储位置为<code>/usr/local/Cellar/highlight/3.18_1/share/highlight/langDefs/</code>。</p>
+
+<p>还以Java为例，该目录下会有一个文件，名为<code>java.lang</code>，内容如下：</p>
+
+<p>```
+Description="Java"</p>
+
+<p>Keywords={
+  { Id=1,</p>
+
+<pre><code>List={"abstract", "default", "if", "private", "this", "do", "implements",
+</code></pre>
+
+<p>"protected", "throw", "break", "import", "public", "throws", "else",
+"instanceof", "return", "transient", "case", "extends", "try", "catch", "final",
+"interface", "static", "finally", "strictfp", "volatile", "class", "native",
+"super", "while", "const", "for", "new", "switch", "continue", "goto",
+"package", "synchronized", "as", "in", "def", "property"}, },
+  { Id=2,</p>
+
+<pre><code>List={"boolean", "double", "byte", "int", "short", "void", "char", "long", "float"},
+</code></pre>
+
+<p>  },
+ { Id=3,</p>
+
+<pre><code>Regex=[[@\w+]],
+</code></pre>
+
+<p>  },
+  { Id=4,</p>
+
+<pre><code>Regex=[[(\w+)\s*\(]],
+</code></pre>
+
+<p>  },
+}</p>
+
+<p>Strings={
+  Delimiter=[["|']],
+  Escape = [[ \u\d{4}|\x?\d{3}|\\w|\[\'\\"] ]]
+}</p>
+
+<p>IgnoreCase=false</p>
+
+<p>Comments={
+  { Block=false,</p>
+
+<pre><code>Delimiter= { [[\/\/]] },
+</code></pre>
+
+<p>  },
+  { Block=true,</p>
+
+<pre><code>Nested=false,
+Delimiter= { [[\/\*]],[[\*\/]],}
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>Operators=[[(|)|[|]|{|}|\,|\;|.|\:|&amp;|&lt;|>|!|\=|\/|*|\%|+|-|\|]]</p>
+
+<p>EnableIndentation=true
+```</p>
+
+<p>基本上，这些配置都是自解释的，比如关键字列表的定义，字符串的正则pattern，是否区分大小写，注释的格式，操作符的格式，是否启用缩进等。</p>
+
+<p>我在准备Slide的时候，想要加入一段<code>Cucumber</code>的feature文件，然后发现并不支持，于是就参照着Java的定义新建了一个文件：</p>
+
+<p>```
+Description="Gherkin"</p>
+
+<p>Keywords={
+  { Id=1,</p>
+
+<pre><code>List={"Feature", "Scenario", "Given", "When", "Then", "And", "World", "Outline"},
+</code></pre>
+
+<p>  },
+}</p>
+
+<p>Strings={
+  Delimiter=[["|']],
+  Escape = [[ \u\d{4}|\x?\d{3}|\\w|\[\'\\"] ]]
+}</p>
+
+<p>Comments={
+  { Block=false,</p>
+
+<pre><code>Delimiter= { [[#]] },
+</code></pre>
+
+<p>  },
+}</p>
+
+<p>IgnoreCase=false
+```</p>
+
+<p>将这个文件保存为<code>feature.lang</code>，这样我们就可以高亮下面这个<code>cucumber</code>的feature文件了（其实feature文件本身是有一个叫做Gherkin的语言编写的）</p>
+
+<p>```gherkin
+Feature:  Connected Home Purchase</p>
+
+<pre><code>Scenario: Purchase T-Broadband
+    Given I am purchasing "T-BROADBAND-50GB"
+    When I go to checkout page
+    And I am an existing telstra broadband customer
+    When I select "Professional Installation" in Premium service and support
+    # And I select "None" in Community Wifi
+    And I select "None" in Optional extras
+    Then I should see "Telstra Broadband 50GB" in my shopping cart
+    And I should see "Professional Installation" in add on list
+    And I should see the total price is "$72.00"
+
+Scenario: Purchase Entertainerment Bundle
+    Given I am purchasing "Telstra Entertainer Supreme Bundle M"
+    When I go to checkout page
+    And I am an existing telstra broadband customer
+    And I select "Foxtel iQ3 ($125 one-off)" in Inclusions
+    And I select "Professional Installation" in Premium service and support
+    # And I select "None" in Community Wifi
+    And I select "None" in Optional extras
+    Then I should see "Telstra Entertainer Supreme Bundle Entertainment M" in my shopping cart
+    And I should see "Professional Installation" in add on list
+    And I should see the total price is "$120.00"
+</code></pre>
+
+<p>```</p>
+
+<p><img src="/images/2015/01/feature-highlight-resized.png" alt="cucumber feature" /></p>
+
+<p>如果你经常写代码，喜欢分享自己学到的，并且喜欢以简短的代码来举例子，那么这个工具非常适合你。</p>
+]]></content>
+  </entry>
+  
+</feed>
