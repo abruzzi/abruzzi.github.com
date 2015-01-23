@@ -44,4 +44,4 @@ footer: true
 
 如果有任何的意见或者建议，非常欢迎联系我：
 
-[请联系我](http://localhost:4000/about-me)
+[请联系我](http://icodeit.org/about-me/)

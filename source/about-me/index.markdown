@@ -10,9 +10,16 @@ footer: true
 ## 关于我
 我是邱俊涛，是一名软件工程师，热爱生活，热爱编程，也热爱开源软件。喜欢旅行，喜欢摄影，更喜欢骑着山地车在云南的红山绿水之间骑行。有一些Java开发经验，也有Linux下C语言开发经验，喜欢各种动态语言，如python/javascript/ruby等。
 
-2012年3月加入**thoughtworks**西安，开始了新的生活方式。崇尚简单、轻量的设计和开发模式。2013年5月，我的第一本书[《JavaScript核心概念及实践》](http://book.douban.com/subject/24165880/)在很多同事的帮助下终于出版。而第二本书《轻量级Web应用程序开发》也在计划中。
+2012年3月加入**ThoughtWorks**西安，开始了新的生活方式。崇尚简单、轻量的设计和开发模式。2013年5月，我的第一本书[《JavaScript核心概念及实践》](http://book.douban.com/subject/24165880/)在很多同事的帮助下终于出版。而第二本书《轻量级Web应用程序开发》也在计划中。
 
-###我发起并维护的开源项目
+### 我的著作
+-  [《JavaScript核心概念及实践》](http://book.douban.com/subject/24165880/)
+-  [《轻量级Web应用开发》，编辑中](http://icodeit.org/lwweb/)
+-  [《3周3Web设计》](http://juntao.gitbooks.io/3-web-designs-in-3-weeks/)
+
+### 我发起并维护的开源项目
+-	[turbo](https://github.com/abruzzi/turbo), HTTP API测试工具
+-	[moko](https://github.com/abruzzi/moko),测试框架[moco](https://github.com/dreamhead/moco)的Ruby包装
 -    [BBMS](https://code.google.com/p/bbms/), 一个小型的，基于总线的消息系统(bus-based-message-system)
 -    [sTodo](https://code.google.com/p/stodo/), 一个简单的，用Swing实现的，支持脚本化的todo管理器
 -    [phoc](https://github.com/abruzzi/phoc)，一个可编程的计算器，支持脚本化，可以绘制函数图象
