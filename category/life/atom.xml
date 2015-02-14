@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Life | I code it]]></title>
   <link href="http://abruzzi.github.com/category/life/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-01-24T01:55:40+11:00</updated>
+  <updated>2015-02-14T19:36:55+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,121 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[在ThoughtWorks我们做内部培训？]]></title>
+    <link href="http://abruzzi.github.com/2015/01/how-we-do-training-in-thoughtworks/"/>
+    <updated>2015-01-25T01:20:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/01/how-we-do-training-in-thoughtworks</id>
+    <content type="html"><![CDATA[<h3>ThoughtWorks内部培训</h3>
+
+<p>对新人的培训是每个企业都绕不开的一个话题，企业当然想要每个新人都能直接独当一面，最好可以直接上项目贡献自己的价值。但是从经验来看，所有新人到一个新环境都需要学习很多不同的新东西（新技术，框架，语言，工作方式等等），而每个企业对于培训新人都有各种各样的策略，比如老人带新人，比如扔到项目上让新人自己学。</p>
+
+<p>在ThoughtWorks，我们有着丰富的培训方式，有面向社招的，有面向毕业生的，有民间自发的，有官方组织的，有内部的，也有面向社区的。</p>
+
+<h4>TWU</h4>
+
+<p>TWU全称ThoughtWorks University，面向毕业生，入职之后的第一堂课。TWU的地点设在印度，之前在班加罗尔，后来改到了普内。每一期5周，学生们需要和和全球其他国家地区的同学一起，一般会尽量将各个地区的学生打乱安排，尽量让学生体会多元化的文化，培训内容设计公司文化，软件开发方法论，敏捷开发（Project SImulation）实践等，同时还需要保证学生有足够的代码练习机会。</p>
+
+<p>我在2013年作为讲师参加了一起TWU，对我自己的帮助也非常大，在和来自不同地区的讲师一起备课，学习中学习到了很多的东西，之前似是而非的一些概念也得到了纠正。</p>
+
+<p><img src="/images/2015/02/twu33-resized.png" alt="twu" /></p>
+
+<h4>TWI</h4>
+
+<p>TWI全称ThoughtWorks Immersion，面向有经验的社招同事，主要涉及的内容为公司文化（合作，沟通），专业服务（如何专业的解决客户的问题），软件开发流程，敏捷开发方法论等。</p>
+
+<p>我在2012年时参加过TWI，并整理了几篇相关文章，可以参考<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-1/">这里</a>，<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-2/">这里</a>还有<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-3/">这里</a>。</p>
+
+<p><img src="/images/2015/01/twi-resized.png" alt="twi" /></p>
+
+<h4>Session</h4>
+
+<p>Office局限在ThoughtWorks办公室之内，内容随意，参加不参加随意，可以随时加入或随时离开。虽然内容没有限制，但是大多数时候分享的都是技术主题。比如<code>自动化部署</code>，<code>自动测试</code>，<code>Spring 4</code>，<code>Ruby中的构建工具</code>等等。</p>
+
+<p>Sessoin的形式是主讲者找一个自己感兴趣的主题，一个人讲，其他参与者听，鼓励互动。时间一般控制在一个小时以内，所以一般选择在中午饭的时候，有的session会给大家订饭，一边吃一边听。</p>
+
+<p>虽然大部分Sessoin的主题是技术相关的，但是并不局限于此。比如旅游见闻，历史，财务，摄影等等，都可以分享，有时候这些趣味性的Session的参与者更多。</p>
+
+<p><img src="/images/2015/01/session-resized.png" alt="session" /></p>
+
+<h4>WorkShop</h4>
+
+<p>Office之内，内容随意，以动手为主，讲解为辅。</p>
+
+<ul>
+<li>HTML/CSS</li>
+<li>Testable JavaScript</li>
+<li>设计工作坊</li>
+<li>OO BootCamp</li>
+<li>Ruby BootCamp</li>
+</ul>
+
+
+<p>一般来说，Workshop都会组成一个系列，通常会占用几天到几周不等。参与者需要带上电脑，在课堂上进行练习之外，课后还会有一些练习。</p>
+
+<p><img src="/images/2015/01/workshop-resized.png" alt="" /></p>
+
+<p><a href="http://icodeit.org/3-pages-in-3-weeks/">3周3页面</a>和<a href="http://icodeit.org/lwweb/">可测试的JavaScript</a>是我去年做的两个Workshop。由于Workshop会在下班后或者中午的休息时间，公司会为每个参与者订饭，以节省时间。</p>
+
+<h4>郑大晔校</h4>
+
+<p>面向刚刚得到offer的毕业生，在上项目之前，我们希望学生的基本技术达到特定的水平，因此设置了一系列的练习。包括</p>
+
+<ul>
+<li>编程基础</li>
+<li>开发流程</li>
+<li>工作方式</li>
+<li>公司文化</li>
+</ul>
+
+
+<p>等等。郑大晔校的周期为每周一次，一次一天。涉及的内容会与大多数项目上的要求一致，比如西安office的Java/Ruby项目居多，我们的课程安排就会涉及到<code>Java/Ruby</code>方面。当然，各种软技能如工作方式也会在课程中涉及，尽量的寓教于乐。</p>
+
+<p>每期郑大晔校大概会有10周，学生入职之后有的会直接去TWU，有的则会在项目上工作一段时间再去TWU。</p>
+
+<p><img src="/images/2015/01/zhengda-resized.png" alt="" /></p>
+
+<h4>组内培训</h4>
+
+<p>各个组内自行组织，并不要求其他同事参加。比如某个项目需要一些<code>docker</code>的知识，或者需要<code>AngularJS</code>相关的培训，一方面是找自己组内的专家组织一次内部培训，，另一种是找办公室内相关的专家来进行培训，形式比较灵活。</p>
+
+<ul>
+<li>项目中已经在使用的技术</li>
+<li>项目中将要使用的技术</li>
+<li>请别的组的专家来咨询</li>
+</ul>
+
+
+<p><img src="/images/2015/01/group-resized.png" alt="group learn" /></p>
+
+<h4>社区</h4>
+
+<ul>
+<li>OpenParty</li>
+<li>Rails Girl</li>
+</ul>
+
+
+<p><img src="/images/2015/02/rails-girl-session-resized.png" alt="rails girl" /></p>
+
+<h4>问题</h4>
+
+<ul>
+<li>谁当讲师</li>
+<li>活动经费</li>
+<li>内容如何持久化（人，内部知识分享系统）</li>
+<li>如何保证效果（宽松）</li>
+</ul>
+
+
+<p>由于对任何的话题都没有限制，也没有对参与者的限制，因此任何人只要感兴趣都可以作为讲师。而又由于没有任何的强制措施，参与者和主讲者都凭着自己的热情来组织，这也算是比较独树一帜的事情。</p>
+
+<p>而关于内容的持久化，更多的是为参与者打开一扇新的窗户，或者说洒下一些火星，而至于火星如何形成燎原之势，则完全在参与者自己的自觉。好多次和客户分享了我们的培训机制之后，被问到最多的问题是如何<code>强迫</code>参与者产生热情？</p>
+
+<p>这个问题在ThoughtWorks不是问题，我们在一个人进入公司的最开始，也就是面试的时候，就考察了他的热情，如果在热情上有缺陷，则很可能会直接拒掉，免得破坏我们好不容易构建起来的学习氛围。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[我的2014]]></title>

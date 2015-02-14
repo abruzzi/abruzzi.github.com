@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-01-24T01:55:40+11:00</updated>
+  <updated>2015-02-14T19:36:55+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,329 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux命令行中的7个小技巧]]></title>
+    <link href="http://abruzzi.github.com/2015/02/linux-tips/"/>
+    <updated>2015-02-14T17:48:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/02/linux-tips</id>
+    <content type="html"><![CDATA[<h3>Linux命令行中的7个小技巧</h3>
+
+<p>命令行是开发者的好朋友，<code>*nix</code>系统（包括Mac OS X和各种Linux）都自带了强大的Shell环境，作为一个专业的程序员，Shell是离不开的。这里总结了几个常用的小技巧，都是我自己平时经常用，而又不想每次都去Google的。</p>
+
+<h4>如何知道哪个进程在监听4000端口？</h4>
+
+<p>当启动服务时，经常会遇到想要<code>Address already in use</code>这样的异常，那么如何知道是哪个进程占用了该端口呢？</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsof -i :4000
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>lsof</code>会列出系统目前打开的文件（List open files，Linux世界中，一切都是文件），<code>-i</code>表示网络地址（Internet address），注意此处的冒号。如果不带参数，lsof会列出所有打开的网络地址：</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/02/lsof-resized.png" alt="lsof" /></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsof -i :4000
+</span><span class='line'>COMMAND   PID  USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+</span><span class='line'>ruby    32303 jtqiu    7u  IPv4 0x947b402a4bb8370b      0t0  TCP *:terabase <span class="o">(</span>LISTEN<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Shell中如何设置代理？</h4>
+
+<p>很多公司都会有一个代理服务器供员工上外网使用，命令行中设置代理非常容易：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">export </span><span class="nv">http_proxy</span><span class="o">=</span><span class="s2">&quot;http://username:password@hosename:port&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果密码中有特设字符，比如<code>$</code>的话，需要转义一下。使用URLEncoding即可，比如<code>$</code>就是<code>%24</code>。最简单的就是在Chrome的<code>Console</code>中输入<code>encodeURIComponent("$")</code>来获得转义字符。</p>
+
+<p>如果不想对某些地址使用代理，可以设置<code>no_proxy</code>环境变量：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">export </span><span class="nv">no_proxy</span><span class="o">=</span><span class="s2">&quot;127.0.0.1, localhost, *.cnn.com, 192.168.1.10, domain.com:8080&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>如何为svn中的脚本设置可执行属性</h4>
+
+<p>你在Linux下创建了一个可执行脚本<code>e2e_test.sh</code>，但是团队里的其他人工作在Windows系统上，当你提交可执行脚本之后，他们checkout的是一个不能执行的文件！（其实也在情理之中，Windows这种垃圾货什么时候正常过呢？）</p>
+
+<p>这时候可以通过给这个脚本设置一个<code>svn</code>的属性:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>svn propset svn:executable <span class="s2">&quot;*&quot;</span> e2e_test.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样在Windows上才heckout之后就正常了。</p>
+
+<h4>在Bash脚本中如何判断一个文件是否可执行？</h4>
+
+<p>有时候我们在<code>Bash</code>中需要判断某个文件是否可以执行，这行脚本可以解救你：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="k">if</span> <span class="o">[</span> -x <span class="nv">$FILENAME</span> <span class="o">]</span>; <span class="k">then</span>
+</span><span class='line'>  <span class="c"># the file is executable</span>
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>判断某个文件是否存在的脚本为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="k">if</span> <span class="o">[</span> -f <span class="nv">$FILENAME</span> <span class="o">]</span>; <span class="k">then</span>
+</span><span class='line'>  <span class="c"># the file is existing</span>
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>我正在用的Linux是哪个发行版？</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsb_release -a
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在<code>SUSE</code>系统中运行这条命令可以得到这样的输出:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsb_release -a
+</span><span class='line'>LSB Version:    core-2.0-noarch:core-3.0-noarch:core-2.0-x86_64:core-3.0-x86_64:desktop-3.1-amd64:desktop-3.1-noarch:graphics-2.0-amd64:graphics-2.0-noarch:graphics-3.1-amd64:graphics-3.1-noarch
+</span><span class='line'>Distributor ID: SUSE LINUX
+</span><span class='line'>Description:    SUSE Linux Enterprise Server 10 <span class="o">(</span>x86_64<span class="o">)</span>
+</span><span class='line'>Release:        10
+</span><span class='line'>Codename:       n/a
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而在<code>ubuntu</code>上则为:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsb_release  -a
+</span><span class='line'>No LSB modules are available.
+</span><span class='line'>Distributor ID: Ubuntu
+</span><span class='line'>Description:    Ubuntu 12.04.3 LTS
+</span><span class='line'>Release:        12.04
+</span><span class='line'>Codename:       precise
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>与之相关的还有个问题是我当前的操作系统是<code>32位还是64为呢</code>?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>uname -m
+</span><span class='line'>x86_64
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者使用<code>file</code>命令来查看系统自带的执行文件的元数据信息:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>file /usr/bin/file
+</span><span class='line'>/usr/bin/file: ELF 64-bit LSB executable, x86-64, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, dynamically linked <span class="o">(</span>uses shared libs<span class="o">)</span>, <span class="k">for </span>GNU/Linux 2.6.15, BuildID<span class="o">[</span>sha1<span class="o">]=</span>0xe04b36145abc21d863652b93e6a0d069f7dfd3f4, stripped
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>查找文件(跳过某些指定目录)</h4>
+
+<p>你想要统计系统中所有的<code>JavaScript</code>文件的数量，但是又不想把外部的库文件（位于<code>libs</code>目录中）统计在内：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>find . -path ./libs -prune -o -name <span class="s2">&quot;*.js&quot;</span> | wc -l
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里大概解释一下，上面的命令其实等于这条命令的缩写：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>find . -path ./libs -a -prune -o -name <span class="s2">&quot;*.js&quot;</span> | wc -l
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>也即</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>find . -path ./libs -and -prune -or -name <span class="s2">&quot;*.js&quot;</span> | wc -l
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>翻译成伪代码相当于：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;./libs&quot;</span>
+</span><span class='line'>    <span class="n">prune</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>    <span class="n">find_by_name</span> <span class="s2">&quot;*.js&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>断点续传</h4>
+
+<p>下载了一半，网络断了。小文件的话大不了重来一次，但是如果是一个7G的镜像呢？好在我们有<code>wget -c</code>。<code>wget</code>基本上是Linux中下载软件的标配了，它有很多的参数，甚至可以将整个静态网站克隆到本地，断点续传当然是支持的了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>wget -c https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-4.6.0-0-virtualbox.7z --no-check-certificate
+</span><span class='line'>--2014-05-08 12:32:25--  https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-4.6.0-0-virtualbox.7z
+</span><span class='line'>Connecting to 172.19.6.47:8080... connected.
+</span><span class='line'>Proxy request sent, awaiting response... 206 Partial Content
+</span><span class='line'>Length: 3393638045 <span class="o">(</span>3.2G<span class="o">)</span>, 2951427152 <span class="o">(</span>2.7G<span class="o">)</span> remaining <span class="o">[</span>text/plain<span class="o">]</span>
+</span><span class='line'>Saving to: <span class="sb">`</span>cloudera-quickstart-vm-4.6.0-0-virtualbox.7z<span class="err">&#39;</span>
+</span><span class='line'>
+</span><span class='line'>13% <span class="o">[</span>++++++++++                                                                      <span class="o">]</span> 450,866,893 57.8K/s  eta 3h 57m
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[在ThoughtWorks我们做内部培训？]]></title>
+    <link href="http://abruzzi.github.com/2015/01/how-we-do-training-in-thoughtworks/"/>
+    <updated>2015-01-25T01:20:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/01/how-we-do-training-in-thoughtworks</id>
+    <content type="html"><![CDATA[<h3>ThoughtWorks内部培训</h3>
+
+<p>对新人的培训是每个企业都绕不开的一个话题，企业当然想要每个新人都能直接独当一面，最好可以直接上项目贡献自己的价值。但是从经验来看，所有新人到一个新环境都需要学习很多不同的新东西（新技术，框架，语言，工作方式等等），而每个企业对于培训新人都有各种各样的策略，比如老人带新人，比如扔到项目上让新人自己学。</p>
+
+<p>在ThoughtWorks，我们有着丰富的培训方式，有面向社招的，有面向毕业生的，有民间自发的，有官方组织的，有内部的，也有面向社区的。</p>
+
+<h4>TWU</h4>
+
+<p>TWU全称ThoughtWorks University，面向毕业生，入职之后的第一堂课。TWU的地点设在印度，之前在班加罗尔，后来改到了普内。每一期5周，学生们需要和和全球其他国家地区的同学一起，一般会尽量将各个地区的学生打乱安排，尽量让学生体会多元化的文化，培训内容设计公司文化，软件开发方法论，敏捷开发（Project SImulation）实践等，同时还需要保证学生有足够的代码练习机会。</p>
+
+<p>我在2013年作为讲师参加了一起TWU，对我自己的帮助也非常大，在和来自不同地区的讲师一起备课，学习中学习到了很多的东西，之前似是而非的一些概念也得到了纠正。</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/02/twu33-resized.png" alt="twu" /></p>
+
+<h4>TWI</h4>
+
+<p>TWI全称ThoughtWorks Immersion，面向有经验的社招同事，主要涉及的内容为公司文化（合作，沟通），专业服务（如何专业的解决客户的问题），软件开发流程，敏捷开发方法论等。</p>
+
+<p>我在2012年时参加过TWI，并整理了几篇相关文章，可以参考<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-1/">这里</a>，<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-2/">这里</a>还有<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-3/">这里</a>。</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/01/twi-resized.png" alt="twi" /></p>
+
+<h4>Session</h4>
+
+<p>Office局限在ThoughtWorks办公室之内，内容随意，参加不参加随意，可以随时加入或随时离开。虽然内容没有限制，但是大多数时候分享的都是技术主题。比如<code>自动化部署</code>，<code>自动测试</code>，<code>Spring 4</code>，<code>Ruby中的构建工具</code>等等。</p>
+
+<p>Sessoin的形式是主讲者找一个自己感兴趣的主题，一个人讲，其他参与者听，鼓励互动。时间一般控制在一个小时以内，所以一般选择在中午饭的时候，有的session会给大家订饭，一边吃一边听。</p>
+
+<p>虽然大部分Sessoin的主题是技术相关的，但是并不局限于此。比如旅游见闻，历史，财务，摄影等等，都可以分享，有时候这些趣味性的Session的参与者更多。</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/01/session-resized.png" alt="session" /></p>
+
+<h4>WorkShop</h4>
+
+<p>Office之内，内容随意，以动手为主，讲解为辅。</p>
+
+<ul>
+<li>HTML/CSS</li>
+<li>Testable JavaScript</li>
+<li>设计工作坊</li>
+<li>OO BootCamp</li>
+<li>Ruby BootCamp</li>
+</ul>
+
+
+<p>一般来说，Workshop都会组成一个系列，通常会占用几天到几周不等。参与者需要带上电脑，在课堂上进行练习之外，课后还会有一些练习。</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/01/workshop-resized.png" alt="" /></p>
+
+<p><a href="http://icodeit.org/3-pages-in-3-weeks/">3周3页面</a>和<a href="http://icodeit.org/lwweb/">可测试的JavaScript</a>是我去年做的两个Workshop。由于Workshop会在下班后或者中午的休息时间，公司会为每个参与者订饭，以节省时间。</p>
+
+<h4>郑大晔校</h4>
+
+<p>面向刚刚得到offer的毕业生，在上项目之前，我们希望学生的基本技术达到特定的水平，因此设置了一系列的练习。包括</p>
+
+<ul>
+<li>编程基础</li>
+<li>开发流程</li>
+<li>工作方式</li>
+<li>公司文化</li>
+</ul>
+
+
+<p>等等。郑大晔校的周期为每周一次，一次一天。涉及的内容会与大多数项目上的要求一致，比如西安office的Java/Ruby项目居多，我们的课程安排就会涉及到<code>Java/Ruby</code>方面。当然，各种软技能如工作方式也会在课程中涉及，尽量的寓教于乐。</p>
+
+<p>每期郑大晔校大概会有10周，学生入职之后有的会直接去TWU，有的则会在项目上工作一段时间再去TWU。</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/01/zhengda-resized.png" alt="" /></p>
+
+<h4>组内培训</h4>
+
+<p>各个组内自行组织，并不要求其他同事参加。比如某个项目需要一些<code>docker</code>的知识，或者需要<code>AngularJS</code>相关的培训，一方面是找自己组内的专家组织一次内部培训，，另一种是找办公室内相关的专家来进行培训，形式比较灵活。</p>
+
+<ul>
+<li>项目中已经在使用的技术</li>
+<li>项目中将要使用的技术</li>
+<li>请别的组的专家来咨询</li>
+</ul>
+
+
+<p><img src="http://abruzzi.github.com/images/2015/01/group-resized.png" alt="group learn" /></p>
+
+<h4>社区</h4>
+
+<ul>
+<li>OpenParty</li>
+<li>Rails Girl</li>
+</ul>
+
+
+<p><img src="http://abruzzi.github.com/images/2015/02/rails-girl-session-resized.png" alt="rails girl" /></p>
+
+<h4>问题</h4>
+
+<ul>
+<li>谁当讲师</li>
+<li>活动经费</li>
+<li>内容如何持久化（人，内部知识分享系统）</li>
+<li>如何保证效果（宽松）</li>
+</ul>
+
+
+<p>由于对任何的话题都没有限制，也没有对参与者的限制，因此任何人只要感兴趣都可以作为讲师。而又由于没有任何的强制措施，参与者和主讲者都凭着自己的热情来组织，这也算是比较独树一帜的事情。</p>
+
+<p>而关于内容的持久化，更多的是为参与者打开一扇新的窗户，或者说洒下一些火星，而至于火星如何形成燎原之势，则完全在参与者自己的自觉。好多次和客户分享了我们的培训机制之后，被问到最多的问题是如何<code>强迫</code>参与者产生热情？</p>
+
+<p>这个问题在ThoughtWorks不是问题，我们在一个人进入公司的最开始，也就是面试的时候，就考察了他的热情，如果在热情上有缺陷，则很可能会直接拒掉，免得破坏我们好不容易构建起来的学习氛围。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[高亮剪贴板里的代码片段]]></title>
@@ -4007,416 +4330,6 @@
 <li><a href="http://download.geofabrik.de/osm/">GEO Fabrik</a></li>
 </ol>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[如何测试AngularJS中的Service]]></title>
-    <link href="http://abruzzi.github.com/2014/01/how-to-test-service-in-angularjs/"/>
-    <updated>2014-01-04T14:22:00+11:00</updated>
-    <id>http://abruzzi.github.com/2014/01/how-to-test-service-in-angularjs</id>
-    <content type="html"><![CDATA[<h3>Service的典型示例</h3>
-
-<p>在AngularJS中，Service都是单例的实体，通常会将Service作为向后台交互的数据提供者，所有的需要数据的组件只需要依赖于这个Service即可。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;MyApp&#39;</span><span class="p">,</span> <span class="p">[]);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;SearchSettingService&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">[</span><span class="s1">&#39;$http&#39;</span><span class="p">,</span> <span class="s1">&#39;$q&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$http</span><span class="p">,</span> <span class="nx">$q</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">setting</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>            <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">$q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">success</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">}).</span><span class="nx">error</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="s2">&quot;network error&quot;</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'><span class="p">}]);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>$httpBackend</h4>
-
-<p>测试的时候，我们不需要真实的发送HTTP请求来获取数据。如果可以只测试Service的逻辑，当发送请求时，我们将这个请求拦截下来，然后返回一个预定义好的数据即可：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have settings from http request&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span><span class="p">;</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;period&quot;</span><span class="o">:</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;date&quot;</span><span class="o">:</span> <span class="s2">&quot;Sat Dec 21 12:56:53 EST 2013&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">settingService</span><span class="p">.</span><span class="nx">setting</span><span class="p">();</span>
-</span><span class='line'>    <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">result</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>$httpBackend是AngularJS提供的一个测试用的服务，可以在spec中注入进来：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">module</span><span class="p">(</span><span class="s1">&#39;services&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">inject</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">SearchSettingService</span><span class="p">,</span> <span class="nx">$httpBackend</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">settingService</span> <span class="o">=</span> <span class="nx">SearchSettingService</span><span class="p">;</span>
-</span><span class='line'>        <span class="nx">httpBackend</span> <span class="o">=</span> <span class="nx">$httpBackend</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>httpBackend</code>服务有一些很方便测试的方法：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="nx">url</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
-</span><span class='line'><span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectPOST</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">param</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>设置之后，当调用<code>httpBackend.flush</code>时，AngularJS会调用这个setup，发送的请求会被之前的setup拦截并返回，这样service中的数据就被填充好了。</p>
-
-<h4>Service测试的模板</h4>
-
-<p>或者说，当测试一个Service时，我们应该测那些方面呢？</p>
-
-<ol>
-<li>正常流程，一个完整的处理过程</li>
-<li>异常处理，如果服务器出错了，程序需要如何反馈？</li>
-<li>其他异常情况</li>
-</ol>
-
-
-<p>正常流程很容易，在调用service提供的方法之后，在获得的promise对象上调用then方法来填充一个数据即可，然后调用<code>httpBackend.flush()</code>来<strong>发送</strong>请求，最后验证数据的格式/内容是否正确。</p>
-
-<p>这个测试的主要目的是验证当调用service的方法时，service真实的发送了一个http请求：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have settings from http request&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span><span class="p">;</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;period&quot;</span><span class="o">:</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;date&quot;</span><span class="o">:</span> <span class="s2">&quot;Sat Dec 21 12:56:53 EST 2013&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">settingService</span><span class="p">.</span><span class="nx">setting</span><span class="p">();</span>
-</span><span class='line'>    <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">result</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>对于异常的情况，比如服务器返回了错误，如<code>500</code>，那么最低程度，程序应该可以处理这个异常：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should throw error when network expection&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">error</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">settingService</span><span class="p">.</span><span class="nx">setting</span><span class="p">();</span>
-</span><span class='line'>    <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">result</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">error</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toBeUndefined</span><span class="p">();</span>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">error</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s2">&quot;network error&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4><em>服务器</em> moco</h4>
-
-<p><a href="https://github.com/dreamhead/moco">moco</a>是同事<a href="http://dreamhead.blogbus.com/">郑晔</a>开发的一个测试框架/工具，基本上来说，moco是一个用来集成测试的用的HTTP服务器。</p>
-
-<p>你可以通过API方式或者启动moco服务器的方式来使用它，我比较喜欢将moco作为一个独立的服务器来使用：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>java -jar moco-runner-0.9-standalone.jar start -p 12306 -c moco.conf.json
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>比如<code>moco.conf.json</code>中定义了一下规则：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;request&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>            <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="s2">&quot;post&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="s2">&quot;uri&quot;</span><span class="o">:</span> <span class="s2">&quot;/resource&quot;</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>        <span class="s2">&quot;response&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>            <span class="s2">&quot;status&quot;</span><span class="o">:</span> <span class="mi">201</span><span class="p">,</span>
-</span><span class='line'>            <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;resource has been created&quot;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;request&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>            <span class="s2">&quot;uri&quot;</span><span class="o">:</span> <span class="s2">&quot;/resource&quot;</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>        <span class="s2">&quot;response&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>            <span class="s2">&quot;status&quot;</span><span class="o">:</span> <span class="mi">200</span><span class="p">,</span>
-</span><span class='line'>            <span class="s2">&quot;file&quot;</span><span class="o">:</span> <span class="s2">&quot;resources.json&quot;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>则启动moco的服务器之后，所有发往<code>/resource</code>的<code>post</code>请求都会得到</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="mi">201</span>
-</span><span class='line'><span class="nx">resource</span> <span class="nx">has</span> <span class="nx">been</span> <span class="nx">created</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>的HTTP响应，这个功能在前端开发越来越独立的情况下变得非常好用。我最近在有很多小项目中都在尝试moco，非常的好用，后边会有相关的博客专门介绍。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用 Yahoo pipes 服务做内容聚合 -- ThoughtWorks好声音]]></title>
-    <link href="http://abruzzi.github.com/2014/01/use-yahoo-pipe-service-to-aggregate-blogs-you-care/"/>
-    <updated>2014-01-01T19:48:00+11:00</updated>
-    <id>http://abruzzi.github.com/2014/01/use-yahoo-pipe-service-to-aggregate-blogs-you-care</id>
-    <content type="html"><![CDATA[<h3>ThoughtWorks好声音</h3>
-
-<p><a href="http://voice.thoughtworkers.org/">ThoughtWorks好声音</a>是一个聚合网站，内容来自众ThoughtWorker的博客，我们每周会汇聚一次，从众多的博客中挑选出一些P2(软件卓越)相关的主题，然后编为一辑，再分享出去。</p>
-
-<p>但是从近100个博客中找P2相关的内容，这件事本身非常繁琐，如果每周都做这个重复劳动的话，那么软件卓越从何谈起呢？作为以解放人类为己任的程序员，我们绝对不能忍受纯体力的劳动。</p>
-
-<h4>获取博客地址列表</h4>
-
-<p>之前郑晔做了一个<a href="https://jinshuju.net/">金数据</a>的统计，请各位同事把自己的名字和博客地址登记在一个金数据的表单上：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/01/blog-colllecting.png" alt="image" /></p>
-
-<p>接下来第一步就是把网页上的所有地址取下来，这一步很容易，从金数据的页面上用jQuery找到表格的第二列，然后将其中的文字取出来：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;table tr td:nth-child(2)&quot;</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">item</span><span class="p">).</span><span class="nx">text</span><span class="p">().</span><span class="nx">trim</span><span class="p">();</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>写到这里突发奇想，能不能用phantomjs去把这个动作自动化？</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">page</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">status</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">status</span> <span class="o">!==</span> <span class="s1">&#39;success&#39;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Unable to access network&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">page</span><span class="p">.</span><span class="nx">injectJs</span><span class="p">(</span><span class="s1">&#39;jquery.js&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">links</span> <span class="o">=</span> <span class="nx">page</span><span class="p">.</span><span class="nx">evaluate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;table tr td:nth-child(2)&quot;</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">).</span><span class="nx">text</span><span class="p">().</span><span class="nx">trim</span><span class="p">();</span>
-</span><span class='line'>            <span class="p">});</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">underscore</span><span class="p">(</span><span class="nx">links</span><span class="p">).</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s1">&#39;^(https|http)&#39;</span><span class="p">).</span><span class="nx">test</span><span class="p">(</span><span class="nx">item</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>                <span class="k">return</span> <span class="s2">&quot;http://&quot;</span> <span class="o">+</span> <span class="nx">item</span><span class="p">;</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>            <span class="k">return</span> <span class="nx">item</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="nx">phantom</span><span class="p">.</span><span class="nx">exit</span><span class="p">();</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，results数组中就包含了所有的博客链接了，而且有的同事比较懒，提供的URL中不包含<code>http</code>，这段代码还顺手给这样的url添加了头尾。</p>
-
-<p>然后<strong>第二步</strong>，我<strong>想象</strong>着应该再写个脚本，在这个数组中得每个url的后边加上诸如<code>rss</code>或者<code>atom.xml</code>之类的后缀，然后去获取每个博客的rss文件，然后根据这些信息做一些事情。吃午饭的过程中我还在想象这个工具分为几个模块，用什么样的语言来做开发等等细节。</p>
-
-<p>吃完午饭，突然想起来之前熊杰貌似发过一个yahoo pipes生成的rss，我在邮件中翻出来之后，失望的发现我自己的博客都不在里边，想想熊杰貌似还在乌干达援助非洲人民，那就自己动手重新定义一个吧。</p>
-
-<h4>Yahoo pipes 服务</h4>
-
-<p><a href="http://pipes.yahoo.com/pipes/">Yahoo pipes</a>是一个用来定制聚合的服务，只需要定义好数据源(通常是rss/atom)，然后定义一些操作，比如排序，去重，联合等等。最后这个pipe会生成一个结果集，这些特性简直就是为我们这个需求定制的：</p>
-
-<ol>
-<li>将博客地址+&#8217;/rss&#8217; / 博客地址+&#8217;/atom.xml&#8217; 添加到一个个的fetcher上</li>
-<li>将这些fetcher联合起来</li>
-<li>将联合的结果排序(按照发表日期/更新日期)</li>
-<li>生成最后的rss</li>
-</ol>
-
-
-<p>yahoo pipes提供的编辑器非常简单易用：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/01/single-pipe.png" alt="image" /></p>
-
-<p>而且在编辑界面底下有一个预览界面：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/01/single-preview.png" alt="image" /></p>
-
-<p>当然，当定义好完整的pipe之后，我们的ThoughtWorks好声音的源看起来是这样的：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/01/tvot-pipe-resized.png" alt="image" /></p>
-
-<p>运行这个pipe之后，得到一个preview的界面：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/01/tvot-pipe-run-resized.png" alt="image" /></p>
-
-<p>最后，可以将这个pipe公开发布，或者将这个pipe生成的rss订阅到阅读器中，比如<a href="http://www.vienna-rss.org/">vienna</a>:</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/01/vienna-resized.png" alt="image" /></p>
-
-<p>然后就可以一目了然的看到最近有哪些ThoughtWorker更新了自己的博客，又有那些是P2相关的，可以<code>理论上</code>减轻我们编辑很多的工作量。</p>
-
-<h4>结论</h4>
-
-<p>手里是锤子的时候，看着周围的东西都像钉子。有时候，那些又酷又炫的技巧/工具可能并非必须。</p>
 ]]></content>
   </entry>
   

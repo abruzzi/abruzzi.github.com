@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="高亮剪贴板里的代码片段 我前几天在准备一个培训的slides的时候，想在Keynote中粘贴一段代码，默认的粘贴板中的内容并没有样式，粘进去之后就是纯文本，没有语法高亮不说，默认的，代码的字体会采用Keynote默认的字体，非常难看。 之前在Intellij中有个插件'Copy' on &hellip;">
+  <meta name="description" content="Linux命令行中的7个小技巧 命令行是开发者的好朋友，*nix系统（包括Mac OS X和各种Linux）都自带了强大的Shell环境，作为一个专业的程序员，Shell是离不开的。这里总结了几个常用的小技巧，都是我自己平时经常用，而又不想每次都去Google的。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,383 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/02/linux-tips/">Linux命令行中的7个小技巧</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-14T17:48:00+11:00" pubdate data-updated="true">Feb 14<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Linux命令行中的7个小技巧</h3>
+
+<p>命令行是开发者的好朋友，<code>*nix</code>系统（包括Mac OS X和各种Linux）都自带了强大的Shell环境，作为一个专业的程序员，Shell是离不开的。这里总结了几个常用的小技巧，都是我自己平时经常用，而又不想每次都去Google的。</p>
+
+<h4>如何知道哪个进程在监听4000端口？</h4>
+
+<p>当启动服务时，经常会遇到想要<code>Address already in use</code>这样的异常，那么如何知道是哪个进程占用了该端口呢？</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsof -i :4000
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>lsof</code>会列出系统目前打开的文件（List open files，Linux世界中，一切都是文件），<code>-i</code>表示网络地址（Internet address），注意此处的冒号。如果不带参数，lsof会列出所有打开的网络地址：</p>
+
+<p><img src="/images/2015/02/lsof-resized.png" alt="lsof" /></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsof -i :4000
+</span><span class='line'>COMMAND   PID  USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+</span><span class='line'>ruby    32303 jtqiu    7u  IPv4 0x947b402a4bb8370b      0t0  TCP *:terabase <span class="o">(</span>LISTEN<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Shell中如何设置代理？</h4>
+
+<p>很多公司都会有一个代理服务器供员工上外网使用，命令行中设置代理非常容易：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">export </span><span class="nv">http_proxy</span><span class="o">=</span><span class="s2">&quot;http://username:password@hosename:port&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果密码中有特设字符，比如<code>$</code>的话，需要转义一下。使用URLEncoding即可，比如<code>$</code>就是<code>%24</code>。最简单的就是在Chrome的<code>Console</code>中输入<code>encodeURIComponent("$")</code>来获得转义字符。</p>
+
+<p>如果不想对某些地址使用代理，可以设置<code>no_proxy</code>环境变量：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">export </span><span class="nv">no_proxy</span><span class="o">=</span><span class="s2">&quot;127.0.0.1, localhost, *.cnn.com, 192.168.1.10, domain.com:8080&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>如何为svn中的脚本设置可执行属性</h4>
+
+<p>你在Linux下创建了一个可执行脚本<code>e2e_test.sh</code>，但是团队里的其他人工作在Windows系统上，当你提交可执行脚本之后，他们checkout的是一个不能执行的文件！（其实也在情理之中，Windows这种垃圾货什么时候正常过呢？）</p>
+
+<p>这时候可以通过给这个脚本设置一个<code>svn</code>的属性:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>svn propset svn:executable <span class="s2">&quot;*&quot;</span> e2e_test.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样在Windows上才heckout之后就正常了。</p>
+
+<h4>在Bash脚本中如何判断一个文件是否可执行？</h4>
+
+<p>有时候我们在<code>Bash</code>中需要判断某个文件是否可以执行，这行脚本可以解救你：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="k">if</span> <span class="o">[</span> -x <span class="nv">$FILENAME</span> <span class="o">]</span>; <span class="k">then</span>
+</span><span class='line'>  <span class="c"># the file is executable</span>
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>判断某个文件是否存在的脚本为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="k">if</span> <span class="o">[</span> -f <span class="nv">$FILENAME</span> <span class="o">]</span>; <span class="k">then</span>
+</span><span class='line'>  <span class="c"># the file is existing</span>
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>我正在用的Linux是哪个发行版？</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsb_release -a
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在<code>SUSE</code>系统中运行这条命令可以得到这样的输出:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsb_release -a
+</span><span class='line'>LSB Version:    core-2.0-noarch:core-3.0-noarch:core-2.0-x86_64:core-3.0-x86_64:desktop-3.1-amd64:desktop-3.1-noarch:graphics-2.0-amd64:graphics-2.0-noarch:graphics-3.1-amd64:graphics-3.1-noarch
+</span><span class='line'>Distributor ID: SUSE LINUX
+</span><span class='line'>Description:    SUSE Linux Enterprise Server 10 <span class="o">(</span>x86_64<span class="o">)</span>
+</span><span class='line'>Release:        10
+</span><span class='line'>Codename:       n/a
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而在<code>ubuntu</code>上则为:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsb_release  -a
+</span><span class='line'>No LSB modules are available.
+</span><span class='line'>Distributor ID: Ubuntu
+</span><span class='line'>Description:    Ubuntu 12.04.3 LTS
+</span><span class='line'>Release:        12.04
+</span><span class='line'>Codename:       precise
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>与之相关的还有个问题是我当前的操作系统是<code>32位还是64为呢</code>?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>uname -m
+</span><span class='line'>x86_64
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者使用<code>file</code>命令来查看系统自带的执行文件的元数据信息:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>file /usr/bin/file
+</span><span class='line'>/usr/bin/file: ELF 64-bit LSB executable, x86-64, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, dynamically linked <span class="o">(</span>uses shared libs<span class="o">)</span>, <span class="k">for </span>GNU/Linux 2.6.15, BuildID<span class="o">[</span>sha1<span class="o">]=</span>0xe04b36145abc21d863652b93e6a0d069f7dfd3f4, stripped
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>查找文件(跳过某些指定目录)</h4>
+
+<p>你想要统计系统中所有的<code>JavaScript</code>文件的数量，但是又不想把外部的库文件（位于<code>libs</code>目录中）统计在内：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>find . -path ./libs -prune -o -name <span class="s2">&quot;*.js&quot;</span> | wc -l
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里大概解释一下，上面的命令其实等于这条命令的缩写：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>find . -path ./libs -a -prune -o -name <span class="s2">&quot;*.js&quot;</span> | wc -l
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>也即</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>find . -path ./libs -and -prune -or -name <span class="s2">&quot;*.js&quot;</span> | wc -l
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>翻译成伪代码相当于：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;./libs&quot;</span>
+</span><span class='line'>    <span class="n">prune</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>    <span class="n">find_by_name</span> <span class="s2">&quot;*.js&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>断点续传</h4>
+
+<p>下载了一半，网络断了。小文件的话大不了重来一次，但是如果是一个7G的镜像呢？好在我们有<code>wget -c</code>。<code>wget</code>基本上是Linux中下载软件的标配了，它有很多的参数，甚至可以将整个静态网站克隆到本地，断点续传当然是支持的了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>wget -c https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-4.6.0-0-virtualbox.7z --no-check-certificate
+</span><span class='line'>--2014-05-08 12:32:25--  https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-4.6.0-0-virtualbox.7z
+</span><span class='line'>Connecting to 172.19.6.47:8080... connected.
+</span><span class='line'>Proxy request sent, awaiting response... 206 Partial Content
+</span><span class='line'>Length: 3393638045 <span class="o">(</span>3.2G<span class="o">)</span>, 2951427152 <span class="o">(</span>2.7G<span class="o">)</span> remaining <span class="o">[</span>text/plain<span class="o">]</span>
+</span><span class='line'>Saving to: <span class="sb">`</span>cloudera-quickstart-vm-4.6.0-0-virtualbox.7z<span class="err">&#39;</span>
+</span><span class='line'>
+</span><span class='line'>13% <span class="o">[</span>++++++++++                                                                      <span class="o">]</span> 450,866,893 57.8K/s  eta 3h 57m
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/01/how-we-do-training-in-thoughtworks/">在ThoughtWorks我们做内部培训？</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-25T01:20:00+11:00" pubdate data-updated="true">Jan 25<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>ThoughtWorks内部培训</h3>
+
+<p>对新人的培训是每个企业都绕不开的一个话题，企业当然想要每个新人都能直接独当一面，最好可以直接上项目贡献自己的价值。但是从经验来看，所有新人到一个新环境都需要学习很多不同的新东西（新技术，框架，语言，工作方式等等），而每个企业对于培训新人都有各种各样的策略，比如老人带新人，比如扔到项目上让新人自己学。</p>
+
+<p>在ThoughtWorks，我们有着丰富的培训方式，有面向社招的，有面向毕业生的，有民间自发的，有官方组织的，有内部的，也有面向社区的。</p>
+
+<h4>TWU</h4>
+
+<p>TWU全称ThoughtWorks University，面向毕业生，入职之后的第一堂课。TWU的地点设在印度，之前在班加罗尔，后来改到了普内。每一期5周，学生们需要和和全球其他国家地区的同学一起，一般会尽量将各个地区的学生打乱安排，尽量让学生体会多元化的文化，培训内容设计公司文化，软件开发方法论，敏捷开发（Project SImulation）实践等，同时还需要保证学生有足够的代码练习机会。</p>
+
+<p>我在2013年作为讲师参加了一起TWU，对我自己的帮助也非常大，在和来自不同地区的讲师一起备课，学习中学习到了很多的东西，之前似是而非的一些概念也得到了纠正。</p>
+
+<p><img src="/images/2015/02/twu33-resized.png" alt="twu" /></p>
+
+<h4>TWI</h4>
+
+<p>TWI全称ThoughtWorks Immersion，面向有经验的社招同事，主要涉及的内容为公司文化（合作，沟通），专业服务（如何专业的解决客户的问题），软件开发流程，敏捷开发方法论等。</p>
+
+<p>我在2012年时参加过TWI，并整理了几篇相关文章，可以参考<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-1/">这里</a>，<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-2/">这里</a>还有<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-3/">这里</a>。</p>
+
+<p><img src="/images/2015/01/twi-resized.png" alt="twi" /></p>
+
+<h4>Session</h4>
+
+<p>Office局限在ThoughtWorks办公室之内，内容随意，参加不参加随意，可以随时加入或随时离开。虽然内容没有限制，但是大多数时候分享的都是技术主题。比如<code>自动化部署</code>，<code>自动测试</code>，<code>Spring 4</code>，<code>Ruby中的构建工具</code>等等。</p>
+
+<p>Sessoin的形式是主讲者找一个自己感兴趣的主题，一个人讲，其他参与者听，鼓励互动。时间一般控制在一个小时以内，所以一般选择在中午饭的时候，有的session会给大家订饭，一边吃一边听。</p>
+
+<p>虽然大部分Sessoin的主题是技术相关的，但是并不局限于此。比如旅游见闻，历史，财务，摄影等等，都可以分享，有时候这些趣味性的Session的参与者更多。</p>
+
+<p><img src="/images/2015/01/session-resized.png" alt="session" /></p>
+
+<h4>WorkShop</h4>
+
+<p>Office之内，内容随意，以动手为主，讲解为辅。</p>
+
+<ul>
+<li>HTML/CSS</li>
+<li>Testable JavaScript</li>
+<li>设计工作坊</li>
+<li>OO BootCamp</li>
+<li>Ruby BootCamp</li>
+</ul>
+
+
+<p>一般来说，Workshop都会组成一个系列，通常会占用几天到几周不等。参与者需要带上电脑，在课堂上进行练习之外，课后还会有一些练习。</p>
+
+<p><img src="/images/2015/01/workshop-resized.png" alt="" /></p>
+
+<p><a href="http://icodeit.org/3-pages-in-3-weeks/">3周3页面</a>和<a href="http://icodeit.org/lwweb/">可测试的JavaScript</a>是我去年做的两个Workshop。由于Workshop会在下班后或者中午的休息时间，公司会为每个参与者订饭，以节省时间。</p>
+
+<h4>郑大晔校</h4>
+
+<p>面向刚刚得到offer的毕业生，在上项目之前，我们希望学生的基本技术达到特定的水平，因此设置了一系列的练习。包括</p>
+
+<ul>
+<li>编程基础</li>
+<li>开发流程</li>
+<li>工作方式</li>
+<li>公司文化</li>
+</ul>
+
+
+<p>等等。郑大晔校的周期为每周一次，一次一天。涉及的内容会与大多数项目上的要求一致，比如西安office的Java/Ruby项目居多，我们的课程安排就会涉及到<code>Java/Ruby</code>方面。当然，各种软技能如工作方式也会在课程中涉及，尽量的寓教于乐。</p>
+
+<p>每期郑大晔校大概会有10周，学生入职之后有的会直接去TWU，有的则会在项目上工作一段时间再去TWU。</p>
+
+<p><img src="/images/2015/01/zhengda-resized.png" alt="" /></p>
+
+<h4>组内培训</h4>
+
+<p>各个组内自行组织，并不要求其他同事参加。比如某个项目需要一些<code>docker</code>的知识，或者需要<code>AngularJS</code>相关的培训，一方面是找自己组内的专家组织一次内部培训，，另一种是找办公室内相关的专家来进行培训，形式比较灵活。</p>
+
+<ul>
+<li>项目中已经在使用的技术</li>
+<li>项目中将要使用的技术</li>
+<li>请别的组的专家来咨询</li>
+</ul>
+
+
+<p><img src="/images/2015/01/group-resized.png" alt="group learn" /></p>
+
+<h4>社区</h4>
+
+<ul>
+<li>OpenParty</li>
+<li>Rails Girl</li>
+</ul>
+
+
+<p><img src="/images/2015/02/rails-girl-session-resized.png" alt="rails girl" /></p>
+
+<h4>问题</h4>
+
+<ul>
+<li>谁当讲师</li>
+<li>活动经费</li>
+<li>内容如何持久化（人，内部知识分享系统）</li>
+<li>如何保证效果（宽松）</li>
+</ul>
+
+
+<p>由于对任何的话题都没有限制，也没有对参与者的限制，因此任何人只要感兴趣都可以作为讲师。而又由于没有任何的强制措施，参与者和主讲者都凭着自己的热情来组织，这也算是比较独树一帜的事情。</p>
+
+<p>而关于内容的持久化，更多的是为参与者打开一扇新的窗户，或者说洒下一些火星，而至于火星如何形成燎原之势，则完全在参与者自己的自觉。好多次和客户分享了我们的培训机制之后，被问到最多的问题是如何<code>强迫</code>参与者产生热情？</p>
+
+<p>这个问题在ThoughtWorks不是问题，我们在一个人进入公司的最开始，也就是面试的时候，就考察了他的热情，如果在热情上有缺陷，则很可能会直接拒掉，免得破坏我们好不容易构建起来的学习氛围。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2023,553 +2400,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/09/get-started-with-node-webkit/">使用node-webkit构建桌面应用程序</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-21T17:12:00+10:00" pubdate data-updated="true">Sep 21<span>st</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Web前端的现状</h3>
-
-<p>目前的Web前端的现状较之5-6年前，简直不能同日而语：从所使用的技术、工具、框架到开发一个产品所需要付出的工作量，从前端开发从业人员的数量到Web应用的数量，从企业对于Web前端的重要程度的认识到Web实际上为企业带来的回报，一切都有了翻天覆地的变化。</p>
-
-<p>借助HTML5+CSS3的普及，加上一些开箱即用的CSS框架（如bootstrap，foundation等）支持，人们已经可以非常容易的从零开始搭建一个Web应用的前端。一个在UI方面非常业余的程序员也可以很快的做出一个像模像样的用户界面。而另一方面，基于操作系统原生API，要想设计并实现一个桌面应用，需要的付出则远远超过超过同水平的Web界面。</p>
-
-<h3>webkit浏览器内核</h3>
-
-<p><a href="https://www.webkit.org/">Webkit</a>作为最受欢迎的<em>浏览器内核</em>，自然有非常多的port。比如GTK+对它的port &#8211; <a href="http://webkitgtk.org/">WebkitGTK</a>，以及构建在WebkitGTK之上的Python的<a href="https://code.google.com/p/pywebkitgtk/">bind</a>。使用WebkitGTK的Python版本，开发人员可以用HTML+CSS来开发应用，然后写一点Python脚本，最后将其运行在桌面上。</p>
-
-<p>这里有个早期的例子来教你<a href="http://arstechnica.com/information-technology/2009/07/how-to-build-a-desktop-wysiwyg-editor-with-webkit-and-html-5/1/">如何写一个所见即所得的编辑器</a>。桌面应用开发中，对于用户界面的复杂性一直是一个难题，而这种方式可以减轻很多的用户界面开发的复杂性，将界面开发交给另外更加灵活，更加容易编写和调试方式：HTML+CSS。</p>
-
-<p>这种模式下基本的开发流程是编写一个HTML页面（作为程序入口），然后在这个页面上引入额外的CSS（界面风格）和JavaScript（动作），然后将这些资源交给工业级浏览器内核Webkit来渲染 &#8211; 这个过程和在浏览器中访问该文件并无二致，但是有两个额外的好处：</p>
-
-<ol>
-<li>页面运行在一个“桌面应用程序”中</li>
-<li>没有地址栏，状态栏，菜单栏等，看起来更像是一个桌面应用</li>
-<li>用户界面开发的复杂性被“外包”给一个更简单的环境</li>
-</ol>
-
-
-<p>这就是传说中的混合（hybrid）开发模式，比如现在移动开发中的cordova就是采用这种模式，使得本来被视为天堑的原生的用户界面开发变为坦途。</p>
-
-<h4>node-webkit</h4>
-
-<p><a href="https://github.com/rogerwang/node-webkit">node-webkit</a>是一个基于<a href="http://www.chromium.org/">chromium</a>和node.js的应用程序开发工具。它不但支持你使用传统的HTML5+CSS3+JS方式来开发你的应用程序，还支持无缝的与Node.js集成，也就是说，所有的Node支持的与操作系统交互的功能，如网络连接，文件系统，操作系统资源访问等，以及Node之上的第三方库都可以在node-webkit中进行使用。</p>
-
-<p>更好的是，node-webkit是一个跨平台的工具，你可以使用它构建出运行在Mac OS，Linux以及Windows下的应用程序。应用程序通过Node.js来进行与系统相关的访问，而用HTML5+CSS3进行用户界面部分的设计。</p>
-
-<p>node-webkit未必是未来桌面应用的唯一方式，但是却是一个非常好的选择，特别对于已经熟知Web前端开发技术栈的众多开发者来说，无需学习一门新的语言，一切都被很大程度的简化了。</p>
-
-<h4>第一个node-webkit应用程序</h4>
-
-<p>开发node-webkit应用程序非常简单。在<a href="https://github.com/rogerwang/node-webkit">这里下载</a>系统对应的版本。并确保对应的二进制文件(nwnw.exe)在系统的PATH之中。</p>
-
-<p>创建一个新的目录，然后在该目录中创建一个<code>package.json</code>文件和一个<code>index.html</code>文件：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>mkdir -p hello-node-webkit
-</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>hello-node-webkit
-</span><span class='line'><span class="nv">$ </span>touch package.json index.html
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>package.json</code>文件的内容如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;hello-node-webkit&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;version&quot;</span><span class="o">:</span> <span class="s2">&quot;0.1.0&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;main&quot;</span><span class="o">:</span> <span class="s2">&quot;index.html&quot;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>index.html</code>文件的内容如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;title&gt;</span>Hello node-webkit<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;h1&gt;</span>Hello node-webkit<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后将这两个文件打在一个<code>zip</code>格式压缩包中：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>zip -r hello-node-webkit.zip *
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后将这个文件重命名为<code>hello-node-webkit.nw</code>，最后使用node-webkit来启动这个应用程序。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span> ~/Tools/node-webkit.app/Contents/MacOS/node-webkit hello-node-webkit.nw
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2014/09/hello-node-webkit-resized.png" alt="image" /></p>
-
-<h4>添加外部JS/CSS</h4>
-
-<p>接下来我们为这个页面添加一些外部的引用：CSS/JavaScript文件。首先创建两个目录<code>style</code>和<code>script</code>，然后分别创建文件如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>├── index.html
-</span><span class='line'>├── package.json
-</span><span class='line'>├── script
-</span><span class='line'>│   ├── app.js
-</span><span class='line'>│   └── jquery.min.js
-</span><span class='line'>└── style
-</span><span class='line'>    └── style.css
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中，style.css定义了<code>h1</code>的简单样式：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">h1</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#999999</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而app.js则注册了一个简单的事件处理器：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;h1&quot;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">alert</span><span class="p">(</span><span class="s2">&quot;Heading 1 is clicked&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>此时的index.html修改如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;title&gt;</span>Hello node-webkit<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;style/style.css&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;h1&gt;</span>Hello node-webkit<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;script/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;script/app.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>还是按照上一小节的命令完成打包，改名，启动之后。点击<code>h1</code>元素时，会弹出对话框如下：</p>
-
-<p><img src="/images/2014/09/node-webkit-clicked-resized.png" alt="image" /></p>
-
-<p>在这个例子中，我们使用了外部的<code>css</code>文件来添加样式，还引入了<code>jQuery</code>作为访问DOM元素的工具，最后还使用了一段调用<code>jQuery</code>的JavaScript代码。</p>
-
-<h4>构建脚本</h4>
-
-<p>你可能已经注意到了，使用node-webkit开发非常方便。但是这一系列的动作（修改HTML+CSS，压缩打包，改名，启动）等有一部分重复工作，我们可以将其自动化。</p>
-
-<p>好在已经有了一个很好用的<code>grunt</code>的插件：<a href="https://github.com/mllrsohn/grunt-node-webkit-builder">grunt-node-webkit-builder</a>，这个插件可以帮助我们自动执行压缩打包这些动作。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>npm install grunt-node-webkit-builder
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后定义一个Gruntfile.js，这个文件中指定源文件（所有的HTML，JavaScript代码，CSS文件）所在目录，目标文件所在目录，需要构建的应用程序指定的操作系统平台等：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">grunt</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">grunt</span><span class="p">.</span><span class="nx">initConfig</span><span class="p">({</span>
-</span><span class='line'>        <span class="nx">pkg</span><span class="o">:</span> <span class="nx">grunt</span><span class="p">.</span><span class="nx">file</span><span class="p">.</span><span class="nx">readJSON</span><span class="p">(</span><span class="s1">&#39;package.json&#39;</span><span class="p">),</span>
-</span><span class='line'>        <span class="nx">nodewebkit</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">platforms</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osx&#39;</span><span class="p">],</span>
-</span><span class='line'>                <span class="nx">buildDir</span><span class="o">:</span> <span class="s1">&#39;builds&#39;</span><span class="p">,</span>
-</span><span class='line'>            <span class="p">},</span>
-</span><span class='line'>            <span class="nx">src</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;app/**/*&#39;</span><span class="p">]</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span><span class="s1">&#39;grunt-node-webkit-builder&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;nodewebkit&#39;</span><span class="p">]);</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，我们修改之后，就可以很简单的执行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>grunt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>来进行打包了。比如在Mac下，构建出来的应用位于<code>builds/&lt;app-name&gt;/osx</code>目录下，要启动该应用只需要在命令行输入</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>open builds/hello-node-webkit/osx/hello-node-webkit.app
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者在Finder中双击打开即可。</p>
-
-<p>可以看到上例中的应用程序还有浓重的浏览器痕迹，比如地址栏，刷新按钮，甚至还有一个<code>DevTools</code>的按钮。我们可以通过修改<code>package.json</code>来指定：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;hello-node-webkit&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;version&quot;</span><span class="o">:</span> <span class="s2">&quot;0.1.0&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;main&quot;</span><span class="o">:</span> <span class="s2">&quot;index.html&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;window&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;toolbar&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;width&quot;</span><span class="o">:</span> <span class="mi">800</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;height&quot;</span><span class="o">:</span> <span class="mi">600</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样的界面就更像是一个桌面应用了：</p>
-
-<p><img src="/images/2014/09/hello-without-address-resized.png" alt="image" /></p>
-
-<p>到目前为止，这个小的<em>应用程序</em>并没有什么有趣的特性，用户界面也毫无美感，但是有了这些基本知识和工具之后，我们就可以开始更进一步的开发。除了使用既有的CSS框架来完成用户界面的美化，我们还会使用node.js访问系统资源来构建真实的应用程序。</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/09/simple-idea-and-simple-script/">一个简单的午餐推荐脚本</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-18T21:55:00+10:00" pubdate data-updated="true">Sep 18<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>千古谜题 &#8212; 中午吃啥？</h3>
-
-<p>如果要列出一些日常最频繁的会问/被问的问题的一个列表，<strong><em>吃啥？</em></strong>绝对会排在前三位，对于程序员来说，一样频繁的还有诸如<strong><em>这是谁写的？</em></strong>，<strong><em>这尼玛啥意思啊？</em></strong>之类。</p>
-
-<p><strong>吃啥</strong>作为一个每天都会面对的问题，我们自然而言会想很多办法，比如随大流，其他人去哪儿我们跟着就行，但是这种方法最大的问题是：大部分人其实都没有很好的想法，大家都很迷茫。作为程序员，一个非常直观的想法就是找出一个列表，然后随机/伪随机的从这个列表中拿出一条来作为推荐。</p>
-
-<h4>基本思路</h4>
-
-<p>一个基本的思路是这样的，或者说，要开发的软件应该满足这几个基本的需求</p>
-
-<ol>
-<li>维护一个饭店/饭菜的列表</li>
-<li>随机的从这个列表中取出一项</li>
-<li>每天定时的触发，比如<strong>11:30</strong>准时提醒</li>
-<li>这个工具最终要以弹出窗口等方式来提醒</li>
-</ol>
-
-
-<p>饭店/饭菜的列表比较容易，比如一个静态的JSON文件：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;关中客大碗面&quot;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;王华峰肉夹馍&quot;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;傻得帽冒菜&quot;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;蒸饺&quot;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;樊家肉夹馍&quot;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;马奴哈羊肉泡馍&quot;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;子午路张记肉夹馍&quot;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;东滩水盆&quot;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后我们需要一个小程序来读取这段JSON，并已随机/伪随机的方式返回一个推荐：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># encoding: UTF-8</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">first</span>
-</span><span class='line'>    <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;food.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">)</span><span class="o">.</span><span class="n">shuffle</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="s2">&quot;name&quot;</span><span class="o">]</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;今天去吃</span><span class="si">#{</span><span class="n">first</span><span class="si">}</span><span class="s2">吧?&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>测试一下，将上边这个ruby程序运行几次，可以得到一下结果：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>ruby lunch.rb
-</span><span class='line'>今天去吃东滩水盆吧?
-</span><span class='line'>
-</span><span class='line'><span class="nv">$ </span>ruby lunch.rb
-</span><span class='line'>今天去吃子午路张记肉夹馍吧?
-</span><span class='line'>
-</span><span class='line'><span class="nv">$ </span>ruby lunch.rb
-</span><span class='line'>今天去吃傻得帽冒菜吧?
-</span><span class='line'>
-</span><span class='line'><span class="nv">$ </span>ruby lunch.rb
-</span><span class='line'>今天去吃马奴哈羊肉泡馍吧?
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>效果不错，最起码它可以在控制台上打印比较随机的一个推荐了。</p>
-
-<h4>界面</h4>
-
-<p>最开始界面当然会考虑用诸如Sinatra做一个Web页面，然后吃饭前大家派代表去摇一下，然后听天由命。但是这样的弊端是不直观，用户需要打开该网站，然后主动的获取信息。</p>
-
-<p>我们更想要的是<strong>推送</strong>的方式来获得这个信息，经过简单的测试，发现Mac系统自带的<code>osascript</code>比较适合，这个工具可以执行苹果的脚本语言<a href="https://developer.apple.com/library/mac/documentation/AppleScript/Conceptual/AppleScriptX/AppleScriptX.html">AppleScript</a>，当然还可以执行<a href="https://developer.apple.com/library/mac/documentation/applescript/conceptual/applescriptx/concepts/osa.html">OSA</a>，不过这篇的重点并不是这个，我们可以在另一篇文件中讨论这个主题。</p>
-
-<p>比如一个很简单的<code>osascript</code>脚本是这样的：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='applescript'><span class='line'><span class="nb">display</span> <span class="nv">notification</span> <span class="s2">&quot;Hello, world&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在命令行输入：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>osascript hello.osa
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>来执行这个脚本，这时你会看到一个弹出窗口：</p>
-
-<p><img src="/images/2014/09/hello-osa-resized.png" alt="image" /></p>
-
-<p>可以通过指定title来设置弹出窗口的标题：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='applescript'><span class='line'><span class="nb">display</span> <span class="nv">notification</span> <span class="s2">&quot;Hello, world&quot;</span> <span class="nv">with</span> <span class="na">title</span> <span class="s2">&quot;This is Title&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2014/09/hello-osa-with-title-resized.png" alt="image" /></p>
-
-<p>这样我们的实现就比较容易了，一个最简单的版本如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">chisha</span><span class="o">=</span><span class="sb">`</span>ruby lunch.rb<span class="sb">`</span>
-</span><span class='line'>osascript -e <span class="s2">&quot;display notification \&quot;${chisha}\&quot; with title \&quot;Chisha?\&quot;&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>首先执行<code>ruby lunch.rb</code>得到一个推荐的饭店，然后将这个饭店名称传入osascript来生成通知：</p>
-
-<p><img src="/images/2014/09/chisha-resized.png" alt="image" /></p>
-
-<h4>定时任务</h4>
-
-<p>有了这个脚本，我们可以很容易的使用<code>crontab</code>将其作为定时任务，比如将上述的脚本保存为<code>lunch.sh</code>，然后定义一个<code>crontab</code>脚本：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>crontab -l
-</span><span class='line'>30 11 * * 1-5 /Users/jtqiu/develop/ruby/chisha/lunch.sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个脚本会在每周的周一到周五的中午11点30分执行一次，对于<a href="http://en.wikipedia.org/wiki/Cron">crontab的语法</a>请参考此处。</p>
-
-<p>一个直观的图示如下：</p>
-
-<p><img src="/images/2014/09/crontab-syntax.gif" alt="image" /></p>
-
-<p>图片来源(http://www.webenabled.com/sites/default/files/crontab-syntax.gif)</p>
-
-<p>对应的<a href="https://github.com/abruzzi/chisha">代码都放在Github上</a>，而且这个README是我目前写的最详细的一个，:)。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -2585,6 +2415,14 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/02/linux-tips/">Linux命令行中的7个小技巧</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/01/how-we-do-training-in-thoughtworks/">在ThoughtWorks我们做内部培训？</a>
+      </li>
+    
+      <li class="post">
         <a href="/2015/01/copy-code-with-style/">高亮剪贴板里的代码片段</a>
       </li>
     
@@ -2594,14 +2432,6 @@
     
       <li class="post">
         <a href="/2014/12/my-2014/">我的2014</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2014/12/setup-sublime-as-javascript-development-env/">在Sublime Text中设置JavaScript构建</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2014/11/modern-ui-development-workflow/">现代Web页面开发流程</a>
       </li>
     
   </ul>
