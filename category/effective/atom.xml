@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: effective | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/effective/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2015-02-18T15:05:48+11:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[制作一个更漂亮的svn diff命令]]></title>
+    <link href="http://abruzzi.github.com/2015/02/make-a-colorful-svn-diff/"/>
+    <updated>2015-02-18T14:14:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/02/make-a-colorful-svn-diff</id>
+    <content type="html"><![CDATA[<h3>Code Review</h3>
+
+<p>在<code>ThoughtWorks</code>，我们几乎每天都会进行一个叫<code>code review</code>或者<code>code diff</code>的活动：每天下午5:00，团队成员围坐在一起，将今天的修改大概过一下，这样做的好处非常明显：</p>
+
+<ol>
+<li>分享业务知识，了解彼此的工作</li>
+<li>分享技术细节，比如有人使用了某种设计模式</li>
+<li>帮助别人发现问题，比如逻辑错误等，群策群力</li>
+</ol>
+
+
+<p>经过实践，<code>code reivew</code>可以快速发现问题，而且可以尽可能多的分享知识，是一种<code>ThoughtWorker</code>们喜闻乐见的学习/娱乐形式。</p>
+
+<p>但是随着项目的不同，各个团队使用的版本管理工具都不一样。用惯了<code>git</code>的非常漂亮的<code>diff</code>子命令之后，<code>svn</code>的<code>diff</code>简直就是战五渣。没有高亮，没有进度条，就是黑底白字的一些文本，实在无法让人提起兴趣。</p>
+
+<p>这篇文章分享一个简单的方法，可以让你很容易的把<code>svn</code>的<code>diff</code>打造成一个漂亮的工具：</p>
+
+<p><img src="/images/2015/02/svn-color-diff-resized.png" alt="svn diff" /></p>
+
+<h4>diff格式</h4>
+
+<p>Diff是一种通用的表示文本差异的格式，细节可以看我之前写过一篇<a href="http://icodeit.org/2012/02/diff%E5%92%8Cpatch%E7%9A%84%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/">关于diff和patch的文章</a>。需要说明的是，它作为一种标准格式，很多编辑器都提供对这种格式的高亮显示，比如现在非常流行的<code>Sublime Text</code>编辑器：</p>
+
+<p><img src="/images/2015/02/sublime-diff-resized.png" alt="sublime diff" /></p>
+
+<p>默认的，<code>svn</code>的diff命令会生成这样<strong>朴素</strong>的输出：</p>
+
+<p><img src="/images/2015/02/svn-diff-resized.png" alt="svn diff" /></p>
+
+<h4>命令行的diff高亮显示</h4>
+
+<p>在Mac下，可以通过<code>brew</code>来安装一个命令行工具，这个工具可以将<code>Diff</code>格式高亮显示：</p>
+
+<p><code>sh
+$ brew install colordiff
+</code></p>
+
+<p>有了这个工具，就可以将<code>svn</code>生成的<code>Diff</code>格式高亮显示出来：</p>
+
+<p><code>sh
+$ svn diff | colordiff
+</code></p>
+
+<p><img src="/images/2015/02/color-diff-resized.png" alt="color diff" /></p>
+
+<p>但是你可能已经发现这些神奇的<code>^M</code>，这是<code>Windows</code>系统中的换行符在<code>Unix</code>类系统中的展示，我们需要将<code>Diff</code>先转换一次：</p>
+
+<p><code>sh
+$ svn diff | dos2unix | colordiff
+</code></p>
+
+<p><img src="/images/2015/02/color-diff-converted-resized.png" alt="color diff converted" /></p>
+
+<p>如果你的系统中没有<code>dos2unix</code>，可以用<code>brew</code>来安装：</p>
+
+<p><code>sh
+$ brew install dos2unix unix2dos
+</code></p>
+
+<h4>分页器</h4>
+
+<p>*nix系统下有两种分页器：<code>more</code>和<code>less</code>，<code>less</code>比<code>more</code>的功能更丰富。<code>less</code>有很多的参数，我们这里选用了3个常见的：</p>
+
+<ol>
+<li><code>-s</code>: 压缩连续的空白行为一行</li>
+<li><code>-M</code>: 给出更多的提示信息，包含行号，百分比等</li>
+<li><code>+Gg</code>: 先跳至要查看文件的末尾，再跳至文件开头，这样从less就可以得到整个流的长度，从而计算出正确的百分比。当然如果是单独文件时，less是明确知道文件长度的，但是如果是从流中重定向过来的文本，less无法在开始时就得知长度。</li>
+</ol>
+
+
+<p>下面这条命令可以将当前目录下的所有<code>html</code>文件分屏显示，并且在每一屏的最后一行显示百分比等信息：</p>
+
+<p><code>sh
+$ cat *.html | less -s -M +Gg
+</code></p>
+
+<h4>放在一起</h4>
+
+<p>好了，我们将每个部分都已经讲解了一遍了，现在让我们将这些零件串起来，在svn的<code>working copy</code>中执行这条命令就可以得到非常漂亮的，分页显示的Diff：</p>
+
+<p><code>sh
+$ svn diff | dos2unix | colordiff | less -s -M +Gg
+</code></p>
+
+<p>当然，还可以用一个<code>alias</code>(别名)来节省敲入的字符数：</p>
+
+<p><code>sh
+$ alias sd='svn diff | dos2unix | colordiff | less -s -M +Gg'
+</code></p>
+]]></content>
+  </entry>
+  
+</feed>

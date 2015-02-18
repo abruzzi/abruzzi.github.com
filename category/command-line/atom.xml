@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Command line | I code it]]></title>
+  <title><![CDATA[Category: command line | I code it]]></title>
   <link href="http://abruzzi.github.com/category/command-line/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-02-14T19:36:55+11:00</updated>
+  <updated>2015-02-18T15:05:48+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,269 +14,98 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Linux命令行中的7个小技巧]]></title>
-    <link href="http://abruzzi.github.com/2015/02/linux-tips/"/>
-    <updated>2015-02-14T17:48:00+11:00</updated>
-    <id>http://abruzzi.github.com/2015/02/linux-tips</id>
-    <content type="html"><![CDATA[<h3>Linux命令行中的7个小技巧</h3>
+    <title type="html"><![CDATA[制作一个更漂亮的svn diff命令]]></title>
+    <link href="http://abruzzi.github.com/2015/02/make-a-colorful-svn-diff/"/>
+    <updated>2015-02-18T14:14:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/02/make-a-colorful-svn-diff</id>
+    <content type="html"><![CDATA[<h3>Code Review</h3>
 
-<p>命令行是开发者的好朋友，<code>*nix</code>系统（包括Mac OS X和各种Linux）都自带了强大的Shell环境，作为一个专业的程序员，Shell是离不开的。这里总结了几个常用的小技巧，都是我自己平时经常用，而又不想每次都去Google的。</p>
-
-<h4>如何知道哪个进程在监听4000端口？</h4>
-
-<p>当启动服务时，经常会遇到想要<code>Address already in use</code>这样的异常，那么如何知道是哪个进程占用了该端口呢？</p>
-
-<p><code>sh
-$ lsof -i :4000
-</code></p>
-
-<p><code>lsof</code>会列出系统目前打开的文件（List open files，Linux世界中，一切都是文件），<code>-i</code>表示网络地址（Internet address），注意此处的冒号。如果不带参数，lsof会列出所有打开的网络地址：</p>
-
-<p><img src="/images/2015/02/lsof-resized.png" alt="lsof" /></p>
-
-<p><code>sh
-$ lsof -i :4000
-COMMAND   PID  USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
-ruby    32303 jtqiu    7u  IPv4 0x947b402a4bb8370b      0t0  TCP *:terabase (LISTEN)
-</code></p>
-
-<h4>Shell中如何设置代理？</h4>
-
-<p>很多公司都会有一个代理服务器供员工上外网使用，命令行中设置代理非常容易：</p>
-
-<p><code>sh
-export http_proxy="http://username:password@hosename:port"
-</code></p>
-
-<p>如果密码中有特设字符，比如<code>$</code>的话，需要转义一下。使用URLEncoding即可，比如<code>$</code>就是<code>%24</code>。最简单的就是在Chrome的<code>Console</code>中输入<code>encodeURIComponent("$")</code>来获得转义字符。</p>
-
-<p>如果不想对某些地址使用代理，可以设置<code>no_proxy</code>环境变量：</p>
-
-<p><code>sh
-export no_proxy="127.0.0.1, localhost, *.cnn.com, 192.168.1.10, domain.com:8080"
-</code></p>
-
-<h4>如何为svn中的脚本设置可执行属性</h4>
-
-<p>你在Linux下创建了一个可执行脚本<code>e2e_test.sh</code>，但是团队里的其他人工作在Windows系统上，当你提交可执行脚本之后，他们checkout的是一个不能执行的文件！（其实也在情理之中，Windows这种垃圾货什么时候正常过呢？）</p>
-
-<p>这时候可以通过给这个脚本设置一个<code>svn</code>的属性:</p>
-
-<p><code>sh
-svn propset svn:executable "*" e2e_test.sh
-</code></p>
-
-<p>这样在Windows上才heckout之后就正常了。</p>
-
-<h4>在Bash脚本中如何判断一个文件是否可执行？</h4>
-
-<p>有时候我们在<code>Bash</code>中需要判断某个文件是否可以执行，这行脚本可以解救你：</p>
-
-<p><code>sh
-if [ -x $FILENAME ]; then
-  # the file is executable
-fi
-</code></p>
-
-<p>判断某个文件是否存在的脚本为：</p>
-
-<p><code>sh
-if [ -f $FILENAME ]; then
-  # the file is existing
-fi
-</code></p>
-
-<h4>我正在用的Linux是哪个发行版？</h4>
-
-<p><code>sh
-$ lsb_release -a
-</code></p>
-
-<p>在<code>SUSE</code>系统中运行这条命令可以得到这样的输出:</p>
-
-<p><code>sh
-$ lsb_release -a
-LSB Version:    core-2.0-noarch:core-3.0-noarch:core-2.0-x86_64:core-3.0-x86_64:desktop-3.1-amd64:desktop-3.1-noarch:graphics-2.0-amd64:graphics-2.0-noarch:graphics-3.1-amd64:graphics-3.1-noarch
-Distributor ID: SUSE LINUX
-Description:    SUSE Linux Enterprise Server 10 (x86_64)
-Release:        10
-Codename:       n/a
-</code></p>
-
-<p>而在<code>ubuntu</code>上则为:</p>
-
-<p><code>sh
-$ lsb_release  -a
-No LSB modules are available.
-Distributor ID: Ubuntu
-Description:    Ubuntu 12.04.3 LTS
-Release:        12.04
-Codename:       precise
-</code></p>
-
-<p>与之相关的还有个问题是我当前的操作系统是<code>32位还是64为呢</code>?</p>
-
-<p><code>sh
-$ uname -m
-x86_64
-</code></p>
-
-<p>或者使用<code>file</code>命令来查看系统自带的执行文件的元数据信息:</p>
-
-<p><code>sh
-$ file /usr/bin/file
-/usr/bin/file: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.15, BuildID[sha1]=0xe04b36145abc21d863652b93e6a0d069f7dfd3f4, stripped
-</code></p>
-
-<h4>查找文件(跳过某些指定目录)</h4>
-
-<p>你想要统计系统中所有的<code>JavaScript</code>文件的数量，但是又不想把外部的库文件（位于<code>libs</code>目录中）统计在内：</p>
-
-<p><code>sh
-find . -path ./libs -prune -o -name "*.js" | wc -l
-</code></p>
-
-<p>这里大概解释一下，上面的命令其实等于这条命令的缩写：</p>
-
-<p><code>sh
-find . -path ./libs -a -prune -o -name "*.js" | wc -l
-</code></p>
-
-<p>也即</p>
-
-<p><code>sh
-find . -path ./libs -and -prune -or -name "*.js" | wc -l
-</code></p>
-
-<p>翻译成伪代码相当于：</p>
-
-<p>```ruby
-if path == "./libs"</p>
-
-<pre><code>prune
-</code></pre>
-
-<p>else</p>
-
-<pre><code>find_by_name "*.js"
-</code></pre>
-
-<p>end
-```</p>
-
-<h4>断点续传</h4>
-
-<p>下载了一半，网络断了。小文件的话大不了重来一次，但是如果是一个7G的镜像呢？好在我们有<code>wget -c</code>。<code>wget</code>基本上是Linux中下载软件的标配了，它有很多的参数，甚至可以将整个静态网站克隆到本地，断点续传当然是支持的了：</p>
-
-<p><code>``sh
-$ wget -c https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-4.6.0-0-virtualbox.7z --no-check-certificate
---2014-05-08 12:32:25--  https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-4.6.0-0-virtualbox.7z
-Connecting to 172.19.6.47:8080... connected.
-Proxy request sent, awaiting response... 206 Partial Content
-Length: 3393638045 (3.2G), 2951427152 (2.7G) remaining [text/plain]
-Saving to:</code>cloudera-quickstart-vm-4.6.0-0-virtualbox.7z'</p>
-
-<p>13% [++++++++++                                                                      ] 450,866,893 57.8K/s  eta 3h 57m
-```</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[SVN中合并分支]]></title>
-    <link href="http://abruzzi.github.com/2014/08/how-to-merge-branches-in-svn/"/>
-    <updated>2014-08-25T22:42:00+10:00</updated>
-    <id>http://abruzzi.github.com/2014/08/how-to-merge-branches-in-svn</id>
-    <content type="html"><![CDATA[<h3>分支策略</h3>
-
-<p>本来准备整理一篇版本管理中，关于分支的维护策略。后来看到阮一峰老师的<a href="http://www.ruanyifeng.com/blog/2012/07/git.html">这篇文章</a>，觉得非常清晰，这里给出一个链接供参考。</p>
-
-<p>另外一个有意思的<a href="http://codicesoftware.blogspot.com/2008/08/4-steps-to-make-version-control-shine.html">链接在这里</a>，也可以一并参看。</p>
-
-<p>本文就仅仅简单的描述一下，使用svn的命令行工具，如何具体完成合并的操作：</p>
-
-<h3>在Svn中合并分支</h3>
-
-<p>在svn中，要合并两个分支（通常是将某个分支b合并到trunk上，不过另一种模式下也可以将trunk合并到b上）非常简单，我们以一个简单的例子来说明其步骤。</p>
-
-<p>比如我们要将trunk上的修改合并到分支b上，操作可以分为4步：</p>
+<p>在<code>ThoughtWorks</code>，我们几乎每天都会进行一个叫<code>code review</code>或者<code>code diff</code>的活动：每天下午5:00，团队成员围坐在一起，将今天的修改大概过一下，这样做的好处非常明显：</p>
 
 <ol>
-<li>切换到分支b上（之前执行过<code>svn co /path/branches/b</code>之后的目录）</li>
-<li>使用<code>svn log --stop-on-copy</code>命令得到该分支的最早版本号</li>
-<li>使用<code>svn merge --dry-run -rXXX:HEAD /path/trunk</code>来预览合并列表</li>
-<li>合并</li>
+<li>分享业务知识，了解彼此的工作</li>
+<li>分享技术细节，比如有人使用了某种设计模式</li>
+<li>帮助别人发现问题，比如逻辑错误等，群策群力</li>
 </ol>
 
 
-<p>在第二步中，一个典型的输出是这样的：</p>
+<p>经过实践，<code>code reivew</code>可以快速发现问题，而且可以尽可能多的分享知识，是一种<code>ThoughtWorker</code>们喜闻乐见的学习/娱乐形式。</p>
 
-<p>```sh
-$ svn log --stop-on-copy                                                                 <br/>
-...</p>
+<p>但是随着项目的不同，各个团队使用的版本管理工具都不一样。用惯了<code>git</code>的非常漂亮的<code>diff</code>子命令之后，<code>svn</code>的<code>diff</code>简直就是战五渣。没有高亮，没有进度条，就是黑底白字的一些文本，实在无法让人提起兴趣。</p>
 
-<p>r231625 | juntao | 2014-07-10 13:33:36 +1000 (Thu, 10 Jul 2014) | 1 line</p>
+<p>这篇文章分享一个简单的方法，可以让你很容易的把<code>svn</code>的<code>diff</code>打造成一个漂亮的工具：</p>
 
-<h2>Juntao Change the version in pom.xml</h2>
+<p><img src="/images/2015/02/svn-color-diff-resized.png" alt="svn diff" /></p>
 
-<p>r231623 | abruzzi | 2014-07-10 13:22:00 +1000 (Thu, 10 Jul 2014) | 1 line</p>
+<h4>diff格式</h4>
 
-<h2>Spike on data structure of c-wifi, a workable prototype</h2>
+<p>Diff是一种通用的表示文本差异的格式，细节可以看我之前写过一篇<a href="http://icodeit.org/2012/02/diff%E5%92%8Cpatch%E7%9A%84%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/">关于diff和patch的文章</a>。需要说明的是，它作为一种标准格式，很多编辑器都提供对这种格式的高亮显示，比如现在非常流行的<code>Sublime Text</code>编辑器：</p>
 
-<p>r231610 | juntao | 2014-07-10 12:29:01 +1000 (Thu, 10 Jul 2014) | 1 line</p>
+<p><img src="/images/2015/02/sublime-diff-resized.png" alt="sublime diff" /></p>
 
-<h2>Create a new branch for c-wifi</h2>
+<p>默认的，<code>svn</code>的diff命令会生成这样<strong>朴素</strong>的输出：</p>
 
-<p>```</p>
+<p><img src="/images/2015/02/svn-diff-resized.png" alt="svn diff" /></p>
 
-<p>一旦有了这个修订号(231610)，就可以开始合并了：</p>
+<h4>命令行的diff高亮显示</h4>
 
-<p><code>sh
-$ svn merge --dry-run -r231610:HEAD /path/trunk
-</code></p>
-
-<p>这个命令会列出从修订好r231610到当前版本之中，trunk和分支b之间的所有需要合并的文件列表：</p>
-
-<p><code>
---- Merging r235763 through r236311 into 'src/test/java':
-U    src/test/java/tcom/checkout/CheckoutServiceTest.java
-U    src/test/java/bundles/checkout/accordion/AppointmentTest.java
-U    src/test/java/common/service/ServiceHandlerTest.java
-...
-Summary of conflicts:
-  Text conflicts: 2
-</code></p>
-
-<p>最后，svn会给出冲突信息（如果有的话），这时，我们来决定是否合并，以及合并哪些修订号区间的修改。如果预览之后觉得可以直接合并，则可以直接运行：</p>
+<p>在Mac下，可以通过<code>brew</code>来安装一个命令行工具，这个工具可以将<code>Diff</code>格式高亮显示：</p>
 
 <p><code>sh
-$ svn merge -r231610:HEAD /path/trunk
+$ brew install colordiff
 </code></p>
 
-<p>过程中，遇到冲突的情况，svn会询问采取哪种方式来处理</p>
-
-<p>```sh
-Select: (p) postpone, (df) diff-full, (e) edit,</p>
-
-<pre><code>    (mc) mine-conflict, (tc) theirs-conflict,
-    (s) show all options: p
-</code></pre>
-
-<p>```</p>
-
-<p>如果拿不准，可以使用<code>p</code>子命令，然后等到最后在IDE或者编辑器中合并，如果想要丢弃自己的修改，使用<code>tc</code>子命令；如果要丢弃别人的修改，使用<code>mc</code>子命令。</p>
-
-<p>最后，在编辑器中修改完了这些冲突之后，使用:</p>
+<p>有了这个工具，就可以将<code>svn</code>生成的<code>Diff</code>格式高亮显示出来：</p>
 
 <p><code>sh
-$ svn resolved pom.xml
-Resolved conflicted state of 'pom.xml'
+$ svn diff | colordiff
 </code></p>
 
-<p>来标记该冲突已经被解决。最后，运行测试并提交本次修改：</p>
+<p><img src="/images/2015/02/color-diff-resized.png" alt="color diff" /></p>
+
+<p>但是你可能已经发现这些神奇的<code>^M</code>，这是<code>Windows</code>系统中的换行符在<code>Unix</code>类系统中的展示，我们需要将<code>Diff</code>先转换一次：</p>
 
 <p><code>sh
-$ mvn clean test
-$ svn ci -m "Merge branch b with trunk"
+$ svn diff | dos2unix | colordiff
+</code></p>
+
+<p><img src="/images/2015/02/color-diff-converted-resized.png" alt="color diff converted" /></p>
+
+<p>如果你的系统中没有<code>dos2unix</code>，可以用<code>brew</code>来安装：</p>
+
+<p><code>sh
+$ brew install dos2unix unix2dos
+</code></p>
+
+<h4>分页器</h4>
+
+<p>*nix系统下有两种分页器：<code>more</code>和<code>less</code>，<code>less</code>比<code>more</code>的功能更丰富。<code>less</code>有很多的参数，我们这里选用了3个常见的：</p>
+
+<ol>
+<li><code>-s</code>: 压缩连续的空白行为一行</li>
+<li><code>-M</code>: 给出更多的提示信息，包含行号，百分比等</li>
+<li><code>+Gg</code>: 先跳至要查看文件的末尾，再跳至文件开头，这样从less就可以得到整个流的长度，从而计算出正确的百分比。当然如果是单独文件时，less是明确知道文件长度的，但是如果是从流中重定向过来的文本，less无法在开始时就得知长度。</li>
+</ol>
+
+
+<p>下面这条命令可以将当前目录下的所有<code>html</code>文件分屏显示，并且在每一屏的最后一行显示百分比等信息：</p>
+
+<p><code>sh
+$ cat *.html | less -s -M +Gg
+</code></p>
+
+<h4>放在一起</h4>
+
+<p>好了，我们将每个部分都已经讲解了一遍了，现在让我们将这些零件串起来，在svn的<code>working copy</code>中执行这条命令就可以得到非常漂亮的，分页显示的Diff：</p>
+
+<p><code>sh
+$ svn diff | dos2unix | colordiff | less -s -M +Gg
+</code></p>
+
+<p>当然，还可以用一个<code>alias</code>(别名)来节省敲入的字符数：</p>
+
+<p><code>sh
+$ alias sd='svn diff | dos2unix | colordiff | less -s -M +Gg'
 </code></p>
 ]]></content>
   </entry>

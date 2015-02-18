@@ -9,7 +9,8 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Linux命令行中的7个小技巧 命令行是开发者的好朋友，*nix系统（包括Mac OS X和各种Linux）都自带了强大的Shell环境，作为一个专业的程序员，Shell是离不开的。这里总结了几个常用的小技巧，都是我自己平时经常用，而又不想每次都去Google的。 &hellip;">
+  <meta name="description" content="Code Review 在ThoughtWorks，我们几乎每天都会进行一个叫code review或者code diff的活动：每天下午5:00，团队成员围坐在一起，将今天的修改大概过一下，这样做的好处非常明显： 分享业务知识，了解彼此的工作
+分享技术细节，比如有人使用了某种设计模式 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +83,137 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/02/make-a-colorful-svn-diff/">制作一个更漂亮的svn Diff命令</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-18T14:14:00+11:00" pubdate data-updated="true">Feb 18<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Code Review</h3>
+
+<p>在<code>ThoughtWorks</code>，我们几乎每天都会进行一个叫<code>code review</code>或者<code>code diff</code>的活动：每天下午5:00，团队成员围坐在一起，将今天的修改大概过一下，这样做的好处非常明显：</p>
+
+<ol>
+<li>分享业务知识，了解彼此的工作</li>
+<li>分享技术细节，比如有人使用了某种设计模式</li>
+<li>帮助别人发现问题，比如逻辑错误等，群策群力</li>
+</ol>
+
+
+<p>经过实践，<code>code reivew</code>可以快速发现问题，而且可以尽可能多的分享知识，是一种<code>ThoughtWorker</code>们喜闻乐见的学习/娱乐形式。</p>
+
+<p>但是随着项目的不同，各个团队使用的版本管理工具都不一样。用惯了<code>git</code>的非常漂亮的<code>diff</code>子命令之后，<code>svn</code>的<code>diff</code>简直就是战五渣。没有高亮，没有进度条，就是黑底白字的一些文本，实在无法让人提起兴趣。</p>
+
+<p>这篇文章分享一个简单的方法，可以让你很容易的把<code>svn</code>的<code>diff</code>打造成一个漂亮的工具：</p>
+
+<p><img src="/images/2015/02/svn-color-diff-resized.png" alt="svn diff" /></p>
+
+<h4>diff格式</h4>
+
+<p>Diff是一种通用的表示文本差异的格式，细节可以看我之前写过一篇<a href="http://icodeit.org/2012/02/diff%E5%92%8Cpatch%E7%9A%84%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/">关于diff和patch的文章</a>。需要说明的是，它作为一种标准格式，很多编辑器都提供对这种格式的高亮显示，比如现在非常流行的<code>Sublime Text</code>编辑器：</p>
+
+<p><img src="/images/2015/02/sublime-diff-resized.png" alt="sublime diff" /></p>
+
+<p>默认的，<code>svn</code>的diff命令会生成这样<strong>朴素</strong>的输出：</p>
+
+<p><img src="/images/2015/02/svn-diff-resized.png" alt="svn diff" /></p>
+
+<h4>命令行的diff高亮显示</h4>
+
+<p>在Mac下，可以通过<code>brew</code>来安装一个命令行工具，这个工具可以将<code>Diff</code>格式高亮显示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>brew install colordiff
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有了这个工具，就可以将<code>svn</code>生成的<code>Diff</code>格式高亮显示出来：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn diff | colordiff
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2015/02/color-diff-resized.png" alt="color diff" /></p>
+
+<p>但是你可能已经发现这些神奇的<code>^M</code>，这是<code>Windows</code>系统中的换行符在<code>Unix</code>类系统中的展示，我们需要将<code>Diff</code>先转换一次：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn diff | dos2unix | colordiff
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2015/02/color-diff-converted-resized.png" alt="color diff converted" /></p>
+
+<p>如果你的系统中没有<code>dos2unix</code>，可以用<code>brew</code>来安装：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>brew install dos2unix unix2dos
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>分页器</h4>
+
+<p>*nix系统下有两种分页器：<code>more</code>和<code>less</code>，<code>less</code>比<code>more</code>的功能更丰富。<code>less</code>有很多的参数，我们这里选用了3个常见的：</p>
+
+<ol>
+<li><code>-s</code>: 压缩连续的空白行为一行</li>
+<li><code>-M</code>: 给出更多的提示信息，包含行号，百分比等</li>
+<li><code>+Gg</code>: 先跳至要查看文件的末尾，再跳至文件开头，这样从less就可以得到整个流的长度，从而计算出正确的百分比。当然如果是单独文件时，less是明确知道文件长度的，但是如果是从流中重定向过来的文本，less无法在开始时就得知长度。</li>
+</ol>
+
+
+<p>下面这条命令可以将当前目录下的所有<code>html</code>文件分屏显示，并且在每一屏的最后一行显示百分比等信息：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>cat *.html | less -s -M +Gg
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>放在一起</h4>
+
+<p>好了，我们将每个部分都已经讲解了一遍了，现在让我们将这些零件串起来，在svn的<code>working copy</code>中执行这条命令就可以得到非常漂亮的，分页显示的Diff：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn diff | dos2unix | colordiff | less -s -M +Gg
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然，还可以用一个<code>alias</code>(别名)来节省敲入的字符数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">alias </span><span class="nv">sd</span><span class="o">=</span><span class="s1">&#39;svn diff | dos2unix | colordiff | less -s -M +Gg&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2269,137 +2401,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/11/splash-color-in-black-and-white-photo/">命令行制作黑白+单色照片</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-08T12:59:00+11:00" pubdate data-updated="true">Nov 8<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>黑白+单色照片</h3>
-
-<p>有很多摄影师通过后期制作出了非常独特的<code>黑白+单色</code>照片，并由此来强调被拍摄主题，绿叶中的红花，紫色花朵的黄色花蕊等；的另一方面，这种照片可以强调背景的灰色，比如雾霾中的交通灯。</p>
-
-<p>比如原图是这样的：</p>
-
-<p><img src="/images/2014/11/flower-resized.jpg" alt="image" /></p>
-
-<p>经过处理之后，最终的效果是这样的：</p>
-
-<p><img src="/images/2014/11/flower-final-resized.jpg" alt="image" /></p>
-
-<p>网络上已经有很多的教程来做到这一点，不过都需要使用<code>photoshop</code>来完成颜色的抽取，反色，灰化等。当然，作为程序员，特别是命令行控，自然会想到的是使用<a href="http://www.imagemagick.org/">图片编辑神器ImageMagick</a>来处理。</p>
-
-<h4>基本原理</h4>
-
-<p>我们都知道，彩色图片都是由3个通道（红，绿，蓝三个）叠加在一起的（如果图片带有透明通道的话，会有4个通道，我们这里略过）形成的。每个通道都是一张灰度图，并且会根据图片实际的色彩，在不同程度上有明暗差异。</p>
-
-<p>比如上图的花朵，如果我们将jpg本身的RGB分离开，就会得到3张不同的灰度图：</p>
-
-<p>红色通道灰度图：</p>
-
-<p><img src="/images/2014/11/flower-red-resized.jpg" alt="red" /></p>
-
-<p>绿色通道灰度图：</p>
-
-<p><img src="/images/2014/11/flower-green-resized.jpg" alt="green" /></p>
-
-<p>蓝色通道灰度图：</p>
-
-<p><img src="/images/2014/11/flower-blue-resized.jpg" alt="blue" /></p>
-
-<p>由于原图绿色和紫红色为主要色彩，所以在红色通道中，花朵比较偏向白色，蓝色通道中花朵也会偏向白色，因为紫红色包含红色和蓝色的亮度都比较高，而在绿色通道中，叶子的颜色则更偏向白色一些。</p>
-
-<h4>图片的加减</h4>
-
-<p>有了灰度图，我们就可以通过不同通道的加减来加强某些色彩，比如蓝色通道和红色通道相减之后，绿色就会被过滤掉，因为绿色在红色和蓝色通道中都表现为灰色：</p>
-
-<p><img src="/images/2014/11/flower-minus-resized.jpg" alt="minus" /></p>
-
-<p>这时候，我们已经有了花瓣的轮廓，但是还是有些模糊，我们还需要将其二值化。这样做出来的图片被称为<code>mask</code>，这个<code>mask</code>和最终的图片叠加之后，才会将我们关注的部位凸现出来。</p>
-
-<p><img src="/images/2014/11/flower-mask-resized.jpg" alt="mask" /></p>
-
-<h3>实现</h3>
-
-<p>ImageMagick提供的命令行工具<code>convert</code>非常强大，我们这里只是用其中很简单的几个：</p>
-
-<pre><code>1.  图片通道的分离
-2.  图片相加减
-3.  叠加多个图片为一个
-</code></pre>
-
-<p>要分离一张RGB的图片，只需要指定：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>convert flower.jpg -separate flower_rgb_%d.jpg
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这条命令会把图片flower.jpg分离成三张图片，命令中的<code>%d</code>占位符会自动被展开为<code>1,2,3</code>这样的数字，这样这条命令会生成3章图片：flower_rgb_0.jpg,flower_rgb_1.jpg,flower_rgb_2.jpg。</p>
-
-<p>图片的相减也很方便，使用命令：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>convert flower_rgb_2.jpg flower_rgb_0.jpg -compose minus <span class="se">\</span>
-</span><span class='line'>-composite flower_minus.jpg
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>来完成。得到差值文件之后（已经具备了基本轮廓，如果不理想，可以换一个通道试试），就可以进一步二值化了。</p>
-
-<p>命令</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>convert flower_minus.jpg -level 10%,30% flower_mask.jpg
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>用来生成<code>mask</code>文件，其中10%表示亮度低于10%的点会被认为是黑色，而30%则表示亮度高于30%的点会被认为是白色，这样的出来的图片就是只有黑白两种颜色了。</p>
-
-<p>最后，我们需要将不同的图片合并在一起，形成最终的结果：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>convert flower_rgb_2.jpg flower.jpg flower_mask.jpg -composite flower_final.jpg
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意这里的次序，先是蓝色通道，然后是原图，最后是<code>mask</code>。这样<code>composite</code>的结果就是我们最开始看到的了：</p>
-
-<p><img src="/images/2014/11/flower-final-resized.jpg" alt="image" /></p>
-
-<p>再来看另外一张用同样方式生成的图片：</p>
-
-<p><img src="/images/2014/11/bird-final-resized.jpg" alt="image" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -2415,6 +2416,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/02/make-a-colorful-svn-diff/">制作一个更漂亮的svn diff命令</a>
+      </li>
+    
+      <li class="post">
         <a href="/2015/02/linux-tips/">Linux命令行中的7个小技巧</a>
       </li>
     
@@ -2428,10 +2433,6 @@
     
       <li class="post">
         <a href="/2015/01/page-object-with-site-prism/">编写体面的UI测试</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2014/12/my-2014/">我的2014</a>
       </li>
     
   </ul>
