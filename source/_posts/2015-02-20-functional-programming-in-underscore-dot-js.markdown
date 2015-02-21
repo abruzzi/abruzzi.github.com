@@ -292,17 +292,25 @@ function count(words) {
 }
 ```
 
+<del>
 还可以使用`underscore.js`的链式操作，使用`_(object)`生成一个`underscore`包装过的对象。然后就可以使用`_(object).map(...).reduce(...)`的形式了：
+</del>
 
 ```js
 function count(text) {
-    return _(text.match(/\w+/g)).map(function(word) {
+    var mapped = _(text.match(/\w+/g)).map(function(word) {
         return word.toLowerCase()
-    }).reduce(function(frequencies, word) {
+    });
+
+    return _(mapped).reduce(function(frequencies, word) {
         frequencies[word] = (frequencies[word] || 0) + 1;
         return frequencies;
     }, {});
 }
+```
+
+我们在下一篇文章中将介绍如何将这些API用连式操作连起来。
+
 ```
 
 ![wordcount](/images/2015/02/wordcount-resized.png)
