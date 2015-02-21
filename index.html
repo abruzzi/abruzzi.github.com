@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="JavaScript中的map/reduce 在过去的10年间，不论你是否对大数据有所涉足，你肯定听过map/reduce这个貌似很高大上的词。这个高大上的词事实上来自于函数式编程世界。map的意思是影射，即将一个集合中的内容，通过应用某种函数，形成另外一个集合。reduce表示求和，或者规约， &hellip;">
+  <meta name="description" content="underscore.js中的集合操作 书接前文，我们在上一篇中将一个文本划分成了单词的数组，并统计了每个单词出现的频率。现在我们需要将排行前10的单词找出来。那么第一步就是将所有单词按照频率排序，然后将这个集合的前10个拿出来。 underscore.js为集合提供了丰富的API， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,560 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/02/collection-operations-in-underscore-dot-js/">underscore.js中的集合操作</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-21T12:48:00+11:00" pubdate data-updated="true">Feb 21<span>st</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>underscore.js中的集合操作</h2>
+
+<p><a href="icodeit.org/2015/02/functional-programming-in-underscore-dot-js/">书接前文</a>，我们在上一篇中将一个文本划分成了单词的数组，并统计了每个单词出现的频率。现在我们需要将排行前10的单词找出来。那么第一步就是将所有单词按照频率排序，然后将这个集合的前10个拿出来。</p>
+
+<p><code>underscore.js</code>为集合提供了丰富的API，这与函数式编程的鼻祖<code>LISP</code>语言有着直接的继承关系。<code>LISP</code>围绕着<code>List</code>提供了的众多函数。</p>
+
+<h3>排序</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">contacts</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Juntao&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">29</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Abruzzi&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">30</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Sara&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">29</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>比如想要将上面这个集合按照<code>age</code>排序，可以使用<code>sortBy</code>函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">sorted</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">contacts</span><span class="p">).</span><span class="nx">sortBy</span><span class="p">(</span><span class="s2">&quot;age&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>默认的<code>sortBy</code>的返回值是按照升序排列的，不过JavaScript的数组原生就有reverse的API用以翻转数组，因此如果要得到降序的排列，只需要：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">sorted</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">contacts</span><span class="p">).</span><span class="nx">sortBy</span><span class="p">(</span><span class="s2">&quot;age&quot;</span><span class="p">).</span><span class="nx">reverse</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>抽取</h3>
+
+<p>有时候，我们需要从众多的信息中抽取自己关心的，比如上例中的<code>contacts</code>集合，我们在界面上仅仅需要<code>name</code>属性组成的集合，这时候可以通过<code>pluck</code>来完成抽取：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">names</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">contacts</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="c1">//[&quot;juntao&quot;, &quot;abruzzi&quot;, &quot;sara&quot;]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>underscore.js</code>默认的<code>pluck</code>只能抽取一层，如果遇到下面这种场景：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">contacts</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Juntao&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">29</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;address&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s2">&quot;street&quot;</span><span class="o">:</span> <span class="s2">&quot;Dengling Rd&quot;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Sara&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">29</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;address&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s2">&quot;street&quot;</span><span class="o">:</span> <span class="s2">&quot;Zhangba 4th Rd&quot;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>想要抽取<code>address.street</code>就无能为力了，不过我们可以很容易的增强一下<code>pluck</code>的功能。先来写一个小测试：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;deep pluck&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">contacts</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Juntao&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">29</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;address&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>                <span class="s2">&quot;street&quot;</span><span class="o">:</span> <span class="s2">&quot;Dengling Rd&quot;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">deeppluck</span><span class="p">(</span><span class="nx">contacts</span><span class="p">,</span> <span class="s2">&quot;address.street&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s2">&quot;Dengling Rd&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后是实现：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">deeppluck</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span> <span class="nx">property</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nx">property</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span> <span class="nx">property</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">object</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">origin</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">chain</span> <span class="o">=</span> <span class="nx">property</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">_</span><span class="p">(</span><span class="nx">chain</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">object</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">key</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">object</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样就可以深度的抽取了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">deeppluck</span><span class="p">(</span><span class="nx">contacts</span><span class="p">,</span> <span class="s2">&quot;address.street&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="c1">//[&quot;Dengling Rd&quot;, &quot;Zhangba 4th Rd&quot;]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>underscore</code>提供了类似于<code>Ruby</code>中的<code>mixin</code>扩展，这样就可以将我们自定义的函数添加到<code>underscore</code>中了。扩展方法很容易，只需要为<code>mixin</code>传入一个键值对(<code>函数名：函数</code>)即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">_</span><span class="p">.</span><span class="nx">mixin</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">deeppluck</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span> <span class="nx">property</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nx">property</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span> <span class="nx">property</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">object</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">origin</span><span class="p">);</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">chain</span> <span class="o">=</span> <span class="nx">property</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">_</span><span class="p">(</span><span class="nx">chain</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">object</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">key</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">object</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样<code>deeppluck</code>就和其他<code>underscore</code>内置的API一样被使用了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">_</span><span class="p">.</span><span class="nx">deeppluck</span><span class="p">(</span><span class="nx">contacts</span><span class="p">,</span> <span class="s2">&quot;address.street&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="c1">//[&quot;Dengling Rd&quot;, &quot;Zhangba 4th Rd&quot;]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">_</span><span class="p">(</span><span class="nx">contacts</span><span class="p">).</span><span class="nx">deeppluck</span><span class="p">(</span><span class="s2">&quot;address.street&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="c1">//[&quot;Dengling Rd&quot;, &quot;Zhangba 4th Rd&quot;]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>按照频率排序单词列表</h3>
+
+<p>好了，有了这些基础知识，我们来完成今天的变成任务吧。我们昨天得到的数据格式是这样的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;drools&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;extends&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;rete&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;by&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;optimizing&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;the&quot;</span><span class="p">:</span> <span class="mi">23</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;propagation&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;from&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;objecttypenode&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;to&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;alphanode&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;using&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;hashing&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;each&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;time&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>    <span class="err">...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个格式无法使用<code>sortBy</code>，那么最简单的方式就是做一下<code>map</code>操作，使其变为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;word&quot;</span><span class="p">:</span> <span class="s2">&quot;drools&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">3</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;word&quot;</span><span class="p">:</span> <span class="s2">&quot;extends&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">2</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="err">...</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>根据昨天学到的<code>_.map</code>，很容易写出：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">sortWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">mapped</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;word&quot;</span><span class="o">:</span> <span class="nx">key</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="nx">value</span>
+</span><span class='line'>        <span class="p">};</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span><span class="nx">mapped</span><span class="p">).</span><span class="nx">sortBy</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">).</span><span class="nx">reverse</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>取出指定数目的元素</h3>
+
+<p>由于<code>sortWords</code>返回的是一个JavaScript原生的数组，我们可以使用原生的API来取出前10个元素：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">sorted</span> <span class="o">=</span> <span class="nx">sortWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">)</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">top10</span> <span class="o">=</span> <span class="nx">sorted</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>不过<code>underscore.js</code>提供更友好的<code>take</code>函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">sorted</span> <span class="o">=</span> <span class="nx">sortWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">top10</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">sorted</span><span class="p">).</span><span class="nx">take</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>基于已经学习到的这些API，我们可以包装一下，形成这样以一个函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">topWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">mapped</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;word&quot;</span><span class="o">:</span> <span class="nx">key</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="nx">value</span>
+</span><span class='line'>        <span class="p">};</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">sorted</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">mapped</span><span class="p">).</span><span class="nx">sortBy</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">).</span><span class="nx">reverse</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span><span class="nx">_</span><span class="p">(</span><span class="nx">sorted</span><span class="p">).</span><span class="nx">take</span><span class="p">(</span><span class="nx">n</span><span class="p">)).</span><span class="nx">pluck</span><span class="p">(</span><span class="s2">&quot;word&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个函数可以取出频率最高的前N个单词：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">topWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="c1">//[&quot;the&quot;]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">topWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="c1">//[&quot;the&quot;, &quot;a&quot;, &quot;to&quot;]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">topWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="c1">//[&quot;the&quot;, &quot;a&quot;, &quot;to&quot;, &quot;is&quot;, &quot;and&quot;, &quot;input&quot;, &quot;as&quot;, &quot;alphanode&quot;, &quot;we&quot;, &quot;objects&quot;]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然，上面的代码可以略微压缩一下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">topWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span><span class="nx">_</span><span class="p">(</span><span class="nx">_</span><span class="p">(</span><span class="nx">_</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;word&quot;</span><span class="o">:</span> <span class="nx">key</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="nx">value</span>
+</span><span class='line'>        <span class="p">};</span>
+</span><span class='line'>    <span class="p">})).</span><span class="nx">sortBy</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">).</span><span class="nx">reverse</span><span class="p">()).</span><span class="nx">take</span><span class="p">(</span><span class="nx">n</span><span class="p">)).</span><span class="nx">pluck</span><span class="p">(</span><span class="s2">&quot;word&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>啊偶，有点难看了。幸好<code>underscore.js</code>提供了链式操作</p>
+
+<h3>链式操作</h3>
+
+<p>如果你用过jQuery，那么应该对链式操作非常熟悉了。链式操作写起来非常顺畅，代码也会非常的语义化。<code>underscore.js</code>中也支持将代码写成链式的，API为<code>chain</code>，<code>chain</code>返回的是一个包装过的<code>underscore</code>对象，到链结束的时候，需要调用<code>value</code>来获取最终的结果：</p>
+
+<p>比如</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">count</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">mapped</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/g</span><span class="p">)).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">word</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span><span class="nx">mapped</span><span class="p">).</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">frequencies</span><span class="p">,</span> <span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">frequencies</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">},</span> <span class="p">{});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以简化为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">count</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">chain</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/g</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">word</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">frequencies</span><span class="p">,</span> <span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">frequencies</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">},</span> <span class="p">{})</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">value</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>同样，我们刚才<code>简化</code>过的那段很难看的代码也可以写成：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">topWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">chain</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>                <span class="s2">&quot;word&quot;</span><span class="o">:</span> <span class="nx">key</span><span class="p">,</span>
+</span><span class='line'>                <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="nx">value</span>
+</span><span class='line'>            <span class="p">};</span>
+</span><span class='line'>        <span class="p">})</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">sortBy</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">reverse</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="s2">&quot;word&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">value</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最终，我们的代码就被缩减成了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">top10</span> <span class="o">=</span> <span class="nx">topWords</span><span class="p">(</span><span class="nx">count</span><span class="p">(</span><span class="nx">text</span><span class="p">),</span> <span class="mi">10</span><span class="p">);</span>
+</span><span class='line'><span class="c1">//[&quot;the&quot;, &quot;a&quot;, &quot;to&quot;, &quot;is&quot;, &quot;and&quot;, &quot;input&quot;, &quot;as&quot;, &quot;alphanode&quot;, &quot;we&quot;, &quot;objects&quot;]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以看到，使用<code>underscore.js</code>提供的众多API，可以写出非常简洁，表意的代码来。这也是函数式编程逐步占领<code>主流</code>编程世界的一个重要原因吧。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -560,7 +1114,9 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>还可以使用<code>underscore.js</code>的链式操作，使用<code>_(object)</code>生成一个<code>underscore</code>包装过的对象。然后就可以使用<code>_(object).map(...).reduce(...)</code>的形式了：</p>
+<p><del>
+还可以使用<code>underscore.js</code>的链式操作，使用<code>_(object)</code>生成一个<code>underscore</code>包装过的对象。然后就可以使用<code>_(object).map(...).reduce(...)</code>的形式了：
+</del></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -570,16 +1126,24 @@
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
 </pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">count</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/g</span><span class="p">)).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">mapped</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/g</span><span class="p">)).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>        <span class="k">return</span> <span class="nx">word</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">}).</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">frequencies</span><span class="p">,</span> <span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span><span class="nx">mapped</span><span class="p">).</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">frequencies</span><span class="p">,</span> <span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>        <span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
 </span><span class='line'>        <span class="k">return</span> <span class="nx">frequencies</span><span class="p">;</span>
 </span><span class='line'>    <span class="p">},</span> <span class="p">{});</span>
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>我们在下一篇文章中将介绍如何将这些API用连式操作连起来。</p>
+
+<p>&#8220;`</p>
 
 <p><img src="/images/2015/02/wordcount-resized.png" alt="wordcount" /></p>
 </div>
@@ -2171,128 +2735,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/11/publish-your-web-design/">发布你的Web设计</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-21T22:24:00+11:00" pubdate data-updated="true">Nov 21<span>st</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Github的<code>主页服务</code></h3>
-
-<p>Github提供了<a href="https://help.github.com/articles/user-organization-and-project-pages/">Github Pages</a>的服务来帮助你为自己的项目提供<code>主页</code>。目前，这种主页服务分为两种：<code>用户主页</code>和<code>项目主页</code>。其中<code>用户主页</code>已经称为广大开发者的标配，有很多的开发者已经将自己的博客迁移到了Github上，其中所用到的核心机制就是<code>Github Pages</code>。</p>
-
-<p>这篇文章主要介绍如何使用<code>项目主页</code>。<code>项目主页</code>，顾名思义，就是你项目的主页，本来设计的初衷是为你的项目编写介绍文档，不过Github只提供对静态内容的托管。如果需要添加评论，可以使用<a href="https://disqus.com/home/">disqus</a>的服务，而和微博，flickr等集成都有现成的JavaScript片段，这里也不做详细讨论。</p>
-
-<p>你现在正在看的我的博客正是托管在Github上，不过我对域名进行了自定义而已，如何做到这一点可以<a href="https://help.github.com/articles/tips-for-configuring-a-cname-record-with-your-dns-provider/">查看此处</a>的文档。</p>
-
-<p>我之前发布的一个<code>我去过的地方</code>就使用了<code>项目主页</code>的服务，该项目的<a href="https://github.com/abruzzi/placesihavebeen">地址在此</a>，<a href="http://icodeit.org/placesihavebeen/">最终的页面</a>在这里。</p>
-
-<p><img src="/images/2014/11/places-i-have-been-resized.png" alt="places I have been" /></p>
-
-<h4>Web设计样板工程</h4>
-
-<p>我在Github上创建了一个<a href="https://github.com/abruzzi/design-boilerplate">设计样板工程</a>，你可以使用这个工程快速的搭建一个完整的样板工程，其中包含了：</p>
-
-<ol>
-<li>一个基本的HTML5的文档</li>
-<li>SCSS环境</li>
-<li>Guard环境，可以与LiveReload集成</li>
-</ol>
-
-
-<p>具体的操作可以<a href="https://github.com/abruzzi/design-boilerplate/blob/master/README.md">参看文档</a>。</p>
-
-<h4>发布你的Web设计</h4>
-
-<p>Github提供的<code>项目主页服务</code>可以帮助你快速将设计发布，你所需要做的就是为项目创建一个名叫<code>gh-pages</code>的分支，然后将<code>HTML/CSS/JS</code>放在这个分支上即可。</p>
-
-<p>假设你在github上的用户名为<code>wumai</code>(一时间想不到好名字，看看窗外，就叫<strong>雾霾</strong>吧)，那么根据惯例，你的Github地址为<code>https://github.com/wumai</code>。这时候，假设你的项目（repo）的名称为<code>design-1</code>，则你的<code>项目主页地址</code>为<code>https://wumai.github.io/design-1</code>。</p>
-
-<p>知道了你的<code>项目主页地址</code>，你就需要为这个页面添加内容了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git clone git@github.com:abruzzi/design-boilerplate.git design-1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>克隆了<code>design-boilerplate</code>之后，</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">cd </span>design-1
-</span><span class='line'><span class="nv">$ </span>git remote -v
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>你可以看到当前的项目是和<code>git@github.com:abruzzi/design-boilerplate.git</code>关联的，</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>origin git@github.com:abruzzi/design-boilerplate.git <span class="o">(</span>fetch<span class="o">)</span>
-</span><span class='line'>origin    git@github.com:abruzzi/design-boilerplate.git <span class="o">(</span>push<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>你需要先和这个样板工程解除绑定：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git remote remove origin
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后你需要在Github上创建一个新的Repo，假设命名为<code>design-1</code>，这时候，将这个新创建的Repo作为你本地的remote：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git remote add -u origin git@github.com:wumai/design-1.git
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>与远程连接之后，我们可以开始实际的设计了，不过在这之前，需要先创建一个<code>gh-pages</code>分支：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git checkout -b gh-pages
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这条命令会创建<code>gh-pages</code>分支，并切换到该分支，这样后续的修改都会在该分支进行，这也正是我们想要的。开发调试之后，就可以将这个分支push到Github：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git push -u origin gh-pages
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>好了，现在打开地址<code>http://wumai.github.io/design-1</code>，应该就可以看到你自己的设计了。</p>
-
-<p><img src="/images/2014/11/web-design-resized.png" alt="web design" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -2308,6 +2750,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/02/collection-operations-in-underscore-dot-js/">underscore.js中的集合操作</a>
+      </li>
+    
+      <li class="post">
         <a href="/2015/02/functional-programming-in-underscore-dot-js/">underscore.js中的函数式编程</a>
       </li>
     
@@ -2321,10 +2767,6 @@
     
       <li class="post">
         <a href="/2015/01/how-we-do-training-in-thoughtworks/">在ThoughtWorks我们做内部培训？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/01/copy-code-with-style/">高亮剪贴板里的代码片段</a>
       </li>
     
   </ul>

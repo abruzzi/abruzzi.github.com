@@ -536,7 +536,11 @@
     </url>
     <url>
         <loc>http://abruzzi.github.com/2015/02/functional-programming-in-underscore-dot-js/</loc>
-        <lastmod>2015-02-20T23:07:17+11:00</lastmod>
+        <lastmod>2015-02-21T12:47:21+11:00</lastmod>
+    </url>
+    <url>
+        <loc>http://abruzzi.github.com/2015/02/collection-operations-in-underscore-dot-js/</loc>
+        <lastmod>2015-02-21T14:38:03+11:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/3p3w/</loc>
@@ -548,11 +552,11 @@
     </url>
     <url>
         <loc>http://abruzzi.github.com/blog/archives/</loc>
-        <lastmod>2015-02-20T23:07:17+11:00</lastmod>
+        <lastmod>2015-02-21T14:38:03+11:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/</loc>
-        <lastmod>2015-02-20T23:07:17+11:00</lastmod>
+        <lastmod>2015-02-21T14:38:03+11:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/jsccp/</loc>

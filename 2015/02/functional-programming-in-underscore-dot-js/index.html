@@ -557,7 +557,9 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>还可以使用<code>underscore.js</code>的链式操作，使用<code>_(object)</code>生成一个<code>underscore</code>包装过的对象。然后就可以使用<code>_(object).map(...).reduce(...)</code>的形式了：</p>
+<p><del>
+还可以使用<code>underscore.js</code>的链式操作，使用<code>_(object)</code>生成一个<code>underscore</code>包装过的对象。然后就可以使用<code>_(object).map(...).reduce(...)</code>的形式了：
+</del></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -567,16 +569,24 @@
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
 </pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">count</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/g</span><span class="p">)).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">mapped</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/g</span><span class="p">)).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>        <span class="k">return</span> <span class="nx">word</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">}).</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">frequencies</span><span class="p">,</span> <span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span><span class="nx">mapped</span><span class="p">).</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">frequencies</span><span class="p">,</span> <span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>        <span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
 </span><span class='line'>        <span class="k">return</span> <span class="nx">frequencies</span><span class="p">;</span>
 </span><span class='line'>    <span class="p">},</span> <span class="p">{});</span>
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>我们在下一篇文章中将介绍如何将这些API用连式操作连起来。</p>
+
+<p>&#8220;`</p>
 
 <p><img src="/images/2015/02/wordcount-resized.png" alt="wordcount" /></p>
 </div>
@@ -625,6 +635,8 @@
         <a class="basic-alignment left" href="/2015/02/make-a-colorful-svn-diff/" title="Previous Post: 制作一个更漂亮的svn diff命令">&laquo; 制作一个更漂亮的svn diff命令</a>
       
       
+        <a class="basic-alignment right" href="/2015/02/collection-operations-in-underscore-dot-js/" title="Next Post: underscore.js中的集合操作">underscore.js中的集合操作 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -645,6 +657,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/02/collection-operations-in-underscore-dot-js/">underscore.js中的集合操作</a>
+      </li>
+    
+      <li class="post">
         <a href="/2015/02/functional-programming-in-underscore-dot-js/">underscore.js中的函数式编程</a>
       </li>
     
@@ -658,10 +674,6 @@
     
       <li class="post">
         <a href="/2015/01/how-we-do-training-in-thoughtworks/">在ThoughtWorks我们做内部培训？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/01/copy-code-with-style/">高亮剪贴板里的代码片段</a>
       </li>
     
   </ul>

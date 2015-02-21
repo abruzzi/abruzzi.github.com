@@ -4,7 +4,7 @@
   <title><![CDATA[Category: effective | I code it]]></title>
   <link href="http://abruzzi.github.com/category/effective/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-02-20T23:09:46+11:00</updated>
+  <updated>2015-02-21T14:40:01+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,378 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[underscore.js中的集合操作]]></title>
+    <link href="http://abruzzi.github.com/2015/02/collection-operations-in-underscore-dot-js/"/>
+    <updated>2015-02-21T12:48:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/02/collection-operations-in-underscore-dot-js</id>
+    <content type="html"><![CDATA[<h2>underscore.js中的集合操作</h2>
+
+<p><a href="icodeit.org/2015/02/functional-programming-in-underscore-dot-js/">书接前文</a>，我们在上一篇中将一个文本划分成了单词的数组，并统计了每个单词出现的频率。现在我们需要将排行前10的单词找出来。那么第一步就是将所有单词按照频率排序，然后将这个集合的前10个拿出来。</p>
+
+<p><code>underscore.js</code>为集合提供了丰富的API，这与函数式编程的鼻祖<code>LISP</code>语言有着直接的继承关系。<code>LISP</code>围绕着<code>List</code>提供了的众多函数。</p>
+
+<h3>排序</h3>
+
+<p>```js
+var contacts = [</p>
+
+<pre><code>{
+    "name": "Juntao",
+    "age": 29
+},
+{
+    "name": "Abruzzi",
+    "age": 30
+},
+{
+    "name": "Sara",
+    "age": 29
+}
+</code></pre>
+
+<p>];
+```</p>
+
+<p>比如想要将上面这个集合按照<code>age</code>排序，可以使用<code>sortBy</code>函数：</p>
+
+<p><code>js
+var sorted = _(contacts).sortBy("age");
+</code></p>
+
+<p>默认的<code>sortBy</code>的返回值是按照升序排列的，不过JavaScript的数组原生就有reverse的API用以翻转数组，因此如果要得到降序的排列，只需要：</p>
+
+<p><code>js
+var sorted = _(contacts).sortBy("age").reverse();
+</code></p>
+
+<h3>抽取</h3>
+
+<p>有时候，我们需要从众多的信息中抽取自己关心的，比如上例中的<code>contacts</code>集合，我们在界面上仅仅需要<code>name</code>属性组成的集合，这时候可以通过<code>pluck</code>来完成抽取：</p>
+
+<p><code>js
+var names = _.pluck(contacts, "name");
+//["juntao", "abruzzi", "sara"]
+</code></p>
+
+<p><code>underscore.js</code>默认的<code>pluck</code>只能抽取一层，如果遇到下面这种场景：</p>
+
+<p>```js
+var contacts = [</p>
+
+<pre><code>{
+    "name": "Juntao",
+    "age": 29,
+    "address": {
+        "street": "Dengling Rd"
+    }
+},
+{
+    "name": "Sara",
+    "age": 29,
+    "address": {
+        "street": "Zhangba 4th Rd"
+    }
+}
+</code></pre>
+
+<p>]
+```</p>
+
+<p>想要抽取<code>address.street</code>就无能为力了，不过我们可以很容易的增强一下<code>pluck</code>的功能。先来写一个小测试：</p>
+
+<p>```js
+it("deep pluck", function() {</p>
+
+<pre><code>var contacts = [
+    {
+        "name": "Juntao",
+        "age": 29,
+        "address": {
+            "street": "Dengling Rd"
+        }
+    }
+];
+
+var result = deeppluck(contacts, "address.street");
+
+expect(result[0]).toEqual("Dengling Rd");
+</code></pre>
+
+<p>});
+```</p>
+
+<p>然后是实现：</p>
+
+<p>```js
+function deeppluck(origin, property) {</p>
+
+<pre><code>if (property.indexOf(".") &lt; 0) {
+    return _.pluck(origin, property)
+}
+
+var object = _.clone(origin);
+var chain = property.split(".");
+
+_(chain).each(function(key) {
+    object = _.pluck(object, key);
+});
+
+return object;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这样就可以深度的抽取了：</p>
+
+<p><code>js
+deeppluck(contacts, "address.street");
+//["Dengling Rd", "Zhangba 4th Rd"]
+</code></p>
+
+<p><code>underscore</code>提供了类似于<code>Ruby</code>中的<code>mixin</code>扩展，这样就可以将我们自定义的函数添加到<code>underscore</code>中了。扩展方法很容易，只需要为<code>mixin</code>传入一个键值对(<code>函数名：函数</code>)即可：</p>
+
+<p>```js
+_.mixin({</p>
+
+<pre><code>deeppluck: function(origin, property) {
+    if (property.indexOf(".") &lt; 0) {
+        return _.pluck(origin, property)
+    }
+
+    var object = _.clone(origin);
+    var chain = property.split(".");
+
+    _(chain).each(function(key) {
+        object = _.pluck(object, key);
+    });
+
+    return object;
+}
+</code></pre>
+
+<p>});
+```</p>
+
+<p>这样<code>deeppluck</code>就和其他<code>underscore</code>内置的API一样被使用了：</p>
+
+<p>```js
+_.deeppluck(contacts, "address.street");
+//["Dengling Rd", "Zhangba 4th Rd"]</p>
+
+<p>_(contacts).deeppluck("address.street");
+//["Dengling Rd", "Zhangba 4th Rd"]
+```</p>
+
+<h3>按照频率排序单词列表</h3>
+
+<p>好了，有了这些基础知识，我们来完成今天的变成任务吧。我们昨天得到的数据格式是这样的：</p>
+
+<p>```json
+{</p>
+
+<pre><code>"drools": 3,
+"extends": 2,
+"rete": 2,
+"by": 3,
+"optimizing": 1,
+"the": 23,
+"propagation": 1,
+"from": 3,
+"objecttypenode": 2,
+"to": 11,
+"alphanode": 5,
+"using": 1,
+"hashing": 1,
+"each": 4,
+"time": 1,
+...
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这个格式无法使用<code>sortBy</code>，那么最简单的方式就是做一下<code>map</code>操作，使其变为：</p>
+
+<p>```json
+[</p>
+
+<pre><code>{
+    "word": "drools",
+    "count": 3
+},
+{
+    "word": "extends",
+    "count": 2
+},
+...
+</code></pre>
+
+<p>]
+```</p>
+
+<p>根据昨天学到的<code>_.map</code>，很容易写出：</p>
+
+<p>```js
+function sortWords(wordMap) {</p>
+
+<pre><code>var mapped = _(wordMap).map(function(value, key) {
+    return {
+        "word": key,
+        "count": value
+    };
+});
+
+return _(mapped).sortBy("count").reverse();
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>取出指定数目的元素</h3>
+
+<p>由于<code>sortWords</code>返回的是一个JavaScript原生的数组，我们可以使用原生的API来取出前10个元素：</p>
+
+<p><code>js
+var sorted = sortWords(wordMap)
+var top10 = sorted.splice(0, 10);
+</code></p>
+
+<p>不过<code>underscore.js</code>提供更友好的<code>take</code>函数：</p>
+
+<p><code>js
+var sorted = sortWords(wordMap);
+var top10 = _(sorted).take(10);
+</code></p>
+
+<p>基于已经学习到的这些API，我们可以包装一下，形成这样以一个函数：</p>
+
+<p>```js</p>
+
+<p>function topWords(wordMap, n) {</p>
+
+<pre><code>var mapped = _(wordMap).map(function(value, key) {
+    return {
+        "word": key,
+        "count": value
+    };
+});
+
+var sorted = _(mapped).sortBy("count").reverse();
+
+return _(_(sorted).take(n)).pluck("word");
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这个函数可以取出频率最高的前N个单词：</p>
+
+<p>```js
+topWords(wordMap, 1)
+//["the"]</p>
+
+<p>topWords(wordMap, 3)
+//["the", "a", "to"]</p>
+
+<p>topWords(wordMap, 10)
+//["the", "a", "to", "is", "and", "input", "as", "alphanode", "we", "objects"]
+```</p>
+
+<p>当然，上面的代码可以略微压缩一下：</p>
+
+<p>```js
+function topWords(wordMap, n) {</p>
+
+<pre><code>return _(_(_(_(wordMap).map(function(value, key) {
+    return {
+        "word": key,
+        "count": value
+    };
+})).sortBy("count").reverse()).take(n)).pluck("word");
+</code></pre>
+
+<p>}
+```</p>
+
+<p>啊偶，有点难看了。幸好<code>underscore.js</code>提供了链式操作</p>
+
+<h3>链式操作</h3>
+
+<p>如果你用过jQuery，那么应该对链式操作非常熟悉了。链式操作写起来非常顺畅，代码也会非常的语义化。<code>underscore.js</code>中也支持将代码写成链式的，API为<code>chain</code>，<code>chain</code>返回的是一个包装过的<code>underscore</code>对象，到链结束的时候，需要调用<code>value</code>来获取最终的结果：</p>
+
+<p>比如</p>
+
+<p>```js
+function count(text) {</p>
+
+<pre><code>var mapped = _(text.match(/\w+/g)).map(function(word) {
+    return word.toLowerCase()
+});
+
+return _(mapped).reduce(function(frequencies, word) {
+    frequencies[word] = (frequencies[word] || 0) + 1;
+    return frequencies;
+}, {});
+</code></pre>
+
+<p>}
+```</p>
+
+<p>可以简化为：</p>
+
+<p>```js
+function count(text) {</p>
+
+<pre><code>return _.chain(text.match(/\w+/g))
+.map(function(word) {
+    return word.toLowerCase()
+})
+.reduce(function(frequencies, word) {
+    frequencies[word] = (frequencies[word] || 0) + 1;
+    return frequencies;
+}, {})
+.value();
+</code></pre>
+
+<p>}
+```</p>
+
+<p>同样，我们刚才<code>简化</code>过的那段很难看的代码也可以写成：</p>
+
+<p>```js
+function topWords(wordMap, n) {</p>
+
+<pre><code>return _.chain(wordMap)
+    .map(function(value, key) {
+        return {
+            "word": key,
+            "count": value
+        };
+    })
+    .sortBy("count")
+    .reverse()
+    .take(n)
+    .pluck("word")
+    .value();
+</code></pre>
+
+<p>}
+```</p>
+
+<p>最终，我们的代码就被缩减成了：</p>
+
+<p><code>js
+var text = "...";
+var top10 = topWords(count(text), 10);
+//["the", "a", "to", "is", "and", "input", "as", "alphanode", "we", "objects"]
+</code></p>
+
+<p>可以看到，使用<code>underscore.js</code>提供的众多API，可以写出非常简洁，表意的代码来。这也是函数式编程逐步占领<code>主流</code>编程世界的一个重要原因吧。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[underscore.js中的函数式编程]]></title>
@@ -353,14 +725,18 @@ function count(words) {</p>
 <p>}
 ```</p>
 
-<p>还可以使用<code>underscore.js</code>的链式操作，使用<code>_(object)</code>生成一个<code>underscore</code>包装过的对象。然后就可以使用<code>_(object).map(...).reduce(...)</code>的形式了：</p>
+<p><del>
+还可以使用<code>underscore.js</code>的链式操作，使用<code>_(object)</code>生成一个<code>underscore</code>包装过的对象。然后就可以使用<code>_(object).map(...).reduce(...)</code>的形式了：
+</del></p>
 
 <p>```js
 function count(text) {</p>
 
-<pre><code>return _(text.match(/\w+/g)).map(function(word) {
+<pre><code>var mapped = _(text.match(/\w+/g)).map(function(word) {
     return word.toLowerCase()
-}).reduce(function(frequencies, word) {
+});
+
+return _(mapped).reduce(function(frequencies, word) {
     frequencies[word] = (frequencies[word] || 0) + 1;
     return frequencies;
 }, {});
@@ -368,6 +744,10 @@ function count(text) {</p>
 
 <p>}
 ```</p>
+
+<p>我们在下一篇文章中将介绍如何将这些API用连式操作连起来。</p>
+
+<p>```</p>
 
 <p><img src="/images/2015/02/wordcount-resized.png" alt="wordcount" /></p>
 ]]></content>
