@@ -543,6 +543,12 @@
         <lastmod>2015-02-21T14:38:03+11:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery/
+        </loc>
+        <lastmod>2015-02-22T13:28:31+11:00</lastmod>
+    </url>
+    <url>
         <loc>http://abruzzi.github.com/3p3w/</loc>
         <lastmod>2015-01-24T01:47:17+11:00</lastmod>
     </url>
@@ -552,11 +558,11 @@
     </url>
     <url>
         <loc>http://abruzzi.github.com/blog/archives/</loc>
-        <lastmod>2015-02-21T14:38:03+11:00</lastmod>
+        <lastmod>2015-02-22T13:28:31+11:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/</loc>
-        <lastmod>2015-02-21T14:38:03+11:00</lastmod>
+        <lastmod>2015-02-22T13:28:31+11:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/jsccp/</loc>
