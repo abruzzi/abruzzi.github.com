@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-02-22T14:08:33+11:00</updated>
+  <updated>2015-03-01T14:32:48+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,144 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用inotify/fswatch构建自动监控脚本]]></title>
+    <link href="http://abruzzi.github.com/2015/03/build-monitor-script-based-on-inotify/"/>
+    <updated>2015-03-01T14:12:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/03/build-monitor-script-based-on-inotify</id>
+    <content type="html"><![CDATA[<h2>自动告警脚本</h2>
+
+<p>最近项目上有这样一个需求：系统中有一个后台服务会不断的生成监控日志，根据系统的运行情况，它每天会在目录<code>/var/alarms</code>下生成一个文件，文件名带有时间戳，其中内容格式如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>cat /var/alarms/alarms-20150228130522.csv
+</span><span class='line'>node,summary,occurrence,proiority
+</span><span class='line'>VIQ002,heartbeat failure,2/12/2015 01:23 AM,critical
+</span><span class='line'>VIQ002,packages are rejected,2/12/2015 01:22 AM,major
+</span><span class='line'>VIQ002,connection cannot be established,2/11/2015 01:23 AM,medium
+</span><span class='line'>VIQ001,packages are rejected,2/11/2015 01:23 AM,warning
+</span><span class='line'>VIQ001,connection cannot be established,2/09/2015 01:23 AM,medium
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运维团队需要监控这个目录，如果里边的文件发生了变化，就要及时的发送邮件给工程团队解决。我们当然不可能人工的监控该目录，然后编写邮件，再拷贝粘贴，所以需要编写一个脚本来自动化这个任务。</p>
+
+<p>处理方法有两种：</p>
+
+<ol>
+<li>编写一个crontab的任务，每隔五分钟轮询一下，然后编写脚本来探测变化，发送邮件</li>
+<li>使用操作系统提供的<code>inotify</code>相关API探测变化，编写脚本发送邮件</li>
+</ol>
+
+
+<p>不过作为程序员，第二种方法显然更高级一些。另外相对于检测文件变化（对比目录树，检查时间戳，而且还要记录上一次变更的状态等），编写一个发送邮件的脚本要简单得多。</p>
+
+<h3>使用inotify</h3>
+
+<p>如果在<code>Linux</code>下，我们可以使用<code>inotify</code>相关的工具，你可以使用你正在使用的系统下的包管理工具来安装。也可以直接从源码包编译安装。</p>
+
+<p>安装之后，系统中就有了一个叫做<code>inotifywait</code>的命令，这个命令提供多个参数。默认的<code>inotifywait</code>在接收到指定的事件（文件变化）后，会打印信息并退出。可以使用<code>-m</code>参数让<code>inotifywati</code>处于监听状态。<code>-e</code>参数指定需要监听的事件类型，下面是几个常见的事件类型：</p>
+
+<ol>
+<li><code>CREATE</code>，创建</li>
+<li><code>MODIFY</code>，修改</li>
+<li><code>CLOSE_WRITE,CLOSE</code>，写入成功</li>
+</ol>
+
+
+<p>还可以通过<code>--format</code>来指定事件的输出，<code>%w</code>表示监控的文件名，<code>%f</code>表示如果被监控的对象是目录，则当发生事件时返回文件名。比如下面的命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>inotifywait -m -e close_write /var/alarms --format <span class="s2">&quot;%w%f&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>表示以监控模式（事件发生后不退出，继续监听），监听<code>close_write</code>事件，在<code>/var/alarms</code>目录上，并且输出的格式为<code>%w%f</code>。</p>
+
+<p>这样我们在另一个窗口上模拟事件发生：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>touch /var/alarms/alarms-20150228130522.csv
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当前的窗口就会出现<code>/var/alarms/alarms-20150228130522.csv</code>这样的输出。有了这个功能，我们只需要编写一段简单的脚本就可以完成上一小节中的问题了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nv">DIR</span><span class="o">=</span><span class="nv">$1</span>
+</span><span class='line'>
+</span><span class='line'>inotifywait -m -e close_write <span class="nv">$DIR</span> --format <span class="s2">&quot;%w%f&quot;</span> | <span class="k">while </span><span class="nb">read </span>FILE
+</span><span class='line'><span class="k">do</span>
+</span><span class='line'><span class="k">  </span>cat <span class="k">${</span><span class="nv">FILE</span><span class="k">}</span> | mail -s <span class="s2">&quot;Alarm: $FILE&quot;</span> juntao.qiu@gmail.com
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命令<code>mail</code>是Linux下默认的邮件客户端，可以完成邮件的发送功能。将上边的脚本命名为<code>monitor.sh</code>，添加可执行权限，并启动监控：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>chmod +x monitor.sh
+</span><span class='line'><span class="nv">$ </span>./monitor.sh /var/alarms
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，当目标目录<code>/var/alarms</code>发生变化后，我们就可以收到告警邮件了！</p>
+
+<h3>Mac OSX下使用fswatch</h3>
+
+<p>如果是在<code>Mac OSX</code>下，虽然没有了<code>inotify</code>相关的API，但是我们可以使用<code>fswatch</code>来完成同样的工作。</p>
+
+<p>使用<code>brew</code>安装<code>fswatch</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>brew install fswatch
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>即可。<code>fswatch</code>也有很多选项，我们这里仅使用<code>-0</code>（表示以传统的NUL作为字符串终结符，因为*nix下文件名可以包含任意字符，比如空格）。我们可以很容易的用<code>xargs</code>将检测到的事件进行进一步的处理：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>fswatch -0 /var/alarms | xargs -0 -n 1 ~/bin/send-notify.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中，<code>-0</code>的意思与<code>fswatch</code>的命令中的<code>-0</code>一致，<code>-n 1</code>表示每条<code>NUL</code>结尾的字符串都执行一次脚本。脚本<code>send-notify.sh</code>的内容如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">FILE</span><span class="o">=</span><span class="nv">$1</span>
+</span><span class='line'>cat <span class="nv">$FILE</span> | mail -s <span class="s2">&quot;Alarm: $FILE&quot;</span> jutao.qiu@gmail.com
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，当文件发生变化时，脚本就会发送一封邮件到指定邮箱了（由于我自己的laptop的hostname不像是一个合理的主机名，所以Gmail会把这封邮件放到垃圾邮件列表中，这里只是用作示例而已）。</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/03/mail-resized.png" alt="fswatch" /></p>
+
+<p>当然，由于脚本是我们自己可以编写的，所以理论上当检测到变化之后，我们可以做任何事情，比如<a href="http://icodeit.org/2014/09/simple-idea-and-simple-script/">说几句话</a>，播放一段音乐等。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用underscore.js构建前端应用]]></title>
@@ -4760,363 +4898,6 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[我的第一个Arduino机器人]]></title>
-    <link href="http://abruzzi.github.com/2014/06/my-4w-robot-built-on-top-of-arduino/"/>
-    <updated>2014-06-01T15:21:00+10:00</updated>
-    <id>http://abruzzi.github.com/2014/06/my-4w-robot-built-on-top-of-arduino</id>
-    <content type="html"><![CDATA[<h3>我的第一个机器人</h3>
-
-<p>以我的视角拍摄的机器人</p>
-
-<p><embed src="http://player.youku.com/player.php/sid/XNzIwNzE4NjYw/v.swf" allowFullScreen="true" quality="high" width="480" height="400" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed></p>
-
-<p>以机器人自身的视角拍摄的</p>
-
-<p><embed src="http://player.youku.com/player.php/sid/XNzIwNzI4NDQw/v.swf" allowFullScreen="true" quality="high" width="480" height="400" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed></p>
-
-<p>虽然迟了4年，但是我终于完成了我的第一台机器人的安装和配置。</p>
-
-<ol>
-<li>基于Arduino的<a href="http://arduino.cc/en/Main/arduinoBoard">Duemilanove开发板</a></li>
-<li>可以躲开障碍物继续前进（有距离探测器，与障碍物的距离小于20cm时会自动转向）</li>
-<li>4轮驱动</li>
-</ol>
-
-
-<p>我回忆了一下，这块板子和外设是我2010年3月在昆明的时候买的，那段时间对硬件突然有了极高的热情，但是买了之后准备开始之际，发现了几点困难：</p>
-
-<ol>
-<li>当时航空管制，电池不能空运，因此网购的小车没有电池</li>
-<li>缺乏基本的硬件常识，四个电机如何接在两个电机端口上</li>
-<li>不会焊接电机</li>
-<li>没有买杜邦线，没有测试用的面包板</li>
-</ol>
-
-
-<p>基于这些困难，又加上我当时在找工作，准备面试之类，机器人的制造就放了下来。结果一放就是4年，中途从昆明搬家回到西安，不过细心的孙曼思将那一大包的零部件都打包好带了回来，多亏她认真负责的态度，才让这个机器人的产生有了可能。</p>
-
-<h4>ThoughtWorks西安硬件小组</h4>
-
-<p>2013年，在ThoughtWorks的西安Office有了硬件小组，他们研究开源硬件，以及这些小芯片在实际环境中的应用。比如RCA的高亮，做出了一个“半自动”地移动上的story的产品。2014年Hackday的时候，CASA团队又做出了一个看房机器人Dora，dora可以在房间中移动，由于装置了一个摄像头，因此可以实时的看到它看到的东西，而且Dora有安装了无线模块，你可以在远程操控它并得到实时图像。</p>
-
-<p>好了，这么多铺垫事实上是有意义的，如果没有西安Office的硬件小组，我的这个机器人的诞生可能又需要若干年。它给我提供了丰富的资源，比如：</p>
-
-<ol>
-<li>有丰富硬件经验的张新宇，高亮，王超，可以让我很容易问问题并得到答案</li>
-<li>张新宇帮我焊了一个电源的接头</li>
-<li>王超提供了一个7.2V的电池</li>
-<li>高亮的百宝箱中有一个9V电池盒</li>
-<li>CASA团队桌子上开发Dora的一些下脚料</li>
-<li>杜邦线，热缩管，电烙铁，松香，镊子，钳子，各种螺丝刀等等</li>
-</ol>
-
-
-<h4>4年 vs 4天</h4>
-
-<p>虽然拖的时间很长（4年），但是事实上加起来搭建它的所有时间差不多是4天。</p>
-
-<ol>
-<li>单独测试URM模块</li>
-<li>单独测试电机驱动L298N模块</li>
-</ol>
-
-
-<p>我发现，其实硬件开发和软件一样，化分模块，小步前进，测试，持续集成等等概念可以很好的运用其中，而且效果极好，比如我的小车基本上可以划分为这样几个小功能的逐步实现：</p>
-
-<ol>
-<li>测距模块的单独启动</li>
-<li>测距模块控制一个LED（距离小于5cm，点亮一个LED）</li>
-<li>电机的单独启动（正转，反转）</li>
-<li>测距模块控制电机（距离小于5cm，转动电机）</li>
-<li>多个电机联合（如何联线）</li>
-<li>测距模块控制多个电机</li>
-</ol>
-
-
-<p>当到达最后一步时，基本上所有要验证的功能都已经就绪了，只需要拼装在小车的底座上，进行集成测试即可。其实，当划分好任务之后，每一个小的任务都不会花费很多时间。</p>
-
-<h4>故障</h4>
-
-<p>当我兴高采烈的去掉USB线，加上一个7.2V的电池给整个系统时，URM37测距模块伴随着浓郁的电器焦味中烧坏了，就是因为一个跳线的连接不当。这个系统中，电机需要单独加电，但是由于我自己电气知识的匮乏，导致了这个悲剧的发生。</p>
-
-<p>不过，我又在Office的CASA团队的桌子上发现了另外一个测距模块，不过这次只经过了15分钟就完成了替换掉了老板子，换上了新的测距模块。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;NewPing.h&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">#define TRIGGER_PIN  12  </span><span class="c1">// 12端口</span>
-</span><span class='line'><span class="cp">#define ECHO_PIN     11  </span><span class="c1">// 11端口</span>
-</span><span class='line'><span class="cp">#define MAX_DISTANCE 400</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">ledpin</span> <span class="o">=</span> <span class="mi">13</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">NewPing</span> <span class="n">sonar</span><span class="p">(</span><span class="n">TRIGGER_PIN</span><span class="p">,</span> <span class="n">ECHO_PIN</span><span class="p">,</span> <span class="n">MAX_DISTANCE</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">setup</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">begin</span><span class="p">(</span><span class="mi">9600</span><span class="p">);</span> <span class="c1">// Sets the baud rate to 9600</span>
-</span><span class='line'>  <span class="n">pinMode</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>   <span class="c1">//设置13号口为输出</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">loop</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">uS</span> <span class="o">=</span> <span class="n">sonar</span><span class="p">.</span><span class="n">ping</span><span class="p">();</span> <span class="c1">// 把扫描时间转化成us</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">dis</span> <span class="o">=</span> <span class="n">uS</span> <span class="o">/</span> <span class="n">US_ROUNDTRIP_CM</span><span class="p">;</span> <span class="c1">//转成距离</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">dis</span> <span class="o">&lt;=</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">LOW</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Distance = &quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">dis</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">delay</span><span class="p">(</span><span class="mi">150</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>安装过程</h4>
-
-<p>测距模块很早之前就<a href="http://icodeit.org/2012/01/arduino%E8%B6%85%E5%A3%B0%E6%B3%A2%E6%B5%8B%E8%B7%9D%E6%A8%A1%E5%9D%97%E4%BD%BF%E7%94%A8/">已经整理过</a>了，可以看看这里。不过我最后的成品已经没有使用URM37了，取而代之的是HC-SR04。</p>
-
-<p>连接电机与电机驱动模块：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/06/motor-resized.png" alt="image" /></p>
-
-<p>第一次焊接电机，话说这种电机的触头也太粗糙了吧，不自己焊接的话，根本就用不成，完全没有进入模块化世界。</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/06/motor-repaired-resized.png" alt="image" /></p>
-
-<p>连接之后
-<img src="http://abruzzi.github.com/images/2014/06/motors-connected-resized.png" alt="image" /></p>
-
-<p>装车
-<img src="http://abruzzi.github.com/images/2014/06/4w-car-resized.png" alt="image" /></p>
-
-<p><img src="http://abruzzi.github.com/images/2014/06/debug-car-resized.png" alt="image" /></p>
-
-<h4>最终的代码</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;NewPing.h&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">#define TRIGGER_PIN  12  </span><span class="c1">// 12端口</span>
-</span><span class='line'><span class="cp">#define ECHO_PIN     11  </span><span class="c1">// 11端口</span>
-</span><span class='line'><span class="cp">#define MAX_DISTANCE 400</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">E1</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
-</span><span class='line'><span class="kt">int</span> <span class="n">M1</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">E2</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
-</span><span class='line'><span class="kt">int</span> <span class="n">M2</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">ledpin</span> <span class="o">=</span> <span class="mi">13</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">setup</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">begin</span><span class="p">(</span><span class="mi">9600</span><span class="p">);</span>                  <span class="c1">// Sets the baud rate to 9600</span>
-</span><span class='line'>  <span class="n">pinMode</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>   <span class="c1">//设置13号口为输出</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">pinMode</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
-</span><span class='line'>  <span class="n">pinMode</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">LOW</span><span class="p">);</span> <span class="c1">//灭掉LED  </span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">delay</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span> <span class="c1">//Give sensor some time to start up --Added By crystal  from Singapo, Thanks Crystal.</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">advance</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span><span class="n">HIGH</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span><span class="n">HIGH</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">backoff</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span><span class="n">LOW</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span><span class="n">LOW</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">left</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span><span class="n">LOW</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span><span class="n">HIGH</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">150</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">150</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">right</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span><span class="n">HIGH</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span><span class="n">LOW</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">150</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">150</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">stop</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">NewPing</span> <span class="n">sonar</span><span class="p">(</span><span class="n">TRIGGER_PIN</span><span class="p">,</span> <span class="n">ECHO_PIN</span><span class="p">,</span> <span class="n">MAX_DISTANCE</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">loop</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">uS</span> <span class="o">=</span> <span class="n">sonar</span><span class="p">.</span><span class="n">ping</span><span class="p">();</span> <span class="c1">// 把扫描时间转化成us</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">dis</span> <span class="o">=</span> <span class="n">uS</span> <span class="o">/</span> <span class="n">US_ROUNDTRIP_CM</span><span class="p">;</span> <span class="c1">//转成距离</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">dis</span> <span class="o">&lt;=</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">stop</span><span class="p">();</span>
-</span><span class='line'>    <span class="n">left</span><span class="p">();</span>
-</span><span class='line'>    <span class="n">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">advance</span><span class="p">();</span>
-</span><span class='line'>    <span class="n">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">LOW</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Distance = &quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">dis</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">delay</span><span class="p">(</span><span class="mi">150</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>体会</h4>
-
-<ol>
-<li>和开发软件一样，硬件开发也可以使用“敏捷开发”</li>
-<li>实用主义，比如bluetip的使用，杜邦线拼接等</li>
-<li>迭代开发，小步快跑</li>
-</ol>
 
 ]]></content>
   </entry>
