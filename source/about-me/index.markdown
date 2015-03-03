@@ -1,37 +1,36 @@
 ---
 layout: page
 title: "关于我"
-date: 2012-10-10 13:13
+date: 2015-03-03 18:13
 comments: true
 sharing: true
 footer: true
 ---
 
 ## 关于我
-我是邱俊涛，是一名软件工程师，热爱生活，热爱编程，也热爱开源软件。喜欢旅行，喜欢摄影，更喜欢骑着山地车在云南的红山绿水之间骑行。有一些Java开发经验，也有Linux下C语言开发经验，喜欢各种动态语言，如python/javascript/ruby等。
+我是**邱俊涛**，是一名软件工程师，热爱生活，热爱编程，也热爱知识分享。喜欢旅行，喜欢摄影，更喜欢骑着山地车在<del>云南的红山绿水之间</del>秦岭里骑行。
 
-2012年3月加入**ThoughtWorks**西安，开始了新的生活方式。崇尚简单、轻量的设计和开发模式。2013年5月，我的第一本书[《JavaScript核心概念及实践》](http://book.douban.com/subject/24165880/)在很多同事的帮助下终于出版。而第二本书《轻量级Web应用程序开发》也在计划中。
+主要的编程语言是Java和JavaScript，也有几年Linux下C语言的开发经验，喜欢各种动态语言，尤其如JavaScript，而现在Ruby也成了我工具箱里最主要的工具了。
+
+2012年3月加入**ThoughtWorks**西安办公室，开始了新的生活方式。作为一个程序员，我非常崇尚简单、轻量的设计和开发模式，痛恨一切重量级，复杂的东西。2013年5月，我的第一本书[《JavaScript核心概念及实践》](http://book.douban.com/subject/24165880/)在很多同事的帮助下终于出版。第二本书《轻量级Web应用程序开发》正在编辑中。另外，我在编写正式的书籍之外，还在`gitbook`上发布了两本公开电子书。
 
 ### 我的著作
 -  [《JavaScript核心概念及实践》](http://book.douban.com/subject/24165880/)
 -  [《轻量级Web应用开发》，编辑中](http://icodeit.org/lwweb/)
 -  [《3周3Web设计》](http://juntao.gitbooks.io/3-web-designs-in-3-weeks/)
+-  [《Fun with underscore.js》](http://juntao.gitbooks.io/fun-with-underscore/)
 
-### 我发起并维护的开源项目
--	[turbo](https://github.com/abruzzi/turbo), HTTP API测试工具
--	[moko](https://github.com/abruzzi/moko),测试框架[moco](https://github.com/dreamhead/moco)的Ruby包装
--    [BBMS](https://code.google.com/p/bbms/), 一个小型的，基于总线的消息系统(bus-based-message-system)
--    [sTodo](https://code.google.com/p/stodo/), 一个简单的，用Swing实现的，支持脚本化的todo管理器
--    [phoc](https://github.com/abruzzi/phoc)，一个可编程的计算器，支持脚本化，可以绘制函数图象
--    [jsEvaluator](https://github.com/abruzzi/jsevaluator)，一个简易的JavaScript开发环境，基于Rhino引擎
--    [uTouch](https://github.com/abruzzi/utouch)，一个基于wx.stc.StyledEditCtrl的编辑器
+[![JavaScript Core Concepts And Practices](/images/2015/03/jscp-resized.jpg)](http://book.douban.com/subject/24165880/)
+[![3 Web Designs in 3 Weeks](/images/2015/03/3p3w-resized.jpg)](http://juntao.gitbooks.io/3-web-designs-in-3-weeks/)
 
+如果你觉得我的博客/电子书对你有帮助，而你也鼓励这种行为，可以扫下面的二维码来捐赠：
+
+![QR Code](/images/2015/03/qr-code.jpg)
 
 ### 我的其他站点
--   [我的Github](https://github.com/abruzzi)
+-   [我的Github](https://github.com/abruzzi)，上边有一些我自己的小项目
 -   [我的豆瓣](http://book.douban.com/people/4023370/), 你可能会从中找到一些你也会喜欢的书籍清单
 -   [我的微博](http://weibo.com/juntaoq), 我的球拍时候正面反胶，反面长胶，故名
-
 
 ### 发表在IBM DeveloperWorks上的文章列表
 -    [如何写出优美的 C 代码–面向对象的 C](http://www.ibm.com/developerworks/cn/linux/l-cn-cobject/index.html)
@@ -45,10 +44,14 @@ footer: true
 ### 发表在InfoQ上的文章
 -   [全球地震信息的可视化](http://www.infoq.com/cn/articles/visualization-of-the-global-seismic-system)
 
-### 其他信息
-*    籍贯：陕西.铜川
-*    *现居：云南.昆明*
-*    现居：陕西.西安
+### 我发起并维护的开源项目
+-	[turbo](https://github.com/abruzzi/turbo), HTTP API测试工具
+-	[moko](https://github.com/abruzzi/moko),测试框架[moco](https://github.com/dreamhead/moco)的Ruby包装
+-    [BBMS](https://code.google.com/p/bbms/), 一个小型的，基于总线的消息系统(bus-based-message-system)
+-    [sTodo](https://code.google.com/p/stodo/), 一个简单的，用Swing实现的，支持脚本化的todo管理器
+-    [phoc](https://github.com/abruzzi/phoc)，一个可编程的计算器，支持脚本化，可以绘制函数图象
+-    [jsEvaluator](https://github.com/abruzzi/jsevaluator)，一个简易的JavaScript开发环境，基于Rhino引擎
+-    [uTouch](https://github.com/abruzzi/utouch)，一个基于wx.stc.StyledEditCtrl的编辑器
 
 ### 你可以通过这个地址联系到我： 
 
