@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-03-03T21:20:11+11:00</updated>
+  <updated>2015-03-30T18:51:28+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,274 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Python中的 list comprehension 以及 generator]]></title>
+    <link href="http://abruzzi.github.com/2015/03/list-comprehension-in-python/"/>
+    <updated>2015-03-30T17:06:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/03/list-comprehension-in-python</id>
+    <content type="html"><![CDATA[<h3>一个小故事</h3>
+
+<p>三年前，我在<a href="http://icodeit.org/2012/07/post-from-python-vim-2/">一篇博客</a>里不无自豪的记录了python编写的小函数，当时感觉python真强大，11行代码就写出了一个配置文件的解析器。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">def</span> <span class="nf">loadUserInfo</span><span class="p">(</span><span class="n">fileName</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">userinfo</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">while</span> <span class="nb">file</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">line</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">break</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="p">):</span>
+</span><span class='line'>            <span class="k">continue</span>
+</span><span class='line'>        <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">userinfo</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="n">userinfo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最近正在跟同事学习<code>python在数据挖掘中的应用</code>，又专门学习了一下python本身，然后用<code>list comprehension</code>简化了以下上面的代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">def</span> <span class="nf">loadUserInfo</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">dict</span><span class="p">([</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;#&quot;</span><span class="p">)])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个函数和上面的函数的功能一样，都是读取一个指定的<code>key=value</code>格式的文件，然后构建出来一个<code>映射</code>（当然，在Python中叫做<code>字典</code>）对象，该函数还会跳过空行和<code>#</code>开头的行。</p>
+
+<p>比如，我想要查看一下<code>.wgetrc</code>配置文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="n">loadUserInfo</span><span class="p">(</span><span class="s">&quot;/Users/jtqiu/.wgetrc&quot;</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>假设我的<code>.wgetrc</code>文件配置如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="n">http</span><span class="o">-</span><span class="n">proxy</span><span class="o">=</span><span class="mf">10.18</span><span class="o">.</span><span class="mf">0.254</span><span class="p">:</span><span class="mi">3128</span>
+</span><span class='line'><span class="n">ftp</span><span class="o">-</span><span class="n">proxy</span><span class="o">=</span><span class="mf">10.18</span><span class="o">.</span><span class="mf">0.254</span><span class="p">:</span><span class="mi">3128</span>
+</span><span class='line'><span class="c">#http_proxy=10.1.1.28:3128</span>
+</span><span class='line'><span class="n">use_proxy</span><span class="o">=</span><span class="n">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>则上面的函数会产生这样的输出：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="p">{</span><span class="s">&#39;use_proxy&#39;</span><span class="p">:</span> <span class="s">&#39;yes&#39;</span><span class="p">,</span> <span class="s">&#39;ftp-proxy&#39;</span><span class="p">:</span> <span class="s">&#39;10.18.0.254:3128&#39;</span><span class="p">,</span> <span class="s">&#39;http-proxy&#39;</span><span class="p">:</span> <span class="s">&#39;10.18.0.254:3128&#39;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>list comprehension（列表推导式）</h3>
+
+<p>在python中，<code>list comprehension</code>（或译为列表推导式）可以很容易的从一个列表生成另外一个列表，从而完成诸如<code>map</code>, <code>filter</code>等的动作，比如：</p>
+
+<p>要把一个字符串数组中的每个字符串都变成大写：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;john&quot;</span><span class="p">,</span> <span class="s">&quot;jack&quot;</span><span class="p">,</span> <span class="s">&quot;sean&quot;</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'><span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果用列表推导式，只需要一行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>结果都是一样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="p">[</span><span class="s">&#39;JOHN&#39;</span><span class="p">,</span> <span class="s">&#39;JACK&#39;</span><span class="p">,</span> <span class="s">&#39;SEAN&#39;</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>另外一个例子，如果想要过滤出一个数字列表中的所有偶数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="n">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'><span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="n">numbers</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">number</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果写成列表推导式：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">numbers</span> <span class="k">if</span> <span class="n">x</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>结果也是一样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>显然，列表推导更加短小，也更加表意。</p>
+
+<h3>迭代器</h3>
+
+<p>在了解<code>generator</code>之前，我们先来看一个<code>迭代器</code>的概念。有时候我们不需要将整个列表都放在内存中，特别是当列表的尺寸比较大的时候。</p>
+
+<p>比如我们定义一个函数，它会返回一个连续的整数的列表：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">def</span> <span class="nf">myrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">num</span><span class="p">,</span> <span class="n">nums</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="k">while</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">nums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">nums</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当我们计算诸如<code>myrange(50)</code>或者<code>myrange(100)</code>时，不会有任何问题，但是当获取诸如<code>myrange(10000000000)</code>的时候，由于这个函数的内部会将数字保存在一个临时的列表中，因此会有很多的内存占用。</p>
+
+<p>因此在python有了迭代器的概念：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">class</span> <span class="nc">myrange</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">self</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># for python 3</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">i</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">i</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个对象其实实现了两个特殊的方法：<code>__iter__</code>（对于python3来说，是<code>__next__</code>）和<code>next</code>方法。其中<code>next</code>每次只返回一个值，如果迭代已经结束，就抛出一个<code>StopIteration</code>的异常。实现了这两个方法的类都可以算作是一个迭代器，他们可以被用于<code>可迭代</code>的上下文中，比如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">myrange</span> <span class="kn">import</span> <span class="n">myrange</span>
+</span><span class='line'><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">myrange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</span><span class='line'><span class="mi">0</span>
+</span><span class='line'><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</span><span class='line'><span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是可以看到这个函数中有很多的样板代码，因此我们有了生成器表达式来简化这个过程：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">def</span> <span class="nf">myrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">while</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">yield</span> <span class="n">num</span>
+</span><span class='line'>        <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意此处的<code>yield</code>关键字，每次使用<code>next</code>来调用这个函数时都会求值一次num并返回，具体的细节可以<a href="http://www.jeffknupp.com/blog/2013/04/07/improve-your-python-yield-and-generators-explained/">参考这里</a>。</p>
+
+<h3>区别</h3>
+
+<p>简单来说，两者都可以在迭代器上下文中使用，看起来几乎是一样的。不同的地方是<code>generator</code>可以节省内存空间，从而提高执行速度。<code>generator</code>更适合一次性的列表处理，比如只是需要一个中间列表作为转换。而列表推导则更适合要将<code>列表</code>保存下来，以备后续使用的场景。</p>
+
+<p>这里也有<a href="http://stackoverflow.com/questions/47789/generator-expressions-vs-list-comprehension">一些讨论</a>，可以一并参看。</p>
+
+<h3>参考</h3>
+
+<ol>
+<li><a href="http://anandology.com/python-practice-book/iterators.html">Iterators &amp; Generators</a></li>
+<li><a href="https://wiki.python.org/moin/Generators">Generators Wiki</a></li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用inotify/fswatch构建自动监控脚本]]></title>
@@ -4765,136 +5033,6 @@
 </span><span class='line'>1.6G    IE8 - WinXP-disk1.vmdk
 </span><span class='line'> 11G    IE9 - Win7-disk1.vmdk
 </span><span class='line'> 37G    total
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[SVN中合并分支]]></title>
-    <link href="http://abruzzi.github.com/2014/08/how-to-merge-branches-in-svn/"/>
-    <updated>2014-08-25T22:42:00+10:00</updated>
-    <id>http://abruzzi.github.com/2014/08/how-to-merge-branches-in-svn</id>
-    <content type="html"><![CDATA[<h3>分支策略</h3>
-
-<p>本来准备整理一篇版本管理中，关于分支的维护策略。后来看到阮一峰老师的<a href="http://www.ruanyifeng.com/blog/2012/07/git.html">这篇文章</a>，觉得非常清晰，这里给出一个链接供参考。</p>
-
-<p>另外一个有意思的<a href="http://codicesoftware.blogspot.com/2008/08/4-steps-to-make-version-control-shine.html">链接在这里</a>，也可以一并参看。</p>
-
-<p>本文就仅仅简单的描述一下，使用svn的命令行工具，如何具体完成合并的操作：</p>
-
-<h3>在Svn中合并分支</h3>
-
-<p>在svn中，要合并两个分支（通常是将某个分支b合并到trunk上，不过另一种模式下也可以将trunk合并到b上）非常简单，我们以一个简单的例子来说明其步骤。</p>
-
-<p>比如我们要将trunk上的修改合并到分支b上，操作可以分为4步：</p>
-
-<ol>
-<li>切换到分支b上（之前执行过<code>svn co /path/branches/b</code>之后的目录）</li>
-<li>使用<code>svn log --stop-on-copy</code>命令得到该分支的最早版本号</li>
-<li>使用<code>svn merge --dry-run -rXXX:HEAD /path/trunk</code>来预览合并列表</li>
-<li>合并</li>
-</ol>
-
-
-<p>在第二步中，一个典型的输出是这样的：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn log --stop-on-copy
-</span><span class='line'>...
-</span><span class='line'>
-</span><span class='line'>r231625 | juntao | 2014-07-10 13:33:36 +1000 <span class="o">(</span>Thu, 10 Jul 2014<span class="o">)</span> | 1 line
-</span><span class='line'>
-</span><span class='line'>Juntao Change the version in pom.xml
-</span><span class='line'>------------------------------------------------------------------------
-</span><span class='line'>r231623 | abruzzi | 2014-07-10 13:22:00 +1000 <span class="o">(</span>Thu, 10 Jul 2014<span class="o">)</span> | 1 line
-</span><span class='line'>
-</span><span class='line'>Spike on data structure of c-wifi, a workable prototype
-</span><span class='line'>------------------------------------------------------------------------
-</span><span class='line'>r231610 | juntao | 2014-07-10 12:29:01 +1000 <span class="o">(</span>Thu, 10 Jul 2014<span class="o">)</span> | 1 line
-</span><span class='line'>
-</span><span class='line'>Create a new branch <span class="k">for </span>c-wifi
-</span><span class='line'>------------------------------------------------------------------------
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>一旦有了这个修订号(231610)，就可以开始合并了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn merge --dry-run -r231610:HEAD /path/trunk
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个命令会列出从修订好r231610到当前版本之中，trunk和分支b之间的所有需要合并的文件列表：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>--- Merging r235763 through r236311 into <span class="s1">&#39;src/test/java&#39;</span>:
-</span><span class='line'>U    src/test/java/tcom/checkout/CheckoutServiceTest.java
-</span><span class='line'>U    src/test/java/bundles/checkout/accordion/AppointmentTest.java
-</span><span class='line'>U    src/test/java/common/service/ServiceHandlerTest.java
-</span><span class='line'>...
-</span><span class='line'>Summary of conflicts:
-</span><span class='line'>  Text conflicts: 2
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最后，svn会给出冲突信息（如果有的话），这时，我们来决定是否合并，以及合并哪些修订号区间的修改。如果预览之后觉得可以直接合并，则可以直接运行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn merge -r231610:HEAD /path/trunk
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>过程中，遇到冲突的情况，svn会询问采取哪种方式来处理</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>Select: <span class="o">(</span>p<span class="o">)</span> postpone, <span class="o">(</span>df<span class="o">)</span> diff-full, <span class="o">(</span>e<span class="o">)</span> edit,
-</span><span class='line'>        <span class="o">(</span>mc<span class="o">)</span> mine-conflict, <span class="o">(</span>tc<span class="o">)</span> theirs-conflict,
-</span><span class='line'>        <span class="o">(</span>s<span class="o">)</span> show all options: p
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果拿不准，可以使用<code>p</code>子命令，然后等到最后在IDE或者编辑器中合并，如果想要丢弃自己的修改，使用<code>tc</code>子命令；如果要丢弃别人的修改，使用<code>mc</code>子命令。</p>
-
-<p>最后，在编辑器中修改完了这些冲突之后，使用:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn resolved pom.xml
-</span><span class='line'>Resolved conflicted state of <span class="s1">&#39;pom.xml&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>来标记该冲突已经被解决。最后，运行测试并提交本次修改：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>mvn clean <span class="nb">test</span>
-</span><span class='line'><span class="nv">$ </span>svn ci -m <span class="s2">&quot;Merge branch b with trunk&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
