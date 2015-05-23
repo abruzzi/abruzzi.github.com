@@ -4,7 +4,7 @@
   <title><![CDATA[Category: JavaScript | I code it]]></title>
   <link href="http://abruzzi.github.com/category/javascript/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-05-23T22:27:39+10:00</updated>
+  <updated>2015-05-23T22:39:47+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -20,9 +20,9 @@
     <id>http://abruzzi.github.com/2015/05/functional-programming-again</id>
     <content type="html"><![CDATA[<h2>前言</h2>
 
-<p>4月初在北京的时候，徐昊同学表示我们公司的同事们写的文章都太简单，太注重细节，然后捡起了芝麻丢了西瓜，于是我就不再更新博客（其实根本原因是项目太忙）。上周和其他几个同事一起参加“Martin Fowler深圳行”的活动，我和同事扎西贡献了一个《FullStack Language JavaScript》，一起的还有杨云的话题是《函数式编程》，李新的话题是《并发的前世今生》。</p>
+<p>4月初在北京的时候，徐昊同学表示我们公司的同事们写的文章都太简单，太注重细节，然后捡起了芝麻丢了西瓜，于是我就不再更新博客（其实根本原因是项目太忙）。上周和其他几个同事一起参加“Martin Fowler深圳行”的活动，我和同事扎西贡献了一个《FullStack Language JavaScript》，一起的还有杨云（江湖人称大魔头）的话题是《掌握函数式编程，控制系统复杂度》，李新（江湖人称新爷）的话题是《并发：前生来世》。</p>
 
-<p>和其他同事预演的时候，突然发现其实我们的主题或多或少都有些关联，</p>
+<p>和其他同事预演的时候，突然发现其实我们的主题或多或少都有些关联，我讲的部分也涉及到了基于事件的并发机制和函数式编程。仔细想想，应该与JavaScript本身的特性不无关系：</p>
 
 <ol>
 <li>基于事件（Event-Based）的Node.js的正是并发中很典型的一个模型</li>
@@ -31,9 +31,9 @@
 </ol>
 
 
-<p>会后第二天，在项目代码里忽然想要将一个聚合模型用函数式编程的方式重写一下，结果发现思路竟然与NoSQL依稀有些联系，进一步发现自己很多不足。</p>
+<p>会后的第二天，我在项目代码里忽然想要将一个聚合模型用函数式编程的方式重写一下，结果发现思路竟然与NoSQL依稀有些联系，进一步发现自己很多不足。</p>
 
-<p>下面这个例子来自于实际项目中的场景，不过domain做了切换，但是丝毫不影响阅读和理解背后的机制。</p>
+<p>下面这个例子来自于实际项目中的场景，不过Domain做了切换，但是丝毫不影响阅读和理解背后的机制。</p>
 
 <h3>一个书签应用</h3>
 
@@ -164,27 +164,29 @@ $ curl http://localhost:9999/user/1/marked-feed-ids
 
 <p>比如对于上面这个列表，我们已经有了对应的模板：</p>
 
-<p>```html
-
+<p>
+```
+{{#each feeds}}
 <li class="list-item"></p>
 
-<pre><code>&lt;div class="section" data-feed-id=""&gt;
-    
+<pre><code>&lt;div class="section" data-feed-id="{{this.id}}"&gt;
+    {{#if this.marked}}
         &lt;span class="marked icon-favorite"&gt;&lt;/span&gt;
-    
+    {{else}}
         &lt;span class="unmarked icon-favorite"&gt;&lt;/span&gt;
-    
-    &lt;a href="http://abruzzi.github.com/feeds/"&gt;
+    {{/if}}
+    &lt;a href="http://abruzzi.github.com/feeds/{{this.url}}"&gt;
         &lt;div class="detail"&gt;
-            &lt;h3&gt;&lt;/h3&gt;
+            &lt;h3&gt;{{this.title}}&lt;/h3&gt;
         &lt;/div&gt;
     &lt;/a&gt;
 &lt;/div&gt;
 </code></pre>
 
 <p></li>
-
-```</p>
+{{/each}}
+```
+</p>
 
 <p>事实上，这段代码在收藏夹页面上完全可以复用，我们只需要把所有的<code>marked</code>属性都设置为true就行了！简单，很快我们就可以写出对应的代码：</p>
 

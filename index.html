@@ -113,9 +113,9 @@
 
   <div class="entry-content"><h2>前言</h2>
 
-<p>4月初在北京的时候，徐昊同学表示我们公司的同事们写的文章都太简单，太注重细节，然后捡起了芝麻丢了西瓜，于是我就不再更新博客（其实根本原因是项目太忙）。上周和其他几个同事一起参加“Martin Fowler深圳行”的活动，我和同事扎西贡献了一个《FullStack Language JavaScript》，一起的还有杨云的话题是《函数式编程》，李新的话题是《并发的前世今生》。</p>
+<p>4月初在北京的时候，徐昊同学表示我们公司的同事们写的文章都太简单，太注重细节，然后捡起了芝麻丢了西瓜，于是我就不再更新博客（其实根本原因是项目太忙）。上周和其他几个同事一起参加“Martin Fowler深圳行”的活动，我和同事扎西贡献了一个《FullStack Language JavaScript》，一起的还有杨云（江湖人称大魔头）的话题是《掌握函数式编程，控制系统复杂度》，李新（江湖人称新爷）的话题是《并发：前生来世》。</p>
 
-<p>和其他同事预演的时候，突然发现其实我们的主题或多或少都有些关联，</p>
+<p>和其他同事预演的时候，突然发现其实我们的主题或多或少都有些关联，我讲的部分也涉及到了基于事件的并发机制和函数式编程。仔细想想，应该与JavaScript本身的特性不无关系：</p>
 
 <ol>
 <li>基于事件（Event-Based）的Node.js的正是并发中很典型的一个模型</li>
@@ -124,9 +124,9 @@
 </ol>
 
 
-<p>会后第二天，在项目代码里忽然想要将一个聚合模型用函数式编程的方式重写一下，结果发现思路竟然与NoSQL依稀有些联系，进一步发现自己很多不足。</p>
+<p>会后的第二天，我在项目代码里忽然想要将一个聚合模型用函数式编程的方式重写一下，结果发现思路竟然与NoSQL依稀有些联系，进一步发现自己很多不足。</p>
 
-<p>下面这个例子来自于实际项目中的场景，不过domain做了切换，但是丝毫不影响阅读和理解背后的机制。</p>
+<p>下面这个例子来自于实际项目中的场景，不过Domain做了切换，但是丝毫不影响阅读和理解背后的机制。</p>
 
 <h3>一个书签应用</h3>
 
@@ -313,22 +313,22 @@
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>
-</span><span class='line'><span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">&quot;list-item&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;section&quot;</span> <span class="na">data-feed-id=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>        
-</span><span class='line'>            <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;marked icon-favorite&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>
-</span><span class='line'>        
-</span><span class='line'>            <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;unmarked icon-favorite&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>
-</span><span class='line'>        
-</span><span class='line'>        <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;/feeds/&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;detail&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>                <span class="nt">&lt;h3&gt;</span><span class="nt">&lt;/h3&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/a&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="o">{{</span><span class="c">#each feeds}}</span>
+</span><span class='line'>&lt;li <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;list-item&quot;</span>&gt;
+</span><span class='line'>    &lt;div <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;section&quot;</span> data-feed-id<span class="o">=</span><span class="s2">&quot;{{this.id}}&quot;</span>&gt;
+</span><span class='line'>        <span class="o">{{</span><span class="c">#if this.marked}}</span>
+</span><span class='line'>            &lt;span <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;marked icon-favorite&quot;</span>&gt;&lt;/span&gt;
+</span><span class='line'>        <span class="o">{{</span><span class="k">else</span><span class="o">}}</span>
+</span><span class='line'>            &lt;span <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;unmarked icon-favorite&quot;</span>&gt;&lt;/span&gt;
+</span><span class='line'>        <span class="o">{{</span>/if<span class="o">}}</span>
+</span><span class='line'>        &lt;a <span class="nv">href</span><span class="o">=</span><span class="s2">&quot;/feeds/{{this.url}}&quot;</span>&gt;
+</span><span class='line'>            &lt;div <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;detail&quot;</span>&gt;
+</span><span class='line'>                &lt;h3&gt;<span class="o">{{</span>this.title<span class="o">}}</span>&lt;/h3&gt;
+</span><span class='line'>            &lt;/div&gt;
+</span><span class='line'>        &lt;/a&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>&lt;/li&gt;
+</span><span class='line'><span class="o">{{</span>/each<span class="o">}}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
