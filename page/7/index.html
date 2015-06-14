@@ -9,7 +9,20 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="background 元旦放假前，team的同事们想要一起学习一些技术，然后一起做些小东西，有人提到将物理墙上的卡，通过手机拍照，识别出其中的卡号，然后与电子墙同步状态。这是一个非常有意思的主题，会涉及到很多方面的知识，其实有好几个topic，只不过我对人工智能/机器学习等比较有兴趣而已， &hellip;">
+  <meta name="description" content="我之前在wordpress中有一些页面(page)，在迁移到octopress之后都不见了，早就想把这些页面show出来了，最终都被我以各种理由拖到了今天。 布局 一个典型的octopress博客的source目录布局大概是这样： 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +95,137 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/01/add-new-page-to-octopress/">为octopress添加新的页面(page)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-03T17:38:00+11:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>我之前在wordpress中有一些页面(page)，在迁移到octopress之后都不见了，早就想把这些页面show出来了，最终都被我以各种理由拖到了今天。</p>
+
+<h3>布局</h3>
+
+<p>一个典型的octopress博客的source目录布局大概是这样：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>source/
+</span><span class='line'>├── _attachments
+</span><span class='line'>├── _includes
+</span><span class='line'>│   ├── asides
+</span><span class='line'>│   ├── custom
+</span><span class='line'>│   │   └── asides
+</span><span class='line'>│   └── post
+</span><span class='line'>├── _layouts
+</span><span class='line'>├── _nav_menu_items
+</span><span class='line'>├── _pages
+</span><span class='line'>├── _posts
+</span><span class='line'>├── blog
+</span><span class='line'>│   └── archives
+</span><span class='line'>├── font
+</span><span class='line'>├── images
+</span><span class='line'>│   ├── 2012
+</span><span class='line'>│   │   ├── 01
+</span><span class='line'>│   │   ├── 02
+</span><span class='line'>│   ├── 2013
+</span><span class='line'>│   │   └── 01
+</span><span class='line'>│   ├── fancybox
+</span><span class='line'>│   └── social
+</span><span class='line'>├── javascripts
+</span><span class='line'>│   ├── asides
+</span><span class='line'>│   └── libs
+</span><span class='line'>├── jsccp
+</span><span class='line'>└── stylesheets
+</span><span class='line'>    ├── bootstrap
+</span><span class='line'>    └── syntax</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>对应的，当执行</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rake generate</span></code></pre></td></tr></table></div></figure>
+
+
+<p>时，source下面的markdown会被编译为html，并拷贝到public下，public目录下的结构跟source下一致，里边的内容为最终的静态页面。因此我们需要修改souce中的内容，然后generate/deploy即可。</p>
+
+<h3>添加页面(page)</h3>
+
+<p>在octopress中，已经有两个默认page，即blog/archives，我们可以参考它来完成自己的页面，首先在source中创建一个目录，比如叫做<strong>jsccp</strong>(<a href="http://abruzzi.github.com/jsccp">JavaScript Core Concepts and Practices</a>)，然后在这个目录中放入一个名叫index.markdown的文件即可。</p>
+
+<p>将需要的内容放入这个文件即可完成页面(page)的编辑。但是我们还需要在首页上将这个页面的链接暴露出来，这一步需要编辑<code>source/_includes/custom/navigation.html</code></p>
+
+<pre><code>&lt;ul class="main-navigation"&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Blog&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/blog/archives"&gt;Archives&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/jsccp"&gt;JavaScript内核系列&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</code></pre>
+
+<p>我为这个文件添加了一个新行，指向新创建的目录(此处不需要指定到index.markdown或者index.html)，这样就设置完成了。</p>
+
+<p>尝试<code>rake generate</code>然后<code>rake preview</code>，如果一起正常，就可以<code>rake deploy</code>部署到github上了。</p>
+
+<h3>效果图</h3>
+
+<p><img src="http://abruzzi.github.com/images/2013/01/navigation.png" alt="image" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1217,75 +1361,6 @@ Login your douban account at first, and then try to access this <a href="http://
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/10/first-post-of-github-blog/">First Post of Github Blog (Powered by Octopress)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-08T23:13:00+11:00" pubdate data-updated="true">Oct 8<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>What is Octopress anyway</h2>
-
-<p>Here is a short description from <a href="http://octopress.org/">octopress.org</a>:</p>
-
-<blockquote><p>   Octopress is a framework designed by Brandon Mathis for Jekyll, the blog aware static site generator powering Github Pages. To start blogging with Jekyll, you have to write your own HTML templates, CSS, Javascripts and set up your configuration. But with Octopress All of that is already taken care of. Simply clone or fork Octopress, install dependencies and the theme, and you’re set.</p></blockquote>
-
-<h2>How to configure octopress</h2>
-
-<p>The document presented by octopress itself is really great, you car refer <a href="http://octopress.org/docs/deploying/github/">How to deploying to github</a> for more details (as what I did).</p>
-
-<h2>I found a weird issue when try to generate</h2>
-
-<h3>FIX for Lion&#8217;s posix_spawn_ext.bundle: [BUG] Segmentation fault</h3>
-
-<p>First delete the ruby</p>
-
-<pre><code>rvm remove ruby-1.9.3 --gems --archive
-</code></pre>
-
-<p>then</p>
-
-<pre><code>echo $CC
-</code></pre>
-
-<p>should return none.</p>
-
-<p>finally, reinstall all stuff</p>
-
-<pre><code>CC=/usr/bin/gcc-4.2 rvm install ruby-1.9.2
-gem install bundler
-bundle install
-</code></pre>
-
-<p>should fix the error.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/8/">&larr; Older</a>
@@ -1303,6 +1378,10 @@ bundle install
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/06/do-we-really-short-for-front-end-developer/">我们真的缺前端工程师吗？</a>
+      </li>
+    
+      <li class="post">
         <a href="/2015/05/functional-programming-again/">又一篇JavaScript的函数式编程教程</a>
       </li>
     
@@ -1316,10 +1395,6 @@ bundle install
     
       <li class="post">
         <a href="/2015/02/build-sample-application-by-using-underscore-and-jquery/">使用underscore.js构建前端应用</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/02/collection-operations-in-underscore-dot-js/">underscore.js中的集合操作</a>
       </li>
     
   </ul>

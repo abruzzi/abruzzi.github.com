@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="前言 4月初在北京的时候，徐昊同学表示我们公司的同事们写的文章都太简单，太注重细节，然后捡起了芝麻丢了西瓜，于是我就不再更新博客（其实根本原因是项目太忙）。上周和其他几个同事一起参加“Martin Fowler深圳行”的活动，我和同事扎西贡献了一个《FullStack Language &hellip;">
+  <meta name="description" content="前言 这两天在好几个地方都看到了一篇关于前端工程师很难招到的文章，文章本身是去年的，中心思想是：其实我们并不缺前端工程师，我们缺的是优秀的前端工程师。我还是比较同意作者观点的，不过略有意犹未尽的感觉。于是我结合自己的经验，也来聊一下这个话题：我们真的缺前端工程师吗？ These walls are &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,174 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/06/do-we-really-short-for-front-end-developer/">我们真的缺前端工程师吗？</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-14T23:33:00+10:00" pubdate data-updated="true">Jun 14<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>前言</h3>
+
+<p>这两天在好几个地方都看到了一篇关于<a href="http://chuansong.me/n/1369941">前端工程师很难招到</a>的文章，文章本身是去年的，中心思想是：其实我们并不缺前端工程师，我们缺的是优秀的前端工程师。我还是比较同意作者观点的，不过略有意犹未尽的感觉。于是我结合自己的经验，也来聊一下这个话题：我们真的缺前端工程师吗？</p>
+
+<p><code>
+These walls are kind of funny like that. First you hate them, then you get used to them.Enough time passed, get so you depend on them. That’s institutionalising.
+</code></p>
+
+<p>传统软件公司划分开发者的方式下，在前端部门的程序员永远不会去读缓存部分的代码，设计师也不太可能去和开发坐在一起，开发也不知道软件最终软件会以何种方式部署在服务器上。</p>
+
+<h3>什么是前端工程师</h3>
+
+<p>我在招聘广告和办公室的一些对话中，听到了一个新的角色：UI Dev，事实上我在知乎上还回答过一个<a href="http://www.zhihu.com/question/30170650">关于ThoughtWorks的UI Dev的问题</a>。简而言之，UI Dev可以快速的把设计师的作品实现为HTML/CSS/JavaScript代码。如果按照这个标准，我觉得UI Dev对自己的要求太低了。毕竟要学会HTML/CSS实现mockup并不困难，但是成为一名前端工程师则需要掌握更多的知识：</p>
+
+<ul>
+<li>会用PS来进行图片的处理（比如切图，微调等）</li>
+<li>用HTML/CSS实现mockup（可能还有SASS/LESS等工具）</li>
+<li>熟悉JavaScript（比如前端的MVVM框架，客户端模板）</li>
+<li>前端开发的工作流程（代码检查，精简化，模块化css，LiveReload，调试）</li>
+<li>编写测试（静态检查，单元测试）</li>
+<li>跨浏览器、跨设备的解决方法（不同分辨率，不同厂商）</li>
+<li>会根据项目的特点选择不同的前端技术栈（移动端，Web站点，responsive等）</li>
+</ul>
+
+
+<p>这些要求事实上已经不那么容易做到了。它可能会花费你2到3年时间来完全掌握。但是2到3年之后，即便你已经成为了一个“合格的”前端工程师，这也还远远不够。在现实世界中，一个软件产品除了前端，还有非常广阔的空间，还有很多有趣的东西值得学习：</p>
+
+<ul>
+<li>HTTP协议本身（缓存，鉴权）</li>
+<li>Web容器如何工作</li>
+<li>无状态的Web应用的工作原理</li>
+<li>动态，静态内容如何分离部署（反向代理配置）</li>
+<li>安全机制如何配置</li>
+<li>监控机制如何配置</li>
+</ul>
+
+
+<p>有了这些，也算是有点端到端的意思了。这时你也已经不是一个纯前端工程师了，系统中的大部分问题你都可以搞定，不过日常工作中可能更多的职责还是做前端的开发。但是这些还不够，软件除了交付之外，还有一些非功能性的需求：</p>
+
+<ul>
+<li>端到端测试（UI测试，比如selenium server/web driver）</li>
+<li>devops（比如数据库环境，测试服务器，CI服务器的自动化provision）</li>
+<li>基本的UI设计原则（在某些页面确实的情况下，根据系统的已有UI做设计）</li>
+<li>数据库性能优化</li>
+<li>性能测试</li>
+</ul>
+
+
+<p><del>不过这些还只是我对于Web开发这个领域的总结。其他领域，比如大数据，机器学习，GIS，图像/视频处理等等。</del></p>
+
+<p>这时候你看起来已经是一个全栈工程师了。最起码，你可以说你对软件开发中的大部分机制是如何工作的有了基本的了解。但是我想离一个优秀的工程师还是有很大差距的。</p>
+
+<p>我跟一位<a href="http://www.caicaiwan.com/">设计师同事</a>聊过这个问题：</p>
+
+<p><code>
+……Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找到一些卡片（story卡或者需求文档说明书），然后撸袖子开干，干的过程中有很多自以为是的理解，同样有一些自以为是的牛逼实践（TDD啊，自动化啊），最后功能做完，大功告成，然后接着做下一个卡片。传统的Dev，或者苦逼屌丝程序员的世界就是这样的：需求从哪儿来，不知道；做完之后谁来负责质量，不知道；最终上线的时候怎么发布，不知道；线上有问题了怎么办，不知道。
+</code></p>
+
+<p>以及</p>
+
+<p><code>
+……在ThoughtWorks，Dev的工作有了很大的变化，一个最明显的变化是边界的模糊。比如很多项目都不设QA角色，所有人都对质量负责，都做测试，也有OPs角色，但是大部分非生产环境都是Dev自己发布。也就是说，软件/项目生命周期中的大部分实践我们都能涉足，而且可以带来改进，提升效率。但是这只是往下游（从开发，到测试，到部署，到运维），反过来看上游，比如需求从哪儿来，Dev还是不知道。这毫无疑问是一个令人沮丧的事实，因为这需求的产生才是核心，也就是我昨天跟你聊的：一个idea如何变成一个可视化的原型，然后进一步演进为项目原型？
+</code></p>
+
+<p><img src="/images/2015/06/software-life-cycle-resized.png" alt="software life cycle" /></p>
+
+<p>简而言之，开发者视野应该放开开阔一些。不要将自己局限在某种角色上，不但不要局限在前端/后端开发上，压根就不要局限在开发这种角色本身上，你在系统中，可以是设计师，还可以是业务分析师。虽然不一定最终要你去转行做BA，或者UX，但是更广阔的视野可以使你更加高效的发挥自己的作用。</p>
+
+<p>我所理解的，前端不一定要熟知所有这些知识和技能，但是一定不要认为自己做好了前端的一亩三分地就足够了，不要给自己设限。跨界会给你带来难以估量的好处，一个角色做久了，难免会产生一些盲点。这时候，换个视角，从其他角色的角度来看待你的工作，又会有很多新的发现。而且不仅如此，很可能你会发现之前很麻烦，很难搞定的事情，在新的方法下变得很容易。</p>
+
+<p>在ThoughtWorks，经常可以找到非常优秀的人：比如做出心声（一个帮助聋哑人打电话的软件）的<a href="http://xuexiao.me">朱晨</a>，他的主要角色是用户体验设计师，为了开发心声这个软件专门学习了如何开发；比如西安办公室的大牛何飞，在学完了我上边提到Web领域的绝大部分技能之后，又开始学习各种底层算法；比如UX王倩蕾，<a href="http://www.caicaiwan.com/">唐婉莹</a>，也在积极的学习前端开发；同样UX角色的刘海生，又在向BA角色进发。</p>
+
+<p>我自己从设计到实现的两个小页面：</p>
+
+<p><img src="/images/2015/06/ilearn-resized.png" alt="ilearn" /></p>
+
+<p><img src="/images/2015/06/lightweight-resized.png" alt="lightweight" /></p>
+
+<h3>我的故事</h3>
+
+<h4>其实，我是一名后端开发</h4>
+
+<p>工作之后，我在很长一段时间是专注于“非前端”的领域。和很多刚入行的新人一样，我对计算机能触及的几乎一切领域都感兴趣：语言解释器，人工智能（遗传算法，隐式马尔科夫模型，自动纠错，模式识别），嵌入式开发，图形处理，操作系统的进程调度，进程间通信，多线程模型，各种脚本语言（python，ruby，JavaScript等等），另外，日常开发流程中的一些工具的定制化也会花去我很多的时间，比如如何配置vim，写几个小脚本来和编辑器做集成等等。更别说那些令人一听就觉得激动的编程范式：面向对象，基于消息总线，函数式编程等等。如果你感兴趣，可以看看我几年前的博客（http://abruzzi.iteye.com/）</p>
+
+<p>我的上一家公司的产品是一个省级电网的收费/计费系统（电其实和我们在超市里购买的其他生活用品一样，也是一种商品）。我在那里工作了差不多两年，日常的开发方式就是ssh登陆到RHEL（Redhat Enterprise Linux）服务器上，用vim（当然有一堆的vim插件）开发C代码，调试器是gdb（对，就是那个很牛逼，但是对新手特别不友好的gdb）。</p>
+
+<p>我们用C语言给Apache的httpd写了一个扩展module，大约相当于现在rack里的中间件，这个module要和后端的一个要复杂的多的模块通信，其中不但涉及网络通信，还有*nix管道，缓冲，并发等等考虑。在这两年里，我几乎没有碰过任何的Web界面上的东西（处理用php写了一两百行的页面之外）</p>
+
+<p>在加入这家公司之前，我在一家用Java做报表的公司工作，技术栈为J2EE。其中有一些前端的工作，但是并不很多，而且说实话，我当时有些看不太上这些技术。HTML/CSS在我心目中的地位比线程池，语言解析等差远了，所以我也没有认真地去系统学习。</p>
+
+<p>在加入ThoughtWorks之前，在“前端”方面，唯一算是比较擅长的也不过是写JavaScript，而且对于前端的MVVM框架，双向绑定，模块化等高级货都没听过。且不能论HTML/CSS的最佳实践，连根据设计稿做出一个静态页面的的能力也不具备。我之前有一点JSP/HTML经验，而CSS经验也并没有超出如何画一个细线表格的范畴。换句话说，我的前端（特别是HTML/CSS）是最近才学会的。</p>
+
+<h4>ThoughtWorks的开发</h4>
+
+<p>在ThoughtWorks，很多团队是按照feature团队来组建的。相对于传统的component团队（按部门划分，比如研发组，测试组，设计组等，每个组还有可能会再细分成如用户调研，流程设计，视觉设计等等），feature团队里配备了软件开发过程中需要的几乎所有角色：业务分析，测试工程师，开发工程师，设计师（设计师一般不会常驻），有的团队还有项目经理的角色。</p>
+
+<p>在feature团队里，你可以很容易看到不同的角色是如何工作的，很多时候，开发会和设计师一起来调整颜色，排版，布局，也可能和测试一起编写自动化测试用例，showcase等。也就是说，角色之间的藩篱在淡化，而就开发这一种角色而言，对于前端/后端的区分也会显得非常模糊，因为需求划分之后的story（敏捷开发中的一个术语，其实就是需求的一种展现方式）是端到端的，比如一个商品列表展示的story，会包括</p>
+
+<ul>
+<li>数据库的表结构</li>
+<li>访问数据库的ORM部分，</li>
+<li>使用ORM的业务逻辑service</li>
+<li>响应客户端的controller（消费JSON或者XML的HTTP接口）</li>
+<li>发送请求，处理响应的JavaScript代码</li>
+<li>和设计稿一致的CSS样式</li>
+</ul>
+
+
+<p>而且在这个过程中还会涉及到一些外围的工具</p>
+
+<ul>
+<li>虚拟机环境准备</li>
+<li>数据库连接</li>
+<li>自动化测试（单元测试，集成测试，可能还有UI测试）</li>
+<li>数据库迁移脚本</li>
+</ul>
+
+
+<p>在这个过程中，开发者需要掌握和开发过程相关的一切实践中的一切工具.</p>
+
+<p>在我的ThoughtWorks的第一个项目中，我是以Java开发工程师角色加入的，下项目的时候，我学会了自动化provision，cucumber测试工具，Rails，gradle（没错，我之前用Java都是用IDE构建的，在Linux世界我用make），jasmine测试工具，Backbone.js，haml.js。</p>
+
+<p>第二个项目的时候，我是以前端工程师角色加入，下项目的时候，我学会了nginx配置缓存、负载均衡服务器，gatling测试工具，Hadoop/Spark等的集群配置，还有一些和项目相关的GIS（地理信息系统）的技术栈，前后端分离策略等。</p>
+
+<p>第三个项目我是以Java开发工程师角色加入的，下项目的时候，我学会了如何做性能测试，如何建立一个漂亮的Dashboard（可以用来展现CI等），而且在业余时间系统的学习了CSS3和HTML5，将之前零敲碎打的那些知识串起来，这些总结做了几次内部培训后，还整理成了一本电子书。</p>
+
+<p>第四个项目我又变成了一个前端工程师，但是这个项目有意思的地方是跟mobile相关，于是页面性能，体验又变成了一个重点，下项目的时候，我对无状态的Web应用，session的持久化，CSS3的动画，用Backbone.js组织多页面的方式等等又有了新的理解。</p>
+
+<p>如果这些经历造成了你觉得我很牛的错觉，那我应该道歉。我觉得自己勉强可以算是个合格的程序员：对学习保持着热情，对解决问题保持着热情，仅此而已。在项目上，如果我发现了问题，我就想办法解决，如果属于知识欠缺，那我就会去学习。我还远远没有到达精通这些技术的地步，但是在工程实践领域，根据80/20问题，这些粗浅的知识足以解决80%的问题，而另外的20%，我们才真正需要一个专家来帮忙。也就是说，团队里需要有一个能解决20%的问题的前端工程师，而其他的80%的前端工作，应该可以被其他所有的开发完成，对于后端开发也是一样。</p>
+
+<p><del>尝试从系统级别去解决一个问题，而不是将问题抛给另外一个角色（后端工程师，UX或者QA）</del></p>
+
+<p>我们缺的并不是前端/后端工程师，而是工程师。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3242,308 +3410,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2015/01/copy-code-with-style/">高亮剪贴板里的代码片段</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-01-24T00:17:00+11:00" pubdate data-updated="true">Jan 24<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>高亮剪贴板里的代码片段</h3>
-
-<p>我前几天在准备一个培训的slides的时候，想在Keynote中粘贴一段代码，默认的粘贴板中的内容并没有样式，粘进去之后就是纯文本，没有语法高亮不说，默认的，代码的字体会采用Keynote默认的字体，非常难看。</p>
-
-<p>之前在Intellij中有个插件<code>'Copy' on steroids</code>，这个插件可以将Intellij的编辑器中的高亮过的文本拷贝到剪贴板，然后就可以在Keynote中使用了。</p>
-
-<p>我就想能不能有对应的命令行工具，结果还真的找到一个，就叫<code>highlight</code>，<a href="http://www.andre-simon.de/doku/highlight/en/highlight.php">主页在这里</a>。（这里略微吐槽一下，这个官方页面的风格以今天的眼光来看，无论是配色还是样式布局等，都非常难看，完全是10年前的风格，不过这个小工具确实很好用）。</p>
-
-<h4>基本使用</h4>
-
-<p>在Mac下，安装非常简单：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>brew install highlight
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>highlight</code>支持很多格式，<code>HTML</code>，<code>RTF</code>甚至还有<code>LaTeX</code>。不过如果要在Keynote或者PowerPoint中使用，用<code>RTF</code>(Rich Text Format)就可以了。</p>
-
-<p>选择要高亮的文件，比如<code>app.rb</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="nb">require</span> <span class="s1">&#39;sinatra&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;rack/contrib&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;active_record&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;./model/plants&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">FrontendApplication</span> <span class="o">&lt;</span> <span class="no">Sinatra</span><span class="o">::</span><span class="no">Base</span>
-</span><span class='line'>    <span class="n">get</span> <span class="s1">&#39;/&#39;</span> <span class="k">do</span>
-</span><span class='line'>        <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后使用命令：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>highlight -O rtf app.rb | pbcopy
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>即可将高亮过的内容复制到剪切板中，然后只需要<code>CMD+V</code>就可以粘贴了：</p>
-
-<p><img src="/images/2015/01/ruby-highlight-resized.png" alt="app.rb" /></p>
-
-<p>如果要生成HTML格式，只需要指定:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>highlight -O html app.rb &gt; app.rb.html
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>自定义语言（扩展）</h4>
-
-<p>如果遇到不支持的语言时，默认的<code>highlight</code>会报错，要查看所有支持的语言，可以使用</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>highlight -p
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>所有的<code>highlight</code>内置的语言高亮配置都存储在本地的一个目录中，比如在我的机器上，存储位置为<code>/usr/local/Cellar/highlight/3.18_1/share/highlight/langDefs/</code>。</p>
-
-<p>还以Java为例，该目录下会有一个文件，名为<code>java.lang</code>，内容如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">Description</span><span class="o">=</span><span class="s2">&quot;Java&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">Keywords</span><span class="o">={</span>
-</span><span class='line'>  <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>1,
-</span><span class='line'>    <span class="nv">List</span><span class="o">={</span><span class="s2">&quot;abstract&quot;</span>, <span class="s2">&quot;default&quot;</span>, <span class="s2">&quot;if&quot;</span>, <span class="s2">&quot;private&quot;</span>, <span class="s2">&quot;this&quot;</span>, <span class="s2">&quot;do&quot;</span>, <span class="s2">&quot;implements&quot;</span>,
-</span><span class='line'><span class="s2">&quot;protected&quot;</span>, <span class="s2">&quot;throw&quot;</span>, <span class="s2">&quot;break&quot;</span>, <span class="s2">&quot;import&quot;</span>, <span class="s2">&quot;public&quot;</span>, <span class="s2">&quot;throws&quot;</span>, <span class="s2">&quot;else&quot;</span>,
-</span><span class='line'><span class="s2">&quot;instanceof&quot;</span>, <span class="s2">&quot;return&quot;</span>, <span class="s2">&quot;transient&quot;</span>, <span class="s2">&quot;case&quot;</span>, <span class="s2">&quot;extends&quot;</span>, <span class="s2">&quot;try&quot;</span>, <span class="s2">&quot;catch&quot;</span>, <span class="s2">&quot;final&quot;</span>,
-</span><span class='line'><span class="s2">&quot;interface&quot;</span>, <span class="s2">&quot;static&quot;</span>, <span class="s2">&quot;finally&quot;</span>, <span class="s2">&quot;strictfp&quot;</span>, <span class="s2">&quot;volatile&quot;</span>, <span class="s2">&quot;class&quot;</span>, <span class="s2">&quot;native&quot;</span>,
-</span><span class='line'><span class="s2">&quot;super&quot;</span>, <span class="s2">&quot;while&quot;</span>, <span class="s2">&quot;const&quot;</span>, <span class="s2">&quot;for&quot;</span>, <span class="s2">&quot;new&quot;</span>, <span class="s2">&quot;switch&quot;</span>, <span class="s2">&quot;continue&quot;</span>, <span class="s2">&quot;goto&quot;</span>,
-</span><span class='line'><span class="s2">&quot;package&quot;</span>, <span class="s2">&quot;synchronized&quot;</span>, <span class="s2">&quot;as&quot;</span>, <span class="s2">&quot;in&quot;</span>, <span class="s2">&quot;def&quot;</span>, <span class="s2">&quot;property&quot;</span><span class="o">}</span>, <span class="o">}</span>,
-</span><span class='line'>  <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>2,
-</span><span class='line'>    <span class="nv">List</span><span class="o">={</span><span class="s2">&quot;boolean&quot;</span>, <span class="s2">&quot;double&quot;</span>, <span class="s2">&quot;byte&quot;</span>, <span class="s2">&quot;int&quot;</span>, <span class="s2">&quot;short&quot;</span>, <span class="s2">&quot;void&quot;</span>, <span class="s2">&quot;char&quot;</span>, <span class="s2">&quot;long&quot;</span>, <span class="s2">&quot;float&quot;</span><span class="o">}</span>,
-</span><span class='line'>  <span class="o">}</span>,
-</span><span class='line'> <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>3,
-</span><span class='line'>    <span class="nv">Regex</span><span class="o">=[[</span>@<span class="se">\w</span>+<span class="o">]]</span>,
-</span><span class='line'>  <span class="o">}</span>,
-</span><span class='line'>  <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>4,
-</span><span class='line'>    <span class="nv">Regex</span><span class="o">=[[(</span><span class="se">\w</span>+<span class="o">)</span><span class="se">\s</span>*<span class="se">\(</span><span class="o">]]</span>,
-</span><span class='line'>  <span class="o">}</span>,
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">Strings</span><span class="o">={</span>
-</span><span class='line'>  <span class="nv">Delimiter</span><span class="o">=[[</span><span class="err">&quot;</span>|<span class="err">&#39;</span><span class="o">]]</span>,
-</span><span class='line'>  <span class="nv">Escape</span> <span class="o">=</span> <span class="o">[[</span> <span class="se">\\</span>u<span class="se">\d</span><span class="o">{</span>4<span class="o">}</span>|<span class="se">\\</span>x?<span class="se">\d</span><span class="o">{</span>3<span class="o">}</span>|<span class="se">\\\w</span>|<span class="se">\\</span><span class="o">[</span><span class="se">\&#39;\\\&quot;</span><span class="o">]</span> <span class="o">]]</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">IgnoreCase</span><span class="o">=</span><span class="nb">false</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">Comments</span><span class="o">={</span>
-</span><span class='line'>  <span class="o">{</span> <span class="nv">Block</span><span class="o">=</span><span class="nb">false</span>,
-</span><span class='line'>    <span class="nv">Delimiter</span><span class="o">=</span> <span class="o">{</span> <span class="o">[[</span><span class="se">\/\/</span><span class="o">]]</span> <span class="o">}</span>,
-</span><span class='line'>  <span class="o">}</span>,
-</span><span class='line'>  <span class="o">{</span> <span class="nv">Block</span><span class="o">=</span><span class="nb">true</span>,
-</span><span class='line'>    <span class="nv">Nested</span><span class="o">=</span><span class="nb">false</span>,
-</span><span class='line'>    <span class="nv">Delimiter</span><span class="o">=</span> <span class="o">{</span> <span class="o">[[</span><span class="se">\/\*</span><span class="o">]]</span>,<span class="o">[[</span><span class="se">\*\/</span><span class="o">]]</span>,<span class="o">}</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">Operators</span><span class="o">=[[</span><span class="se">\(</span>|<span class="se">\)</span>|<span class="se">\[</span>|<span class="se">\]</span>|<span class="se">\{</span>|<span class="se">\}</span>|<span class="se">\,</span>|<span class="se">\;</span>|<span class="se">\.</span>|<span class="se">\:</span>|<span class="se">\&amp;</span>|&lt;|&gt;|<span class="se">\!</span>|<span class="se">\=</span>|<span class="se">\/</span>|<span class="se">\*</span>|<span class="se">\%</span>|<span class="se">\+</span>|<span class="se">\-</span>|<span class="se">\|</span><span class="o">]]</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">EnableIndentation</span><span class="o">=</span><span class="nb">true</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>基本上，这些配置都是自解释的，比如关键字列表的定义，字符串的正则pattern，是否区分大小写，注释的格式，操作符的格式，是否启用缩进等。</p>
-
-<p>我在准备Slide的时候，想要加入一段<code>Cucumber</code>的feature文件，然后发现并不支持，于是就参照着Java的定义新建了一个文件：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">Description</span><span class="o">=</span><span class="s2">&quot;Gherkin&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">Keywords</span><span class="o">={</span>
-</span><span class='line'>  <span class="o">{</span> <span class="nv">Id</span><span class="o">=</span>1,
-</span><span class='line'>    <span class="nv">List</span><span class="o">={</span><span class="s2">&quot;Feature&quot;</span>, <span class="s2">&quot;Scenario&quot;</span>, <span class="s2">&quot;Given&quot;</span>, <span class="s2">&quot;When&quot;</span>, <span class="s2">&quot;Then&quot;</span>, <span class="s2">&quot;And&quot;</span>, <span class="s2">&quot;World&quot;</span>, <span class="s2">&quot;Outline&quot;</span><span class="o">}</span>,
-</span><span class='line'>  <span class="o">}</span>,
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">Strings</span><span class="o">={</span>
-</span><span class='line'>  <span class="nv">Delimiter</span><span class="o">=[[</span><span class="err">&quot;</span>|<span class="err">&#39;</span><span class="o">]]</span>,
-</span><span class='line'>  <span class="nv">Escape</span> <span class="o">=</span> <span class="o">[[</span> <span class="se">\\</span>u<span class="se">\d</span><span class="o">{</span>4<span class="o">}</span>|<span class="se">\\</span>x?<span class="se">\d</span><span class="o">{</span>3<span class="o">}</span>|<span class="se">\\\w</span>|<span class="se">\\</span><span class="o">[</span><span class="se">\&#39;\\\&quot;</span><span class="o">]</span> <span class="o">]]</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">Comments</span><span class="o">={</span>
-</span><span class='line'>  <span class="o">{</span> <span class="nv">Block</span><span class="o">=</span><span class="nb">false</span>,
-</span><span class='line'>    <span class="nv">Delimiter</span><span class="o">=</span> <span class="o">{</span> <span class="o">[[</span><span class="c">#]] },</span>
-</span><span class='line'>  <span class="o">}</span>,
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">IgnoreCase</span><span class="o">=</span><span class="nb">false</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>将这个文件保存为<code>feature.lang</code>，这样我们就可以高亮下面这个<code>cucumber</code>的feature文件了（其实feature文件本身是有一个叫做Gherkin的语言编写的）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='gherkin'><span class='line'><span class="k">Feature:</span><span class="nf">  Connected Home Purchase</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf"> </span><span class="k">Scenario:</span><span class="nf"> Purchase T-Broadband</span>
-</span><span class='line'><span class="k">      Given </span><span class="nf">I am purchasing &quot;</span><span class="s">T-BROADBAND-50GB</span><span class="nf">&quot;</span>
-</span><span class='line'><span class="nf">     </span><span class="k">When </span><span class="nf">I go to checkout page</span>
-</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I am an existing telstra broadband customer</span>
-</span><span class='line'><span class="nf">     </span><span class="k">When </span><span class="nf">I select &quot;</span><span class="s">Professional Installation</span><span class="nf">&quot; in Premium service and support</span>
-</span><span class='line'><span class="nf">     </span><span class="c"># And I select &quot;None&quot; in Community Wifi</span><span class="nf"></span>
-</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I select &quot;</span><span class="s">None</span><span class="nf">&quot; in Optional extras</span>
-</span><span class='line'><span class="nf">     </span><span class="k">Then </span><span class="nf">I should see &quot;</span><span class="s">Telstra Broadband 50GB</span><span class="nf">&quot; in my shopping cart</span>
-</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I should see &quot;</span><span class="s">Professional Installation</span><span class="nf">&quot; in add on list</span>
-</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I should see the total price is &quot;</span><span class="s">$72.00</span><span class="nf">&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf"> </span><span class="k">Scenario:</span><span class="nf"> Purchase Entertainerment Bundle</span>
-</span><span class='line'><span class="k">      Given </span><span class="nf">I am purchasing &quot;</span><span class="s">Telstra Entertainer Supreme Bundle M</span><span class="nf">&quot;</span>
-</span><span class='line'><span class="nf">     </span><span class="k">When </span><span class="nf">I go to checkout page</span>
-</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I am an existing telstra broadband customer</span>
-</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I select &quot;</span><span class="s">Foxtel iQ3 ($125 one-off)</span><span class="nf">&quot; in Inclusions</span>
-</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I select &quot;</span><span class="s">Professional Installation</span><span class="nf">&quot; in Premium service and support</span>
-</span><span class='line'><span class="nf">     </span><span class="c"># And I select &quot;None&quot; in Community Wifi</span><span class="nf"></span>
-</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I select &quot;</span><span class="s">None</span><span class="nf">&quot; in Optional extras</span>
-</span><span class='line'><span class="nf">     </span><span class="k">Then </span><span class="nf">I should see &quot;</span><span class="s">Telstra Entertainer Supreme Bundle Entertainment M</span><span class="nf">&quot; in my shopping cart</span>
-</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I should see &quot;</span><span class="s">Professional Installation</span><span class="nf">&quot; in add on list</span>
-</span><span class='line'><span class="nf">     </span><span class="k">And </span><span class="nf">I should see the total price is &quot;</span><span class="s">$120.00</span><span class="nf">&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2015/01/feature-highlight-resized.png" alt="cucumber feature" /></p>
-
-<p>如果你经常写代码，喜欢分享自己学到的，并且喜欢以简短的代码来举例子，那么这个工具非常适合你。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -3559,6 +3425,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/06/do-we-really-short-for-front-end-developer/">我们真的缺前端工程师吗？</a>
+      </li>
+    
+      <li class="post">
         <a href="/2015/05/functional-programming-again/">又一篇JavaScript的函数式编程教程</a>
       </li>
     
@@ -3572,10 +3442,6 @@
     
       <li class="post">
         <a href="/2015/02/build-sample-application-by-using-underscore-and-jquery/">使用underscore.js构建前端应用</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/02/collection-operations-in-underscore-dot-js/">underscore.js中的集合操作</a>
       </li>
     
   </ul>
