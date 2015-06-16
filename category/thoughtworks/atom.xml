@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ThoughtWorks | I code it]]></title>
   <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-06-15T17:15:00+10:00</updated>
+  <updated>2015-06-16T17:11:07+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -28,7 +28,7 @@ These walls are kind of funny like that. First you hate them, then you get used 
 
 <p>传统软件公司划分开发者的方式下，在前端部门的程序员永远不会去读缓存数据部分的代码，设计师也不太可能去和开发坐在一起，开发也不知道软件最终软件会以何种方式部署在服务器上。</p>
 
-<h3>什么是前端工程师</h3>
+<h3>什么是“前端”工程师</h3>
 
 <p>我在招聘广告和办公室的一些对话中，听到了一个新的角色：UI Dev，事实上我在知乎上还回答过一个<a href="http://www.zhihu.com/question/30170650">关于ThoughtWorks的UI Dev的问题</a>。简而言之，UI Dev可以快速的把设计师的作品实现为HTML/CSS/JavaScript代码。</p>
 
@@ -69,7 +69,7 @@ These walls are kind of funny like that. First you hate them, then you get used 
 </ul>
 
 
-<p>有了这些，也算是有点端到端的意思了。这时你也已经不是一个纯前端工程师了，系统中的大部分问题你都可以搞定，不过日常工作中可能更多的职责还是做前端的开发。但是这些还不够，软件除了交付之外，还有一些非功能性的需求：</p>
+<p>有了这些，也算是有点端到端的意思了。这时你也已经不是一个“纯前端”工程师了，系统中的大部分问题你都可以搞定，不过日常工作中可能更多的职责还是做前端的开发。但是这些还不够，软件除了交付之外，还有一些非功能性的需求：</p>
 
 <ul>
 <li>端到端测试（UI测试，比如<a href="http://www.seleniumhq.org/">selenium server</a>/web driver）</li>
@@ -82,7 +82,7 @@ These walls are kind of funny like that. First you hate them, then you get used 
 
 <p><del>不过这些还只是我对于Web开发这个领域的总结。其他领域，比如大数据，机器学习，GIS，图像/视频处理等等。</del></p>
 
-<p>这时候你看起来已经是一个全栈工程师了。最起码，你可以说你对软件开发中的大部分机制是如何工作的有了基本的了解。但是我想这离一个优秀的工程师还是有<strong>很大差距</strong>的。</p>
+<p>这时候，你才能算是一个严格意义上的“前端”工程师。不从系统的角度来思考，不真正做一些后端开发/配置，并不能算是前端工程师，或者可以被称为<em>偏前端</em>工程师（partial frontend developer）。但是即使称为上边这样的“前端工程师”，我想这离一个优秀的工程师还是有<strong>很大差距</strong>的。</p>
 
 <p>我跟一位<a href="http://www.caicaiwan.com/">设计师同事</a>聊过这个问题：</p>
 
@@ -103,14 +103,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 <p>简而言之，开发者视野应该放开开阔一些。不要将自己局限在某种角色上，不但不要局限在前端/后端开发上，压根就不要局限在开发这种角色本身上，你在系统中，可以是设计师，还可以是业务分析师。虽然不一定最终要你去转行做BA，或者UX，但是更广阔的视野可以使你更加高效的发挥自己的作用，也可以在和别的角色互动式，快速的了解上下文。</p>
 
 <p>我所理解的，前端不一定要熟知所有这些知识和技能，但是<strong>一定不要认为自己做好了前端的一亩三分地就足够了</strong>，不要给自己设限。跨界会给你带来难以估量的好处，一个角色做久了，难免会产生一些盲点。这时候，换个视角，从其他角色的角度来看待你的工作，又会有很多新的发现。而且不仅如此，很可能你会发现之前很麻烦，很难搞定的事情，在新的方法/视角下变得很容易。</p>
-
-<p>在ThoughtWorks，经常可以遇到非常优秀的跨界人才：比如做出心声（一个帮助聋哑人打电话的软件）的<a href="http://xuexiao.me">朱晨</a>，他的主要角色是用户体验设计师，为了开发心声这个软件专门学习了如何开发；比如西安办公室的大牛何飞，在学完了我上边提到Web领域的绝大部分技能之后，又开始学习各种底层算法；比如UX王倩蕾，<a href="http://www.caicaiwan.com/">唐婉莹</a>，也在积极的学习前端开发；同样UX角色的<a href="http://">刘海生</a>，又在向BA角色进发。</p>
-
-<p>我是一个Dev，但是花了一些时间来学习界面设计，这里是我从设计到实现的两个小页面：</p>
-
-<p><img src="/images/2015/06/ilearn-resized.png" alt="ilearn" /></p>
-
-<p><img src="/images/2015/06/lightweight-resized.png" alt="lightweight" /></p>
 
 <h3>我的故事</h3>
 
@@ -165,6 +157,12 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 <p>如果这些经历造成了你觉得我很牛的错觉，那我应该道歉。我觉得自己勉强可以算是个合格的程序员：对学习保持着热情，对解决问题保持着热情，仅此而已。在项目上，如果我发现了问题，我就想办法解决，如果属于知识欠缺，那我就会去学习。我还远远没有到达精通这些技术的地步，但是在工程实践领域，根据<a href="https://en.wikipedia.org/wiki/Pareto_principle">80/20原则</a>，这些粗浅的知识足以解决80%的问题，而另外的20%，我们才真正需要一个专家来帮忙。也就是说，团队里需要有一个能解决20%的问题的前端工程师，而其他的80%的前端工作，应该可以被其他所有的开发完成，对于后端开发也是一样。</p>
 
 <p><del>尝试从系统级别去解决一个问题，而不是将问题抛给另外一个角色（后端工程师，UX或者QA）</del></p>
+
+<p>我是一个Dev，但是花了一些时间来学习界面设计，这里是我从设计到实现的两个小页面：</p>
+
+<p><img src="/images/2015/06/ilearn-resized.png" alt="ilearn" /></p>
+
+<p><img src="/images/2015/06/lightweight-resized.png" alt="lightweight" /></p>
 
 <h3>总结</h3>
 
