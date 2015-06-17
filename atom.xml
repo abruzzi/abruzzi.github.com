@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-06-16T17:11:07+10:00</updated>
+  <updated>2015-06-17T18:40:17+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -112,7 +112,7 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 
 <p>我的上一家公司的产品是一个省级电网的收费/计费系统（电其实和我们在超市里购买的其他生活用品一样，也是一种商品）。我在那里工作了差不多两年，日常的开发方式就是ssh登陆到RHEL（Redhat Enterprise Linux）服务器上，用vim（当然有一堆的vim插件）开发C代码，调试器是gdb（对，就是那个很牛逼，但是对新手特别不友好的gdb）。</p>
 
-<p>我们用C语言给Apache的httpd写了一个扩展module，大约相当于现在rack里的中间件，这个module要和后端的一个要复杂的多的模块通信，其中不但涉及网络通信，还有*nix管道，缓冲，并发等等考虑。在这两年里，我几乎没有碰过任何的Web界面上的东西（处理用php写了一两百行的页面之外）</p>
+<p>我们用C语言给Apache的httpd写了一个扩展module，大约相当于现在rack里的中间件，这个module要和后端的一个要复杂的多的模块通信，其中不但涉及网络通信，还有*nix管道，缓冲，并发等等考虑。在这两年里，我几乎没有碰过任何的Web界面上的东西（除了用php写了一两百行的页面之外）。</p>
 
 <p>在加入这家公司之前，我在一家用Java做报表的公司工作，技术栈为J2EE。其中有一些前端的工作，但是并不很多，而且说实话，我当时有些看不太上这些技术。HTML/CSS在我心目中的地位比线程池，语言解析等差远了，所以我也没有认真地去系统学习。</p>
 
