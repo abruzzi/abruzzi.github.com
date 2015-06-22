@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="前言 这两天在好几个地方都看到了一篇关于为什么整个互联网行业都缺前端工程师？的文章，文章本身是去年的，中心思想是：其实我们并不缺前端工程师，我们缺的是优秀的前端工程师。我还是比较同意作者观点的，不过略有意犹未尽的感觉。于是我结合自己的经验，也来聊一下这个话题：我们真的缺前端工程师吗？ These &hellip;">
+  <meta name="description" content="前言 前后端分离已经是业界所共识的一种开发/部署模式了。所谓的前后端分离，并不是传统行业中的按部门划分，一部分人纯做前端（HTML/CSS/JavaScript/Flex），另一部分人纯做后端，因为这种方式是不工作的：比如很多团队采取了后端的模板技术（JSP, FreeMarker, ERB等等 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,537 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/06/whats-next-after-separate-frontend-and-backend/">前后端分离了，然后呢？</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-22T21:29:00+10:00" pubdate data-updated="true">Jun 22<span>nd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>前言</h3>
+
+<p>前后端分离已经是业界所共识的一种开发/部署模式了。所谓的前后端分离，并<strong>不是</strong>传统行业中的按部门划分，一部分人纯做前端（HTML/CSS/JavaScript/Flex），另一部分人纯做后端，因为这种方式是<strong>不工作</strong>的：比如很多团队采取了后端的模板技术（JSP, FreeMarker, ERB等等），前端的开发和调试需要一个后台Web容器的支持，从而无法做到真正的分离（更不用提在部署的时候，由于动态内容和静态内容混在一起，当设计动态静态分流的时候，处理起来非常麻烦）。关于前后端开发的另一个讨论可以<a href="http://icodeit.org/2015/06/do-we-really-short-for-front-end-developer/">参考这里</a>。</p>
+
+<p>即使通过API来解耦前端和后端开发过程，前后端通过<code>RESTFul</code>的接口来通信，前端的静态内容和后端的动态计算分别开发，分别部署，<strong>集成</strong>仍然是一个绕不开的问题 &#8212; 前端/后端的应用都可以独立的运行，但是集成起来却不工作。我们需要花费大量的精力来调试，直到上线前仍然没有人有信心所有的接口都是工作的。</p>
+
+<h3>一点背景</h3>
+
+<p>一个典型的Web应用的布局看起来是这样的：</p>
+
+<p><img src="/images/2015/06/single-backend-resized.png" alt="typical web application" /></p>
+
+<p>前后端都各自有自己的开发流程，构建工具，测试集合等等。前后端仅仅通过接口来编程，这个接口可能是JSON格式的RESTFul的接口，也可能是XML的，重点是后台只负责数据的提供和计算，而完全不处理展现。而前端则负责拿到数据，组织数据并展现的工作。这样结构清晰，关注点分离，前后端会变得相对独立并松耦合。</p>
+
+<p>上述的场景还是比较理想，我们事实上在实际环境中会有非常复杂的场景，比如异构的网络，异构的操作系统等等:</p>
+
+<p><img src="/images/2015/06/multiple-backend-resized.png" alt="real word application" /></p>
+
+<p>在实际的场景中，后端可能还会更复杂，比如用C语言做数据采集，然后通过Java整合到一个数据仓库，然后该数据仓库又有一层Web Service，最后若干个这样的Web Service又被一个Ruby的聚合Service整合在一起返回给前端。在这样一个复杂的系统中，后台任意端点的失败都可能阻塞前端的开发流程，因此我们会采用mock的方式来解决这个问题：</p>
+
+<p><img src="/images/2015/06/mock-server-resized.png" alt="mock application" /></p>
+
+<p>这个<code>mock</code>服务器可以启动一个简单的HTTP服务器，然后将一些静态的内容serve出来，以供前端代码使用。这样的好处很多:</p>
+
+<ol>
+<li>前后端开发相对独立</li>
+<li>后端的进度不会影响前端开发</li>
+<li>启动速度更快</li>
+<li>前后端都可以使用自己熟悉的技术栈（让前端的学maven，让后端的用gulp都会很不顺手）</li>
+</ol>
+
+
+<p>但是当<strong>集成</strong>依然是一个令人头疼的难题。我们往往在集成的时候才发现，本来协商的数据结构变了：<code>deliveryAddress</code>字段本来是一个字符串，现在变成数组了（业务发生了变更，系统现在可以支持多个快递地址）；<code>price</code>字段变成字符串，协商的时候是<code>number</code>；用户邮箱地址多了一个层级等等。这些变动在所难免，而且时有发生，这会花费大量的调试时间和集成时间，更别提修改之后的回归测试了。</p>
+
+<p>所以仅仅使用一个静态服务器，然后提供<code>mock</code>数据是远远不够的。我们需要的<code>mock</code>应该还能做到：</p>
+
+<ol>
+<li>前端依赖指定格式的mock数据来进行UI开发</li>
+<li>前端的开发和<strong>测试</strong>都基于这些mock数据</li>
+<li>后端产生指定格式的mock数据</li>
+<li>后端需要测试来确保生成的mock数据正是前端需要的</li>
+</ol>
+
+
+<p>简而言之，我们需要商定一些契约，并将这些契约作为<strong>可以被测试</strong>的中间格式。然后前后端都需要有测试来使用这些契约。一旦契约发生变化，则另一方的测试会失败，这样就会驱动双方协商，并降低集成时的浪费。</p>
+
+<p>一个实际的场景是：前端发现已有的某个契约中，缺少了一个<code>address</code>的字段，于是就在契约中添加了该字段。然后在UI上将这个字段正确的展现了（当然还设置了字体，字号，颜色等等）。但是后台生成该契约的服务并没有感知到这一变化，当运行生成契约部分测试（后台）时，测试会失败了 &#8212; 因为它并没有生成这个字段。于是后端工程师就找前端来商量，了解业务逻辑之后，他会修改代码，并保证测试通过。这样，当集成的时候，就不会出现UI上少了一个字段，但是谁也不知道是前端问题，后端问题，还是数据库问题等。</p>
+
+<p>而且实际的项目中，往往都是多个页面，多个API，多个版本，多个团队同时进行开发，这样的契约会降低非常多的调试时间，使得集成相对平滑。</p>
+
+<p>在实践中，契约可以定义为一个JSON文件，或者一个XML的payload。只需要保证前后端<strong>共享同一个契约集合</strong>来做测试，那么集成工作就会从中受益。一个最简单的形式是：提供一些静态的<code>mock</code>文件，而前端所有发往后台的请求都被某种机制拦截，并转换成对该静态资源的请求。</p>
+
+<ol>
+<li><a href="https://github.com/dreamhead/moco">moco</a>，基于Java</li>
+<li><a href="http://wiremock.org/index.html">wiremock</a>，基于Java</li>
+<li><a href="http://www.sinatrarb.com/">sinatra</a>，基于Ruby</li>
+</ol>
+
+
+<p>看到<code>sinatra</code>被列在这里，可能熟悉<code>Ruby</code>的人会反对：它可是一个<code>后端</code>全功能的的程序库啊。之所以列它在这里，是因为<code>sinatra</code>提供了一套简洁优美的<code>DSL</code>，这个<code>DSL</code>非常契合<code>Web</code>语言，我找不到更漂亮的方式来使得这个<code>mock server</code>更加易读，所以就采用了它。</p>
+
+<h3>一个例子</h3>
+
+<p>我们以这个应用为示例，来说明如何在前后端分离之后，保证代码的质量，并降低集成的成本。这个应用场景很简单：所有人都可以看到一个条目列表，每个登陆用户都可以选择自己喜欢的条目，并为之加星。加星之后的条目会保存到用户自己的<code>个人中心</code>中。用户界面看起来是这样的：</p>
+
+<p><img src="/images/2015/06/bookmarks-resized.png" alt="bookmarks" /></p>
+
+<p>不过为了专注在我们的中心上，我去掉了诸如登陆，个人中心之类的页面，假设你是一个已登录用户，然后我们来看看如何编写测试。</p>
+
+<h4>前端开发</h4>
+
+<p>根据通常的做法，前后端分离之后，我们很容易<code>mock</code>一些数据来自己测试：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://abruzzi.github.com/2015/03/list-comprehension-in-python/&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Python中的 list comprehension 以及 generator&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;publicDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2015年3月20日&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://abruzzi.github.com/2015/03/build-monitor-script-based-on-inotify/&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;使用inotify/fswatch构建自动监控脚本&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;publicDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2015年2月1日&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery/&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;使用underscore.js构建前端应用&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;publicDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2015年1月20日&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后，一个可能的方式是通过请求这个json来测试前台：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/mocks/feeds.json&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">feeds</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">feedList</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Collection</span><span class="p">(</span><span class="nx">extended</span><span class="p">);</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">feedListView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FeedListView</span><span class="p">(</span><span class="nx">feedList</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.container&#39;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">feedListView</span><span class="p">.</span><span class="nx">render</span><span class="p">());</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样当然是可以工作的，但是这里发送请求的<code>url</code>并不是最终的，当集成的时候我们又需要修改为真实的<code>url</code>。一个简单的做法是使用<code>Sinatra</code>来做一次url的转换：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">get</span> <span class="s1">&#39;/api/feeds&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">content_type</span> <span class="s1">&#39;application/json&#39;</span>
+</span><span class='line'>  <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;mocks/feeds.json&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，当我们和实际的服务进行集成时，只需要连接到那个服务器就可以了。</p>
+
+<p>注意，我们现在的核心是<code>mocks/feeds.json</code>这个文件。这个文件现在的角色就是一个契约，至少对于前端来说是这样的。紧接着，我们的应用需要渲染<code>加星</code>的功能，这就需要另外一个契约：找出当前用户加星过的所有条目，因此我们加入了一个新的契约：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery/&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;使用underscore.js构建前端应用&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nt">&quot;publicDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2015年1月20日&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在<code>sinatra</code>中加入一个新的映射：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">get</span> <span class="s1">&#39;/api/fav-feeds/:id&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">content_type</span> <span class="s1">&#39;application/json&#39;</span>
+</span><span class='line'>  <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;mocks/fav-feeds.json&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过这两个请求，我们会得到两个列表，然后根据这两个列表的交集来绘制出所有的星号的状态（有的是空心，有的是实心）：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">favorite</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">favorite</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">ids</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">favorite</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;id&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">extended</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">feeds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">feed</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">feed</span><span class="p">,</span> <span class="p">{</span><span class="nx">status</span><span class="o">:</span> <span class="nx">_</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">ids</span><span class="p">,</span> <span class="nx">feed</span><span class="p">.</span><span class="nx">id</span><span class="p">)});</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">feedList</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Collection</span><span class="p">(</span><span class="nx">extended</span><span class="p">);</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">feedListView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FeedListView</span><span class="p">(</span><span class="nx">feedList</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.container&#39;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">feedListView</span><span class="p">.</span><span class="nx">render</span><span class="p">());</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>剩下的一个问题是当点击红心时，我们需要发请求给后端，然后更新红心的状态：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">toggleFavorite</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;/api/feeds/&#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">status</span> <span class="o">=</span> <span class="nx">that</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">that</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="o">!</span><span class="nx">status</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里又多出来一个请求，不过使用Sinatra我们还是可以很容易的支持它：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">post</span> <span class="s1">&#39;/api/feeds/:id&#39;</span> <span class="k">do</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以看到，在没有后端的情况下，我们一切都进展顺利 &#8212; 后端甚至还没有开始做，或者正在由一个进度比我们慢的团队在开发，不过无所谓，他们不会影响我们的。</p>
+
+<p>不仅如此，当我们写完前端的代码之后，可以做一个<code>End2End</code>的测试。由于使用了mock数据，免去了数据库和网络的耗时，这个<code>End2End</code>的测试会运行的非常快，并且它确实起到了端到端的作用。这些测试在最后的集成时，还可以用来当UI测试来运行。所谓一举多得。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="c1">#encoding: utf-8</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">describe</span> <span class="s1">&#39;Feeds List Page&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">let</span><span class="p">(</span><span class="ss">:list_page</span><span class="p">)</span> <span class="p">{</span><span class="no">FeedListPage</span><span class="o">.</span><span class="n">new</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">before</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">list_page</span><span class="o">.</span><span class="n">load</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">it</span> <span class="s1">&#39;user can see a banner and some feeds&#39;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">list_page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_banner</span>
+</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">list_page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_feeds</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">it</span> <span class="s1">&#39;user can see 3 feeds in the list&#39;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">list_page</span><span class="o">.</span><span class="n">all_feeds</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_feed_items</span> <span class="n">count</span><span class="p">:</span> <span class="mi">3</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">it</span> <span class="s1">&#39;feed has some detail information&#39;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">first</span> <span class="o">=</span> <span class="n">list_page</span><span class="o">.</span><span class="n">all_feeds</span><span class="o">.</span><span class="n">feed_items</span><span class="o">.</span><span class="n">first</span>
+</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">first</span><span class="o">.</span><span class="n">title</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eql</span><span class="p">(</span><span class="s2">&quot;Python中的 list comprehension 以及 generator&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2015/06/e2e-resized.png" alt="end 2 end" /></p>
+
+<p>关于如何编写这样的测试，可以参考之前写的<a href="http://icodeit.org/2015/01/page-object-with-site-prism/">这篇文章</a>。</p>
+
+<h4>后端开发</h4>
+
+<p>我在这个示例中，后端采用了<code>spring-boot</code>作为示例，你应该可以很容易将类似的思路应用到Ruby或者其他语言上。</p>
+
+<p>首先是请求的入口，<code>FeedsController</code>会负责解析请求路径，查数据库，最后返回JSON格式的数据。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Controller</span>
+</span><span class='line'><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&quot;/api&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FeedsController</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Autowired</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">FeedsService</span> <span class="n">feedsService</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Autowired</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">UserService</span> <span class="n">userService</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFeedsService</span><span class="o">(</span><span class="n">FeedsService</span> <span class="n">feedsService</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">feedsService</span> <span class="o">=</span> <span class="n">feedsService</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserService</span><span class="o">(</span><span class="n">UserService</span> <span class="n">userService</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">userService</span> <span class="o">=</span> <span class="n">userService</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&quot;/feeds&quot;</span><span class="o">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+</span><span class='line'>    <span class="nd">@ResponseBody</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Feed</span><span class="o">&gt;</span> <span class="n">allFeeds</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">feedsService</span><span class="o">.</span><span class="na">allFeeds</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&quot;/fav-feeds/{userId}&quot;</span><span class="o">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
+</span><span class='line'>    <span class="nd">@ResponseBody</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Feed</span><span class="o">&gt;</span> <span class="n">favFeeds</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">&quot;userId&quot;</span><span class="o">)</span> <span class="n">Long</span> <span class="n">userId</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">userService</span><span class="o">.</span><span class="na">favoriteFeeds</span><span class="o">(</span><span class="n">userId</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>具体查询的细节我们就不做讨论了，感兴趣的可以在文章结尾处找到代码库的链接。那么有了这个Controller之后，我们如何测试它呢？或者说，如何让契约变得实际可用呢？</p>
+
+<p><code>sprint-test</code>提供了非常优美的DSL来编写测试，我们仅需要一点代码就可以将契约用起来，并实际的<strong>监督</strong>接口的修改：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">MockMvc</span> <span class="n">mockMvc</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">FeedsService</span> <span class="n">feedsService</span><span class="o">;</span>
+</span><span class='line'><span class="kd">private</span> <span class="n">UserService</span> <span class="n">userService</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Before</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">feedsService</span> <span class="o">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">FeedsService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">userService</span> <span class="o">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">UserService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">FeedsController</span> <span class="n">feedsController</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FeedsController</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">feedsController</span><span class="o">.</span><span class="na">setFeedsService</span><span class="o">(</span><span class="n">feedsService</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">feedsController</span><span class="o">.</span><span class="na">setUserService</span><span class="o">(</span><span class="n">userService</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">mockMvc</span> <span class="o">=</span> <span class="n">standaloneSetup</span><span class="o">(</span><span class="n">feedsController</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>建立了mockmvc之后，我们就可以编写Controller的单元测试了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldResponseWithAllFeeds</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">when</span><span class="o">(</span><span class="n">feedsService</span><span class="o">.</span><span class="na">allFeeds</span><span class="o">()).</span><span class="na">thenReturn</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">prepareFeeds</span><span class="o">()));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">mockMvc</span><span class="o">.</span><span class="na">perform</span><span class="o">(</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;/api/feeds&quot;</span><span class="o">))</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">status</span><span class="o">().</span><span class="na">isOk</span><span class="o">())</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">content</span><span class="o">().</span><span class="na">contentType</span><span class="o">(</span><span class="s">&quot;application/json;charset=UTF-8&quot;</span><span class="o">))</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">jsonPath</span><span class="o">(</span><span class="s">&quot;$&quot;</span><span class="o">,</span> <span class="n">hasSize</span><span class="o">(</span><span class="mi">3</span><span class="o">)))</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">jsonPath</span><span class="o">(</span><span class="s">&quot;$[0].publishDate&quot;</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="n">notNullValue</span><span class="o">())));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当发送<code>GET</code>请求到<code>/api/feeds</code>上之后，我们期望返回状态是200，然后内容是<code>application/json</code>。然后我们预期返回的结果是一个长度为3的数组，然后数组中的第一个元素的<code>publishDate</code>字段不为空。</p>
+
+<p>注意此处的<code>prepareFeeds</code>方法，事实上它会去加载<code>mocks/feeds.json</code>文件 &#8212; 也就是前端用来测试的mock文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">Feed</span><span class="o">[]</span> <span class="nf">prepareFeeds</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">URL</span> <span class="n">resource</span> <span class="o">=</span> <span class="n">getClass</span><span class="o">().</span><span class="na">getResource</span><span class="o">(</span><span class="s">&quot;/mocks/feeds.json&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">ObjectMapper</span> <span class="n">mapper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectMapper</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">mapper</span><span class="o">.</span><span class="na">readValue</span><span class="o">(</span><span class="n">resource</span><span class="o">,</span> <span class="n">Feed</span><span class="o">[].</span><span class="na">class</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，当后端修改<code>Feed</code>定义（添加/删除/修改字段），或者修改了mock数据等，都会导致测试失败；而前端修改mock之后，也会导致测试失败 &#8212; 不要惧怕失败 &#8212; 这样的失败会促进一次协商，并驱动出最终的service的契约。</p>
+
+<p>对应的，测试<code>/api/fav-feeds/{userId}</code>的方式类似：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldResponseWithUsersFavoriteFeeds</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">when</span><span class="o">(</span><span class="n">userService</span><span class="o">.</span><span class="na">favoriteFeeds</span><span class="o">(</span><span class="n">any</span><span class="o">(</span><span class="n">Long</span><span class="o">.</span><span class="na">class</span><span class="o">)))</span>
+</span><span class='line'>        <span class="o">.</span><span class="na">thenReturn</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">prepareFavoriteFeeds</span><span class="o">()));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">mockMvc</span><span class="o">.</span><span class="na">perform</span><span class="o">(</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;/api/fav-feeds/1&quot;</span><span class="o">))</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">status</span><span class="o">().</span><span class="na">isOk</span><span class="o">())</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">content</span><span class="o">().</span><span class="na">contentType</span><span class="o">(</span><span class="s">&quot;application/json;charset=UTF-8&quot;</span><span class="o">))</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">jsonPath</span><span class="o">(</span><span class="s">&quot;$&quot;</span><span class="o">,</span> <span class="n">hasSize</span><span class="o">(</span><span class="mi">1</span><span class="o">)))</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">jsonPath</span><span class="o">(</span><span class="s">&quot;$[0].title&quot;</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;使用underscore.js构建前端应用&quot;</span><span class="o">)))</span>
+</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">jsonPath</span><span class="o">(</span><span class="s">&quot;$[0].publishDate&quot;</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="n">notNullValue</span><span class="o">())));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>总结</h3>
+
+<p>前后端分离是一件容易的事情，而且团队可能在短期可以看到很多好处，但是如果不认真处理集成的问题，分离反而可能会带来更长的集成时间。通过面向契约的方式来组织各自的测试，可以带来很多的好处：更快速的<code>End2End</code>测试，更平滑的集成，更安全的分离开发等等。</p>
+
+<h3>代码</h3>
+
+<p>前后端的代码我都放到了Gitbub上，感兴趣的可以clone下来自行研究：</p>
+
+<ol>
+<li><a href="https://github.com/abruzzi/bookmarks-frontend">bookmarks-frontend</a></li>
+<li><a href="https://github.com/abruzzi/bookmarks-server">bookmarks-server</a></li>
+</ol>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3284,148 +3815,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2015/01/how-we-do-training-in-thoughtworks/">在ThoughtWorks我们做内部培训？</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-01-25T01:20:00+11:00" pubdate data-updated="true">Jan 25<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>ThoughtWorks内部培训</h3>
-
-<p>对新人的培训是每个企业都绕不开的一个话题，企业当然想要每个新人都能直接独当一面，最好可以直接上项目贡献自己的价值。但是从经验来看，所有新人到一个新环境都需要学习很多不同的新东西（新技术，框架，语言，工作方式等等），而每个企业对于培训新人都有各种各样的策略，比如老人带新人，比如扔到项目上让新人自己学。</p>
-
-<p>在ThoughtWorks，我们有着丰富的培训方式，有面向社招的，有面向毕业生的，有民间自发的，有官方组织的，有内部的，也有面向社区的。</p>
-
-<h4>TWU</h4>
-
-<p>TWU全称ThoughtWorks University，面向毕业生，入职之后的第一堂课。TWU的地点设在印度，之前在班加罗尔，后来改到了普内。每一期5周，学生们需要和和全球其他国家地区的同学一起，一般会尽量将各个地区的学生打乱安排，尽量让学生体会多元化的文化，培训内容设计公司文化，软件开发方法论，敏捷开发（Project SImulation）实践等，同时还需要保证学生有足够的代码练习机会。</p>
-
-<p>我在2013年作为讲师参加了一起TWU，对我自己的帮助也非常大，在和来自不同地区的讲师一起备课，学习中学习到了很多的东西，之前似是而非的一些概念也得到了纠正。</p>
-
-<p><img src="/images/2015/02/twu33-resized.png" alt="twu" /></p>
-
-<h4>TWI</h4>
-
-<p>TWI全称ThoughtWorks Immersion，面向有经验的社招同事，主要涉及的内容为公司文化（合作，沟通），专业服务（如何专业的解决客户的问题），软件开发流程，敏捷开发方法论等。</p>
-
-<p>我在2012年时参加过TWI，并整理了几篇相关文章，可以参考<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-1/">这里</a>，<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-2/">这里</a>还有<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-3/">这里</a>。</p>
-
-<p><img src="/images/2015/01/twi-resized.png" alt="twi" /></p>
-
-<h4>Session</h4>
-
-<p>Office局限在ThoughtWorks办公室之内，内容随意，参加不参加随意，可以随时加入或随时离开。虽然内容没有限制，但是大多数时候分享的都是技术主题。比如<code>自动化部署</code>，<code>自动测试</code>，<code>Spring 4</code>，<code>Ruby中的构建工具</code>等等。</p>
-
-<p>Sessoin的形式是主讲者找一个自己感兴趣的主题，一个人讲，其他参与者听，鼓励互动。时间一般控制在一个小时以内，所以一般选择在中午饭的时候，有的session会给大家订饭，一边吃一边听。</p>
-
-<p>虽然大部分Sessoin的主题是技术相关的，但是并不局限于此。比如旅游见闻，历史，财务，摄影等等，都可以分享，有时候这些趣味性的Session的参与者更多。</p>
-
-<p><img src="/images/2015/01/session-resized.png" alt="session" /></p>
-
-<h4>WorkShop</h4>
-
-<p>Office之内，内容随意，以动手为主，讲解为辅。</p>
-
-<ul>
-<li>HTML/CSS</li>
-<li>Testable JavaScript</li>
-<li>设计工作坊</li>
-<li>OO BootCamp</li>
-<li>Ruby BootCamp</li>
-</ul>
-
-
-<p>一般来说，Workshop都会组成一个系列，通常会占用几天到几周不等。参与者需要带上电脑，在课堂上进行练习之外，课后还会有一些练习。</p>
-
-<p><img src="/images/2015/01/workshop-resized.png" alt="" /></p>
-
-<p><a href="http://icodeit.org/3-pages-in-3-weeks/">3周3页面</a>和<a href="http://icodeit.org/lwweb/">可测试的JavaScript</a>是我去年做的两个Workshop。由于Workshop会在下班后或者中午的休息时间，公司会为每个参与者订饭，以节省时间。</p>
-
-<h4>郑大晔校</h4>
-
-<p>面向刚刚得到offer的毕业生，在上项目之前，我们希望学生的基本技术达到特定的水平，因此设置了一系列的练习。包括</p>
-
-<ul>
-<li>编程基础</li>
-<li>开发流程</li>
-<li>工作方式</li>
-<li>公司文化</li>
-</ul>
-
-
-<p>等等。郑大晔校的周期为每周一次，一次一天。涉及的内容会与大多数项目上的要求一致，比如西安office的Java/Ruby项目居多，我们的课程安排就会涉及到<code>Java/Ruby</code>方面。当然，各种软技能如工作方式也会在课程中涉及，尽量的寓教于乐。</p>
-
-<p>每期郑大晔校大概会有10周，学生入职之后有的会直接去TWU，有的则会在项目上工作一段时间再去TWU。</p>
-
-<p><img src="/images/2015/01/zhengda-resized.png" alt="" /></p>
-
-<h4>组内培训</h4>
-
-<p>各个组内自行组织，并不要求其他同事参加。比如某个项目需要一些<code>docker</code>的知识，或者需要<code>AngularJS</code>相关的培训，一方面是找自己组内的专家组织一次内部培训，，另一种是找办公室内相关的专家来进行培训，形式比较灵活。</p>
-
-<ul>
-<li>项目中已经在使用的技术</li>
-<li>项目中将要使用的技术</li>
-<li>请别的组的专家来咨询</li>
-</ul>
-
-
-<p><img src="/images/2015/01/group-resized.png" alt="group learn" /></p>
-
-<h4>社区</h4>
-
-<ul>
-<li>OpenParty</li>
-<li>Rails Girl</li>
-</ul>
-
-
-<p><img src="/images/2015/02/rails-girl-session-resized.png" alt="rails girl" /></p>
-
-<h4>问题</h4>
-
-<ul>
-<li>谁当讲师</li>
-<li>活动经费</li>
-<li>内容如何持久化（人，内部知识分享系统）</li>
-<li>如何保证效果（宽松）</li>
-</ul>
-
-
-<p>由于对任何的话题都没有限制，也没有对参与者的限制，因此任何人只要感兴趣都可以作为讲师。而又由于没有任何的强制措施，参与者和主讲者都凭着自己的热情来组织，这也算是比较独树一帜的事情。</p>
-
-<p>而关于内容的持久化，更多的是为参与者打开一扇新的窗户，或者说洒下一些火星，而至于火星如何形成燎原之势，则完全在参与者自己的自觉。好多次和客户分享了我们的培训机制之后，被问到最多的问题是如何<code>强迫</code>参与者产生热情？</p>
-
-<p>这个问题在ThoughtWorks不是问题，我们在一个人进入公司的最开始，也就是面试的时候，就考察了他的热情，如果在热情上有缺陷，则很可能会直接拒掉，免得破坏我们好不容易构建起来的学习氛围。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -3441,6 +3830,10 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/06/whats-next-after-separate-frontend-and-backend/">前后端分离了，然后呢？</a>
+      </li>
+    
+      <li class="post">
         <a href="/2015/06/do-we-really-short-for-front-end-developer/">我们真的缺前端工程师吗？</a>
       </li>
     
@@ -3454,10 +3847,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
     
       <li class="post">
         <a href="/2015/03/build-monitor-script-based-on-inotify/">使用inotify/fswatch构建自动监控脚本</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/02/build-sample-application-by-using-underscore-and-jquery/">使用underscore.js构建前端应用</a>
       </li>
     
   </ul>
