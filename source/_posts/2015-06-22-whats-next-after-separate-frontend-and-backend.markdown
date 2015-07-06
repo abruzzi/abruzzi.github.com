@@ -254,7 +254,7 @@ public class FeedsController {
 
 具体查询的细节我们就不做讨论了，感兴趣的可以在文章结尾处找到代码库的链接。那么有了这个Controller之后，我们如何测试它呢？或者说，如何让契约变得实际可用呢？
 
-`sprint-test`提供了非常优美的DSL来编写测试，我们仅需要一点代码就可以将契约用起来，并实际的**监督**接口的修改：
+`spring-test`提供了非常优美的DSL来编写测试，我们仅需要一点代码就可以将契约用起来，并实际的**监督**接口的修改：
 
 ```java
 private MockMvc mockMvc;
