@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-07-06T19:12:23+10:00</updated>
+  <updated>2015-07-08T00:14:08+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,92 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[项目经理是大傻B吗？]]></title>
+    <link href="http://abruzzi.github.com/2015/07/is-project-manager-a-fool/"/>
+    <updated>2015-07-07T23:18:00+10:00</updated>
+    <id>http://abruzzi.github.com/2015/07/is-project-manager-a-fool</id>
+    <content type="html"><![CDATA[<h3>一些背景故事</h3>
+
+<p>坊间流传着很多关于PM（Project Manager，项目经理）的笑话，在这些不无刻薄的笑话中，PM往往被描述成一个盲目的承诺客户需求变更，不了解实际情况而又喜欢指手画脚的专门坑开发的家伙。毋庸置疑，这些笑话当然是那些聪明的<strong>开发</strong>发明的（不过你得承认，在很多团队，这些笑话其实是实实在在每天都在发生着的）。</p>
+
+<p>在智力工作中，对于开发的实际进度，开发速率等问题，具体着手做的人永远比在背后指手画脚的人更有发言权。软件开发正是一项智力活动，优秀的软件无法通过人力的堆积而产生。一个关于PM的经典的讽刺是：PM就是那些指望着9个女人在1个月内生出1个小孩的二货。从传统的意义上来说，这个笑话还真是一针见血。</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/07/keep-calm-i-m-the-project-manager-resized.png" alt="project manager, 来源:http://sd.keepcalm-o-matic.co.uk/i/keep-calm-i-m-the-project-manager.png" /></p>
+
+<p>我记得在加入ThoughtWorks不久的时候，私底下经常听到这种论调：PM基本就是项目上被人鄙视（当然大家不会表现的那么明显就是了）的角色，基本上负责<strong>团队建设</strong>去哪儿这种杂事儿就行了，团队的其他人员可以高度自治，并不需要被管理，项目就会如预期般按时交付。</p>
+
+<p>这些论调在某些情况下可能是对的。但是如果在国内项目的这个上下文里，没有一个专业的PM来协助项目，控制需求，划定项目范围，与客户谈判等等，没有任何一个项目是可以真正成功交付的，指望<em>高度自治</em>的开发们来完成项目？咱们还是现实一些吧。</p>
+
+<p>一个悲剧的事实是，开发人员往往都恃才傲物，有时还会带着一幅要来拯救世界的心态来做项目，这事实上和客户的期望，以及PM的期望是有很大出入的。在项目启动之初，PM会面临重重困难：首先，团队里的每个人都不好管，而且每个人都认为自己不需要被管理（当然这种想法在大部分时候都是错误的）；其次，PM需要和客户快速建立信任，并推动项目进入正轨；最后，往往留给PM自己的时间也非常有限，他们也需要学习大量的项目相关的上下文（业务上下文，人员关系，资源协调等）。</p>
+
+<h3>除了催进度，PM平时还干点啥？</h3>
+
+<p>本质上开说，PM其实就是一个轮询器：识别所有的项目风险，然后不断跟进。项目风险可能是技术风险，比如某个技术上压根搞不定的问题。也可能资源风险，比如人手不够，或者开发者很多，但是没有足够的设计师协助，这些风险都会导致项目无法按照时间交付。一个客观事实是，所有项目都会变化，做完售前到需求分析结束之后，需求可能会发生巨大变化，如果还按照报价来做项目很可能会<strong>亏本</strong>。</p>
+
+<p>PM的一个重要职责就是在项目之初将项目范围定下来，这个范围的划分非常依赖经验：划得少了团队得天天加班，累得跟狗一样，然后才能保证交付（据我的经验，虽然项目一般不会天天加班，但是总会有一些攻关，打补丁的事儿，最后还是会累成狗），划得多了客户不买单，意思是就这个小功能你要做两个月，绝对不行。PM需要协调这些不一致，还需要和销售，客户等方面不断谈判，写方案，排计划，简而言之，也是累跟狗一样（而且潜在的，还可能被那些天真幼稚的开发坑 — 开发经常会高估自己的开发速度，反正我还没遇到过低估的，你见过吗？）。</p>
+
+<p>我们每天看到的PM干的最多的事情就是：元芳，那个接口怎么样了？什么时候能做完，有什么blocker？李柯，昨天说的代理的事情怎么样了？小波，高保真什么时候出？何方，我们周三下午要showcase，麻烦你订一下会议室吧……</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/07/pm-resized.png" alt="pm" /></p>
+
+<h3>除了写代码，Dev平时还干点啥？</h3>
+
+<p>如果脱离开PM的角度，做为一个孤傲的开发，时常会觉得PM为什么老是问我进度，是不是怀疑我的能力？为什么监视我的工作？相信我，其实他才不想监视你。但是你设想一下：如果你不参与代码编写，每天只是看旁边的哥们写，你如何知道他实际的进度呢？而且众所周知，开发很难准确的更新自己的工作进度，而且遇到问题也很少积极主动的报告，通常都会自己埋头尝试解决。那么，轮询显然是一种成本最低，反馈最快的方法。</p>
+
+<p>不主动更新进度是另外一个大问题，不过这个得单独说。关于更新进度，典型的的场景是：早上站会的时候，开发目光呆滞的盯着某个卡片，努力回忆其中的验收条件以及自己的当前进度，如果恰好脑海中的技术细节和卡片的描述在某个点上匹配了，他会迅速的告诉你，目前进展良好，今天上午应该就可以做完。开发在更新进度时，不是盲目乐观，就是跳进太细节的地方进行讨论，最后讨论的结果就是：跟没更新一样，除了浪费了10分钟时间。但是别忘了，PM会在15分钟之后再来轮询一次。</p>
+
+<p>PM每周都需要汇总很多数字，比如本迭代完成的点数，剩余的点数，总体进度如何，有没有人有请假计划，遇到什么blocker，每个blocker的具体原因，每个风险点的最终日期是何时，等等等等。他肯定不能记住这些数字，所以可能一天之内向你询问数次。</p>
+
+<h3>PM的其他职责/技能</h3>
+
+<p>上边说到的其实只是描述PM的辛苦，而最微妙，最考验PM的是其“察言观色”的技能。这绝对是一个工作经验在10年之内完全无法获得的技能（而且是在中国的项目上工作10年）。比如，在showcase的时候，有个客户说，嗯，挺好，整个流程就是这样的，后续你们的UI是不是还会美化？如果你遇到这个情况，请问，这个客户是什么意思？</p>
+
+<p>如果你能回答上这个问题（而不是提出问题），那说明你还离PM差十万八千里。成熟的PM会先判断，问这个问题的人是什么角色，以及他在系统中的话语权如何，还有其他人就此问题的反应如何等等因素，然后找到一个合适的答案。</p>
+
+<p>PM另一个绝技是扯皮（不是贬义），开发会花一个下午（我是说10分钟）去跟客户讨论需求的范围吗？或者会为5个人天来讨价还价吗？我想开发大概会说，尼玛，找其他供应商吧，老子不伺候了。</p>
+
+<p>一个项目的成功，需要多方合作，这里说的合作并不局限在甲方和乙方之间，即使乙方的团队之中，也需要很紧密的合作。比如项目经理和开发，设计师之间的合作。如果仅仅从开发的角度来看，PM有时候看起来就是和客户站在一起来整开发的一样，比如催进度，过分保守的估算人天（导致团队加班赶工）。PM需要释放团队中的负面情绪，保证团队士气，还需要他做一些开发不屑于做的琐碎的事情。</p>
+
+<h3>设身处地，提他人着想</h3>
+
+<p>本质来来说，每个项目都是一次生意。在去掉那些繁杂的流程和形式之后，做一个项目和你去菜市场买菜其实并无二致。举个例子，根据传统，软件开发界特别喜欢找建筑行业做类比，我也找个建筑方面例子。装修房子的时候，我们会要求施工方提供图纸（水电改造，基本设计等），按期交付（确定工期），同时会界定项目范围（比如刷墙，贴地砖，吊顶，封阳台等等），会要求工人按时来上班，正常出勤，认真工作，直到项目结束。过程中我们还会讨价还价，比如捎带着把栏杆拆除，捎带着敲掉一面隔离墙等等。在过程中，我们还会敲敲地砖，检查过门石，检查吊顶，测试水电等等。作为甲方，这些活动相信没有人会觉得过分。</p>
+
+<p>但是一旦我们做乙方，也就是施工方的时候，情况就全变了。比如客户要求打卡，有人会觉得不爽，客户要求代码review，有人会觉得不爽，要求代码有设计文档，有人会觉得不爽，要求设计有多个备选方案，有人会觉得不爽。大多数情况下，这都是虚无缥缈的虚荣在作祟，这种情况所在多有，不过还不致命。一旦涉及到讨价还价（不是商务上的讨价还价，而是和客户就工作量达不成一致，或者就某个技术方案达不成一致之后），开发全部歇菜，一言不合，转身就走，压根不具备讨价换件的能力，这样还怎么做生意啊？设身处地想一下，如果你是甲方，当提出了一些合理的要求（比如需要一方提供验收标准，通过验收测试等），结果施工方还一脸的“我不跟你说了，你就是以大傻B”，你能乐意吗？</p>
+
+<h3>如何合作？</h3>
+
+<p>说了这么多，这两种角色在同一个项目上要如何合作呢？我想，作为开发来说，有这样几点可能：</p>
+
+<p>首先，理解PM的工作。在很多时候，开发会有莫名其妙的优越感（其实每个角色都会有了，比如销售看不上技术人员，技术Lead看不上PM等等），主要原因其实是<strong>坐井观天</strong>，对其他角色的辛苦和工作不清楚。然后错误的认为别人的工作都很low。</p>
+
+<p>之前听一个同事讲过一个小session，里面有一点我印象非常深刻：不要因为一个人<strong>不会某个技术</strong>而鄙视他。就好比你不应该因为不会弹钢琴，而被一个会弹钢琴的人鄙视一样。道理很简单，但是开发在长期的“宅”生涯或者坐井观天中，进化出了这种非理性的观点：如果一个人连vim（此处的vim可以换成任何其他技术）都不会，就压根不足以谈人生。</p>
+
+<p>其次，学习如何报告进度。PM催你的根本原因是进度不明确，如果每一个潜在的风险都清楚的显示着进度，而且有明确的负责人，PM就会降低轮询的频率。这需要开发经过刻苦的练习才能达到：</p>
+
+<ul>
+<li>站会前自己花3分钟整理一下昨天做的工作</li>
+<li>根据story的验收条件（最好有和BA/QA一起的讨论需求），进行合理的任务划分（tasking技能）</li>
+<li>可以借助便签纸等工具，帮助自己明确进度（划分了5个子任务，昨天完成了3个，那么可以粗略的估计为60%）</li>
+</ul>
+
+
+<p><img src="http://abruzzi.github.com/images/2015/07/tasking-resized.png" alt="tasking" /></p>
+
+<p>再次，合理估算。有些时候，新人（来自于传统管理环境的新人）可能会误以为PM是一个管理的角色，或者处于某些考虑会在PM询问进度时做出一些错误的回答。比如PM在迭代启动会议上是问这个迭代我们有没有可能做完所有计划内的任务，作为一个负责任的开发，你需要在第一时间指出那些“非理性”的期望，以便PM进行更加准确的计划。</p>
+
+<ul>
+<li>明确告诉PM，有哪些需求是不可能按时交付的，PM会根据实际情况来重新定计划，并和客户确认</li>
+<li>明确告诉PM一些可能的风险，<strong>团队整体</strong>对交付负责，而不是PM，或者开发</li>
+</ul>
+
+
+<p>按照经验，项目从来就不会按照计划进行，在做好一个粗略的计划之后，PM的职责更多的是进行动态调整。所以团队内部至少需要保持信息的流通，虽然可能短期来看可能会影响开发速度，但是从整体上来看，可以减少很多不必要的浪费。</p>
+
+<p>简而言之，要站在别人的角度考虑问题：<strong>如果换做是你，你会怎么做？</strong></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[前后端分离了，然后呢？]]></title>
@@ -5311,296 +5397,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 <p>再来看另外一张用同样方式生成的图片：</p>
 
 <p><img src="http://abruzzi.github.com/images/2014/11/bird-final-resized.jpg" alt="image" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用node-webkit构建桌面应用程序]]></title>
-    <link href="http://abruzzi.github.com/2014/09/get-started-with-node-webkit/"/>
-    <updated>2014-09-21T17:12:00+10:00</updated>
-    <id>http://abruzzi.github.com/2014/09/get-started-with-node-webkit</id>
-    <content type="html"><![CDATA[<h3>Web前端的现状</h3>
-
-<p>目前的Web前端的现状较之5-6年前，简直不能同日而语：从所使用的技术、工具、框架到开发一个产品所需要付出的工作量，从前端开发从业人员的数量到Web应用的数量，从企业对于Web前端的重要程度的认识到Web实际上为企业带来的回报，一切都有了翻天覆地的变化。</p>
-
-<p>借助HTML5+CSS3的普及，加上一些开箱即用的CSS框架（如bootstrap，foundation等）支持，人们已经可以非常容易的从零开始搭建一个Web应用的前端。一个在UI方面非常业余的程序员也可以很快的做出一个像模像样的用户界面。而另一方面，基于操作系统原生API，要想设计并实现一个桌面应用，需要的付出则远远超过超过同水平的Web界面。</p>
-
-<h3>webkit浏览器内核</h3>
-
-<p><a href="https://www.webkit.org/">Webkit</a>作为最受欢迎的<em>浏览器内核</em>，自然有非常多的port。比如GTK+对它的port &#8211; <a href="http://webkitgtk.org/">WebkitGTK</a>，以及构建在WebkitGTK之上的Python的<a href="https://code.google.com/p/pywebkitgtk/">bind</a>。使用WebkitGTK的Python版本，开发人员可以用HTML+CSS来开发应用，然后写一点Python脚本，最后将其运行在桌面上。</p>
-
-<p>这里有个早期的例子来教你<a href="http://arstechnica.com/information-technology/2009/07/how-to-build-a-desktop-wysiwyg-editor-with-webkit-and-html-5/1/">如何写一个所见即所得的编辑器</a>。桌面应用开发中，对于用户界面的复杂性一直是一个难题，而这种方式可以减轻很多的用户界面开发的复杂性，将界面开发交给另外更加灵活，更加容易编写和调试方式：HTML+CSS。</p>
-
-<p>这种模式下基本的开发流程是编写一个HTML页面（作为程序入口），然后在这个页面上引入额外的CSS（界面风格）和JavaScript（动作），然后将这些资源交给工业级浏览器内核Webkit来渲染 &#8211; 这个过程和在浏览器中访问该文件并无二致，但是有两个额外的好处：</p>
-
-<ol>
-<li>页面运行在一个“桌面应用程序”中</li>
-<li>没有地址栏，状态栏，菜单栏等，看起来更像是一个桌面应用</li>
-<li>用户界面开发的复杂性被“外包”给一个更简单的环境</li>
-</ol>
-
-
-<p>这就是传说中的混合（hybrid）开发模式，比如现在移动开发中的cordova就是采用这种模式，使得本来被视为天堑的原生的用户界面开发变为坦途。</p>
-
-<h4>node-webkit</h4>
-
-<p><a href="https://github.com/rogerwang/node-webkit">node-webkit</a>是一个基于<a href="http://www.chromium.org/">chromium</a>和node.js的应用程序开发工具。它不但支持你使用传统的HTML5+CSS3+JS方式来开发你的应用程序，还支持无缝的与Node.js集成，也就是说，所有的Node支持的与操作系统交互的功能，如网络连接，文件系统，操作系统资源访问等，以及Node之上的第三方库都可以在node-webkit中进行使用。</p>
-
-<p>更好的是，node-webkit是一个跨平台的工具，你可以使用它构建出运行在Mac OS，Linux以及Windows下的应用程序。应用程序通过Node.js来进行与系统相关的访问，而用HTML5+CSS3进行用户界面部分的设计。</p>
-
-<p>node-webkit未必是未来桌面应用的唯一方式，但是却是一个非常好的选择，特别对于已经熟知Web前端开发技术栈的众多开发者来说，无需学习一门新的语言，一切都被很大程度的简化了。</p>
-
-<h4>第一个node-webkit应用程序</h4>
-
-<p>开发node-webkit应用程序非常简单。在<a href="https://github.com/rogerwang/node-webkit">这里下载</a>系统对应的版本。并确保对应的二进制文件(nwnw.exe)在系统的PATH之中。</p>
-
-<p>创建一个新的目录，然后在该目录中创建一个<code>package.json</code>文件和一个<code>index.html</code>文件：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>mkdir -p hello-node-webkit
-</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>hello-node-webkit
-</span><span class='line'><span class="nv">$ </span>touch package.json index.html
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>package.json</code>文件的内容如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;hello-node-webkit&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;version&quot;</span><span class="o">:</span> <span class="s2">&quot;0.1.0&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;main&quot;</span><span class="o">:</span> <span class="s2">&quot;index.html&quot;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>index.html</code>文件的内容如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;title&gt;</span>Hello node-webkit<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;h1&gt;</span>Hello node-webkit<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后将这两个文件打在一个<code>zip</code>格式压缩包中：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>zip -r hello-node-webkit.zip *
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后将这个文件重命名为<code>hello-node-webkit.nw</code>，最后使用node-webkit来启动这个应用程序。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span> ~/Tools/node-webkit.app/Contents/MacOS/node-webkit hello-node-webkit.nw
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2014/09/hello-node-webkit-resized.png" alt="image" /></p>
-
-<h4>添加外部JS/CSS</h4>
-
-<p>接下来我们为这个页面添加一些外部的引用：CSS/JavaScript文件。首先创建两个目录<code>style</code>和<code>script</code>，然后分别创建文件如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>├── index.html
-</span><span class='line'>├── package.json
-</span><span class='line'>├── script
-</span><span class='line'>│   ├── app.js
-</span><span class='line'>│   └── jquery.min.js
-</span><span class='line'>└── style
-</span><span class='line'>    └── style.css
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中，style.css定义了<code>h1</code>的简单样式：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">h1</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
-</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#999999</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而app.js则注册了一个简单的事件处理器：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;h1&quot;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">alert</span><span class="p">(</span><span class="s2">&quot;Heading 1 is clicked&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>此时的index.html修改如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;title&gt;</span>Hello node-webkit<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;style/style.css&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;h1&gt;</span>Hello node-webkit<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;script/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;script/app.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>还是按照上一小节的命令完成打包，改名，启动之后。点击<code>h1</code>元素时，会弹出对话框如下：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/09/node-webkit-clicked-resized.png" alt="image" /></p>
-
-<p>在这个例子中，我们使用了外部的<code>css</code>文件来添加样式，还引入了<code>jQuery</code>作为访问DOM元素的工具，最后还使用了一段调用<code>jQuery</code>的JavaScript代码。</p>
-
-<h4>构建脚本</h4>
-
-<p>你可能已经注意到了，使用node-webkit开发非常方便。但是这一系列的动作（修改HTML+CSS，压缩打包，改名，启动）等有一部分重复工作，我们可以将其自动化。</p>
-
-<p>好在已经有了一个很好用的<code>grunt</code>的插件：<a href="https://github.com/mllrsohn/grunt-node-webkit-builder">grunt-node-webkit-builder</a>，这个插件可以帮助我们自动执行压缩打包这些动作。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>npm install grunt-node-webkit-builder
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后定义一个Gruntfile.js，这个文件中指定源文件（所有的HTML，JavaScript代码，CSS文件）所在目录，目标文件所在目录，需要构建的应用程序指定的操作系统平台等：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">grunt</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">grunt</span><span class="p">.</span><span class="nx">initConfig</span><span class="p">({</span>
-</span><span class='line'>        <span class="nx">pkg</span><span class="o">:</span> <span class="nx">grunt</span><span class="p">.</span><span class="nx">file</span><span class="p">.</span><span class="nx">readJSON</span><span class="p">(</span><span class="s1">&#39;package.json&#39;</span><span class="p">),</span>
-</span><span class='line'>        <span class="nx">nodewebkit</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">platforms</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osx&#39;</span><span class="p">],</span>
-</span><span class='line'>                <span class="nx">buildDir</span><span class="o">:</span> <span class="s1">&#39;builds&#39;</span><span class="p">,</span>
-</span><span class='line'>            <span class="p">},</span>
-</span><span class='line'>            <span class="nx">src</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;app/**/*&#39;</span><span class="p">]</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span><span class="s1">&#39;grunt-node-webkit-builder&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;nodewebkit&#39;</span><span class="p">]);</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，我们修改之后，就可以很简单的执行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>grunt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>来进行打包了。比如在Mac下，构建出来的应用位于<code>builds/&lt;app-name&gt;/osx</code>目录下，要启动该应用只需要在命令行输入</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>open builds/hello-node-webkit/osx/hello-node-webkit.app
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者在Finder中双击打开即可。</p>
-
-<p>可以看到上例中的应用程序还有浓重的浏览器痕迹，比如地址栏，刷新按钮，甚至还有一个<code>DevTools</code>的按钮。我们可以通过修改<code>package.json</code>来指定：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;hello-node-webkit&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;version&quot;</span><span class="o">:</span> <span class="s2">&quot;0.1.0&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;main&quot;</span><span class="o">:</span> <span class="s2">&quot;index.html&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="s2">&quot;window&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;toolbar&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;width&quot;</span><span class="o">:</span> <span class="mi">800</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;height&quot;</span><span class="o">:</span> <span class="mi">600</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样的界面就更像是一个桌面应用了：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/09/hello-without-address-resized.png" alt="image" /></p>
-
-<p>到目前为止，这个小的<em>应用程序</em>并没有什么有趣的特性，用户界面也毫无美感，但是有了这些基本知识和工具之后，我们就可以开始更进一步的开发。除了使用既有的CSS框架来完成用户界面的美化，我们还会使用node.js访问系统资源来构建真实的应用程序。</p>
 ]]></content>
   </entry>
   

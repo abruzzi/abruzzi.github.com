@@ -9,11 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Rack it up (proc) 一个最简单的rack应用程序可以是：一个简单的ruby对象，包含了一个call方法。这个call方法接受一个参数，并返回一个有三个元素的数组即可： 1
-2
-3
-def call(env) [200, {}, ["content"]]
-end &hellip;">
+  <meta name="description" content="Grape简介 Grape是一个基于Rack的非常轻量级的框架，用于快速的开发API。一般来说，Rails对于单独的API来说，太过于重量级；而Sinatra虽然足够小巧，但是又没有为开发API提供足够的默认支持（如果从可控制性，灵活性上来说，Sinatra可能更好一些， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -86,6 +82,214 @@ end &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/08/quick-api-development-by-grape/">使用Grape快速开发API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-04T10:29:00+10:00" pubdate data-updated="true">Aug 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Grape简介</h3>
+
+<p><a href="http://intridea.github.io/grape">Grape</a>是一个基于Rack的非常轻量级的框架，用于快速的开发API。一般来说，Rails对于单独的API来说，太过于重量级；而Sinatra虽然足够小巧，但是又没有为开发API提供足够的默认支持（如果从可控制性，灵活性上来说，Sinatra可能更好一些，但是如果有专门的更好用的工具，为什么不用呢？）。</p>
+
+<p>安装非常简便：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ gem install grape</span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者使用在自己的Gemfile中，与其他的gem一起搭建API:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'grape'</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>为既有系统添加API</h3>
+
+<h4>简单一试</h4>
+
+<p>之前的一篇介绍<a href="http://icodeit.org/2013/05/using-active-record-as-a-standalone-orm/">ActiveRecord在既有系统中使用</a>的文章中，我使用ActiveRecord为既有的数据库visitor中的三个表(visitor, listGroup, listGroupItem)建立了ruby对应的模型。现在我们可以为这些模型包装一组API，以方便客户端（消费者）可以通过web来访问。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module MySys
+</span><span class='line'>    class API &lt; Grape::API
+</span><span class='line'>        format :json
+</span><span class='line'>
+</span><span class='line'>        resource :visitors do
+</span><span class='line'>
+</span><span class='line'>            desc "get all visitor information"
+</span><span class='line'>            get do
+</span><span class='line'>                Visitor.limit(20)
+</span><span class='line'>            end
+</span><span class='line'>
+</span><span class='line'>        end
+</span><span class='line'>    end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先，MySys::API扩展了Grape::API。<code>format</code>定义我们的API会产生JSON格式的输出，resource定义了这一组API是为资源visitors提供的，因此访问API的url为：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:9292/visitors/</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然，grape提供一个很方便的设置prefix，可以使得API的路径更有意义:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>format :json
+</span><span class='line'>prefix "mysys"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>url则相应地变为:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:9292/mysys/visitors/</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>处理参数</h4>
+
+<p>在对参数的处理上，grape也非常灵活，比如接上例，我们想要获取某一个具体的用户的信息：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:9292/visitors/8a9d82b13b9786e1013b978766150001</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们可以添加一个新的endpoint：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>desc "return a visitor"
+</span><span class='line'>params do
+</span><span class='line'>    requires :visitor_uid, :type =&gt; String, :desc =&gt; "visitor id"
+</span><span class='line'>end
+</span><span class='line'>route_param :visitor_uid do
+</span><span class='line'>    get do
+</span><span class='line'>        Visitor.find(params[:visitor_uid])
+</span><span class='line'>    end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>params中要求，需要一个类型为String的参数visitor_uid。然后在handler中，通过params来引用这个参数的值。</p>
+
+<h4>助手函数(Helper)</h4>
+
+<p>Grape允许开发者将编解码，权限校验等等的通用的操作分离出来，放入助手函数，这些Helper可以被所有的API使用:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>helpers do
+</span><span class='line'>    def generate_default_visitor(email, site) 
+</span><span class='line'>        {
+</span><span class='line'>            :visitor_uid =&gt; SecureRandom.hex,
+</span><span class='line'>            :password_expiration =&gt; (Time.now + 60 * 60 * 24),
+</span><span class='line'>            :last_used_timestamp =&gt; (Time.now - 60 * 60 * 24),
+</span><span class='line'>            :visitor_login_id =&gt; email,
+</span><span class='line'>            :site_name =&gt; site
+</span><span class='line'>        }
+</span><span class='line'>    end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用上边定义的助手函数<code>generate_default_visitor</code>：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>desc "create a visitor"
+</span><span class='line'>params do
+</span><span class='line'>    requires :email, :type =&gt; String, :desc =&gt; "Email address"
+</span><span class='line'>    requires :site, :type =&gt; String, :desc =&gt; "Site"
+</span><span class='line'>end
+</span><span class='line'>post do
+</span><span class='line'>    attr = generate_default_visitor(params[:email], params[:site])
+</span><span class='line'>    visitor = Visitor.new attr
+</span><span class='line'>    visitor.visitor_uid = attr[:visitor_uid]
+</span><span class='line'>    visitor.save
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>对API进行测试</h3>
+
+<p>通过Web测试API有非常多的方式，比如通过浏览器的插件(POSTMan)，RSpec，但是我最喜欢，也是最轻便的方式是通过命令行工具curl：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:9292/visitors/8a9d82b13b9786e1013b978766150001</span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl -H "Content-Type: application/json" -X POST -d "{\"email\":\"jtqiu@tw.com\", \"site\":\"mysys\"}" http://localhost:9292/visitors/</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命令行的程序curl是一个非常灵活，强大的工具，可以定制HTTP头信息，User Agent，支持所有的HTTP动词，最重要的是，在命令行很容易将工具们组合在一起，并完成自动化。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1756,134 +1960,6 @@ end &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/05/proc-in-ruby/">Proc in Ruby</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-12T16:01:00+10:00" pubdate data-updated="true">May 12<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>block in ruby</h2>
-
-<p>block在ruby中，相当于JavaScript中的匿名函数，可以用来实现诸如高阶函数等。高阶函数最好用的一个特点就是它很好的将“动作”（action）本身抽象成了一个对象来传递。</p>
-
-<p>block本身不是对象，但是可以被转换成Proc类的实例，然后以一种特别的方式执行。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'> &gt; proc = lambda {puts "hello, world"}
-</span><span class='line'> =&gt; #&lt;Proc:0x007ff11284d068@(irb):8 (lambda)&gt; </span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc = lambda do
-</span><span class='line'>&gt;  puts "hello, world"
-</span><span class='line'>&gt; end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>从irb打印的信息可以看出，<code>&lt;Proc:0x007ff11284d068@(irb):8 (lambda)&gt;</code>是一个Proc类的实例用lambda生成的block对象，看起来像一个ruby中定义的函数/方法一样，但是执行的时候需要特别的调用方式：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc.call
-</span><span class='line'>hello, world
-</span><span class='line'> =&gt; nil</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果需要参数，可以这样指定：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc = lambda {|a, b| a + b}
-</span><span class='line'> =&gt; #&lt;Proc:0x007ff114843d40@(irb):14 (lambda)&gt; 
-</span><span class='line'>&gt; proc.call(1,2)
-</span><span class='line'> =&gt; 3 
-</span><span class='line'>&gt; proc.call("hello, ","world")
-</span><span class='line'> =&gt; "hello, world" </span></code></pre></td></tr></table></div></figure>
-
-
-<h2>proc自身</h2>
-
-<p>ruby中大名鼎鼎的rack应用程序，本质上就只是负责调用一个block来获得结果：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rack_proc = lambda {|env| [200, {}, ["&lt;h1&gt;Hello, world&lt;/h1&gt;"]]}
-</span><span class='line'>rack_proc.call({})</span></code></pre></td></tr></table></div></figure>
-
-
-<p>也可以使用proc来创建一个Proc：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; x = proc {puts "hello, world"}
-</span><span class='line'> =&gt; #&lt;Proc:0x007ff114851698@(irb):18&gt; 
-</span><span class='line'>&gt; x.call
-</span><span class='line'>hello, world
-</span><span class='line'> =&gt; nil </span></code></pre></td></tr></table></div></figure>
-
-
-<p>也可以将proc实例返回出来，然后提供给其他函数使用，需要注意的是那个call方法：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def adder(number)
-</span><span class='line'>  proc {|x| x + number}
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>add15 = adder(15)
-</span><span class='line'>add15.call(10) == 25
-</span><span class='line'>
-</span><span class='line'>add10 = adder(10)
-</span><span class='line'>add10.call(10) == 20</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/6/">&larr; Older</a>
@@ -1901,6 +1977,10 @@ end &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/07/is-project-manager-a-fool/">项目经理是大傻B吗？</a>
+      </li>
+    
+      <li class="post">
         <a href="/2015/06/whats-next-after-separate-frontend-and-backend/">前后端分离了，然后呢？</a>
       </li>
     
@@ -1914,10 +1994,6 @@ end &hellip;">
     
       <li class="post">
         <a href="/2015/03/list-comprehension-in-python/">Python中的 list comprehension 以及 generator</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/03/build-monitor-script-based-on-inotify/">使用inotify/fswatch构建自动监控脚本</a>
       </li>
     
   </ul>

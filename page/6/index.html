@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="重阳宫简介 重阳宫为道教三大祖庭之一，位于陕西户县祖庵镇，是全真祖师王重阳修道之地。重阳宫本由王重阳的弟子（全真七子，详见《射雕英雄传》）修建，始于金代，名为“灵虚观”，元初改名“重阳宫”。后山碑林存有众多用以记录全真教祖师及全真七子生平事迹的石碑，如《全真教祖碑》，《重阳祖师仙迹碑》， &hellip;">
+  <meta name="description" content="block in ruby block在ruby中，相当于JavaScript中的匿名函数，可以用来实现诸如高阶函数等。高阶函数最好用的一个特点就是它很好的将“动作”（action）本身抽象成了一个对象来传递。 block本身不是对象，但是可以被转换成Proc类的实例，然后以一种特别的方式执行。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,134 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/05/proc-in-ruby/">Proc in Ruby</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-12T16:01:00+10:00" pubdate data-updated="true">May 12<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>block in ruby</h2>
+
+<p>block在ruby中，相当于JavaScript中的匿名函数，可以用来实现诸如高阶函数等。高阶函数最好用的一个特点就是它很好的将“动作”（action）本身抽象成了一个对象来传递。</p>
+
+<p>block本身不是对象，但是可以被转换成Proc类的实例，然后以一种特别的方式执行。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> &gt; proc = lambda {puts "hello, world"}
+</span><span class='line'> =&gt; #&lt;Proc:0x007ff11284d068@(irb):8 (lambda)&gt; </span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc = lambda do
+</span><span class='line'>&gt;  puts "hello, world"
+</span><span class='line'>&gt; end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从irb打印的信息可以看出，<code>&lt;Proc:0x007ff11284d068@(irb):8 (lambda)&gt;</code>是一个Proc类的实例用lambda生成的block对象，看起来像一个ruby中定义的函数/方法一样，但是执行的时候需要特别的调用方式：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc.call
+</span><span class='line'>hello, world
+</span><span class='line'> =&gt; nil</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果需要参数，可以这样指定：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; proc = lambda {|a, b| a + b}
+</span><span class='line'> =&gt; #&lt;Proc:0x007ff114843d40@(irb):14 (lambda)&gt; 
+</span><span class='line'>&gt; proc.call(1,2)
+</span><span class='line'> =&gt; 3 
+</span><span class='line'>&gt; proc.call("hello, ","world")
+</span><span class='line'> =&gt; "hello, world" </span></code></pre></td></tr></table></div></figure>
+
+
+<h2>proc自身</h2>
+
+<p>ruby中大名鼎鼎的rack应用程序，本质上就只是负责调用一个block来获得结果：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rack_proc = lambda {|env| [200, {}, ["&lt;h1&gt;Hello, world&lt;/h1&gt;"]]}
+</span><span class='line'>rack_proc.call({})</span></code></pre></td></tr></table></div></figure>
+
+
+<p>也可以使用proc来创建一个Proc：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; x = proc {puts "hello, world"}
+</span><span class='line'> =&gt; #&lt;Proc:0x007ff114851698@(irb):18&gt; 
+</span><span class='line'>&gt; x.call
+</span><span class='line'>hello, world
+</span><span class='line'> =&gt; nil </span></code></pre></td></tr></table></div></figure>
+
+
+<p>也可以将proc实例返回出来，然后提供给其他函数使用，需要注意的是那个call方法：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def adder(number)
+</span><span class='line'>  proc {|x| x + number}
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>add15 = adder(15)
+</span><span class='line'>add15.call(10) == 25
+</span><span class='line'>
+</span><span class='line'>add10 = adder(10)
+</span><span class='line'>add10.call(10) == 20</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -934,60 +1062,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/01/where-am-i/">是时候慢下来了</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-09T20:56:00+11:00" pubdate data-updated="true">Jan 9<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>某个晚上，我在网上为自己挑选一个适合出差的行李箱，两个小时之后，我突然发现我停留在了一个瑞士军刀的淘宝店里；本来计划晚上看看AppleScript的资料，结果一个小时之后，我在用python写一个opencv的小程序，又过了一个小时，我停留在Alfred的powerpack的支付页面，面对着15英镑的价格陷入沉思。</p>
-
-<p>而且周围好像每个人都有这样类似的经历。我咨询其他同事遇到类似的情况怎么处理，有人推荐使用Todo列表，而且Todo最好列在纸上。当列表中的Todo被消灭时，会激发你去写下更多的task。这当然是个好办法，我很早的时候就写过一个软件来完成Todo管理：<a href="http://code.google.com/p/stodo/">sTodo</a>。但是当打开电脑之后，时间就完全不受控制了，网络上总是有各种各样好玩的东西，新的框架，新的语言，某种颠覆式的CSS框架，新奇而好用的软件，可以大大提高用户体验的UI库，太多了……。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/01/stodo_edit.png" alt="sTodo" /></p>
-
-<p>上周三的晚上，回家之后打开电脑，开始了“学习”，事实上是很盲目的在网络上游荡，当我意识到又要重蹈覆辙的时候，我毅然的合起了电脑，然后拿起一本纸质的《JavaScript: The good parts》。最后当我要睡觉时才发现，读了大概30多页，而且以前的一些概念也更加清楚了。而且事实上我并未因为没有打开计算机而有什么实质性的损失。</p>
-
-<p>然后我突然意识到我之前的所谓的学习的方式有很大的问题，网络当然可以为你提供大量的信息，但是很多时候，这些呈碎片装的信息的作用并不如预期般的大。它会帮你解决手头的小问题，但是阻挡了你的视线，你本可以走的更远！</p>
-
-<p>在网络上看资料，总是有一种紧迫感：这么多的东西都不会，落后于时代好多年。打开电脑，一个晚上过去了，你可能读了很多的东西，但是记下来的非常少，因为总是会被各种链接，图片等干扰，这个看似在学习的过程事实上完全是在浪费实践，一天之后，你前一个晚上看到的东西几乎被完全遗忘，然后周而复始。</p>
-
-<p>所以，是时候慢下来，你不会因为没有浏览几个网页，或者少读几篇文章而落后于时代几十年的，你需要好多年才能积累起来的知识，别人同样需要好多年。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/01/todos.png" alt="image" /></p>
-
-<p>合上电脑，捧起纸质的书籍，世界突然慢了下来，但是却会充盈很多。事实上，放慢脚步，消除网络带来的<strong><em>虚假的紧迫感</em></strong>，反而可以以更快的速度掌握一项技术，一个框架，也可以让印象更加深刻。晚上回家尽量不带电脑，我用trainng经费购买的10本书，现在才读完2.5本，去年5月买的书还有两本没有读完，这些亏欠都需要在脱离电脑的舒服之后才能想起来，也才有可能完成。</p>
-
-<p>慢下来。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/7/">&larr; Older</a>
@@ -1005,6 +1079,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/07/is-project-manager-a-fool/">项目经理是大傻B吗？</a>
+      </li>
+    
+      <li class="post">
         <a href="/2015/06/whats-next-after-separate-frontend-and-backend/">前后端分离了，然后呢？</a>
       </li>
     
@@ -1018,10 +1096,6 @@
     
       <li class="post">
         <a href="/2015/03/list-comprehension-in-python/">Python中的 list comprehension 以及 generator</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/03/build-monitor-script-based-on-inotify/">使用inotify/fswatch构建自动监控脚本</a>
       </li>
     
   </ul>
