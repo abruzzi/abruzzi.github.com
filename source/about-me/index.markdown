@@ -15,18 +15,14 @@ footer: true
 2012年3月加入**ThoughtWorks**西安办公室，开始了新的生活方式。作为一个程序员，我非常崇尚简单、轻量的设计和开发模式，痛恨一切重量级，复杂的东西。2013年5月，我的第一本书[《JavaScript核心概念及实践》](http://book.douban.com/subject/24165880/)在很多同事的帮助下终于出版。第二本书《轻量级Web应用程序开发》正在编辑中。另外，我在编写正式的书籍之外，还在`gitbook`上发布了两本公开电子书。
 
 ### 我的著作
--  [《JavaScript核心概念及实践》](http://book.douban.com/subject/24165880/)
--  [《轻量级Web应用开发》，编辑中](http://icodeit.org/lwweb/)
--  [《3周3Web设计》](http://juntao.gitbooks.io/3-web-designs-in-3-weeks/)
--  [《Fun with underscore.js》](http://juntao.gitbooks.io/fun-with-underscore/)
+-  [《JavaScript核心概念及实践》](http://www.amazon.cn/JavaScript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B00COG3YVU/ref=sr_1_1?ie=UTF8&qid=1438145311&sr=8-1&keywords=javascript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5)
+-  [《轻量级Web应用开发》，编辑中](http://icodeit.org/lightweight-web/)
+-  [《3周3Web设计》](https://selfstore.io/products/348)
+-  [《Fun with underscore.js》](https://selfstore.io/products/351)
 
-[![JavaScript Core Concepts And Practices](/images/2015/03/jscp-resized.jpg)](http://book.douban.com/subject/24165880/)
-[![3 Web Designs in 3 Weeks](/images/2015/03/3p3w-resized.jpg)](https://www.gitbook.com/book/juntao/3-web-designs-in-3-weeks/details)
-[![Fun with underscore.js](/images/2015/03/fun-fp-resized.jpg)](https://www.gitbook.com/book/juntao/fun-with-underscore/details)
-
-如果你觉得我的博客/电子书对你有帮助，而你也鼓励这种行为，可以扫下面的二维码来捐赠：
-
-![QR Code](/images/2015/03/qr-code.jpg)
+[![JavaScript Core Concepts And Practices](/images/2015/03/jscp-resized.jpg)](http://www.amazon.cn/JavaScript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B00COG3YVU/ref=sr_1_1?ie=UTF8&qid=1438145311&sr=8-1&keywords=javascript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5)
+[![3 Web Designs in 3 Weeks](/images/2015/03/3p3w-resized.jpg)](https://selfstore.io/products/348)
+[![Fun with underscore.js](/images/2015/03/fun-fp-resized.jpg)](https://selfstore.io/products/351)
 
 ### 我的其他站点
 -   [我的Github](https://github.com/abruzzi)，上边有一些我自己的小项目
@@ -59,4 +55,3 @@ footer: true
 ### 你可以通过这个地址联系到我：
 
 `juntao.qiu` &#64; `gmail.com` 或者 `kmustlinux` &#64; `gmail.com`
-
