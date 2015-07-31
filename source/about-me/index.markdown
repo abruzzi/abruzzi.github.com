@@ -22,7 +22,7 @@ footer: true
 -  [《Fun with underscore.js》](https://selfstore.io/products/351)
 
 [![JavaScript Core Concepts And Practices](/images/2015/03/jscp-resized.jpg)](http://www.amazon.cn/JavaScript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B00COG3YVU/ref=sr_1_1?ie=UTF8&qid=1438145311&sr=8-1&keywords=javascript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5)
-[![Lightweight Web app development](lwweb-resized.png)](http://www.amazon.cn/%E8%BD%BB%E9%87%8F%E7%BA%A7Web%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B012R5A1NQ/ref=sr_1_3?s=books&ie=UTF8&qid=1438330531&sr=1-3)
+[![Lightweight Web app development](/images/2015/03/lwweb-resized.png)](http://www.amazon.cn/%E8%BD%BB%E9%87%8F%E7%BA%A7Web%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B012R5A1NQ/ref=sr_1_3?s=books&ie=UTF8&qid=1438330531&sr=1-3)
 [![3 Web Designs in 3 Weeks](/images/2015/03/3p3w-resized.jpg)](https://selfstore.io/products/348)
 [![Fun with underscore.js](/images/2015/03/fun-fp-resized.jpg)](https://selfstore.io/products/351)
 
