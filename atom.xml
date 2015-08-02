@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-07-31T18:34:21+10:00</updated>
+  <updated>2015-08-02T21:20:24+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,98 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[如何快速发布你的点子？]]></title>
+    <link href="http://abruzzi.github.com/2015/08/how-to-make-you-idea-come-true/"/>
+    <updated>2015-08-02T19:04:00+10:00</updated>
+    <id>http://abruzzi.github.com/2015/08/how-to-make-you-idea-come-true</id>
+    <content type="html"><![CDATA[<p><em>说实话，这是一篇软文，为我的新书<a href="http://icodeit.org/lightweight-web">《轻量级Web应用开发》</a>写的软文。如果你不想接着往下读，可以<a href="http://www.amazon.cn/gp/product/B012R5A1NQ?refRID=1GXJ241HTDC784AXJ0SX&amp;ref_=pd_rhf_pe_p_img_2">直接去这里买一本</a>来看，:)</em></p>
+
+<h3>如何细化你的“点子”？</h3>
+
+<p>根据一个已有的产品来参考，演绎，并形成自己的产品并非难事，而创新则是一件非常困难的事情，因为你需要“无中生有”。在ThoughtWorks，我们有这样一些步骤可以帮助客户来梳理信息，并最终交付产品，简而言之，可以归结为这样几个步骤：</p>
+
+<ol>
+<li>Discovery（用户研究，探索）</li>
+<li>Define（归纳洞见，发现）</li>
+<li>Design（原型设计，验证）</li>
+<li>Delivery（制定计划，实施）</li>
+</ol>
+
+
+<p><img src="http://abruzzi.github.com/images/2015/08/i-learn-resized.png" alt="prototype" /></p>
+
+<p>上图是一个“点子”的原型（一个交换技能的应用，用户可以教别人自己擅长的技能，作为交换，也可以从别人那里学习心得技能），原型事实上是<strong>第三步</strong>的产物。我们通过一些调查（口头采访，或者问卷调查）得到一些基本的信息，然后归纳这些信息，并和真实用户再次确认，得到一个概念。有了概念，再来设计一个基本的原型，这个原型还可以迭代数次，然后进入下一个阶段。</p>
+
+<p>前三个阶段更多的是用户体验设计师，以及客户的业务人员参与的。在前三步完成之后，进入实施的时候，软件工程师开始投入。这篇文章更关注<strong>第四步(Delivery)</strong>中的各种实践，通过这些实践，我们可以很好的完成交付计划，使得我们的好想法最终可以变成为用户提供服务的产品。</p>
+
+<h3>实现“点子”的方法</h3>
+
+<p>在软件领域，将一个想法变成实际的产品需要经历若干个阶段。按照传统的软件开发方式，会有前期的调研，需求分析，概要设计，详细设计，编码实现，测试，发布等一系列的流程。这种方式对每个阶段的定义都非常明确，而且每个阶段需要依赖前一个阶段的输出，因此往往被称为“瀑布模型”。后来慢慢发现，这个模型的反馈周期太长，一个软件从调研到发布往往需要数年，当发布之后，可能市场早已经沧海桑田。人们后来发明了更加符合现代市场需求的“敏捷开发”，在敏捷中，更加强调短平快的将需求变为产品。</p>
+
+<p>简而言之，敏捷开发更强调：</p>
+
+<ol>
+<li>快速发布</li>
+<li>渐进增强</li>
+<li>小步迭代</li>
+</ol>
+
+
+<p>而在敏捷开发的继承者精益中，这几点理念也被更进一步的深化。由于没有办法预见未来，我们只能用一种边做边看的方式来验证想法。简而言之，就是先根据经验和调查，做出一个合理的推断，然后定义好范围，构想出一个最小可行产品（MVP），这个MVP的功能非常内聚，非常紧凑，我们需要尽可能快的让其上线，并被真是的用户使用，测试。根据这些用户的反馈，我们会做一些调整，比如去掉那些很少人使用的功能，聚焦在用户喜欢的功能上；从用户的实际使用中，调整界面元素的位置，子功能的入口等等。这个过程会持续多轮，最后的结果会是一个有真是用户使用，并且比较贴近真实需求的产品。当然这还不够，我们需要不断的打磨，渐进式的增强产品的功能，逐步完善功能等。</p>
+
+<p>有一个非常形象的图，可以看出瀑布模型和敏捷开发两种方法的对比：</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/08/waterfall-v-agile-about.gif" alt="waterfall vs agile" /></p>
+
+<p>敏捷开发通过逐步细化，迭代前进的方式，分阶段的将需求实现，在整个过程中，更容易做到快速调整。</p>
+
+<p>所有的这些过程，都非常依赖“快速”这个关键点。如果MVP花了3周就产生了，但是为了让其上线，你花费了1个月，那么很可能这个MVP已经过时了；如果你确实快速的将MVP发布了，在得到了用户的很多反馈之后，花费1个月来实现这些反馈，又会让你落在竞争对手之后；如果快速的发布了多次，并且幸运的是，你的用户量变多了，如果花费很长时间来调整架构，则可能失去当前的市场窗口。也就是说，你需要非常<strong>快速地</strong>对变化做出反应！</p>
+
+<h3>轻量级的开发方式</h3>
+
+<h4>开发中的三个重点</h4>
+
+<p>在工程实践中，我认为有三个特别需要注意重要的点，这三点可以极大程度的改善项目现状，提高效率，并使得产品的高质量交付成为可能，它们分别是：</p>
+
+<ol>
+<li>自动化（自动化一切）</li>
+<li>质量内嵌（defect的数量，是否真正满足了需求）</li>
+<li>代码本身的质量（可读性，可维护性，可扩展性）</li>
+</ol>
+
+
+<p>自动化包括，自动provision，自动部署，自动化测试，自动打包等等。这是提高团队开发效率的必要工具。比如书中提到的grunt/gulp脚本，jasmine/rspec/capybara测试，部署脚本，vagrant/Chef等，都是关于如何将日常开发中的任务尽可能的自动化。</p>
+
+<p>软件没有Bug当然是所有人都追求的，我们有很多中方式来保证代码质量。而在编写产品代码的同时，写大量的自动化测试，是投入产出比最高的一种了。通过单元测试，集成测试，以及一些有限但是关键的UI测试，我们可以覆盖很多的需求，而将这些测试自动化起来之后，可以节省大量的开发/测试成本，并减少回归测试的代价。</p>
+
+<p>要支撑快速的发布，我们需要一系列的技术实践。这些技术包括环境的搭建，框架的使用，代码的编写，产品的发布；而且包括后台的数据库设计，业务代码，同样还有前端的展现等。</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/06/software-life-cycle-resized.png" alt="software life cycle" /></p>
+
+<h4>何为轻量级？</h4>
+
+<p>在<a href="http://www.amazon.cn/gp/product/B012R5A1NQ?refRID=1GXJ241HTDC784AXJ0SX&amp;ref_=pd_rhf_pe_p_img_2">《轻量级Web应用开发》</a>中，我介绍了一系列的实践/工具，这些实践/工具贯穿整个软件开发的生命周期，使得敏捷开发/精益的开发方式变得可以“落地”。比如如何使用轻量级的开发框架来搭建API原型，如何将应用发布在免费的云平台上，如何通过虚拟化技术快速搭建开发环境，从而节省环境配置的投入，如何快速平滑的发布，如何使用测试先行的方式来保证代码质量，如何做高效的自动化UI测试等等。</p>
+
+<ul>
+<li>轻量级Web框架</li>
+<li>前端开发流程</li>
+<li>构建工具</li>
+<li>环境自动化（开发环境的搭建，CI服务器的搭建）</li>
+<li>自动化部署</li>
+<li>UI测试</li>
+<li>实例驱动（书中有很多的实例，也有很多从项目中总结出来的实践）</li>
+</ul>
+
+
+<p>这是一本主要关注开发实践的书，书中通过很多实际的例子来帮助读者建立一套完整，高效，轻量级的开发方式，这些方式可以直接在你的下一个项目中使用。甚至如果项目的技术栈变成了另外一种语言，你也可以迅速找到同类的替代品。比如rake之于<a href="https://gradle.org/">gradle</a>，<a href="http://www.sinatrarb.com/">sinatra</a>至于spring-mvc等等。</p>
+
+<p>每个组件都是可以替换掉的，比如ORM，如果你觉得DataMapper无法满足实际需要，那么可以换成ActiveRecord。如果Rails太重，使用Sinatra或者Grape或许是一个更好的选择。AngularJS包含了太多东西，Backbone.js或许适合你的场景，而也未尝不可以用Riot.js来替换掉Backbone中的view层。</p>
+
+<p>在本地，可以将应用部署到一个vagrant+chef来provision的环境中，而通过部署自动化，这个动作可以很容易的在AWS的云上实现。轻量级的开发方式，帮助你用最小的代价来替换系统中的任意一个组件，因为每个组件在一开始都是按照可替换原则选用的。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[项目经理是大傻B吗？]]></title>
@@ -5293,110 +5385,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 <p>重构是一个永无止境的实践，你可以不断的抽取，简化，重组。比如上例中对于常量的使用，对于JavaScript中的for的使用等，都可以更进一步。但是你需要权衡，适可而止，如果不小心做的太过，则可能引起过渡设计：引入太过的概念，过于简化的接口等。</p>
 
 <p><code>TDD</code>是一种容易付诸实践的开发方式，在小的，简单的例子上如此，在大的，复杂的场景下也是如此。它优美且高效的地方在于：不假设任何人可以一次就写出完善的应用，而是鼓励小步前进，快速反馈，快速迭代。而演化到最后，得到的往往就是孜孜以求的优美设计。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[命令行制作黑白+单色照片]]></title>
-    <link href="http://abruzzi.github.com/2014/11/splash-color-in-black-and-white-photo/"/>
-    <updated>2014-11-08T12:59:00+11:00</updated>
-    <id>http://abruzzi.github.com/2014/11/splash-color-in-black-and-white-photo</id>
-    <content type="html"><![CDATA[<h3>黑白+单色照片</h3>
-
-<p>有很多摄影师通过后期制作出了非常独特的<code>黑白+单色</code>照片，并由此来强调被拍摄主题，绿叶中的红花，紫色花朵的黄色花蕊等；的另一方面，这种照片可以强调背景的灰色，比如雾霾中的交通灯。</p>
-
-<p>比如原图是这样的：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/11/flower-resized.jpg" alt="image" /></p>
-
-<p>经过处理之后，最终的效果是这样的：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/11/flower-final-resized.jpg" alt="image" /></p>
-
-<p>网络上已经有很多的教程来做到这一点，不过都需要使用<code>photoshop</code>来完成颜色的抽取，反色，灰化等。当然，作为程序员，特别是命令行控，自然会想到的是使用<a href="http://www.imagemagick.org/">图片编辑神器ImageMagick</a>来处理。</p>
-
-<h4>基本原理</h4>
-
-<p>我们都知道，彩色图片都是由3个通道（红，绿，蓝三个）叠加在一起的（如果图片带有透明通道的话，会有4个通道，我们这里略过）形成的。每个通道都是一张灰度图，并且会根据图片实际的色彩，在不同程度上有明暗差异。</p>
-
-<p>比如上图的花朵，如果我们将jpg本身的RGB分离开，就会得到3张不同的灰度图：</p>
-
-<p>红色通道灰度图：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/11/flower-red-resized.jpg" alt="red" /></p>
-
-<p>绿色通道灰度图：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/11/flower-green-resized.jpg" alt="green" /></p>
-
-<p>蓝色通道灰度图：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/11/flower-blue-resized.jpg" alt="blue" /></p>
-
-<p>由于原图绿色和紫红色为主要色彩，所以在红色通道中，花朵比较偏向白色，蓝色通道中花朵也会偏向白色，因为紫红色包含红色和蓝色的亮度都比较高，而在绿色通道中，叶子的颜色则更偏向白色一些。</p>
-
-<h4>图片的加减</h4>
-
-<p>有了灰度图，我们就可以通过不同通道的加减来加强某些色彩，比如蓝色通道和红色通道相减之后，绿色就会被过滤掉，因为绿色在红色和蓝色通道中都表现为灰色：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/11/flower-minus-resized.jpg" alt="minus" /></p>
-
-<p>这时候，我们已经有了花瓣的轮廓，但是还是有些模糊，我们还需要将其二值化。这样做出来的图片被称为<code>mask</code>，这个<code>mask</code>和最终的图片叠加之后，才会将我们关注的部位凸现出来。</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/11/flower-mask-resized.jpg" alt="mask" /></p>
-
-<h3>实现</h3>
-
-<p>ImageMagick提供的命令行工具<code>convert</code>非常强大，我们这里只是用其中很简单的几个：</p>
-
-<pre><code>1.  图片通道的分离
-2.  图片相加减
-3.  叠加多个图片为一个
-</code></pre>
-
-<p>要分离一张RGB的图片，只需要指定：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>convert flower.jpg -separate flower_rgb_%d.jpg
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这条命令会把图片flower.jpg分离成三张图片，命令中的<code>%d</code>占位符会自动被展开为<code>1,2,3</code>这样的数字，这样这条命令会生成3章图片：flower_rgb_0.jpg,flower_rgb_1.jpg,flower_rgb_2.jpg。</p>
-
-<p>图片的相减也很方便，使用命令：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>convert flower_rgb_2.jpg flower_rgb_0.jpg -compose minus <span class="se">\</span>
-</span><span class='line'>-composite flower_minus.jpg
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>来完成。得到差值文件之后（已经具备了基本轮廓，如果不理想，可以换一个通道试试），就可以进一步二值化了。</p>
-
-<p>命令</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>convert flower_minus.jpg -level 10%,30% flower_mask.jpg
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>用来生成<code>mask</code>文件，其中10%表示亮度低于10%的点会被认为是黑色，而30%则表示亮度高于30%的点会被认为是白色，这样的出来的图片就是只有黑白两种颜色了。</p>
-
-<p>最后，我们需要将不同的图片合并在一起，形成最终的结果：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>convert flower_rgb_2.jpg flower.jpg flower_mask.jpg -composite flower_final.jpg
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意这里的次序，先是蓝色通道，然后是原图，最后是<code>mask</code>。这样<code>composite</code>的结果就是我们最开始看到的了：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/11/flower-final-resized.jpg" alt="image" /></p>
-
-<p>再来看另外一张用同样方式生成的图片：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/11/bird-final-resized.jpg" alt="image" /></p>
 ]]></content>
   </entry>
   

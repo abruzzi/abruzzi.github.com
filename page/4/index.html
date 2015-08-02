@@ -9,25 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Service的典型示例 在AngularJS中，Service都是单例的实体，通常会将Service作为向后台交互的数据提供者，所有的需要数据的组件只需要依赖于这个Service即可。 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-var app = &hellip;">
+  <meta name="description" content="GIS系统如何工作 去年十二月中旬从RCA项目上下来之后，就一直在一个GIS项目上做咨询。在新的项目上，日常工作的重点主要是放在前端开发上（比如AngularJS，Grunt，Jamsine之类），对于业务（与GIS相关）方面，则完全没有涉及。 虽说之前也接触过一点GIS相关的开发， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -100,6 +82,195 @@ var app = &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2014/04/intro-map-gis/">GIS系统如何工作</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-10T23:45:00+10:00" pubdate data-updated="true">Apr 10<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>GIS系统如何工作</h4>
+
+<p>去年十二月中旬从RCA项目上下来之后，就一直在一个<a href="http://en.wikipedia.org/wiki/Geographic_information_system">GIS</a>项目上做咨询。在新的项目上，日常工作的重点主要是放在前端开发上（比如AngularJS，Grunt，Jamsine之类），对于业务（与GIS相关）方面，则完全没有涉及。</p>
+
+<p>虽说之前也接触过<a href="http://icodeit.org/2013/03/guan-yu-hack-day/">一点GIS相关的开发</a>，比如Google Maps API，<a href="http://openlayers.org/">OpenLayers</a>之类，但是仅仅停留在使用别人的API搭建个小应用的层次。</p>
+
+<p><img src="/images/2014/04/roads-resized.png" alt="image" /></p>
+
+<p>直到最近，在GIS专家芦康平的指导下，才真正开始接触GIS，很快我就发现这是另一个十分好玩的新天地。简而言之，这个新的天地里，所有的东西都有一种似曾相识的感觉，但是又非常新鲜。比如地图服务器，渲染引擎，缓存，地理信息数据库等，都可以在其他的系统中找到对应。这种感觉好比收集硬币，或者收集邮票一样，当你看到新的有着不同花纹，大小，材质，年代的硬币时，那种既在意料之中又在意料之外的感觉简直太有意思了。</p>
+
+<p>GIS系统，毋庸置疑可以帮助人们更加直观的分析数据，当数据与地理信息有所关联的时候，GIS系统会变得十分友好，也可以更充分的提供信息。</p>
+
+<p>鉴于GIS对我来说是一个完全崭新的领域，那么学习之前，自然有很多的问题出现：</p>
+
+<ol>
+<li>地图的信息（建筑物，河流，街道）从何而来？</li>
+<li>数据在服务器端以何种方式存储？</li>
+<li>地图数据到底如何被渲染出来？</li>
+<li>一个GIS系统的部署结构是什么样的？需要哪些组件？</li>
+<li>业界的标准是什么，有哪些开源的项目和工具可供参考？</li>
+</ol>
+
+
+<p>等等。</p>
+
+<h5>地图是如何被渲染的？</h5>
+
+<p>通常来讲，我们看到的地图是由一个底图和若干个层的叠加来达到的最终结果。其中每个层次都会保存不同类型的地理信息，比如将所有的河流信息放在一个层，将建筑物放在另外一个层。</p>
+
+<p><img src="/images/2014/04/elevation-map.jpg" alt="image" /></p>
+
+<p>这些信息存储在数据文件中（<a href="http://en.wikipedia.org/wiki/Shapefiles">shapefiles</a>）或者数据库中，通过使用专门的工具来将这些地理信息转换成图片。由于每张图片都是透明的，这样叠加起来的最后效果就是如Google Maps之类应用的结果了。当然，叠加过程一般都发生在服务器端（有些简单应用则是在客户端完成某些层次的绘制，比如我之前发过的<a href="http://icodeit.org/placesihavebeen">我去过的地方</a>，这些热力图就是在客户端通过JavaScript加上去的。）。</p>
+
+<p>地图在服务器端被渲染出来之后，尺寸一般会非常大。需要有工具将这些大图切分成很多组的小图，这些小图被称之为瓦片（tile）。为了给不同缩放级别的客户端提供不同的图片，这些瓦片被精心的分成了多个组，每个组都有编号。如果地图支持18级的缩放，就会现有18个分组。当然分组好越靠后，分组中的瓦片越多。</p>
+
+<p><img src="/images/2014/04/tiles-resized.png" alt="image" /></p>
+
+<p>比如当客户端请求缩放级别为10的地图时，客户端（比如OpenLayers）会根据经纬度计算好图片的边界，然后请求第10级的一些瓦片，并将这些瓦片排列在画布上。一般而言，这些瓦片都是正方形（256x256或者512x512）。</p>
+
+<h5>WMS服务</h5>
+
+<p><a href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS(Web Map Service)</a>是一个基于HTTP的简单协议，客户端发送的请求中包含请求类型，地图的层次，边界等信息，服务器根据这个信息生成图片，并返回该图片：</p>
+
+<p><img src="/images/2014/04/wms-request.png" alt="image" /></p>
+
+<p>当然，WMS本身支持多种请求，最常见的就是<code>GetMap</code>，细节可以参考OGC规范及具体服务器的实现。而对于后端的服务器来说，从请求中获取这些信息之后，会首先从数据库/数据文件中得到数据，并使用渲染引擎绘制图片，并最后将图片返回客户端。</p>
+
+<h5>图片类型</h5>
+
+<p>图片分为栅格类型和矢量类型两种。栅格图片一般的原始来源是航拍，遥感等，本质上来说是照片，照片必然会有大小，如果放大到某一个范围之外，就会模糊。而矢量图是数学上的抽象，比如在某个坐标系统中，在某处有一个点A，另一处有一个点B，两点之间有一条线连接。矢量图的特点是与缩放程度无关。</p>
+
+<p><img src="/images/2014/04/bangor_oli_2014040_red_swir_tir_720.jpg" alt="栅格图" /></p>
+
+<p>栅格图的特点是真实，矢量图的特点是抽象（存储方便，占用空间更少，也更容易修改）。但是为了绘制正确，完整的地图，两种类型的图片信息都是必要的：</p>
+
+<p><img src="/images/2014/04/polygon-resized.png" alt="矢量图" /></p>
+
+<h5>常用文件格式</h5>
+
+<p>Shapefiles是Esri公司开发出来的用于存储地理信息的文件格式。说是文件，其实是一个文件族，Shapefile包含了数种文件，其中有三种必须的(.shp，.shx，.dbf)。其他有一些可选的(.prj，.sbn/.sbx等等)。</p>
+
+<p>OSM格式是由OpenStreetMap采用的文件格式，其实是一个XML。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;osm</span> <span class="na">version=</span><span class="s">&quot;0.6&quot;</span> <span class="na">generator=</span><span class="s">&quot;Osmosis 0.43.1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;bounds</span> <span class="na">minlon=</span><span class="s">&quot;144.26600&quot;</span> <span class="na">minlat=</span><span class="s">&quot;-38.55200&quot;</span> <span class="na">maxlon=</span><span class="s">&quot;145.81000&quot;</span> <span class="na">maxlat=</span><span class="s">&quot;-37.36500&quot;</span> <span class="na">origin=</span><span class="s">&quot;http://www.openstreetmap.org/api/0.6&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;node</span> <span class="na">id=</span><span class="s">&quot;579259&quot;</span> <span class="na">version=</span><span class="s">&quot;3&quot;</span> <span class="na">timestamp=</span><span class="s">&quot;2008-12-17T02:28:22Z&quot;</span> <span class="na">uid=</span><span class="s">&quot;57437&quot;</span> <span class="na">user=</span><span class="s">&quot;Canley&quot;</span> <span class="na">changeset=</span><span class="s">&quot;431325&quot;</span> <span class="na">lat=</span><span class="s">&quot;-37.9309048&quot;</span> <span class="na">lon=</span><span class="s">&quot;145.1282066&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;node</span> <span class="na">id=</span><span class="s">&quot;579260&quot;</span> <span class="na">version=</span><span class="s">&quot;5&quot;</span> <span class="na">timestamp=</span><span class="s">&quot;2009-12-03T21:42:45Z&quot;</span> <span class="na">uid=</span><span class="s">&quot;1679&quot;</span> <span class="na">user=</span><span class="s">&quot;andrewpmk&quot;</span> <span class="na">changeset=</span><span class="s">&quot;3284133&quot;</span> <span class="na">lat=</span><span class="s">&quot;-37.9388304&quot;</span> <span class="na">lon=</span><span class="s">&quot;145.1266866&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;node</span> <span class="na">id=</span><span class="s">&quot;579261&quot;</span> <span class="na">version=</span><span class="s">&quot;4&quot;</span> <span class="na">timestamp=</span><span class="s">&quot;2013-02-15T20:00:37Z&quot;</span> <span class="na">uid=</span><span class="s">&quot;79475&quot;</span> <span class="na">user=</span><span class="s">&quot;AlexOnTheBus&quot;</span> <span class="na">changeset=</span><span class="s">&quot;15043978&quot;</span> <span class="na">lat=</span><span class="s">&quot;-37.9404366&quot;</span> <span class="na">lon=</span><span class="s">&quot;145.1395848&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;node</span> <span class="na">id=</span><span class="s">&quot;579262&quot;</span> <span class="na">version=</span><span class="s">&quot;18&quot;</span> <span class="na">timestamp=</span><span class="s">&quot;2013-01-31T21:37:02Z&quot;</span> <span class="na">uid=</span><span class="s">&quot;79475&quot;</span> <span class="na">user=</span><span class="s">&quot;AlexOnTheBus&quot;</span> <span class="na">changeset=</span><span class="s">&quot;14864580&quot;</span> <span class="na">lat=</span><span class="s">&quot;-37.9295116&quot;</span> <span class="na">lon=</span><span class="s">&quot;145.1266366&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;tag</span> <span class="na">k=</span><span class="s">&quot;highway&quot;</span> <span class="na">v=</span><span class="s">&quot;traffic_signals&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/node&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;node</span> <span class="na">id=</span><span class="s">&quot;579265&quot;</span> <span class="na">version=</span><span class="s">&quot;2&quot;</span> <span class="na">timestamp=</span><span class="s">&quot;2010-06-24T12:05:34Z&quot;</span> <span class="na">uid=</span><span class="s">&quot;57437&quot;</span> <span class="na">user=</span><span class="s">&quot;Canley&quot;</span> <span class="na">changeset=</span><span class="s">&quot;5065613&quot;</span> <span class="na">lat=</span><span class="s">&quot;-37.9369707&quot;</span> <span class="na">lon=</span><span class="s">&quot;145.140732&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>  ...
+</span><span class='line'><span class="nt">&lt;/osm&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>技术栈</h4>
+
+<p>和传统的三层架构一样，一个典型的GIS系统也是由三部分组成：客户端，服务器，存储。在实际的场景中，可能又会引入缓存服务器，负载均衡服务器等。</p>
+
+<p><img src="/images/2014/04/gis-stack-resized.png" alt="image" /></p>
+
+<ol>
+<li><a href="http://openlayers.org/">OpenLayers</a> / Leaflet</li>
+<li><a href="http://mapnik.org/">Mapnik</a> / Mapnik::OGCServer</li>
+<li><a href="http://www.postgresql.org/">Postgres</a> + <a href="http://postgis.net/">PostGIS</a> / OSM Data / Shapefiles</li>
+</ol>
+
+
+<p><a href="http://openlayers.org/">OpenLayers</a>是一个前端的JavaScript库，几乎可以算是前端的必选了，它提供众多的特性：与任意的后端地图服务集成（Google Maps，Bing Maps，OSM等等），对向量层的支持使得其非常方便的展示用户自定义的元素（多边形，点，InfoWindow等）。OpenLayers的API也非常清晰易用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">,</span> <span class="p">{});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">layer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Layer</span><span class="p">.</span><span class="nx">WMS</span><span class="p">(</span><span class="s1">&#39;Tile Cache&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;tilecache?&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">layers</span><span class="o">:</span> <span class="s1">&#39;basic&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nx">format</span><span class="o">:</span> <span class="s1">&#39;image/png&#39;</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">addLayer</span><span class="p">(</span><span class="nx">layer</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>创建Map对象</li>
+<li>创建Layer对象</li>
+<li>将Layer添加到Map上</li>
+</ol>
+
+
+<p>即可完成基本的设置，并将地图展现在页面上。</p>
+
+<p><a href="http://www.openstreetmap.org/">OSM</a>是Open Street Map的缩写，它本身是一个开源项目，全世界各地的贡献者可以很方便的编辑地图信息，并与其他人分享，整个运作方式非常像Wikipedia，任何人都可以对地图进行编辑。基于这个原因，OSM数据文件是基于XML的。</p>
+
+<p>有很多组织都将OSM的数据下载下来，搭建自己的地图服务器，然后向外部提供<a href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS(Web Map Service)</a>服务。</p>
+
+<p>Mapnik是一个渲染引擎，它可以将地理数据渲染成图片。Mapnik支持来自多种数据源的数据，比如Shapefile，PostGIS中的数据等。而对于OSM数据（一种XML文件），可以使用<a href="https://github.com/openstreetmap/osm2pgsql">osm2postgis</a>工具将其导入到PostGIS数据库，然后使用。</p>
+
+<p>Mapnik本身只是一个C++编写的渲染引擎，并提供很多编程语言的bind，最常用的时python版本的bind，接口非常清晰明了。使用Mapnik可以很容易的定制对地图层次的样式，比如地图中所有土地的颜色，河流的颜色，道路的颜色，标签的字体，属性等等都可以很方便的定制。</p>
+
+<p>实际使用Mapnik+OpenLayers搭建自己的服务器将在下一篇文章中详细描述。</p>
+
+<h5>一些数据源</h5>
+
+<ol>
+<li><a href="http://www.naturalearthdata.com/">Natural Earth</a></li>
+<li><a href="http://download.geofabrik.de/osm/">GEO Fabrik</a></li>
+</ol>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2060,250 +2231,6 @@ var app = &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/10/using-grunt-as-your-build-tool/">使用Grunt作为构建工具(build Tool)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-10-07T18:14:00+11:00" pubdate data-updated="true">Oct 7<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Grunt简介</h3>
-
-<p>Grunt是一个基于JavaScript的构建工具。和其他的构建工具类似，grunt主要用于一些将一些繁琐的工作自动化，比如运行测试，代码的静态检查，压缩JavaScript源代码等等。</p>
-
-<h4>安装grunt-cli</h4>
-
-<p>要在命令行运行grunt，需要安装grunt的命令行工具：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g grunt-cli</span></code></pre></td></tr></table></div></figure>
-
-
-<p>grunt-cli本身并不会提供Grunt构建工具，而只是一个Grunt的调用器。<code>-g</code>参数表示将grunt-cli安装在全局的路径中，这样我们可以在不同的项目中使用grunt-cli，而由于grunt-cli本身只是一个调用器，所以对于不同的项目，真正运行的Grunt可以是不同的版本，而命令行的借口则完全一致。</p>
-
-<p>grunt-cli提供的命令行可执行文件的名称为<code>grunt</code>，这个工具每次运行时都会检查当前目录下的Grunt。</p>
-
-<h4>使用grunt-cli</h4>
-
-<p>如果在一个既有的npm模块中，可以很容易的加入grunt的支持，只需要修改package.json，加入依赖，然后运行<code>npm install</code>来完成依赖的安装即可。</p>
-
-<p>如果是一个新启动的项目，那么在项目中添加两个文件：package.json和Gruntfile。其中package.json用来定义当前项目是一个npm的模块，而Gruntfile用来定义具体的任务，以及加载Grunt的其他插件(Grunt提供丰富的插件，比如运行测试，代码静态检查等功能都是通过插件来完成的)</p>
-
-<h4>package.json</h4>
-
-<p>package.json定义了一个工程的元数据，这些数据被npm管理器来使用，npm本身提供了<code>init</code>参数可以很容易的生成一个package.json文件：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm init </span></code></pre></td></tr></table></div></figure>
-
-
-<p>根据提示可以很容易的生成一个新的package.json</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{
-</span><span class='line'>  "name": "chapter-testing",
-</span><span class='line'>  "version": "0.0.0",
-</span><span class='line'>  "description": "This is the demo for how to use grunt.js",
-</span><span class='line'>  "main": "my.conf.js",
-</span><span class='line'>  "directories": {
-</span><span class='line'>    "test": "test"
-</span><span class='line'>  },
-</span><span class='line'>  "scripts": {
-</span><span class='line'>    "test": "echo \"Error: no test specified\" && exit 1"
-</span><span class='line'>  },
-</span><span class='line'>  "author": "Juntao",
-</span><span class='line'>  "license": "BSD-2-Clause"
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>一般来说，package.json文件中有一个<code>devDependencies</code>的小节，定义了本项目的外部依赖。</p>
-
-<p>可以通过运行</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install grunt --save-dev</span></code></pre></td></tr></table></div></figure>
-
-
-<p>来为工程文件package.json添加<code>devDependencies</code>小节的定义：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>"devDependencies": {
-</span><span class='line'>  "grunt": "~0.4.1"
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>该命令会为工程添加一条依赖关系，如果别人拿到这个文件，就可以在本地“复原”你的开发环境，以保证整个团队使用同样地<strong>库</strong>文件。</p>
-
-<p>完成之后，该命令会在本地生成一个目录(如果没有的话)<code>node_modules</code>，其中包括了完成的Grunt的可执行文件，这时候在命令行运行grunt(由grunt-cli提供的命令行工具)，就会尝试在此目录中查找Grunt的可执行文件。</p>
-
-<h4>Gruntfile</h4>
-
-<p>要运行Grunt，还需要定义你自己的任务，默认的任务定义在Gruntfile中，Gruntfile有一定的格式。</p>
-
-<p>所有的任务需要定义在一个函数中：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>module.exports = function(grunt) {
-</span><span class='line'>  // task defination
-</span><span class='line'>};</span></code></pre></td></tr></table></div></figure>
-
-
-<p>一般而言，使用Grunt会读取一些项目的信息(定义在package.json中)：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
-</span><span class='line'>    pkg: grunt.file.readJSON('package.json')
-</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
-
-
-<p>亦可以在这个时刻指定一些其他的插件的选项：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
-</span><span class='line'>    pkg: grunt.file.readJSON('package.json'),
-</span><span class='line'>    jshint: {
-</span><span class='line'>        all: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
-</span><span class='line'>    }
-</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后需要加载其他的插件(如果需要的话)</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-contrib-jshint');</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最后，需要指定一个grunt的入口任务(<code>default</code>任务)：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.registerTask('default', function() {
-</span><span class='line'>  console.log("default task");
-</span><span class='line'>});
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后运行<code>grunt</code>，我们此处定义的default任务仅仅在控制台上打印一行字符串:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ grunt
-</span><span class='line'>Running "default" task
-</span><span class='line'>default task
-</span><span class='line'>
-</span><span class='line'>Done, without errors.</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Grunt插件</h3>
-
-<p>Grunt已经得到了很多的开源软件贡献者的支持，已经又众多的插件被开发出来。比如:</p>
-
-<ol>
-<li><a href="https://github.com/gruntjs/grunt-contrib-jshint">grunt-contrib-jshint</a></li>
-<li><a href="https://github.com/gruntjs/grunt-contrib-uglify">grunt-contrib-uglify</a></li>
-<li><a href="https://github.com/gruntjs/grunt-contrib-qunit">grunt-contrib-qunit</a></li>
-<li><a href="https://github.com/karma-runner/grunt-karma">grunt-karma</a></li>
-</ol>
-
-
-<p>等等，使用这些插件可以快速的为你的项目开发提供很多的便利，以grunt-jshint为例，
-首先需要安装此插件：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install grunt-contrib-jshint --save-dev</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后在grunt.initConfig中指定jshint需要的参数：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
-</span><span class='line'>    jshint: {
-</span><span class='line'>        files: ['js/*.js'],
-</span><span class='line'>        options: {
-</span><span class='line'>            ignores: ['js/jquery*.js']
-</span><span class='line'>        }
-</span><span class='line'>    }
-</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后加载此插件：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-contrib-jshint');</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最后，可以将<code>jshint</code>加入到默认的任务中：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.registerTask('default', ['jshint']);</span></code></pre></td></tr></table></div></figure>
-
-
-<p>运行结果<code>可能</code>如下:</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/10/jshint.png" alt="image" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/5/">&larr; Older</a>
@@ -2321,6 +2248,10 @@ var app = &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/08/how-to-make-you-idea-come-true/">如何快速发布你的点子？</a>
+      </li>
+    
+      <li class="post">
         <a href="/2015/07/is-project-manager-a-fool/">项目经理是大傻B吗？</a>
       </li>
     
@@ -2334,10 +2265,6 @@ var app = &hellip;">
     
       <li class="post">
         <a href="/2015/05/functional-programming-again/">又一篇JavaScript的函数式编程教程</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/03/list-comprehension-in-python/">Python中的 list comprehension 以及 generator</a>
       </li>
     
   </ul>
