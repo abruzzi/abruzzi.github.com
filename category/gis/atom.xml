@@ -4,7 +4,7 @@
   <title><![CDATA[Category: GIS | I code it]]></title>
   <link href="http://abruzzi.github.com/category/gis/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-08-04T19:21:28+10:00</updated>
+  <updated>2015-09-18T16:29:01+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,324 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[可视化你的足迹]]></title>
+    <link href="http://abruzzi.github.com/2015/09/visualize-your-steps/"/>
+    <updated>2015-09-18T13:36:00+10:00</updated>
+    <id>http://abruzzi.github.com/2015/09/visualize-your-steps</id>
+    <content type="html"><![CDATA[<h3>最终在地图上的可视化</h3>
+
+<p><img src="/images/2015/09/viz-steps-resized.png" alt="steps" /></p>
+
+<p>我们在本文中会制作一个这样的地图，图中绿色的线是城市中的道路，小六边形表示照片拍摄地。颜色表示当时当地拍摄照片的密度，红色表示密集，黄色为稀疏。可以看到，我的活动区域主要集中在左下角，那是公司所在地和我的住处。</p>
+
+<h4>数据来源</h4>
+
+<p>我的照片一般都通过Mac自带的Photos管理（前身iPhoto），手机里照片会定期同步上去。如果你开启了iPhone相机中的定位功能，拍照的时候，iPhone会自动把当前的地理信息写入到图片的元数据中，这样我们就可以使用这些数据来做进一步的分析了。</p>
+
+<p>我在去年学习OpenLayers的时候已经玩过一些简单的<a href="http://icodeit.org/placesihavebeen">足迹可视化</a>，另外还有一篇<a href="http://www.infoq.com/cn/articles/visualization-of-the-global-seismic-system">全球地震信息的可视化</a>，但是仅仅是展示矢量信息，并没有深入，而且都是一些前端的JavaScript的代码。最近又在重新整理之前的GIS知识，重新把这个作为例子来练手。当然，这次会涉及一些<strong>地图编辑</strong>，<strong>空间计算</strong>的内容。</p>
+
+<p>老版本的iPhoto用的是XML文件来存储照片的<a href="https://en.wikipedia.org/wiki/Exchangeable_image_file_format">EXIF数据</a>，新的Photos的实现里，数据被存储在了好几个SQLite数据库文件中，不过问题不大，我们只需要写一点Ruby代码就可以将数据转化为标准格式，这里使用GeoJSON，GeoJSON既可以方便人类阅读，也可以很方便的导入到PostGIS或者直接在客户端展现。</p>
+
+<h3>实现步骤</h3>
+
+<p>我们现在要绘制照片拍摄的密度图，大概需要这样一些步骤：</p>
+
+<ol>
+<li>抽取照片的EXIF信息（经度，纬度，创建时间等）</li>
+<li>编写脚本将抽取出来的信息转换成通用格式（GeoJSON）</li>
+<li>使用QGIS将这些点的集合导入为图层</li>
+<li>插入一些由六边形组成的图层（设置合适的大小）</li>
+<li>计算落在各个多边形中的点的个数，并生成新的图层heatmap</li>
+<li>使用MapServer来渲染基本地图</li>
+</ol>
+
+
+<h4>数据抽取</h4>
+
+<p>Mac上的Photos会将照片的元数据存储在一个SQLite3格式的数据库中，文件名为<code>Library.apdb</code>，通常位于这个位置<code>~/Pictures/Photos\ Library.photoslibrary/Database/apdb/Library.apdb</code>。这个文件可以通过<code>SQLite3</code>的客户端直接打开，不过由于可能有其他进程（Mac自己的）打开了该文件，所以会有锁文件，你可能需要先将这个文件拷贝到另外一个位置。</p>
+
+<p>然后将表<code>RKVersion</code>中的部分信息导出即可，SQLite内置了很方便的导出功能，通过它提供的shell客户端<code>sqlite3</code>，将信息导出到csv文件中：</p>
+
+<p><code>sh
+sqlite&gt; .mode csv
+sqlite&gt; .headers on
+sqlite&gt; .output places-ive-been.csv
+sqlite&gt; select datetime(imageDate+978307200, 'unixepoch', 'localtime') as imageDate, exifLatitude, exifLongitude from RKVersion where exifLatitude and exiflongitude;
+sqlite&gt; .output stdout
+</code></p>
+
+<p>注意这里的日期，苹果的日期偏移和其他公司不同，始于2001年1月1日，所以要在<code>imageDate</code>之后加上这个<code>base</code>值，然后将文件以<code>.csv</code>的格式导出到<code>places-ive-been.csv</code>中，该文件包含3列：时间，纬度，精度。</p>
+
+<p><code>sh
+imageDate,exifLatitude,exifLongitude
+"2012-10-25 16:34:01",34.19216667,108.87316667
+"2012-10-28 14:45:53",35.1795,109.9275
+"2012-10-28 14:45:45",35.1795,109.9275
+"2012-10-25 16:34:04",34.19216667,108.87316667
+"2012-10-19 23:01:05",34.19833333,108.86733333
+...
+</code></p>
+
+<h4>转换为GeoJSON</h4>
+
+<p>方便以后的转换起见，我们将这个文件转换成<code>GeoJSON</code>（其实很多客户端工具可以支持CSV的导入，不过<code>GeoJSON</code>更为标准一些）。</p>
+
+<p>```ruby
+require 'csv'
+require 'json'</p>
+
+<p>lines = CSV.open("places-ive-been.csv").readlines
+keys = lines.delete lines.first</p>
+
+<p>File.open("places-ive-been.json", 'w') do |f|</p>
+
+<pre><code>data = lines.map do |row|
+    {
+        :type =&gt; "Feature",
+        :geometry =&gt; {
+          :type =&gt; "Point",
+          :coordinates =&gt; [row[2].to_f, row[1].to_f]
+        },
+        :properties =&gt; {
+          :created_at =&gt; row[0]
+        }
+    }
+end
+
+f.puts JSON.pretty_generate({
+    :type =&gt; "FeatureCollection",
+    :crs =&gt; {
+      :type =&gt; "name",
+      :properties =&gt; {
+        :name =&gt; "EPSG:4326"
+      }
+    },
+    :features =&gt; data
+})
+</code></pre>
+
+<p>end
+```</p>
+
+<p>这段脚本可以将我们的<code>.csv</code>转换成标准的<code>geojson</code>格式，注意此处的空间投影使用的是<code>EPSG:4326</code>。</p>
+
+<h4>导入为QGIS图层</h4>
+
+<p><a href="http://www.qgis.org/en/site/">QGIS</a>是一个开源的GIS套件，包括桌面端的编辑器和服务器端，这里我们只是用器桌面端来进行图层的编辑。</p>
+
+<p>将我们的<code>GeoJSON</code>导入之后，会看到这样的一个可视化的效果！</p>
+
+<p><img src="/images/2015/09/points-resized.png" alt="points" /></p>
+
+<p>我们还可以导入其他的地图图层，这样可以清楚的看到点所在的区域（国家地图图层可以在<a href="http://www.naturalearthdata.com/">此处下载</a>）：</p>
+
+<p><img src="/images/2015/09/points-countries-resized.png" alt="points with countries" /></p>
+
+<p>好了，有了基础数据之后，我们来作进一步的数据分析 -- 即生成密度图。首先使用QGIS的插件<code>MMQGIS</code>的<strong>生成多边形图层</strong>功能(Create -> Create Grid Layer)，为了处理速度，我们可以将地图放大到一定范围（我选择西安市，我在这里活动比较密集）。</p>
+
+<p>选择六边形<code>hexagon</code>，并设置合适的大小（如果是<code>3857</code>参考系，即按照公里数来设置，会比较容易一些，如果是4326，则需要自己计算）。简而言之，需要保证每个格子都包含一些点，不至于太密，也不至于太稀疏。</p>
+
+<p><img src="/images/2015/09/hexagon-resized.png" alt="hexagon" /></p>
+
+<h4>计算密度</h4>
+
+<p>QGIS提供了很多的数据分析功能，我们在这个例子中使用（Vector -> Analysis Tools -> Points in Polygon）工具，这个工具需要两个图层，一个是点集图层，一个是多边形图层。然后会将结果生成到一个新的图层中，我们可以将其命名为<code>places-ive-been-density.shp</code>，同时需要指定一个字段来存储统计出来的值（density）。</p>
+
+<p>这个过程可能会花费一点时间，根据需要计算的点集合多边形的格式（也就是地图上的区域）。</p>
+
+<p>完成之后会得到一个<code>Shapefile</code>（其实是一组，具体可以<a href="https://en.wikipedia.org/wiki/Shapefile">参看这里</a>）。其实在这个过程中，绝大多数多边形是不包含任何数据的，我们需要过滤掉这些多余的多边形，这样可以缩减绘制地图的时间。</p>
+
+<p>我们可以将这个文件导入到PostGIS中进行简化：</p>
+
+<p><code>sh
+shp2pgsql -I -s 4326 data/places-ive-been/places-ive-been-3857-density.shp places_density |\
+PGUSER=gis PGPASSWORD=gis  psql -h localhost -d playground
+</code></p>
+
+<p>这里的<code>shp2pgsql</code>命令是<a href="http://">GDAL工具包</a>提供的命令，用以将<code>Shapefile</code>导入到<code>PostGIS</code>中，你可以通过</p>
+
+<p><code>sh
+$ brew install gdal --with-postgresql
+</code></p>
+
+<p>来安装。</p>
+
+<p>GDAL会提供很多的工具，比如用来转换各种数据格式，投影，查看信息等等。</p>
+
+<p>导入之后，我们可以在PostGIS的客户端查看，编辑这些数据等。比如在过滤之前，</p>
+
+<p><code>sql
+select count(*) from places_density;
+</code></p>
+
+<p>我们导入的数据中有<code>103166</code>条记录：</p>
+
+<p><code>sql
+select count(*) from places_density where density IS NOT NULL;
+</code></p>
+
+<p>而过滤之后，我们仅剩下<code>749</code>条数据。</p>
+
+<p>通过GDAL提供的另一个工具<code>ogr2ogr</code>可以方便的执行过滤，并生成新的<code>Shapefile</code>:</p>
+
+<p><code>sh
+$ ogr2ogr -f "ESRI Shapefile" data/places-ive-been/places_heatmap.shp \
+PG:"host=localhost user=gis dbname=playground pass
+word=gis" \
+-sql "SELECT density, geom FROM places_density WHERE density IS NOT NULL;"
+</code></p>
+
+<p>这条命令可以得到一个新的文件，这个就是最终的用来绘制地图的文件了。</p>
+
+<h4>绘制地图</h4>
+
+<p>开源世界中有很多的工具可以完成地图的绘制，比如<a href="http://mapserver.org/">MapServer</a>，<a href="http://geoserver.org/">GeoServer</a>，<a href="http://mapnik.org/">Mapnik</a>等等。我们在这篇文章中使用MapServer来完成地图的绘制，MapServer的安装和配置虽然比较容易，但是也需要花费一些时间，所以我将其放到了<a href="https://github.com/abruzzi/mapserver-box">这个repo中</a>，你可以直接clone下来使用。（需要你在虚拟机中安装ansible来完成provision）。</p>
+
+<p>MapServer的配置很简单，类似于一个XML，不过是自定义的格式：</p>
+
+<p>```
+MAP
+  IMAGETYPE      PNG
+  EXTENT         11859978.732852 3994742.227345 12753503.595559 4580388.268737
+  SIZE           8000 6000
+  SHAPEPATH      "/data/heatmap"
+  IMAGECOLOR     255 255 255</p>
+
+<p>  PROJECTION</p>
+
+<pre><code>"init=epsg:3857"   ##required
+</code></pre>
+
+<p>  END</p>
+
+<p>  LAYER # States polygon layer begins here</p>
+
+<pre><code>NAME         heatmap
+DATA         heatmap_3857
+STATUS       default
+TYPE         POLYGON
+
+CLASS
+  NAME "basic"
+  STYLE
+    COLOR        255 255 178
+    OUTLINECOLOR 255 255 178
+  END
+END
+</code></pre>
+
+<p>  END</p>
+
+<p>END
+```</p>
+
+<p>这些配置基本上都比较自解释，比如设置图片格式，图片大小，Shapefile的路径，图层的名称等，<strong>MapServer的文档在开源软件中来说，都算比较烂的</strong>，但是对于这些基本概念的解释还比较详尽，大家可以<a href="http://mapserver.org/documentation.html#documentation">去这里参考</a>。</p>
+
+<p>这里我们定义了一个图层，每个Map中可以定义多个图层（我们完成的最终效果图就是西安市的道路图和照片拍摄密度图两个图层的叠加）。</p>
+
+<p>这个配置绘制出来的地图是没有颜色差异的，全部都是<code>255 255 178</code>。不过MapServer的配置提供了很好的样式定义，比如我们可以定义这样的一些规则：</p>
+
+<ol>
+<li>如果密度为1，则设置颜色为淡黄</li>
+<li>如果密度在1-2,则设置为比淡黄红一点的颜色</li>
+<li>以此类推</li>
+</ol>
+
+
+<p>```
+  LAYER</p>
+
+<pre><code>NAME         heatmap
+DATA         heatmap_3857
+STATUS       default
+TYPE         POLYGON
+#CLASSITEM density
+
+CLASS
+  EXPRESSION ([density] = 1)
+  STYLE
+    COLOR        255 255 178
+    OUTLINECOLOR 255 255 178
+  END
+END
+
+CLASS
+  EXPRESSION ([density] &gt; 1 AND [density] &lt;= 2)
+  STYLE
+    COLOR        254 204 92
+    OUTLINECOLOR 254 204 92
+  END
+END
+
+CLASS
+  EXPRESSION ([density] &gt; 2 AND [density] &lt;= 3)
+  STYLE
+    COLOR        253 141 60
+    OUTLINECOLOR 253 141 60
+  END
+END
+
+CLASS
+  EXPRESSION ([density] &gt; 3 AND [density] &lt;= 10)
+  STYLE
+    COLOR        240 59 32
+    OUTLINECOLOR 240 59 32
+  END
+END
+
+CLASS
+  EXPRESSION ([density] &gt; 10 AND [density] &lt; 3438)
+  STYLE
+    COLOR        189 0 38
+    OUTLINECOLOR 189 0 38
+  END
+END
+</code></pre>
+
+<p>  END
+```</p>
+
+<p>这样我们的地图展现出来就会比较有层次感，而且通过颜色的加深，也能体现<code>热图</code>本身的含义。</p>
+
+<h4>其他部分</h4>
+
+<p>我们可以通过GDAL提供的工具来进行信息的查看，地图的裁剪等。</p>
+
+<p><code>``sh
+$ ogrinfo -al -so data/places-ive-been/places_heatmap.shp
+INFO: Open of</code>data/places-ive-been/places_heatmap.shp'</p>
+
+<pre><code>  using driver `ESRI Shapefile' successful.
+</code></pre>
+
+<p>Layer name: places_heatmap
+Geometry: Polygon
+Feature Count: 749
+Extent: (12076900.006201, 4006814.179729) - (12188333.391490, 4095610.692532)
+Layer SRS WKT:
+GEOGCS["GCS_WGS_1984",</p>
+
+<pre><code>DATUM["WGS_1984",
+    SPHEROID["WGS_84",6378137,298.257223563]],
+PRIMEM["Greenwich",0],
+UNIT["Degree",0.017453292519943295]]
+</code></pre>
+
+<p>density: Integer (10.0)
+```</p>
+
+<p>比如文件类型，文件中要素的类型（点，线，多边形），地图的边界，所使用的投影，以及矢量中包含的其他属性（比如此处的density）以及属性的类型。</p>
+
+<p>而很多时候我们需要完成对地图的裁剪，比如根据已有的places_heatmap.shp的边界从中国地图上裁出西安市部分：</p>
+
+<p><code>sh
+ogr2ogr -f "ESRI Shapefile" xian_roads_3857.shp roads_3857.shp \
+-clipsrc 12075400.005502 4002079.905314 12189633.392097 4097862.359632
+</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[搭建地图服务器（使用Mapnik）]]></title>
