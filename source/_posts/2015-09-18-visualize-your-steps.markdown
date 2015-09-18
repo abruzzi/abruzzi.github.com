@@ -9,19 +9,23 @@ categories:
 - Visualization
 ---
 
-### 最终在地图上的可视化
+### 可视化你的足迹
+
+数据可视化可以让读者以一种轻松的方式来消费数据，人类大脑在处理图形的速度是处理文本的`66,000`倍，这也是人们常常说的`一图胜千言`。在本文中，我们通过将日常中很容易收集到的数据，通过一系列的处理，并最终展现在地图上。这仅仅是GIS的一个很简单场景，但是我们可以看到，当空间数据和地图结合在一起时，可以在可视化上得到很好的效果，读者可以很容易从中获取信息。
 
 ![steps](/images/2015/09/viz-steps-resized.png)
 
-我们在本文中会制作一个这样的地图，图中绿色的线是城市中的道路，小六边形表示照片拍摄地。颜色表示当时当地拍摄照片的密度，红色表示密集，黄色为稀疏。可以看到，我的活动区域主要集中在左下角，那是公司所在地和我的住处。
+我们在本文中会制作一个这样的地图，图中灰色的线是城市中的道路，小六边形表示照片拍摄地。颜色表示当时当地拍摄照片的密度，红色表示密集，黄色为稀疏。可以看到，我的活动区域主要集中在左下角，那是公司所在地和我的住处，:)
+
+要展现数据，首先需要采集数据，不过这些已经在日常生活中被不自觉的被记录下来了：
 
 #### 数据来源
 
-我的照片一般都通过Mac自带的Photos管理（前身iPhoto），手机里照片会定期同步上去。如果你开启了iPhone相机中的定位功能，拍照的时候，iPhone会自动把当前的地理信息写入到图片的元数据中，这样我们就可以使用这些数据来做进一步的分析了。
+如果你开启了iPhone相机中的定位功能，拍照的时候，iPhone会自动把当前的地理信息写入到图片的元数据中，这样我们就可以使用这些数据来做进一步的分析了。
 
 我在去年学习OpenLayers的时候已经玩过一些简单的[足迹可视化](http://icodeit.org/placesihavebeen)，另外还有一篇[全球地震信息的可视化](http://www.infoq.com/cn/articles/visualization-of-the-global-seismic-system)，但是仅仅是展示矢量信息，并没有深入，而且都是一些前端的JavaScript的代码。最近又在重新整理之前的GIS知识，重新把这个作为例子来练手。当然，这次会涉及一些**地图编辑**，**空间计算**的内容。
 
-老版本的iPhoto用的是XML文件来存储照片的[EXIF数据](https://en.wikipedia.org/wiki/Exchangeable_image_file_format)，新的Photos的实现里，数据被存储在了好几个SQLite数据库文件中，不过问题不大，我们只需要写一点Ruby代码就可以将数据转化为标准格式，这里使用GeoJSON，GeoJSON既可以方便人类阅读，也可以很方便的导入到PostGIS或者直接在客户端展现。
+我的照片一般都通过Mac自带的Photos管理（前身iPhoto），手机里照片会定期同步上去。老版本的iPhoto用的是XML文件来存储照片的[EXIF数据](https://en.wikipedia.org/wiki/Exchangeable_image_file_format)，新的Photos的实现里，数据被存储在了好几个SQLite数据库文件中，不过问题不大，我们只需要写一点Ruby代码就可以将数据转化为标准格式，这里使用GeoJSON，GeoJSON既可以方便人类阅读，也可以很方便的导入到PostGIS或者直接在客户端展现。
 
 ### 实现步骤
 
@@ -268,36 +272,8 @@ END
 
 这样我们的地图展现出来就会比较有层次感，而且通过颜色的加深，也能体现`热图`本身的含义。
 
+如果
 
+### 总结
 
-#### 其他部分
-
-我们可以通过GDAL提供的工具来进行信息的查看，地图的裁剪等。
-
-```sh
-$ ogrinfo -al -so data/places-ive-been/places_heatmap.shp 
-INFO: Open of `data/places-ive-been/places_heatmap.shp'
-      using driver `ESRI Shapefile' successful.
-
-Layer name: places_heatmap
-Geometry: Polygon
-Feature Count: 749
-Extent: (12076900.006201, 4006814.179729) - (12188333.391490, 4095610.692532)
-Layer SRS WKT:
-GEOGCS["GCS_WGS_1984",
-    DATUM["WGS_1984",
-        SPHEROID["WGS_84",6378137,298.257223563]],
-    PRIMEM["Greenwich",0],
-    UNIT["Degree",0.017453292519943295]]
-density: Integer (10.0)
-```
-
-比如文件类型，文件中要素的类型（点，线，多边形），地图的边界，所使用的投影，以及矢量中包含的其他属性（比如此处的density）以及属性的类型。
-
-而很多时候我们需要完成对地图的裁剪，比如根据已有的places_heatmap.shp的边界从中国地图上裁出西安市部分：
-
-```sh
-ogr2ogr -f "ESRI Shapefile" xian_roads_3857.shp roads_3857.shp \
--clipsrc 12075400.005502 4002079.905314 12189633.392097 4097862.359632
-```
-
+我们通过使用一些开源工具（MapServer，QGis，PostGIS，GDAL等），构建出一个基于GIS的数据可视化框架。在这个stack上，我们可以很容易的将一些其他数据也通过可视化的方式展现出来（公用自行车站点分布，出租车分布等等）。MapServer可以发布标准的WMS服务，因此可以很好的和客户端框架集成，从而带来更加友好的用户体验。
