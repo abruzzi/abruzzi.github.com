@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "可视化你的足迹 - 服务器duan"
+title: "可视化你的足迹 - 服务器端"
 date: 2015-09-18 13:36
 comments: true
 categories: 
