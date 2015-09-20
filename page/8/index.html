@@ -9,7 +9,8 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Generate the public and private key pair This step is quite strightforward, just generate the keys by using ssh-keygen: $ ssh-keygen #specify the key &hellip;">
+  <meta name="description" content="There is a common scenario: we have lots of local commits related with a certain feature or a big
+bug, after all the works done, we want to combine &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +83,132 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/11/git-squash-localcommits/">Git Squash Localcommits</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-11-07T10:54:00+11:00" pubdate data-updated="true">Nov 7<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>There is a common scenario: we have lots of local commits related with a certain feature or a big
+bug, after all the works done, we want to combine them together. The git provides a handy way to do
+this job: <em>git rebase</em></p>
+
+<p>I&#8217;ll take the following case as an example, say, I&#8217;ve got 3 commits locally and they are all about
+a restyling of some page.</p>
+
+<p><code>$ git st</code></p>
+
+<pre><code># On branch master
+# Your branch is ahead of 'origin/master' by 3 commits.
+#
+nothing to commit (working directory clean)
+</code></pre>
+
+<p>Details:</p>
+
+<p><code>$ git log</code></p>
+
+<pre><code>commit 4e7e1ac7e7e77ae4404843ed96b9f881f969b836
+Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
+Date:   Tue Nov 6 16:49:59 2012 +0800
+
+    RCA-410 new search form style only apply to search result page.
+
+commit 385cec1f22f432c03ea96b5c927f89b3747e82fb
+Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
+Date:   Tue Nov 6 14:21:50 2012 +0800
+
+    RCA-410 re-style search form area.
+
+commit b9694db0b0fb100bfa5f967480188bf05ad538b4
+Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
+Date:   Tue Nov 6 10:33:07 2012 +0800
+
+    RCA-410 restyling search form.
+
+commit 866375c7d805e19f963319fb558f1b16f7daf15b
+Author: John abruzzi &lt;juntao.qiu@gmail.com&gt;
+Date:   Mon Nov 5 14:06:16 2012 +0800
+
+    RCA-625. Add the embeded video feature toggle into casa feature-config file.
+</code></pre>
+
+<p>I have 3 commits after the very commit <em>866375c7d805e19f963319fb558f1b16f7daf15b</em>, and then I&#8217;ll use
+rebase in interactive mode, by the option <em>-i</em> appended.</p>
+
+<p><code>$ git rebase -i HEAD~3</code></p>
+
+<pre><code>pick b9694db0b RCA-410 restyling search form. Pair: Yameng &amp; Juntao
+pick 385cec1f2 RCA-410 re-style search form area. pair:juntao
+pick 4e7e1ac7e RCA-410 new search form style only apply to search result page. pair:Juntao
+</code></pre>
+
+<p>There are a few command provided, I&#8217;ll use <em>squash</em> by now, since I want to squash the following 2 commits
+into the first one, so simply change the <em>pick</em> into <em>squash</em></p>
+
+<pre><code>pick b9694db0b RCA-410 restyling search form. Pair: Yameng &amp; Juntao
+squash 385cec1f2 RCA-410 re-style search form area. pair:juntao
+squash 4e7e1ac7e RCA-410 new search form style only apply to search result page. pair:Juntao
+</code></pre>
+
+<p>After that, save the popuped editor(vi in my local machinel), and change the generated comments message into</p>
+
+<pre><code>RCA-410 restyling search form, applied to search results and pdp. Pair: Yameng &amp; Juntao
+</code></pre>
+
+<p>and then save and quit the editor, we&#8217;ll see the following message:</p>
+
+<p><code>$ git st</code></p>
+
+<pre><code># On branch master
+# Your branch is ahead of 'origin/master' by 1 commit.
+#
+nothing to commit (working directory clean)
+</code></pre>
+
+<p>And the history is more clear like this:
+<code>$ git log</code></p>
+
+<pre><code>commit 8ff8a0e015b6ebe7bcd5434f25ed789dee2d5f1e
+Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
+Date:   Tue Nov 6 10:33:07 2012 +0800
+
+    RCA-410 restyling search form, applied to search results and pdp.
+
+commit 866375c7d805e19f963319fb558f1b16f7daf15b
+Author: John abruzzi &lt;juntao.qiu@gmail.com&gt;
+Date:   Mon Nov 5 14:06:16 2012 +0800
+    RCA-625. Add the embeded video feature toggle into casa feature-config file.
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -975,73 +1102,6 @@ bundle install
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/08/thoughtworks-immersion-day-1/">Thoughtworks Immersion Day 1</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-08-01T00:00:00+10:00" pubdate data-updated="true">Aug 1<span>st</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><p>进入<a href="http://www.thoughtworks.com/">Thoughtworks</a>已经有差不多4个月了，对于TDD，敏捷开发等有了一点基本的，感性的认识，也知道了一些简单的实践，但是知识非常的不系统，很离散，很破碎。</p></p>
-
-<p><p><a href="http://www.thoughtworks.com/">Thoughtworks</a>为社招的，有一定经验的员工提供一种内部培训，名叫TWI(对应的，对于毕业生，有一次为期6周的TWU(ThoughtWorks University)，地点在印度)，初衷是让已经在公司工作了一段时间的同事更好的理解公司的文化(当然，也可以吸收这些在其他公司工作过的同事带进来的不同的文化)。TWI培训主要是针对敏捷开发实践的，当然也有一些公司的历史，文化等的介绍。</p></p>
-
-<p><p><a href="http://abruzzi.github.com/images/2012/08/2012-07-25-17.29.371.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="2012-07-25 17.29.37" border="0" alt="2012-07-25 17.29.37" src="http://abruzzi.github.com/images/2012/08/2012-07-25-17.29.37_thumb1.jpg" width="644" height="484" /></a></p></p>
-
-<p><p><a href="http://www.thoughtworks.com/">Thoughtworks</a>是一个非常尊重dev的公司，这一点可以追溯到公司创建之初，当时公司宣传的理念是“university but pay”，就很明确的表达出了公司的一些理念：这里的层级结构像在大学中一样平坦，大家在这里获得并分享知识，一起成长，但是又有工资。Martin Fowler有篇关于<a href="http://www.martinfowler.com/bliki/RoysSocialExperiment.html">Thoughtworks是什么</a>的文章(事实上，我最初也正是被这篇文章所吸引，而产生加入<a href="http://www.thoughtworks.com/">Thoughtworks</a>的想法的)，非常有意思。</p></p>
-
-<p><p>历史上，当现实与<a href="http://www.thoughtworks.com/">Thoughtworks</a>尊崇的文化有冲突时，如何平衡呢？Thoughtworks的一贯做法是：不向损害文化的现实妥协，哪怕会因此而付出很大的代价。事实上，每个公司都会在不同程度上尊重自己的开发人员(毕竟，他们是为你工作的)，但是很难见到哪个公司做的比Thoughtworks更好。当然，每个人理解的尊重的方式都可能不同的，我自己比较认可而且Thoughtworks也提供给我的方式是这样的：</p></p>
-
-<p><ol> <li>你可以专心致志的做开发  </li><li>你可以自由的表达自己的想法，和别人讨论设计  </li><li>公司提供了宽松，开放的环境，鼓励交流  </li><li>有很多优秀的开发人员在你周围，你可以随意与他们讨论  </li><li>软硬件都是为了支持开发团队而展开的  </li><li>虽然你是开发人员，你可以take更多的responsibility，比如QA/BA等  </li><li>有很多有意思的和不那么有意思的项目，鼓励学习更多的技能  </li><li>没有常见的“死领导”，肩膀上很轻松  </li><li>鼓励你分享自己的知识</li></ol></p>
-
-<p><p>事实上，对于Thoughtworks来说，员工永远是其最为宝贵的资产，办公室，计算机，玻璃墙，所有都是可以替代的，唯独这些自称为Thoughtworker的，才是最宝贵并且不可替代的。</p></p>
-
-<p><p>TWI的组织者也显然为这种内部培训投入了很多的精力和实践，使得我们的学习过程一直处于轻松，活跃的气氛中，可以说是我参加过最精彩的培训，做到了真正的寓教于乐。</p></p>
-
-<p><p><a href="http://abruzzi.github.com/images/2012/08/2012-07-25-15.40.121.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="2012-07-25 15.40.12" border="0" alt="2012-07-25 15.40.12" src="http://abruzzi.github.com/images/2012/08/2012-07-25-15.40.12_thumb.jpg" width="644" height="484" /></a></p></p>
-
-<p><p>言归正传，什么是敏捷呢？简而言之，就是敏捷地进行软件开发。如何做到“敏捷地”呢？有很多不同的理论支持，这些理论也并非凭空产生，是通过大量的工程实践而总结出来的经验，事实上，敏捷开发是由很多的方法论组成的集合，敏捷宣言中提到的：</p></p>
-
-<p><ol> <li>个体与交互 over 过程和工具  </li><li>可以工作的软件 over 面面俱到的文档  </li><li>客户合作 over 合同谈判  </li><li>响应变化 over 遵循计划</li></ol></p>
-
-<p><p>(虽然右边的项也有价值，但是我们认为左边的项有更大的价值)</p></p>
-
-<p><p>可以看到，这些都是比较common的一些原则，并没有规定注入如TDD，结对之类的实践。Thoughtworks为什么要使用这些实践呢？因为这些实践是我们在实际项目中，觉得行之有效：能保证软件质量和开发效率，能帮助团队迅速成长，对公司和个人都很有帮助。与其他所有的学习规律一样：</p></p>
-
-<p><ol> <li>首先follow一种实践，并身体力行  </li><li>与实际问题结合，发现实践可能的不足  </li><li>改进这种实践，并将其分享</li></ol></p>
-
-<p><p>外界对于<a href="http://www.thoughtworks.com/">Thoughtworks</a>有一些传言，经常会给不熟悉的人这样一种错觉：一群不会编程，只是死记硬背下一些方法论的年轻人，到处招摇撞骗。事实上，Thoughtworker们是我见过的，最具活力，也最热心于钻研技术，热爱分享的年轻人。而且我没有遇到任何一个同事是将敏捷奉为圭臬，或者将其上升到不容置疑的高度，大家都会遵守一些原则，也会采用一些实践，但是不会轻易相信那就是最佳的方式。</p></p>
-
-<p><p>可能最后一段看着像是在写广告，那就请将他当成广告吧。给那些曾经像我一样，热爱技术却感觉希望渺茫，每天做一些平淡而无挑战的工作，但是又渴望改变，渴望和更多优秀的同好们一起工作的人们的一个广告。她可能并非最好的选择，但是她绝对是一个值得一试的好选择。</p>
-</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/9/">&larr; Older</a>
@@ -1059,7 +1119,11 @@ bundle install
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/2015/09/visualize-your-steps/">可视化你的足迹</a>
+        <a href="/2015/09/show-your-map-in-browser/">可视化你的足迹 - Web端</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/09/visualize-your-steps/">可视化你的足迹 - 服务器duan</a>
       </li>
     
       <li class="post">
@@ -1072,10 +1136,6 @@ bundle install
     
       <li class="post">
         <a href="/2015/07/is-project-manager-a-fool/">项目经理是大傻B吗？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/06/whats-next-after-separate-frontend-and-backend/">前后端分离了，然后呢？</a>
       </li>
     
   </ul>

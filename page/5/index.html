@@ -9,8 +9,8 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Grunt的几个常用插件 grunt-karma 简介 grunt-karma是一个karma的Grunt插件，上一篇文章中已经介绍了karma的基本用法。这里简单介绍如何在Grunt中使用karma。 首先需要安装grunt-karma插件： 1
-$ npm install grunt- &hellip;">
+  <meta name="description" content="Bower简介 Bower安装及简单配置 Bower是一个基于Node.js的依赖管理工具，它是一个npm的包，因此安装十分简单，由于我们需要在所有项目中都可以使用bower，因此将其安装在全局目录下： 1
+$ npm install -g bower 安装完成之后，可以通过bower &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -83,6 +83,124 @@ $ npm install grunt- &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/10/bower-as-dependencies-manager/">Bower as Dependencies Manager</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-09T16:38:00+11:00" pubdate data-updated="true">Oct 9<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Bower简介</h3>
+
+<h4>Bower安装及简单配置</h4>
+
+<p><a href="http://bower.io/">Bower</a>是一个基于Node.js的依赖管理工具，它是一个npm的包，因此安装十分简单，由于我们需要在所有项目中都可以使用bower，因此将其安装在全局目录下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g bower</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装完成之后，可以通过<code>bower search</code>来搜索需要的包，比如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ bower search underscore</span></code></pre></td></tr></table></div></figure>
+
+
+<p>典型的应用场景可能会是这样的，新建一个项目目录，然后运行<code>bower init</code>：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ mkdir -p listing
+</span><span class='line'>$ cd listing
+</span><span class='line'>$ bower init</span></code></pre></td></tr></table></div></figure>
+
+
+<p>和Grunt类似，bower会问你一些问题，比如项目名称，项目入口点，作者信息之类：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name": "listing",
+</span><span class='line'>  "version": "0.0.0",
+</span><span class='line'>  "authors": [
+</span><span class='line'>    "Qiu Juntao &lt;juntao.qiu@gmail.com&gt;"
+</span><span class='line'>  ],
+</span><span class='line'>  "main": "src/app.js",
+</span><span class='line'>  "license": "MIT",
+</span><span class='line'>  "ignore": [
+</span><span class='line'>    "**/.*",
+</span><span class='line'>    "node_modules",
+</span><span class='line'>    "bower_components",
+</span><span class='line'>    "test",
+</span><span class='line'>    "tests"
+</span><span class='line'>  ]
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>比如我们需要安装jQuery和underscore.js，则很简单的运行<code>bower install</code>命令即可：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ bower install jquery
+</span><span class='line'>$ bower install underscore</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果需要团队中的其他成员可以在本地恢复我们的环境，需要在bower.json中指定<code>dependencies</code>小节：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  "dependencies": {
+</span><span class='line'>    "jquery": "~2.0.3",
+</span><span class='line'>    "underscore": "~1.5.2"
+</span><span class='line'>  }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所有的JavaScript包都被安装到了本地的<code>bower_components</code>目录下，如果有了bower.json文件，那么即使本地的<code>bower_components</code>目录不存在，或者其中的包内容过期了，那么很容易用<code>bower install</code>将其更新。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1852,147 +1970,6 @@ $ npm install grunt- &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/05/create-a-alfred-extension-for-create-sinatra-project/">Alfred简介及Alfred扩展编写</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-18T20:04:00+10:00" pubdate data-updated="true">May 18<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Alfred简介</h3>
-
-<p><a href="http://www.alfredapp.com/">Alfred</a>是Mac下的一个小工具，可以极大的提高使用计算机的效率。Alfred提供非常丰富的功能集，比如：</p>
-
-<ol>
-<li>基本的文件/目录查找功能</li>
-<li>应用程序加载器</li>
-<li>快速的搜索（google，wikipedia）</li>
-</ol>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/05/alfred-find.png" alt="使用Alfred搜索" /></p>
-
-<h4>powerpack</h4>
-
-<p>Alfred本身是免费的，但是一些高级的功能，如：</p>
-
-<ol>
-<li>自定义扩展（<strong>非常有用</strong>）</li>
-<li>剪贴板栈/代码片段管理（<strong>非常有用</strong>）</li>
-<li>iTunes控制</li>
-<li>近期访过的文档</li>
-</ol>
-
-
-<p>提供在<a href="http://www.alfredapp.com/powerpack/">powerpack</a>中，这个功能是要收费的，不过个人觉得绝对的物超所值。这些功能可以极大的提高我对计算机的使用效率，而且剪贴板栈功能可以节省我很多的时间。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/05/alfred-clipboard.png" alt="image" /></p>
-
-<h3>扩展编写</h3>
-
-<p>经常会使用<a href="http://www.sinatrarb.com/">sinatra</a>编写一些简单的Web应用程序，以用作一些showcase和应用程序的原型搭建。但是由于sinatra并不是一个框架，并不会像rails那样自动生成目录结构等，而每个sinatra应用的目录结构和文件依赖都非常相似，因此完全可以考虑将这个过程自动化。</p>
-
-<p>基本思路是：</p>
-
-<ol>
-<li>定义一个目录结构的模板</li>
-<li>每次开始一个sinatra工程时，将个模板目录拷贝到新的工程下</li>
-<li>一些库依赖的下载（bundle install以及JavaScript库的下载）</li>
-<li>在编辑器中打开这个新的目录</li>
-</ol>
-
-
-<h4>一个sinatra工程的原型</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ pwd
-</span><span class='line'>/Users/twer/develop/templates/sinatra
-</span><span class='line'>
-</span><span class='line'>$ tree -a
-</span><span class='line'>.
-</span><span class='line'>├── .rvmrc
-</span><span class='line'>├── Gemfile
-</span><span class='line'>├── app.rb
-</span><span class='line'>├── config.ru
-</span><span class='line'>├── public
-</span><span class='line'>│   ├── css
-</span><span class='line'>│   └── scripts
-</span><span class='line'>│       ├── app.js
-</span><span class='line'>│       └── libs
-</span><span class='line'>└── views</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Extension shell script</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># create the project folder
-</span><span class='line'>cd ~/develop/ruby && mkdir -p {query} && cd {query}
-</span><span class='line'>
-</span><span class='line'># cp info to folder
-</span><span class='line'>cp -R ~/develop/templates/sinatra/ .
-</span><span class='line'>
-</span><span class='line'># grab jquery
-</span><span class='line'>curl http://code.jquery.com/jquery.js &gt; public/scripts/libs/jquery.js
-</span><span class='line'>
-</span><span class='line'># open the project
-</span><span class='line'>/Applications/MacVim.app/Contents/MacOS/Vim -g .</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/05/sinatra-ext-result.png" alt="image" /></p>
-
-<p>执行完之后，<code>~/develop/ruby</code>下会生成一个新的目录，即<code>note</code>，这个目录中即为一个可以直接开始开发sinatra应用的工作目录了。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/6/">&larr; Older</a>
@@ -2010,7 +1987,11 @@ $ npm install grunt- &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/2015/09/visualize-your-steps/">可视化你的足迹</a>
+        <a href="/2015/09/show-your-map-in-browser/">可视化你的足迹 - Web端</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/09/visualize-your-steps/">可视化你的足迹 - 服务器duan</a>
       </li>
     
       <li class="post">
@@ -2023,10 +2004,6 @@ $ npm install grunt- &hellip;">
     
       <li class="post">
         <a href="/2015/07/is-project-manager-a-fool/">项目经理是大傻B吗？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/06/whats-next-after-separate-frontend-and-backend/">前后端分离了，然后呢？</a>
       </li>
     
   </ul>

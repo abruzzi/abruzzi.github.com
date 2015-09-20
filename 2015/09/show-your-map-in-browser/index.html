@@ -1,0 +1,425 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>可视化你的足迹 - Web端 - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="可视化你的足迹 上一篇文章讲述了如何在服务器端通过MapServer来生成地图。虽然MapServer发布出来的地图是标准的WMS服务，但是我们还需要一个客户端程序来展现。我们在上一篇中，通过一些小脚本将照片中的地理信息抽取到了一个GeoJSON文件中。GeoJSON是一种向量图层格式， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2015/09/show-your-map-in-browser">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">文章</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="/jsccp">JavaScript核心概念及实践</a></li>
+  <li><a href="/lwweb">轻量级Web应用开发</a></li>
+  <li><a href="/3p3w">三周三页面</a></li>
+  <li><a href="/about-me">关于我</a></li>
+</ul>
+
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">可视化你的足迹 - Web端</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-20T22:44:00+10:00" pubdate data-updated="true">Sep 20<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>可视化你的足迹</h3>
+
+<p><a href="http://icodeit.org/2015/09/visualize-your-steps/">上一篇文章</a>讲述了如何在服务器端通过MapServer来生成地图。虽然MapServer发布出来的地图是标准的<a href="https://en.wikipedia.org/wiki/Web_Map_Service">WMS</a>服务，但是我们还需要一个客户端程序来展现。我们在上一篇中，通过一些小脚本将照片中的地理信息抽取到了一个<code>GeoJSON</code>文件中。<code>GeoJSON</code>是一种向量图层格式，向量数据可以在服务器端绘制成栅格图，也可以直接在客户端canvas上直接绘制出来。当数据量比较大的时候，我们更倾向于在服务器端绘制，这样只需要在网络上传输一张图片（而且可以做缓存）。大数据量的客户端绘制在性能上会比较差（当然现在已经有了一些新的解决方案，我们后续再细谈），特别是有用户交互时，会出现明显的卡顿。</p>
+
+<p>在本文中，我将分别使用客户端和服务端绘制的两种方式来展现两种不同的地图：使用<a href="http://openlayers.org/">OpenLayers</a>直接在客户端绘制矢量图，以及使用<a href="http://leafletjs.com/">Leaflet</a>来展示在服务器端绘制好的栅格图层。</p>
+
+<h4>使用OpenLayers3展示GeoJSON</h4>
+
+<p>展示GeoJSON非常容易，也是一种比较直接的方式，只需要将GeoJSON文件发送到前端，然后直接通过客户端渲染即可。使用<code>OpenLayers3</code>的API，代码会是这样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">getJSON</span><span class="p">(</span><span class="s1">&#39;data/places-ive-been-3857.json&#39;</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">geojson</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">vectorSource</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">Vector</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">features</span><span class="o">:</span> <span class="p">(</span><span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">format</span><span class="p">.</span><span class="nx">GeoJSON</span><span class="p">()).</span><span class="nx">readFeatures</span><span class="p">(</span><span class="nx">geojson</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>客户端发送一个<code>ajax</code>请求，得到<code>GeoJSON</code>数据之后，将其转换成一个<code>向量</code>类型。<code>OpenLayers</code>定义了很多中格式读取器，比如KML的，GML的，GeoJSON的等等。然后我们可以定义一个样式函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'>  <span class="kd">var</span> <span class="nx">image</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">Circle</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">radius</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">fill</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">stroke</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">Stroke</span><span class="p">({</span><span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;#f04e98&#39;</span><span class="p">,</span> <span class="nx">width</span><span class="o">:</span> <span class="mi">1</span><span class="p">})</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">styles</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s1">&#39;Point&#39;</span><span class="o">:</span> <span class="p">[</span><span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">Style</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">image</span><span class="o">:</span> <span class="nx">image</span>
+</span><span class='line'>    <span class="p">})]</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">styleFunction</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">feature</span><span class="p">,</span> <span class="nx">resolution</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">styles</span><span class="p">[</span><span class="nx">feature</span><span class="p">.</span><span class="nx">getGeometry</span><span class="p">().</span><span class="nx">getType</span><span class="p">()];</span>
+</span><span class='line'>  <span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个函数会应用到向量集的<code>Point</code>类型，将其绘制为一个红色，半径为5像素的圆圈。有了数据和样式，我们再来创建一个新的向量，然后生成一个新的图层：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">vectorLayer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">layer</span><span class="p">.</span><span class="nx">Vector</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">source</span><span class="o">:</span> <span class="nx">vectorSource</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">style</span><span class="o">:</span> <span class="nx">styleFunction</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>创建地图，为了方便对照，我们加入了另外一个<code>ol.source.Stamen</code>图层作为参照。这样当缩放到较小的区域时，我们可以清楚的知道当前的点和地物的对照，比如道路名称，建筑名称等，从而确定目前的位置。这是一种非常常见的GIS应用的场景，但是需要注意的是，不同的图层需要有相同的空间映射方式，OpenLayers默认才用EPSG:3857，所以需要两者都采用该投影：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">Map</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">layers</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>    <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">layer</span><span class="p">.</span><span class="nx">Tile</span><span class="p">({</span>
+</span><span class='line'>      <span class="nx">source</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">Stamen</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">layer</span><span class="o">:</span> <span class="s1">&#39;toner&#39;</span>
+</span><span class='line'>      <span class="p">})</span>
+</span><span class='line'>    <span class="p">}),</span>
+</span><span class='line'>    <span class="nx">vectorLayer</span>
+</span><span class='line'>  <span class="p">],</span>
+</span><span class='line'>  <span class="nx">target</span><span class="o">:</span> <span class="s1">&#39;map&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">controls</span><span class="o">:</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">control</span><span class="p">.</span><span class="nx">defaults</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">attributionOptions</span><span class="o">:</span> <span class="cm">/** @type {olx.control.AttributionOptions} */</span> <span class="p">({</span>
+</span><span class='line'>      <span class="nx">collapsible</span><span class="o">:</span> <span class="kc">false</span>
+</span><span class='line'>    <span class="p">})</span>
+</span><span class='line'>  <span class="p">}),</span>
+</span><span class='line'>  <span class="nx">view</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">View</span><span class="p">({</span>
+</span><span class='line'>    <span class="nx">center</span><span class="o">:</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">proj</span><span class="p">.</span><span class="nx">transform</span><span class="p">([</span><span class="mf">108.87316667</span><span class="p">,</span> <span class="mf">34.19216667</span><span class="p">],</span> <span class="s1">&#39;EPSG:4326&#39;</span><span class="p">,</span> <span class="s1">&#39;EPSG:3857&#39;</span><span class="p">),</span>
+</span><span class='line'>    <span class="nx">zoom</span><span class="o">:</span> <span class="mi">2</span>
+</span><span class='line'>  <span class="p">})</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>创建地图时，我们可以通过<code>layers</code>来指定多个图层。在OpenLayers中，有很多类型的<code>Tile</code>，<code>Stamen</code>是一个专注于做<a href="http://maps.stamen.com/#watercolor/12/37.7706/-122.3782">非常漂亮的地图的组织</a>。</p>
+
+<p>在view中，我们需要将经纬度（EPSG:4326）转换为墨卡托投影（EPSG:3857）。这样我们就可以得到一个很漂亮的地图了：</p>
+
+<p><img src="/images/2015/09/toner-resized.png" alt="geojson toner" /></p>
+
+<h4>使用Leaflet展示栅格数据</h4>
+
+<p>我们在上一篇中已经生成了MapServer的WMS地图，这里可以用<a href="http://leafletjs.com/">Leaflet</a>来消费该地图（使用OpenLayers也可以消费，不过V3似乎在和WMS集成时有些问题，我此处使用了<a href="http://leafletjs.com/">Leaflet</a>）。</p>
+
+<p>首先创建一个地图：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="nx">L</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">).</span><span class="nx">setView</span><span class="p">([</span><span class="mi">34</span><span class="p">,</span> <span class="mi">108</span><span class="p">],</span> <span class="mi">10</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后就可以直接接入我们在上一篇中生成的地图：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'>  <span class="nx">L</span><span class="p">.</span><span class="nx">tileLayer</span><span class="p">.</span><span class="nx">wms</span><span class="p">(</span><span class="s2">&quot;http://localhost:9999/cgi-bin/mapserv?map=/data/xian.map&quot;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">layers</span><span class="o">:</span> <span class="s1">&#39;places&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nx">format</span><span class="o">:</span> <span class="s1">&#39;image/png&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nx">transparent</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>            <span class="nx">maxZoom</span><span class="o">:</span> <span class="mi">16</span><span class="p">,</span>
+</span><span class='line'>            <span class="nx">minZoom</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>        <span class="p">}).</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>便于对照，我们先添加一个底图：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">L</span><span class="p">.</span><span class="nx">tileLayer</span><span class="p">(</span> <span class="s1">&#39;http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">attribution</span><span class="o">:</span> <span class="s1">&#39;&amp;copy; &lt;a href=&quot;http://osm.org/copyright&quot; title=&quot;OpenStreetMap&quot; target=&quot;_blank&quot;&gt;OpenStreetMap&lt;/a&gt; contributors | Tiles Courtesy of &lt;a href=&quot;http://www.mapquest.com/&quot; title=&quot;MapQuest&quot; target=&quot;_blank&quot;&gt;MapQuest&lt;/a&gt; &lt;img src=&quot;http://developer.mapquest.com/content/osm/mq_logo.png&quot; width=&quot;16&quot; height=&quot;16&quot;&gt;&#39;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">subdomains</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;otile1&#39;</span><span class="p">,</span><span class="s1">&#39;otile2&#39;</span><span class="p">,</span><span class="s1">&#39;otile3&#39;</span><span class="p">,</span><span class="s1">&#39;otile4&#39;</span><span class="p">],</span>
+</span><span class='line'>      <span class="nx">detectRetina</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'>  <span class="p">}).</span><span class="nx">addTo</span><span class="p">(</span> <span class="nx">map</span> <span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样就可以看到最终的地图：</p>
+
+<p><img src="/images/2015/09/xian-leaflet-resized.png" alt="xian leaflet" /></p>
+
+<p>使用Web界面，我们可以自由的拖拽，移动，并且方便的放大缩小。如果观察浏览器的网络标签，在放大地图时，可以看到很多的WMS请求：</p>
+
+<p><img src="/images/2015/09/wms-requests-resized.png" alt="xian leaflet" /></p>
+
+<h4>其他</h4>
+
+<p>如果你对代码感兴趣，可以参看<a href="https://github.com/abruzzi/places-ive-been">这个repo</a>。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-20T22:44:00+10:00" pubdate data-updated="true">Sep 20<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/data/'>Data</a>, <a class='category' href='/category/gis/'>GIS</a>, <a class='category' href='/category/visualization/'>Visualization</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2015/09/visualize-your-steps/" title="Previous Post: 可视化你的足迹 - 服务器duan">&laquo; 可视化你的足迹 - 服务器duan</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2015/09/show-your-map-in-browser/">可视化你的足迹 - Web端</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/09/visualize-your-steps/">可视化你的足迹 - 服务器duan</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/08/how-to-write-a-book/">如何写一本书？</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/08/how-to-make-you-idea-come-true/">如何快速发布你的点子？</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/07/is-project-manager-a-fool/">项目经理是大傻B吗？</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2015/09/show-your-map-in-browser/';
+        var disqus_url = 'http://abruzzi.github.com/2015/09/show-your-map-in-browser/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

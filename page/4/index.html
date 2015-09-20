@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="OpenLayers 使用OpenLayers可以很容易的搭建基于Web的GIS系统，OpenLayers支持不同的数据源(符合WMS协议的服务器，Google Maps API, Bing Maps，KML以及GeoJSON等等)。通过将不同的数据源的数据整合， &hellip;">
+  <meta name="description" content="CGI的一些背景 Web在设计之初只是可以提供静态内容，用于诸如文档分享，论文引用这样的内容。但是很快人们就不满足于静态的内容了，根据UNIX系统的哲学，人们倾向于让不同的应用程序通过已有的机制（进程间通信如管道，UNIX域socket，以及TCP/IPsocket）连接起来。 在Web服务器， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,274 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2014/04/how-web-works-cgi/">Web是怎么工作的: CGI脚本</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-20T19:22:00+10:00" pubdate data-updated="true">Apr 20<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>CGI的一些背景</h4>
+
+<p>Web在设计之初只是可以提供静态内容，用于诸如文档分享，论文引用这样的内容。但是很快人们就不满足于静态的内容了，根据UNIX系统的哲学，人们倾向于让不同的应用程序通过已有的机制（进程间通信如管道，UNIX域socket，以及TCP/IPsocket）连接起来。</p>
+
+<p>在Web服务器，诸如Apache httpd中加入与外部应用程序的通信接口就显得非常自然了。<a href="http://en.wikipedia.org/wiki/Common_Gateway_Interface">CGI(Common Gateway Interface)</a>即是在这种背景下被发明的。</p>
+
+<p>基本来说，CGI可以是任何的可执行程序，可以是Shell脚本，二进制应用，或者其他的脚本（Python脚本，Ruby脚本等）。CGI的基本流程是这样：</p>
+
+<ol>
+<li>Apache接收到客户端的请求</li>
+<li>通过传统的fork-exec机制启动外部应用程序（cgi程序）</li>
+<li>将客户端的请求数据通过环境变量和重定向发送给外部应用（cgi程序）</li>
+<li>将cgi程序产生的输出写回给客户端（浏览器）</li>
+<li>停止cgi程序（kill）</li>
+</ol>
+
+
+<p><img src="/images/2014/04/cgi.png" alt="image" /></p>
+
+<h4>配置Apache支持CGI</h4>
+
+<p>本文的所有示例都是在Mac OSX环境下编写和实验。</p>
+
+<p>先创建一个cgi的运行目录<code>/Users/jtqiu/Sites/cgi-bin/</code>，然后创建一个空的文件<code>echo.cgi</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>mkdir -p /Users/jtqiu/Sites/cgi-bin/
+</span><span class='line'><span class="nv">$ </span>touch echo.cgi
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在这个文件中，添加一小段python代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/env python</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&quot;Content-Type: text/html</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&quot;&lt;b&gt;Hello, World&lt;/b&gt;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改文件的执行权限：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>chmod +x echo.cgi
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这段python代码并无特别，如果在shell运行这个脚本，可以得到：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>Content-Type: text/html
+</span><span class='line'>
+</span><span class='line'>&lt;b&gt;Hello, World&lt;/b&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个可执行文件将作为我们的第一个CGI脚本，完成了这一步，我们需要配置Apache来支持CGI，首先，在目录<code>/etc/apache2/users/</code>中创建一个文件，文件名就是你的用户名称，如<code>jtqiu.conf</code>。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>sudo vi /etc/apache2/users/jtqiu.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>添加以下配置，其中<code>/Users/jtqiu/Sites/cgi-bin/</code>目录就是所有cgi脚本所在的目录，在次配置中<code>AddHandler cgi-script .cgi</code>表示为所有后缀为cgi的添加<code>cgi-script</code>的<code>Handler</code>。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Directory</span> <span class="err">&quot;/Users/jtqiu/Sites/cgi-bin/&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    AddHandler cgi-script .cgi
+</span><span class='line'>    Options +ExecCGI
+</span><span class='line'><span class="nt">&lt;/Directory&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后重启apache:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>sudo apachectl restart
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下面我们就通过<code>curl</code>来进行测试：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>curl -v http://localhost/~jtqiu/cgi-bin/echo.cgi
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>更进一步</h5>
+
+<p>传统的CGI脚本的生命周期很短，Web服务器在接收到一次请求之后，会fork出一个进程来执行CGI脚本，一旦请求完成，这个进程就会被终止。</p>
+
+<p>我们可以设置一个超时来查看：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/env python</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">time</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&quot;Content-Type: text/html</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">print</span><span class="p">(</span><span class="s">&quot;&lt;b&gt;Hello, World&lt;/b&gt;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>curl -v http://localhost/~jtqiu/cgi-bin/echo.cgi
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>再次通过curl脚本来查看，另起一个窗口，通过<code>ps -Af | grep cgi</code>来查看</p>
+
+<p><img src="/images/2014/04/cgi-ps-resized.png" alt="[image]" /></p>
+
+<h5>一个稍微有点用的脚本</h5>
+
+<p>Web服务器通过环境变量来和CGI脚本进行部分的数据传递，比如下面这个例子会打印所有的，来自Web服务器的环境变量：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/env python</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">os</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span> <span class="s">&quot;Content-type: text/html</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">print</span> <span class="s">&quot;&lt;b&gt;Environment&lt;/b&gt;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span> <span class="s">&quot;&lt;ul&gt;&quot;</span>
+</span><span class='line'><span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span class='line'>      <span class="k">print</span> <span class="s">&quot;&lt;li&gt;</span><span class="si">%20s</span><span class="s">: </span><span class="si">%s</span><span class="s">&lt;/li&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">param</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">print</span> <span class="s">&quot;&lt;/ul&gt;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过<code>curl</code>来测试：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">curl</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="o">/</span>\<span class="o">~</span><span class="n">jtqiu</span><span class="o">/</span><span class="n">cgi</span><span class="o">-</span><span class="nb">bin</span><span class="o">/</span><span class="n">echo</span><span class="o">.</span><span class="n">cgi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>会的到一个完整的环境变量列表：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;b&gt;</span>Environment<span class="nt">&lt;/b&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;ul&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>VERSIONER_PYTHON_PREFER_32_BIT: no<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>     SERVER_SOFTWARE: Apache/2.2.26 (Unix) DAV/2 PHP/5.4.24 mod_ssl/2.2.26 OpenSSL/0.9.8y<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>         SCRIPT_NAME: /~jtqiu/cgi-bin/echo.cgi<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>    SERVER_SIGNATURE: <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>      REQUEST_METHOD: GET<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>     SERVER_PROTOCOL: HTTP/1.1<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>        QUERY_STRING: <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>                PATH: /usr/bin:/bin:/usr/sbin:/sbin<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>     HTTP_USER_AGENT: curl/7.30.0<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>         SERVER_NAME: localhost<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>         REMOTE_ADDR: ::1<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>         SERVER_PORT: 80<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>         SERVER_ADDR: ::1<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>       DOCUMENT_ROOT: /Library/WebServer/Documents<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>     SCRIPT_FILENAME: /Users/jtqiu/Sites/cgi-bin/echo.cgi<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>        SERVER_ADMIN: you@example.com<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>           HTTP_HOST: localhost<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>         REQUEST_URI: /~jtqiu/cgi-bin/echo.cgi<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>         HTTP_ACCEPT: */*<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>   GATEWAY_INTERFACE: CGI/1.1<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>         REMOTE_PORT: 64361<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>__CF_USER_TEXT_ENCODING: 0x46:0:0<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;li&gt;</span>VERSIONER_PYTHON_VERSION: 2.7<span class="nt">&lt;/li&gt;</span>
+</span><span class='line'><span class="nt">&lt;/ul&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>更进一步FastCGI</h4>
+
+<p>传统的CGI脚本，生命周期很短，只会serve一次请求就终止了。如果有高并发的场景的话，显然服务器性能会收到极大的冲击。因此人们又设计了<a href="http://en.wikipedia.org/wiki/FastCGI">FastCGI</a>。FastCGI的生命周期很长，甚至可以被实现成一个TCP/IP的服务器，这样就会永远运行下去。</p>
+
+<p>目前，Apache，Nginx等Web服务器都已经支持FastCGI。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2468,124 +2736,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/10/bower-as-dependencies-manager/">Bower as Dependencies Manager</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-10-09T16:38:00+11:00" pubdate data-updated="true">Oct 9<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Bower简介</h3>
-
-<h4>Bower安装及简单配置</h4>
-
-<p><a href="http://bower.io/">Bower</a>是一个基于Node.js的依赖管理工具，它是一个npm的包，因此安装十分简单，由于我们需要在所有项目中都可以使用bower，因此将其安装在全局目录下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g bower</span></code></pre></td></tr></table></div></figure>
-
-
-<p>安装完成之后，可以通过<code>bower search</code>来搜索需要的包，比如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ bower search underscore</span></code></pre></td></tr></table></div></figure>
-
-
-<p>典型的应用场景可能会是这样的，新建一个项目目录，然后运行<code>bower init</code>：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ mkdir -p listing
-</span><span class='line'>$ cd listing
-</span><span class='line'>$ bower init</span></code></pre></td></tr></table></div></figure>
-
-
-<p>和Grunt类似，bower会问你一些问题，比如项目名称，项目入口点，作者信息之类：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{
-</span><span class='line'>  "name": "listing",
-</span><span class='line'>  "version": "0.0.0",
-</span><span class='line'>  "authors": [
-</span><span class='line'>    "Qiu Juntao &lt;juntao.qiu@gmail.com&gt;"
-</span><span class='line'>  ],
-</span><span class='line'>  "main": "src/app.js",
-</span><span class='line'>  "license": "MIT",
-</span><span class='line'>  "ignore": [
-</span><span class='line'>    "**/.*",
-</span><span class='line'>    "node_modules",
-</span><span class='line'>    "bower_components",
-</span><span class='line'>    "test",
-</span><span class='line'>    "tests"
-</span><span class='line'>  ]
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>比如我们需要安装jQuery和underscore.js，则很简单的运行<code>bower install</code>命令即可：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ bower install jquery
-</span><span class='line'>$ bower install underscore</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果需要团队中的其他成员可以在本地恢复我们的环境，需要在bower.json中指定<code>dependencies</code>小节：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>  "dependencies": {
-</span><span class='line'>    "jquery": "~2.0.3",
-</span><span class='line'>    "underscore": "~1.5.2"
-</span><span class='line'>  }</span></code></pre></td></tr></table></div></figure>
-
-
-<p>所有的JavaScript包都被安装到了本地的<code>bower_components</code>目录下，如果有了bower.json文件，那么即使本地的<code>bower_components</code>目录不存在，或者其中的包内容过期了，那么很容易用<code>bower install</code>将其更新。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/5/">&larr; Older</a>
@@ -2603,7 +2753,11 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/2015/09/visualize-your-steps/">可视化你的足迹</a>
+        <a href="/2015/09/show-your-map-in-browser/">可视化你的足迹 - Web端</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/09/visualize-your-steps/">可视化你的足迹 - 服务器duan</a>
       </li>
     
       <li class="post">
@@ -2616,10 +2770,6 @@
     
       <li class="post">
         <a href="/2015/07/is-project-manager-a-fool/">项目经理是大傻B吗？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/06/whats-next-after-separate-frontend-and-backend/">前后端分离了，然后呢？</a>
       </li>
     
   </ul>
