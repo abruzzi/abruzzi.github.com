@@ -4,7 +4,7 @@
   <title><![CDATA[Category: GIS | I code it]]></title>
   <link href="http://abruzzi.github.com/category/gis/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-09-20T23:52:15+10:00</updated>
+  <updated>2015-09-21T00:13:28+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -167,7 +167,7 @@ L.tileLayer( 'http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[可视化你的足迹 - 服务器duan]]></title>
+    <title type="html"><![CDATA[可视化你的足迹 - 服务器端]]></title>
     <link href="http://abruzzi.github.com/2015/09/visualize-your-steps/"/>
     <updated>2015-09-18T13:36:00+10:00</updated>
     <id>http://abruzzi.github.com/2015/09/visualize-your-steps</id>
