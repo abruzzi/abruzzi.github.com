@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "可视化你的足迹"
+title: "可视化你的足迹 - 服务器duan"
 date: 2015-09-18 13:36
 comments: true
 categories: 
@@ -278,4 +278,4 @@ END
 
 ### 总结
 
-我们通过使用一些开源工具（MapServer，QGis，PostGIS，GDAL等），构建出一个基于GIS的数据可视化框架。在这个stack上，我们可以很容易的将一些其他数据也通过可视化的方式展现出来（公用自行车站点分布，出租车分布等等）。MapServer可以发布标准的WMS服务，因此可以很好的和客户端框架集成，从而带来更加友好的用户体验。
+我们通过使用一些开源工具（MapServer，QGis，PostGIS，GDAL等），构建出一个基于GIS的数据可视化框架。在这个stack上，我们可以很容易的将一些其他数据也通过可视化的方式展现出来（公用自行车站点分布，出租车分布等等）。MapServer可以发布标准的[WMS](https://en.wikipedia.org/wiki/Web_Map_Service)服务，因此可以很好的和客户端框架集成，从而带来更加友好的用户体验。
