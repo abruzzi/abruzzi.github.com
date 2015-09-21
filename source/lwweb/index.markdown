@@ -8,6 +8,14 @@ footer: true
 
 ---
 
+本书已经于2015年7月末由人民邮电出版社出版，欢迎在这里选购：
+
+#### 购书链接
+
+1.  [亚马逊链接](http://www.amazon.cn/%E8%BD%BB%E9%87%8F%E7%BA%A7Web%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B012R5A1NQ/ref=sr_1_1?ie=UTF8&qid=1440730930&sr=8-1&keywords=%E8%BD%BB%E9%87%8F%E7%BA%A7web)
+2.  [京东链接](http://item.jd.com/11741605.html)
+3.  [豆瓣链接](http://book.douban.com/subject/26585461/)
+
 ### 简介
 
 我个人非常推崇轻量级的开发方式：轻量的编辑器，轻量的前后端框架，轻量的构架工具，轻量的发布工具和流程等等。敏捷开发的初衷，也是使用轻量级的工作方式：这样才能在犯错的时候及时调整方向。
@@ -21,14 +29,6 @@ footer: true
 -  书中不但在每个章节中有一些小型的例子，还专门开辟出三章来将这些零散的知识点连接起来，使你更容易学以致用。
 
 这里有一个为本书设计的一个[静态站点](http://icodeit.org/lightweight-web/)。
-
-本书已经于2015年7月末由人民邮电出版社出版，欢迎在这里选购：
-
-#### 购书链接
-
-1.  [亚马逊链接](http://www.amazon.cn/%E8%BD%BB%E9%87%8F%E7%BA%A7Web%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B012R5A1NQ/ref=sr_1_1?ie=UTF8&qid=1440730930&sr=8-1&keywords=%E8%BD%BB%E9%87%8F%E7%BA%A7web)
-2.  [京东链接](http://item.jd.com/11741605.html)
-3.  [豆瓣链接](http://book.douban.com/subject/26585461/)
 
 #### 资源下载
 
