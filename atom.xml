@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-09-21T11:57:17+10:00</updated>
+  <updated>2015-09-23T22:02:52+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -761,7 +761,7 @@
 
 <p>目前已经有很多的渠道可以发布电子书，比如<a href="https://www.gitbook.com/">gitbhook</a>，<a href="http://zhibimo.com/">知笔墨</a>。这些应用的出现，大大降低了发布<code>书籍</code>的成本，我的<a href="https://selfstore.io/products/348">《函数式编程乐趣》</a>，用了3天就完成了草稿，而发布只需要数秒。</p>
 
-<p>另外一个问题是书籍的价格和作者的收入。一本书定价50元RMB，出版社给作者的版税是8%，也就是说，没卖出一本，作者可以得到4元，如果你的书非常畅销，这还是一个不错的价格。但是可能90%的书籍都不会是畅销书（就好比每个班级都会有优等生，但是他们仅占全班人数的10%一样）。这对作者是一种浪费：你需要耗时数月甚至数年来写一本书，然后市场的反馈又非常慢（毕竟你无法出版一本未完成的书）。</p>
+<p>另外一个问题是书籍的价格和作者的收入。一本书定价50元RMB，出版社给作者的版税是8%，也就是说，每卖出一本，作者可以得到4元，如果你的书非常畅销，这还是一个不错的价格。但是可能90%的书籍都不会是畅销书（就好比每个班级都会有优等生，但是他们仅占全班人数的10%一样）。这对作者是一种浪费：你需要耗时数月甚至数年来写一本书，然后市场的反馈又非常慢（毕竟你无法出版一本未完成的书）。</p>
 
 <p>我在<a href="https://selfstore.io/">selfstore.io</a>上有两本电子书：<a href="https://selfstore.io/products/348">《3周3页面》</a>和<a href="https://selfstore.io/products/351">《函数式编程乐趣》</a>，<a href="https://selfstore.io/products/348">《3周3页面》</a>定价为16元，每卖出一本，扣除掉交易费之后，我可以得到14.7元。</p>
 
