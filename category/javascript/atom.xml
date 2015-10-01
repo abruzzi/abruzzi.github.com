@@ -4,7 +4,7 @@
   <title><![CDATA[Category: JavaScript | I code it]]></title>
   <link href="http://abruzzi.github.com/category/javascript/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-09-23T22:02:52+10:00</updated>
+  <updated>2015-10-01T12:00:43+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,313 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[所以，学编译原理到底有什么用？]]></title>
+    <link href="http://abruzzi.github.com/2015/09/write-a-parser/"/>
+    <updated>2015-09-30T18:45:00+10:00</updated>
+    <id>http://abruzzi.github.com/2015/09/write-a-parser</id>
+    <content type="html"><![CDATA[<h3>前言</h3>
+
+<p>在代码编写中，很多时候我们都会处理字符串：发现字符串中的某些规律，然后将想要的部分抽取出来。对于发杂一些的场景，我们会使用<code>正则表达式</code>来帮忙，正则表达式强大而灵活，主流的变成语言如<code>Java</code>，<code>Ruby</code>的标准库中都对其由很好的支持。</p>
+
+<p>但是有时候，当接收到的字符串结构更加复杂（往往会这样）的时候，正则表达式要么会变的不够用，要么变得超出我们能理解的复杂度。这时候，我们可能借助一些更为强大的工具。</p>
+
+<p>下面是一个实际的例子，这个代码片段是MapServer的配置文件，它用来描述地图中的一个层，其中包含了嵌套的<code>CLASS</code>，而<code>CLASS</code>自身又包含了一个嵌套的<code>STYLE</code>节。显然，正则表达式在解释这样复杂的结构化数据方面，是无法满足需求的。</p>
+
+<p>```
+LAYER
+  NAME         "counties"
+  DATA         "counties-in-shaanxi-3857"
+  STATUS       default
+  TYPE         POLYGON
+  TRANSPARENCY 70</p>
+
+<p>  CLASS</p>
+
+<pre><code>NAME       "polygon"
+STYLE
+  COLOR     255 255 255
+  OUTLINECOLOR 40 44 52
+END
+</code></pre>
+
+<p>  END
+END
+```</p>
+
+<p>在UNIX世界，很早的时候，人们就开发出了很多用来生成<code>解释器</code>(parser)的工具，比如早期的<a href="https://en.wikipedia.org/wiki/Lex_(software">lex</a>)/<a href="https://en.wikipedia.org/wiki/Yacc">yacc</a>之类的工具和后来的<a href="https://en.wikipedia.org/wiki/GNU_bison">bison</a>。通过这些工具，程序员只需要定义一个结构化的文法，工具就可以自动生成解释器的C代码，非常容易。在JavaScript世界中，有一个非常类似的工具，叫做<a href="https://zaach.github.io/jison/">jison</a>。在本文中，我将以jison为例，说明在JavaScript中自定义一个解释器是何等的方便。</p>
+
+<p><strong>注意</strong>，我们这里说的<code>解释器</code>不是一个编译器，编译器有非常复杂的后端（抽象语法树的生成，虚拟机器指令，或者机器码的生成等等），我们这里仅仅讨论一个编译器的<strong>前端</strong>。</p>
+
+<h3>一点理论知识</h3>
+
+<p>本文稍微需要一点理论知识，当年编译原理课的时候，各种名词诸如<code>规约</code>，<code>推导式</code>，<code>终结符</code>，<code>非终结符</code>等等，</p>
+
+<h4>上下文无关文法（Context Free Grammar）</h4>
+
+<p>先看看维基上的这段定义：</p>
+
+<blockquote><p>在计算机科学中，若一个形式文法 G = (N, Σ, P, S) 的产生式规则都取如下的形式：V -> w，则称之为上下文无关文法（英语：context-free grammar，缩写为CFG），其中 V∈N ，w∈(N∪Σ)* 。上下文无关文法取名为“上下文无关”的原因就是因为字符 V 总可以被字串 w 自由替换，而无需考虑字符 V 出现的上下文。</p></blockquote>
+
+<p>基本上跟没说一样。要定义一个上下文无关文法，数学上的精确定义是一个在4元组：<code>G = (N, Σ, P, S)</code>，其中</p>
+
+<ol>
+<li>N是“非终结符”的集合</li>
+<li>Σ是“终结符”的集合，与N的交集为空（不想交）</li>
+<li>P表示规则集（即N中的一些元素以何种方式）</li>
+<li>S表示起始变量，是一个“非终结符”</li>
+</ol>
+
+
+<p>其中，规则集P是重中之重，我们会在下一小节解释。经过这个形式化的解释，基本还是等于没说，在继续之前，我们先来看一下BNF，然后结合一个例子来帮助理解。</p>
+
+<p>话说我上一次写这种<a href="http://www.cnblogs.com/abruzzi/archive/2009/06/06/1497449.html">学院派的文章</a>还是2009年，时光飞逝。</p>
+
+<h4>巴科斯范式（Backus Normal Form）</h4>
+
+<p>维基上的解释是：</p>
+
+<blockquote><p>巴科斯范式（英语：Backus Normal Form，缩写为 BNF），又称为巴科斯-诺尔范式（英语：Backus-Naur Form，也译为巴科斯-瑙尔范式、巴克斯-诺尔范式），是一种用于表示上下文无关文法的语言，上下文无关文法描述了一类形式语言。它是由约翰·巴科斯（John Backus）和彼得·诺尔（Peter Naur）首先引入的用来描述计算机语言语法的符号集。</p></blockquote>
+
+<p>简而言之，它是由推导公式的集合组成，比如下面这组公式：</p>
+
+<p><code>
+S -&gt; T + T | T - T | T
+T -&gt; F * F | F / F | F
+F -&gt; NUMBER | '(' S ')'
+NUMBER -&gt;  0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+</code></p>
+
+<p>可以被“继续分解”的元素，我们称之为“非终结符”，如上式中的<code>S</code>, <code>T</code>, <code>NUMBER</code>，而无法再细分的如<code>0..9</code>，<code>(</code>，<code>)</code>则被称之为终结符。<code>|</code>表示或的关系。在上面的公式集合中，<code>S</code>可以被其右边的<code>T+T</code>替换，也可以被<code>T-T</code>替换，还可以被<code>T</code>本身替换。回到上一小节最后留的悬疑，在这里：</p>
+
+<ol>
+<li>N就是{<code>S</code>, <code>T</code>, <code>F</code>, <code>NUMBER</code>}</li>
+<li>Σ就是{<code>0</code>, <code>1</code>, ..., <code>9</code>, <code>(</code>, <code>)</code>, <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>}</li>
+<li>P就是上面的BNF式子</li>
+<li>S就是这个的<code>S</code>(第一个等式的左边状态)</li>
+</ol>
+
+
+<p>上面的BNF其实就是四则运算的形式定义了，也就是说，由这个BNF可以解释一切出现在四则运算中的文法，比如：</p>
+
+<p><code>
+1+1
+8*2+3
+(10-6)*4/2
+</code></p>
+
+<p>而所谓上下文无关，指的是在推导式的左边，都是非终结符，并且可以<strong>无条件</strong>的被其右边的式子替换。此处的<strong>无条件</strong>就是上下文无关。</p>
+
+<h3>实现一个四则运算计算器</h3>
+
+<p>我们这里要使用<a href="https://zaach.github.io/jison/">jison</a>，jison是一个npm包，所以安装非常容易：</p>
+
+<p><code>sh
+npm install -g jison
+</code></p>
+
+<p>安装之后，你本地就会有一个命令行工具<code>jison</code>，这个工具可以将你定义的<code>jison</code>文件编译成一个<code>.js</code>文件，这个文件就是解释器的源码。我们先来定义一些<code>符号</code>(token)，所谓<code>token</code>就是上述的<code>终结符</code>：</p>
+
+<h4>第一步：识别数字</h4>
+
+<p>创建一个新的文本文件，假设就叫<code>calc.jison</code>，在其中定义一段这样的符号表:</p>
+
+<p><code>js
+\s+                   /* skip whitespace */
+[0-9]+("."[0-9]+)?    return 'NUMBER'
+&lt;&lt;EOF&gt;&gt;               return 'EOF'
+.                     return 'INVALID'
+</code></p>
+
+<p>这里我们定义了4个符号，所有的空格（<code>\s+</code>），我们都跳过；如果遇到数字，则返回<code>NUMBER</code>；如果遇到文件结束，则返回<code>EOF</code>；其他的任意字符(.)都返回<code>INVALID</code>。</p>
+
+<p>定义好符号之后，我们就可以编写<code>BNF</code>了：</p>
+
+<p>```js
+expressions</p>
+
+<pre><code>: NUMBER EOF
+    {
+    console.log($1);
+    return $1;
+    }
+;
+</code></pre>
+
+<p>```</p>
+
+<p>这里我们定义了一条规则，即<code>expressions -&gt; NUMBER EOF</code>。在<code>jison</code>中，当匹配到规则之后，可以执行一个代码块，比如此处的输出语句<code>console.log($1)</code>。这个产生式的右侧有几个元素，就可以用<code>$加序号</code>来引用，如<code>$1</code>表示<code>NUMBER</code>实际对应的值，<code>$2</code>为<code>EOF</code>。</p>
+
+<p>通过命令</p>
+
+<p><code>sh
+jison calc.jison
+</code></p>
+
+<p>可以在当前目录下生成一个<code>calc.js</code>文件，现在来创建一个文件<code>expr</code>，文件内容为一个数字，然后执行：</p>
+
+<p><code>sh
+node calc.js expr
+</code></p>
+
+<p>来测试我们的解释器：</p>
+
+<p><code>sh
+$ echo "3.14" &gt; expr
+$ node calc.js expr
+3.14
+</code></p>
+
+<p>目前我们完整的代码仅仅20行：</p>
+
+<p>```js
+/<em> lexical grammar </em>/
+%lex
+%%</p>
+
+<p>\s+                   /<em> skip whitespace </em>/
+[0-9]+("."[0-9]+)?    return 'NUMBER'
+&lt;<EOF>>               return 'EOF'
+.                     return 'INVALID'</p>
+
+<p>/lex</p>
+
+<p>%start expressions</p>
+
+<p>%% /<em> language grammar </em>/</p>
+
+<p>expressions</p>
+
+<pre><code>: NUMBER EOF
+    {
+    console.log($1);
+    return $1;
+    }
+;
+</code></pre>
+
+<p>```</p>
+
+<h4>加法</h4>
+
+<p>我们的解析器现在只能计算一个数字（输入给定的数字，给出同样的输出），我们来为它添加一条新的规则:加法。首先我们来扩展目前的BNF，添加一条新的规则：</p>
+
+<p>```js
+expressions</p>
+
+<pre><code>: statement EOF
+    {
+    console.log($1);
+    return $1;
+    }
+;
+</code></pre>
+
+<p>statement:
+  NUMBER PLUS NUMBER
+  {$$ = $1 + $3}
+  |
+  NUMBER
+  {$$ = $1}
+  ;
+```</p>
+
+<p>即，<code>expressions</code>由<code>statement</code>组成，而<code>statement</code>可以有两个规则规约得到，一个就是纯数字，另一个是<code>数字 加号 数字</code>，这里的<code>PLUS</code>是我们定义的一个新的符号：</p>
+
+<p><code>js
+"+"    return "PLUS"
+</code></p>
+
+<p>当输入匹配到规则<code>数字 加号 数字</code>时，对应的块<code>{$$ = $1 + $3}</code>会被执行，也就是说，两个<code>NUMBER</code>对应的值会加在一起，然后赋值给整个表达式的值，这样就完成了<strong>语义</strong>的翻译。</p>
+
+<p>我们在文件<code>expr</code>中写入算式：<code>3.14+1</code>，然后测试：</p>
+
+<p><code>sh
+$ jison calc.jison
+$ node calc.js expr
+13.14
+</code></p>
+
+<p>嗯，结果有点不对劲，两个数字都被当成了字符串而拼接在一起了，这是因为JavaScript中，<code>+</code>的二义性和弱类型的自动转换导致的，我们需要做一点修改：</p>
+
+<p><code>js
+statement:
+  NUMBER PLUS NUMBER
+  {$$ = parseFloat($1) + parseFloat($3)}
+  |
+  NUMBER
+  {$$ = $1}
+  ;
+</code></p>
+
+<p>我们使用JavaScript内置的<code>parseFloat</code>将字符串转换为数字类型，再做加法即可：</p>
+
+<p><code>sh
+$ jison calc.jison
+$ node calc.js expr
+4.140000000000001
+</code></p>
+
+<h4>更多的规则</h4>
+
+<p>剩下的事情基本就是把BNF翻译成<code>jison</code>的语法了：</p>
+
+<p><code>
+S -&gt; T + T | T - T | T
+T -&gt; F * F | F / F | F
+F -&gt; NUMBER | '(' S ')'
+NUMBER -&gt;  0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+</code></p>
+
+<p>```js
+expressions</p>
+
+<pre><code>: statement EOF
+    {
+    console.log($1);
+    return $1;
+    }
+;
+</code></pre>
+
+<p>statement:
+  term PLUS term {$$ = $1 + $3}
+  |
+  term MINUS term {$$ = $1 - $3}
+  |
+  term {$$ = $1}
+  ;</p>
+
+<p>term:
+  factor MULTIPLE factor {$$ = $1 * $3}
+  |
+  factor DIVIDE factor {$$ = $1 / $3}
+  |
+  factor {$$ = $1}
+  ;</p>
+
+<p>factor:
+  NUMBER {$$ = parseFloat($1)}
+  |
+  LP statement RP {$$ = $2}
+  ;</p>
+
+<p>```</p>
+
+<p>这样，像复杂一些的四则运算：<code>(10-2) * 3 + 2/4</code>，我们的计算器也已经有能力来计算出结果了：</p>
+
+<p><code>sh
+$ jison calc.jison
+$ node calc.js expr
+24.5
+</code></p>
+
+<h3>总结</h3>
+
+<p>我们在本文中讨论了BNF和上下文无关文法，以及这些理论如何与工程实践联系起来。这里的<code>四则运算计算器</code>当然是一个很简单的例子，不过我们从中可以看到将<code>BNF</code>形式文法翻译成实际可以工作的代码是多么方便。我在后续的文章中会介绍<code>jison</code>更高级的用法，以及如何在实际项目中使用<code>jison</code>产生的解释器。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[又一篇JavaScript的函数式编程教程]]></title>
@@ -751,242 +1058,6 @@ protocol: new OpenLayers.Protocol.HTTP({
 <p><img src="/images/2014/04/openlayers-geojson-weekly-resized.png" alt="image" /></p>
 
 <p>完整的代码示例<a href="https://github.com/abruzzi/earthquake-viz">可以看这里</a>。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[搭建地图服务器（使用Mapnik）]]></title>
-    <link href="http://abruzzi.github.com/2014/04/setup-map-server-by-mapnik/"/>
-    <updated>2014-04-12T14:07:00+10:00</updated>
-    <id>http://abruzzi.github.com/2014/04/setup-map-server-by-mapnik</id>
-    <content type="html"><![CDATA[<h4>渲染引擎Mapnik</h4>
-
-<p><a href="http://icodeit.org/2014/04/intro-map-gis/">上一篇文章</a>中大概介绍了<a href="https://github.com/mapnik">Mapnik</a>，它是一个渲染引擎，一般开发中都会使用他的python的bind做开发。</p>
-
-<p>Mapnik的文档写的比较详细，我们这里只是做一些必要的介绍，详细的细节可以参看Mapnik在<a href="https://github.com/mapnik/mapnik/wiki">Github上的文档</a>。</p>
-
-<p>在Mac下，安装Mapnik十分容易，使用brew即可，注意我们在此处带上<code>--with-postgresql</code>选项，使得Mapnik可以通过PostGIS来访问数据库：</p>
-
-<p><code>sh
-brew install mapnik --with-postgresql
-</code></p>
-
-<p>安装完成之后，可以通过一个小的python脚本来测试：</p>
-
-<p>```python
-import mapnik</p>
-
-<p>map = mapnik.Map(256, 256)
-map.background = mapnik.Color('red')
-map.zoom_all()</p>
-
-<p>mapnik.render_to_file(map, 'red.png', 'png')
-```</p>
-
-<p>这段脚本可以在当前目录下生成一个红色的256x256的小图片。好了，有了渲染引擎，我们需要一些数据来进行渲染了。</p>
-
-<h4>数据源</h4>
-
-<p>最通用的数据格式为Shapefiles，目前有很多的免费地理信息供公共下载，我们可以从<a href="http://metro.teczno.com/">Metro的站点</a>上下载一些小的数据文件。</p>
-
-<p><code>sh
-$ wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm2pgsql-shapefiles.zip
-$ mkdir chengdu
-$ cd chengdu
-$ unzip chengdu.osm2pgsql-shapefiles.zip
-</code>
-这样就得到了一组文件：</p>
-
-<p><code>
-$ find . -name "*.shp"
-./chengdu.osm-line.shp
-./chengdu.osm-point.shp
-./chengdu.osm-polygon.shp
-</code></p>
-
-<p>每一个shp文件都会对应几个其他类型的文件，比如投影信息，属性表等。仅仅查看shp的话，有表示所有点的文件chengdu.osm-line.shp，又表示所有线的chengdu.osm-line.shp，以及表示所有面（区域）的chengdu.osm-polygon.shp文件。</p>
-
-<p>有了这些文件，我们就可以做一些测试了，比如我们首先加载所有的线条，并根据这些线条生成一个图层：</p>
-
-<p>```python
-import mapnik</p>
-
-<p>map = mapnik.Map(800, 800)
-map.background = mapnik.Color('#ffffff')</p>
-
-<p>style = mapnik.Style()
-rule = mapnik.Rule()</p>
-
-<p>point_symbolizer = mapnik.PointSymbolizer()
-rule.symbols.append(point_symbolizer)</p>
-
-<p>style.rules.append(rule)</p>
-
-<p>map.append_style('default', style)</p>
-
-<p>ds_point = mapnik.Shapefile(file='chengdu.osm-point.shp')
-point = mapnik.Layer('point')
-point.datasource = ds_point
-point.styles.append('default')</p>
-
-<p>map.layers.append(point)
-map.zoom_all()</p>
-
-<p>mapnik.render_to_file(map, 'chengdu.png', 'png')
-```</p>
-
-<p>可以得到：</p>
-
-<p><img src="/images/2014/04/chengdu-point.png" alt="points" /></p>
-
-<p>这里介绍一下Mapnik中的一些概念：一个Map可以包含若干个层（Layer），每个层可以独立着色，即可以为每个层定制样式（Style），每个样式由若干个规则组成（Rule）。每个规则由是由若干个符号定制。</p>
-
-<p><img src="/images/2014/04/chengdu-line.png" alt="lines" /></p>
-
-<p>如果将两者重叠，则可以得到：</p>
-
-<p><img src="/images/2014/04/chengdu-point-and-line.png" alt="lines" /></p>
-
-<p>```python
-polygon_symbolizer = mapnik.PolygonSymbolizer(mapnik.Color('#c8102e'))
-polygon_rule.symbols.append(polygon_symbolizer)</p>
-
-<p>ds_polygon = mapnik.Shapefile(file='chengdu.osm-polygon.shp')
-polygon = mapnik.Layer('polygon')
-polygon.datasource = ds_polygon
-polygon.styles.append('polygon')</p>
-
-<p>map.layers.append(polygon)
-```</p>
-
-<p><img src="/images/2014/04/chengdu-polygon.png" alt="image" /></p>
-
-<p>将这三个层叠加在一起，会得到最终的结果：</p>
-
-<p><img src="/images/2014/04/chengdu-point-and-line-and-polygon.png" alt="lines" /></p>
-
-<h4>数据转化</h4>
-
-<p>在进一步之前，我们需要将数据存储在数据库中。我们可以将shapefile通过转化存入到数据库中。PostGIS本身自带了一个用于此作用的工具：<code>shp2pgsql</code>。可以通过这个工具来先将shapefile导入到数据库中。也可以直接导入别的开放数据，比如很多OSM格式的数据源，我们此处仅仅简单的从别的数据源将OSM格式的数据下载并导入到PostGIS中。</p>
-
-<p>创建数据库<code>chengdu</code>:</p>
-
-<p>```sh
-$ createdb chengdu -O gis -E UTF8 -e
-CREATE DATABASE chengdu OWNER gis ENCODING 'UTF8';</p>
-
-<p>$ psql -U gis -d chengdu
-```</p>
-
-<p>登陆PostGres，然后为数据库<code>chengdu</code>启动PostGIS扩展：</p>
-
-<p><code>sql
--- Enable PostGIS (includes raster)
-CREATE EXTENSION postgis;
--- Enable Topology
-CREATE EXTENSION postgis_topology;
--- fuzzy matching needed for Tiger
-CREATE EXTENSION fuzzystrmatch;
--- Enable US Tiger Geocoder
-CREATE EXTENSION postgis_tiger_geocoder;
-</code></p>
-
-<p><code>sh
-$ wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm.bz2
-$ bunzip2 -d chengdu.osm.bz2
-$ osm2pgsql -U gis -d chengdu -s -S ./default.style chengdu.osm
-</code></p>
-
-<p>这个命令将chengdu.osm导入到了名称为<code>chengdu</code>的数据库中。</p>
-
-<p>可以通过SQL命令查看其中的数据：</p>
-
-<p><code>sql
-select ST_Extent(ST_Transform(way,4326)) from planet_osm_roads;
-</code></p>
-
-<p>结果如下：</p>
-
-<p>```</p>
-
-<pre><code>                            st_extent                                 
-</code></pre>
-
-<hr />
-
-<p> BOX(103.564165069794 30.3634139134986,104.554549945024 30.9869936005376)
-(1 row)
-```</p>
-
-<h4>WMS服务器</h4>
-
-<p>生成图片之后，我们还需要将这些图片切成瓦片，然后公开给外部以便使用。Mapnik提供了切图的功能，并且还提供一个实现了<a href="https://github.com/mapnik/OGCServer">WMS协议的服务器</a>，以便使用。</p>
-
-<p>安装这个OGCServer服务器非常容易：</p>
-
-<p><code>sh
-$ git clone git@github.com:mapnik/OGCServer.git
-$ cd OGCServer
-$ sudo python setup.py install
-</code></p>
-
-<p>但是OGCServer的启动，需要一个配置XML配置文件，这个配置文件可以由Mapnik提供的工具集生成：</p>
-
-<p><code>sh
-$ svn co http://svn.openstreetmap.org/applications/rendering/mapnik/
-</code></p>
-
-<p>这个svn仓库中包含了众多的小工具，generate_xml.py用于生成Mapnik的样式文件，generate_image.py用于生成图片，generate_tiles.py用于生成众多的瓦片。</p>
-
-<p>此处我们将使用<code>generate_xml.py</code>来创建一个地图样式文件，</p>
-
-<p><code>sh
-$ cd svn.openstreetmap.org/applications/rendering/mapnik/
-$ ./generate_xml.py osm.xml chengdu.xml --dbname chengdu --user gis --accept-none
-</code></p>
-
-<p>generate_xml.py根据osm.xml作为模板，生成<code>chengdu.xml</code>。这个文件即可用于测试OGCServer：</p>
-
-<p><code>sh
-$ OGCServer chengdu.xml
-Listening at 0.0.0.0:8000....
-</code></p>
-
-<p>然后在浏览器中查看：</p>
-
-<p><img src="/images/2014/04/ogcserver-localhost-resized.png" alt="ogcserver" /></p>
-
-<h4>使用OpenLayers测试</h4>
-
-<p>有了一张图片，那么我们就需要有更多的图片组成的瓦片，这就需要使用引入GIS的前端利器OpenLayers了：</p>
-
-<p>```
-$(function() {</p>
-
-<pre><code>var map, layer;
-map = new OpenLayers.Map('map', {});
-
-layer = new OpenLayers.Layer.WMS('Tile Cache', 
-    'http://localhost:8000/?', {
-        layers: '__all__',
-        format: 'image/png'
-    });
-
-map.addLayer(layer);
-
-if (!map.getCenter()) {
-    map.zoomToMaxExtent();
-}
-</code></pre>
-
-<p>});
-```</p>
-
-<p><img src="/images/2014/04/openlayers-chengdu-resized.png" alt="openlayers" /></p>
-
-<p><img src="/images/2014/04/openlayers-chengdu-detail-resized.png" alt="openlayers" /></p>
-
-<p>应该注意的是，此处在OpenLayers中使用了来自与OSM导入的数据，而并非Shapefile中的数据（Shapefile中仅有三个层次，point, line, polygon）。而OSM的数据则丰富的多。</p>
 ]]></content>
   </entry>
   
