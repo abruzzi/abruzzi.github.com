@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "所以，学编译原理到底有什么用？"
+title: "工程中的编译原理 -- JavaScript版"
 date: 2015-09-30 18:45
 comments: true
 categories: 
