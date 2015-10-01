@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "徒手编写解释器 -- JavaScript版本"
+title: "所以，学编译原理到底有什么用？"
 date: 2015-09-30 18:45
 comments: true
 categories: 
