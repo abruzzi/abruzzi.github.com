@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-10-01T12:00:43+10:00</updated>
+  <updated>2015-10-01T12:15:03+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[所以，学编译原理到底有什么用？]]></title>
+    <title type="html"><![CDATA[工程中的编译原理 -- JavaScript版]]></title>
     <link href="http://abruzzi.github.com/2015/09/write-a-parser/"/>
     <updated>2015-09-30T18:45:00+10:00</updated>
     <id>http://abruzzi.github.com/2015/09/write-a-parser</id>
