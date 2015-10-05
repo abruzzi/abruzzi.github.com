@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-10-01T12:15:03+10:00</updated>
+  <updated>2015-10-05T14:20:15+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,7 +14,459 @@
 
   
   <entry>
-    <title type="html"><![CDATA[工程中的编译原理 -- JavaScript版]]></title>
+    <title type="html"><![CDATA[工程中的编译原理 -- Mapfile解析器]]></title>
+    <link href="http://abruzzi.github.com/2015/10/mapfile-parser/"/>
+    <updated>2015-10-05T12:59:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/10/mapfile-parser</id>
+    <content type="html"><![CDATA[<h3>前言</h3>
+
+<p>Mapfile是<code>MapServer</code>用来描述一个地图的配置文件。它是一个很简单的<code>声明式</code>语言，一个地图（Map）可以有多个层（Layer），每个层可以有很多属性（键值对）。在一个层的定义中，还可以定义若干个类（Class），这个类用以管理不同的样式（Style）。而每个类或者样式都可以由若干个属性（键值对）。</p>
+
+<p>这里有一个实际的例子：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>LAYER
+</span><span class='line'>  NAME         "counties"
+</span><span class='line'>  DATA         "counties-in-shaanxi-3857"
+</span><span class='line'>  STATUS       default
+</span><span class='line'>  TYPE         POLYGON
+</span><span class='line'>  TRANSPARENCY 70
+</span><span class='line'>
+</span><span class='line'>  CLASS
+</span><span class='line'>    NAME       "polygon"
+</span><span class='line'>    STYLE
+</span><span class='line'>      COLOR     255 255 255
+</span><span class='line'>      OUTLINECOLOR 40 44 52
+</span><span class='line'>    END
+</span><span class='line'>  END
+</span><span class='line'>END</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>最简单的层的定义</h4>
+
+<p>最简单的情形是，我们定义了一个层<code>Layer</code>，但是没有指定任何的属性：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>LAYER
+</span><span class='line'>END</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们期望parser可以输出：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span><span class="nx">layer</span><span class="o">:</span> <span class="kc">null</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>要做到这一步，首先需要定义符号<code>LAYER</code>和<code>END</code>，以及一些对空格，非法字符的处理等：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="err">\</span><span class="nx">s</span><span class="o">+</span>                     <span class="cm">/* skip whitespace */</span>
+</span><span class='line'><span class="err">\</span><span class="nx">n</span><span class="o">|</span><span class="err">\</span><span class="nx">r</span><span class="err">\</span><span class="nx">n</span>                 <span class="cm">/* skip whitespace */</span>
+</span><span class='line'><span class="s2">&quot;LAYER&quot;</span>                 <span class="k">return</span> <span class="s2">&quot;LAYER&quot;</span>
+</span><span class='line'><span class="s2">&quot;END&quot;</span>                   <span class="k">return</span> <span class="s2">&quot;END&quot;</span>
+</span><span class='line'><span class="o">&lt;&lt;</span><span class="nx">EOF</span><span class="o">&gt;&gt;</span>                 <span class="k">return</span> <span class="s1">&#39;EOF&#39;</span>
+</span><span class='line'><span class="p">.</span>                       <span class="k">return</span> <span class="s1">&#39;INVALID&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对于，空格，回车换行等，我们都直接跳过。对应的<code>BNF</code>也非常简单：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">expressions</span>
+</span><span class='line'>    <span class="o">:</span> <span class="nx">decls</span> <span class="nx">EOF</span> <span class="p">{</span><span class="k">return</span> <span class="nx">$1</span><span class="p">;}</span>
+</span><span class='line'>    <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">decls</span>
+</span><span class='line'>    <span class="o">:</span> <span class="nx">LAYER</span> <span class="nx">END</span> <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="p">{</span><span class="nx">layer</span><span class="o">:</span> <span class="kc">null</span><span class="p">}}</span>
+</span><span class='line'>    <span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>为层添加属性</h4>
+
+<p>接下来我们来为层添加<code>Name</code>属性，首先还是添加符号<code>NAME</code>和对字符串的定义。这里的字符串被定义为：由双引号括起来的所有内容。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="s2">&quot;NAME&quot;</span>                  <span class="k">return</span> <span class="s2">&quot;NAME&quot;</span>
+</span><span class='line'><span class="s1">&#39;&quot;&#39;</span><span class="p">(</span><span class="s2">&quot;\\&quot;</span><span class="p">[</span><span class="s2">&quot;]|[^&quot;</span><span class="p">])</span><span class="o">*</span><span class="s1">&#39;&quot;&#39;</span>   <span class="k">return</span> <span class="s1">&#39;STRING&#39;</span>
+</span><span class='line'><span class="p">[</span><span class="nx">a</span><span class="o">-</span><span class="nx">zA</span><span class="o">-</span><span class="nx">Z</span><span class="p">]</span><span class="o">+</span>               <span class="k">return</span> <span class="s1">&#39;WORD&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后我们就可以为<code>BNF</code>添加一个新的节：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">decls</span><span class="o">:</span>
+</span><span class='line'>  <span class="nx">LAYER</span> <span class="nx">decl</span> <span class="nx">END</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="p">{</span><span class="nx">layer</span><span class="o">:</span> <span class="nx">$2</span><span class="p">}}</span>
+</span><span class='line'>  <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">decl</span><span class="o">:</span>
+</span><span class='line'>  <span class="nx">NAME</span> <span class="nx">STRING</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在<code>decl</code>中，我们将获得的字符串两头的引号去掉<code>$2.substring</code>。这样<code>decl</code>的值就会是字符串本身，而不是带着双引号的字符串了。修改之后的代码可以解析诸如这样的声明：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">LAYER</span>
+</span><span class='line'>  <span class="nx">NAME</span> <span class="s2">&quot;counties&quot;</span>
+</span><span class='line'><span class="nx">END</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>并产生这样的输出：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span> <span class="nx">layer</span><span class="o">:</span> <span class="s1">&#39;counties&#39;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是如果我们用来解析两个以上的属性：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">LAYER</span>
+</span><span class='line'>  <span class="nx">NAME</span>         <span class="s2">&quot;counties&quot;</span>
+</span><span class='line'>  <span class="nx">DATA</span>         <span class="s2">&quot;counties-in-shaanxi-3857&quot;</span>
+</span><span class='line'><span class="nx">END</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>解析器会报告一个错误：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>node map.js expr
+</span><span class='line'>
+</span><span class='line'>/Users/jtqiu/develop/ideas/jison-demo/mapfile/map.js:106
+</span><span class='line'>        throw new Error<span class="o">(</span>str<span class="o">)</span>;
+</span><span class='line'>              ^
+</span><span class='line'>Error: Parse error on line 2:
+</span><span class='line'>...       <span class="s2">&quot;counties&quot;</span>  DATA         <span class="err">&quot;</span>counti
+</span><span class='line'>----------------------^
+</span><span class='line'>Expecting <span class="s1">&#39;END&#39;</span>, got <span class="s1">&#39;WORD&#39;</span>
+</span><span class='line'>    at Object.parseError <span class="o">(</span>/Users/jtqiu/develop/ideas/jison-demo/mapfile/map.js:106:15<span class="o">)</span>
+</span><span class='line'>    at Object.parse <span class="o">(</span>/Users/jtqiu/develop/ideas/jison-demo/mapfile/map.js:171:22<span class="o">)</span>
+</span><span class='line'>    at Object.commonjsMain <span class="o">[</span>as main<span class="o">]</span> <span class="o">(</span>/Users/jtqiu/develop/ideas/jison-demo/mapfile/map.js:620:27<span class="o">)</span>
+</span><span class='line'>    at Object.&lt;anonymous&gt; <span class="o">(</span>/Users/jtqiu/develop/ideas/jison-demo/mapfile/map.js:623:11<span class="o">)</span>
+</span><span class='line'>    at Module._compile <span class="o">(</span>module.js:456:26<span class="o">)</span>
+</span><span class='line'>    at Object.Module._extensions..js <span class="o">(</span>module.js:474:10<span class="o">)</span>
+</span><span class='line'>    at Module.load <span class="o">(</span>module.js:356:32<span class="o">)</span>
+</span><span class='line'>    at Function.Module._load <span class="o">(</span>module.js:312:12<span class="o">)</span>
+</span><span class='line'>    at Function.Module.runMain <span class="o">(</span>module.js:497:10<span class="o">)</span>
+</span><span class='line'>    at startup <span class="o">(</span>node.js:119:16<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>即，期望一个<code>END</code>符号，但是却看到了一个<code>WORD</code>符号。我们只需要稍事修改，就可以让当前的语法支持多个属性的定义：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">decls</span><span class="o">:</span>
+</span><span class='line'>  <span class="nx">LAYER</span> <span class="nx">pairs</span> <span class="nx">END</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="p">{</span><span class="nx">layer</span><span class="o">:</span> <span class="nx">$2</span><span class="p">}}</span>
+</span><span class='line'>  <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">pairs</span><span class="o">:</span>
+</span><span class='line'>  <span class="nx">pair</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$1</span><span class="p">}</span>
+</span><span class='line'>  <span class="o">|</span>
+</span><span class='line'>  <span class="nx">pairs</span> <span class="nx">pair</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">merge</span><span class="p">(</span><span class="nx">$1</span><span class="p">,</span> <span class="nx">$2</span><span class="p">)}</span>
+</span><span class='line'>  <span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">pair</span><span class="o">:</span>
+</span><span class='line'>  <span class="nx">NAME</span> <span class="nx">STRING</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)}}</span>
+</span><span class='line'>  <span class="o">|</span> <span class="nx">DATA</span> <span class="nx">STRING</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="p">{</span><span class="nx">data</span><span class="o">:</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)}};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>先看，<code>pair</code>的定义，它由<code>NAME STRING</code>或者<code>DATA STRING</code>组成，是我们语法中的终结符。再来看<code>pairs</code>的定义：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">pairs</span><span class="o">:</span> <span class="nx">pair</span> <span class="o">|</span> <span class="nx">pairs</span> <span class="nx">pair</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个递归的定义可以保证我们可以写一条<code>pair</code>或者多条<code>pairs pair</code>属性定义语句。而对于多条的情况，我们需要将这行属性<code>规约</code>在一起，即当遇到这样的情形时：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">NAME</span>         <span class="s2">&quot;counties&quot;</span>
+</span><span class='line'><span class="nx">DATA</span>         <span class="s2">&quot;counties-in-shaanxi-3857&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们需要产生这样的输出：<code>{name: "counties", data: "counties-in-shaanxi-3857"}</code>。但是由于符号是逐个匹配的，我们会得到这样的匹配结果：<code>{name: "counties"}</code>和<code>{data: "counties-in-shaanxi-3857"}</code>，因此我们需要编写一个简单的函数来合并这些属性：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'>  <span class="kd">function</span> <span class="nx">merge</span><span class="p">(</span><span class="nx">o1</span><span class="p">,</span> <span class="nx">o2</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">o1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">obj</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">o1</span><span class="p">[</span><span class="nx">k</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">v</span> <span class="k">in</span> <span class="nx">o2</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">obj</span><span class="p">[</span><span class="nx">v</span><span class="p">]</span> <span class="o">=</span> <span class="nx">o2</span><span class="p">[</span><span class="nx">v</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">obj</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>按照惯例，这种自定义的函数需要被定义在<code>%{</code>和<code>}%</code>括起来的<code>section</code>中：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">...</span>
+</span><span class='line'><span class="p">[</span><span class="nx">a</span><span class="o">-</span><span class="nx">zA</span><span class="o">-</span><span class="nx">Z</span><span class="p">]</span><span class="o">+</span>               <span class="k">return</span> <span class="s1">&#39;WORD&#39;</span>
+</span><span class='line'><span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">9</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">9</span><span class="p">]</span><span class="o">+</span><span class="p">)</span><span class="o">?</span>      <span class="k">return</span> <span class="s1">&#39;NUMBER&#39;</span>
+</span><span class='line'><span class="o">&lt;&lt;</span><span class="nx">EOF</span><span class="o">&gt;&gt;</span>                 <span class="k">return</span> <span class="s1">&#39;EOF&#39;</span>
+</span><span class='line'><span class="p">.</span>                       <span class="k">return</span> <span class="s1">&#39;INVALID&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">/</span><span class="nx">lex</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">%</span><span class="p">{</span>
+</span><span class='line'>  <span class="kd">function</span> <span class="nx">merge</span><span class="p">(</span><span class="nx">o1</span><span class="p">,</span> <span class="nx">o2</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">o1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">obj</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">o1</span><span class="p">[</span><span class="nx">k</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">v</span> <span class="k">in</span> <span class="nx">o2</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">obj</span><span class="p">[</span><span class="nx">v</span><span class="p">]</span> <span class="o">=</span> <span class="nx">o2</span><span class="p">[</span><span class="nx">v</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">obj</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="o">%</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">%</span><span class="nx">start</span> <span class="nx">expressions</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">%%</span> <span class="cm">/* language grammar */</span>
+</span><span class='line'><span class="p">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在我们的解析器就可以识别多条属性定义了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>node map.js expr
+</span><span class='line'><span class="o">{</span> layer: <span class="o">{</span> name: <span class="s1">&#39;counties&#39;</span>, data: <span class="s1">&#39;counties-in-shaanxi-3857&#39;</span> <span class="o">}</span> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>嵌套的结构</h4>
+
+<p>现在新的问题又来了，我们的解析器现在可以识别对层的对个属性的解析了，不过由于<code>CLASS</code>并不是由简单的键值对定义的，所以还需要进一步的修改：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">classes</span><span class="o">:</span>
+</span><span class='line'>  <span class="nx">CLASS</span> <span class="nx">pairs</span> <span class="nx">END</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="p">{</span><span class="kr">class</span><span class="o">:</span> <span class="nx">$2</span><span class="p">}}</span>
+</span><span class='line'>  <span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>类由<code>CLASS</code>关键字和<code>END</code>关键字定义，而类的属性定义和<code>Layer</code>的属性定义并无二致，都可以使用<code>pairs</code>（多条属性）。而<code>classes</code>事实上是<code>pair</code>的另一种形式，就像对属性的定义一样，所以：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">pair</span><span class="o">:</span>
+</span><span class='line'>  <span class="nx">NAME</span> <span class="nx">STRING</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)}}</span>
+</span><span class='line'>  <span class="o">|</span> <span class="nx">DATA</span> <span class="nx">STRING</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="p">{</span><span class="nx">data</span><span class="o">:</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)}}</span>
+</span><span class='line'>  <span class="o">|</span> <span class="nx">classes</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$1</span><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，解析器就可以识别<code>CLASS</code>子句了。我们注意到，在<code>CLASS</code>中，还可以定义<code>STYLE</code>，因此又需要稍作扩展：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">pair</span><span class="o">:</span>
+</span><span class='line'>  <span class="nx">NAME</span> <span class="nx">STRING</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)}}</span>
+</span><span class='line'>  <span class="o">|</span> <span class="nx">DATA</span> <span class="nx">STRING</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="p">{</span><span class="nx">data</span><span class="o">:</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">$2</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)}}</span>
+</span><span class='line'>  <span class="o">|</span> <span class="nx">classes</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$1</span><span class="p">}</span>
+</span><span class='line'>  <span class="o">|</span> <span class="nx">styles</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$1</span><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">styles</span><span class="o">:</span>
+</span><span class='line'>  <span class="nx">STYLE</span> <span class="nx">pairs</span> <span class="nx">END</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="p">{</span><span class="nx">style</span><span class="o">:</span> <span class="nx">$2</span><span class="p">}}</span>
+</span><span class='line'>  <span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，我们的解析器就可以处理样例中的所有语法了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>node map.js expr
+</span><span class='line'><span class="o">{</span> layer:
+</span><span class='line'>   <span class="o">{</span> name: <span class="s1">&#39;counties&#39;</span>,
+</span><span class='line'>     data: <span class="s1">&#39;counties-in-shaanxi-3857&#39;</span>,
+</span><span class='line'>     status: <span class="s1">&#39;default&#39;</span>,
+</span><span class='line'>     <span class="nb">type</span>: 70,
+</span><span class='line'>     class: <span class="o">{</span> name: <span class="s1">&#39;polygon&#39;</span>, style: <span class="o">[</span>Object<span class="o">]</span> <span class="o">}</span> <span class="o">}</span> <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>完整的代码在github上的<a href="https://github.com/abruzzi/jison-demos">这个repo中</a>。</p>
+
+<h3>总结</h3>
+
+<p>使用<code>BNF</code>定义一个复杂配置文件的规则，事实上一个比较容易的工作。要手写这样一个解析器需要花费很多的时间，而且当你需要parser多种配置文件时，这将是一个非常无聊且痛苦的事情。学习<code>jison</code>可以帮助你很快的编写出小巧的解析器，在上面的<code>Mapfile</code>的例子中，所有的代码还不到<code>100</code>行。下一次再遇到诸如复杂的文本解析，配置文件读取的时候，先不要忙着编写<code>正则表达式</code>，试试更高效，更轻便的<code>jison</code>吧。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[工程中的编译原理 -- Jison入门篇]]></title>
     <link href="http://abruzzi.github.com/2015/09/write-a-parser/"/>
     <updated>2015-09-30T18:45:00+10:00</updated>
     <id>http://abruzzi.github.com/2015/09/write-a-parser</id>
@@ -5586,83 +6038,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 
 
 <p>基本上，每个<code>step</code>仅仅对应1行（或者很少的几行）代码，而这些代码背后有一组组织良好的<code>PageObject</code>。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[我的2014]]></title>
-    <link href="http://abruzzi.github.com/2014/12/my-2014/"/>
-    <updated>2014-12-27T23:56:00+11:00</updated>
-    <id>http://abruzzi.github.com/2014/12/my-2014</id>
-    <content type="html"><![CDATA[<p>依照惯例，我每年在元旦时候都会写一篇回顾，总结过去，展望未来。不过很少跟上一年指定的<code>计划</code>真正去比较，一般都是列举一下这一年做的事情。</p>
-
-<p>大致分下来，可以分为上半年和下半年两部分，这当然不是废话。因为上半年和下半年分别在两个完全不同的项目上工作。</p>
-
-<h3>技术咨询项目</h3>
-
-<p>上半年在一个国内咨询项目上，主要做的事情有（其实我是作为前端专家加入的，不过后来工作重心发生了改变）：</p>
-
-<ol>
-<li>GIS平台</li>
-<li>大数据平台</li>
-</ol>
-
-
-<p>关于GIS最后的产出是一系列博客，而且还在<a href="http://www.infoq.com/cn/articles/visualization-of-the-global-seismic-system">InfoQ</a>上发表了一篇。</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/04/openlayers-earthquake-resized.png" alt="earthquake" /></p>
-
-<p>而后来我又根据我iPhone上照片的经纬度信息，汇总出了一个热力图（使用<a href="http://qgis.org/en/site/">QGis</a>）：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/12/places-resized.png" alt="heat map" /></p>
-
-<p>大数据相关的所有东西都在<a href="https://gist.github.com/abruzzi">我的gist上</a>，还没有时间整理。</p>
-
-<h3>硬件</h3>
-
-<p>回到办公室之后，发现了硬件小组提供的一大堆有意思的工具和器件，包括<code>3D打印机</code>，<code>Arduino</code>的一些芯片等，为了纪念我的GIS项目，我还打印了一个瓦片：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/12/tile-resized.png" alt="tile" /></p>
-
-<p>不断将我拖延了4年的机器小车组装了起来，而且还使用舵机，蓝牙，超声波等模块制作了一个实际的雷达：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/12/radar-resized.png" alt="radar" /></p>
-
-<h3>Sessions &amp; Workshop</h3>
-
-<p>5月底回到办公室后，我发现Office的气氛其实比我来的时候低落了很多，ThoughtWorks的感觉非常淡了。</p>
-
-<p>一方面是新人太多，而来新的项目所在的11楼由于客户的关系（我自以为），同事们的积极性极低。一个最容易看到的信号就是Session变得很少，我尝试做一些改变。</p>
-
-<p>分别做了一些关于自动化测试，JavaScript方面的Session和Workshop，下面是《可测试的JavaScript》的Workshop。这是我第一次组织比较大的，而且时间比较长的Workshop。</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/12/testable-javascript-resized.png" alt="testable-javascript" /></p>
-
-<p>有了上一次的Feedback，在年底的时候，我又组织了一次为期3周的Workshop，受众更是扩大到了各种角色，包括BA，UX，UIDev，QA等等。</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/12/3-pages-resized.png" alt="3 pages" /></p>
-
-<h3>写作</h3>
-
-<p>今年的博客数量减少了，一个原因是我在编写我的第二本书<a href="http://icodeit.org/lwweb/">《轻量级Web应用开发》</a>，经过几个月的坚持和努力，这本书已经编写完成，应该会在明年(2015年)年初与读者见面。</p>
-
-<p>另外，在休年假的时候（3周3页面之后），我将Workshop的内容做了整理，并加入了一些<code>设计</code>相关的内容，形成了一本电子书，名为<a href="http://juntao.gitbooks.io/3-web-designs-in-3-weeks/">《3 web designs in 3 weeks》</a>。</p>
-
-<h3>其他</h3>
-
-<p>我正在努力的向<code>UX</code>角色的转变，所谓<code>千里之行，始于足下</code>。我在休年假期间，买了一大堆UX相关的书籍。目前正在努力学习画画：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/12/drawing-resized.png" alt="两点透视" /></p>
-
-<p>在今天的CST的创新课上，我们一起设想了几个场景，下面是我自己画的图：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/12/scenario-resized.png" alt="场景" /></p>
-
-<p>最后是一张我自己设计的自己的名片：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/12/my-card-resized.png" alt="name card" /></p>
-
-<p>希望来年可以在自己努力的路上看到一些成果吧。</p>
 ]]></content>
   </entry>
   

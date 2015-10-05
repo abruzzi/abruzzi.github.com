@@ -4,7 +4,7 @@
   <title><![CDATA[Category: JavaScript | I code it]]></title>
   <link href="http://abruzzi.github.com/category/javascript/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-10-01T12:15:03+10:00</updated>
+  <updated>2015-10-05T14:20:15+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,7 +14,325 @@
 
   
   <entry>
-    <title type="html"><![CDATA[工程中的编译原理 -- JavaScript版]]></title>
+    <title type="html"><![CDATA[工程中的编译原理 -- Mapfile解析器]]></title>
+    <link href="http://abruzzi.github.com/2015/10/mapfile-parser/"/>
+    <updated>2015-10-05T12:59:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/10/mapfile-parser</id>
+    <content type="html"><![CDATA[<h3>前言</h3>
+
+<p>Mapfile是<code>MapServer</code>用来描述一个地图的配置文件。它是一个很简单的<code>声明式</code>语言，一个地图（Map）可以有多个层（Layer），每个层可以有很多属性（键值对）。在一个层的定义中，还可以定义若干个类（Class），这个类用以管理不同的样式（Style）。而每个类或者样式都可以由若干个属性（键值对）。</p>
+
+<p>这里有一个实际的例子：</p>
+
+<p>```
+LAYER
+  NAME         "counties"
+  DATA         "counties-in-shaanxi-3857"
+  STATUS       default
+  TYPE         POLYGON
+  TRANSPARENCY 70</p>
+
+<p>  CLASS</p>
+
+<pre><code>NAME       "polygon"
+STYLE
+  COLOR     255 255 255
+  OUTLINECOLOR 40 44 52
+END
+</code></pre>
+
+<p>  END
+END
+```</p>
+
+<h4>最简单的层的定义</h4>
+
+<p>最简单的情形是，我们定义了一个层<code>Layer</code>，但是没有指定任何的属性：</p>
+
+<p><code>
+LAYER
+END
+</code></p>
+
+<p>我们期望parser可以输出：</p>
+
+<p><code>js
+{layer: null}
+</code></p>
+
+<p>要做到这一步，首先需要定义符号<code>LAYER</code>和<code>END</code>，以及一些对空格，非法字符的处理等：</p>
+
+<p><code>js
+\s+                     /* skip whitespace */
+\n|\r\n                 /* skip whitespace */
+"LAYER"                 return "LAYER"
+"END"                   return "END"
+&lt;&lt;EOF&gt;&gt;                 return 'EOF'
+.                       return 'INVALID'
+</code></p>
+
+<p>对于，空格，回车换行等，我们都直接跳过。对应的<code>BNF</code>也非常简单：</p>
+
+<p>```js
+expressions</p>
+
+<pre><code>: decls EOF {return $1;}
+;
+</code></pre>
+
+<p>decls</p>
+
+<pre><code>: LAYER END {$$ = {layer: null}}
+;
+</code></pre>
+
+<p>```</p>
+
+<h4>为层添加属性</h4>
+
+<p>接下来我们来为层添加<code>Name</code>属性，首先还是添加符号<code>NAME</code>和对字符串的定义。这里的字符串被定义为：由双引号括起来的所有内容。</p>
+
+<p><code>js
+"NAME"                  return "NAME"
+'"'("\\"["]|[^"])*'"'   return 'STRING'
+[a-zA-Z]+               return 'WORD'
+</code></p>
+
+<p>然后我们就可以为<code>BNF</code>添加一个新的节：</p>
+
+<p>```js
+decls:
+  LAYER decl END
+  {$$ = {layer: $2}}
+  ;</p>
+
+<p>decl:
+  NAME STRING
+  {$$ = $2.substring(1, $2.length - 1)};
+```</p>
+
+<p>在<code>decl</code>中，我们将获得的字符串两头的引号去掉<code>$2.substring</code>。这样<code>decl</code>的值就会是字符串本身，而不是带着双引号的字符串了。修改之后的代码可以解析诸如这样的声明：</p>
+
+<p>```
+LAYER</p>
+
+<pre><code>NAME "counties"
+</code></pre>
+
+<p>END
+```</p>
+
+<p>并产生这样的输出：</p>
+
+<p><code>js
+{ layer: 'counties' }
+</code></p>
+
+<p>但是如果我们用来解析两个以上的属性：</p>
+
+<p><code>js
+LAYER
+  NAME         "counties"
+  DATA         "counties-in-shaanxi-3857"
+END
+</code></p>
+
+<p>解析器会报告一个错误：</p>
+
+<p>```sh
+$ node map.js expr</p>
+
+<p>/Users/jtqiu/develop/ideas/jison-demo/mapfile/map.js:106</p>
+
+<pre><code>    throw new Error(str);
+          ^
+</code></pre>
+
+<p>Error: Parse error on line 2:
+...       "counties"  DATA         "counti
+----------------------^
+Expecting 'END', got 'WORD'</p>
+
+<pre><code>at Object.parseError (/Users/jtqiu/develop/ideas/jison-demo/mapfile/map.js:106:15)
+at Object.parse (/Users/jtqiu/develop/ideas/jison-demo/mapfile/map.js:171:22)
+at Object.commonjsMain [as main] (/Users/jtqiu/develop/ideas/jison-demo/mapfile/map.js:620:27)
+at Object.&lt;anonymous&gt; (/Users/jtqiu/develop/ideas/jison-demo/mapfile/map.js:623:11)
+at Module._compile (module.js:456:26)
+at Object.Module._extensions..js (module.js:474:10)
+at Module.load (module.js:356:32)
+at Function.Module._load (module.js:312:12)
+at Function.Module.runMain (module.js:497:10)
+at startup (node.js:119:16)
+</code></pre>
+
+<p>```</p>
+
+<p>即，期望一个<code>END</code>符号，但是却看到了一个<code>WORD</code>符号。我们只需要稍事修改，就可以让当前的语法支持多个属性的定义：</p>
+
+<p>```js
+decls:
+  LAYER pairs END
+  {$$ = {layer: $2}}
+  ;</p>
+
+<p>pairs:
+  pair
+  {$$ = $1}
+  |
+  pairs pair
+  {$$ = merge($1, $2)}
+  ;</p>
+
+<p>pair:
+  NAME STRING
+  {$$ = {name: $2.substring(1, $2.length - 1)}}
+  | DATA STRING
+  {$$ = {data: $2.substring(1, $2.length - 1)}};
+```</p>
+
+<p>先看，<code>pair</code>的定义，它由<code>NAME STRING</code>或者<code>DATA STRING</code>组成，是我们语法中的终结符。再来看<code>pairs</code>的定义：</p>
+
+<p><code>js
+pairs: pair | pairs pair;
+</code></p>
+
+<p>这个递归的定义可以保证我们可以写一条<code>pair</code>或者多条<code>pairs pair</code>属性定义语句。而对于多条的情况，我们需要将这行属性<code>规约</code>在一起，即当遇到这样的情形时：</p>
+
+<p><code>
+NAME         "counties"
+DATA         "counties-in-shaanxi-3857"
+</code></p>
+
+<p>我们需要产生这样的输出：<code>{name: "counties", data: "counties-in-shaanxi-3857"}</code>。但是由于符号是逐个匹配的，我们会得到这样的匹配结果：<code>{name: "counties"}</code>和<code>{data: "counties-in-shaanxi-3857"}</code>，因此我们需要编写一个简单的函数来合并这些属性：</p>
+
+<p>```js
+  function merge(o1, o2) {</p>
+
+<pre><code>var obj = {};
+
+for(var k in o1) {
+  obj[k] = o1[k];
+}
+for(var v in o2) {
+  obj[v] = o2[v];
+}
+
+return obj;
+</code></pre>
+
+<p>  }
+```</p>
+
+<p>按照惯例，这种自定义的函数需要被定义在<code>%{</code>和<code>}%</code>括起来的<code>section</code>中：</p>
+
+<p>```js
+...
+[a-zA-Z]+               return 'WORD'
+[0-9]+("."[0-9]+)?      return 'NUMBER'
+&lt;<EOF>>                 return 'EOF'
+.                       return 'INVALID'</p>
+
+<p>/lex</p>
+
+<p>%{
+  function merge(o1, o2) {</p>
+
+<pre><code>var obj = {};
+
+for(var k in o1) {
+  obj[k] = o1[k];
+}
+for(var v in o2) {
+  obj[v] = o2[v];
+}
+
+return obj;
+</code></pre>
+
+<p>  }
+%}</p>
+
+<p>%start expressions</p>
+
+<p>%% /<em> language grammar </em>/
+...</p>
+
+<p>```</p>
+
+<p>现在我们的解析器就可以识别多条属性定义了：</p>
+
+<p><code>sh
+$ node map.js expr
+{ layer: { name: 'counties', data: 'counties-in-shaanxi-3857' } }
+</code></p>
+
+<h4>嵌套的结构</h4>
+
+<p>现在新的问题又来了，我们的解析器现在可以识别对层的对个属性的解析了，不过由于<code>CLASS</code>并不是由简单的键值对定义的，所以还需要进一步的修改：</p>
+
+<p><code>js
+classes:
+  CLASS pairs END
+  {$$ = {class: $2}}
+  ;
+</code></p>
+
+<p>类由<code>CLASS</code>关键字和<code>END</code>关键字定义，而类的属性定义和<code>Layer</code>的属性定义并无二致，都可以使用<code>pairs</code>（多条属性）。而<code>classes</code>事实上是<code>pair</code>的另一种形式，就像对属性的定义一样，所以：</p>
+
+<p><code>js
+pair:
+  NAME STRING
+  {$$ = {name: $2.substring(1, $2.length - 1)}}
+  | DATA STRING
+  {$$ = {data: $2.substring(1, $2.length - 1)}}
+  | classes
+  {$$ = $1};
+</code></p>
+
+<p>这样，解析器就可以识别<code>CLASS</code>子句了。我们注意到，在<code>CLASS</code>中，还可以定义<code>STYLE</code>，因此又需要稍作扩展：</p>
+
+<p>```js
+pair:
+  NAME STRING
+  {$$ = {name: $2.substring(1, $2.length - 1)}}
+  | DATA STRING
+  {$$ = {data: $2.substring(1, $2.length - 1)}}
+  | classes
+  {$$ = $1}
+  | styles
+  {$$ = $1};</p>
+
+<p>styles:
+  STYLE pairs END
+  {$$ = {style: $2}}
+  ;
+```</p>
+
+<p>这样，我们的解析器就可以处理样例中的所有语法了：</p>
+
+<p>```sh
+node map.js expr
+{ layer:
+   { name: 'counties',</p>
+
+<pre><code> data: 'counties-in-shaanxi-3857',
+ status: 'default',
+ type: 70,
+ class: { name: 'polygon', style: [Object] } } }
+</code></pre>
+
+<p>```</p>
+
+<p>完整的代码在github上的<a href="https://github.com/abruzzi/jison-demos">这个repo中</a>。</p>
+
+<h3>总结</h3>
+
+<p>使用<code>BNF</code>定义一个复杂配置文件的规则，事实上一个比较容易的工作。要手写这样一个解析器需要花费很多的时间，而且当你需要parser多种配置文件时，这将是一个非常无聊且痛苦的事情。学习<code>jison</code>可以帮助你很快的编写出小巧的解析器，在上面的<code>Mapfile</code>的例子中，所有的代码还不到<code>100</code>行。下一次再遇到诸如复杂的文本解析，配置文件读取的时候，先不要忙着编写<code>正则表达式</code>，试试更高效，更轻便的<code>jison</code>吧。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[工程中的编译原理 -- Jison入门篇]]></title>
     <link href="http://abruzzi.github.com/2015/09/write-a-parser/"/>
     <updated>2015-09-30T18:45:00+10:00</updated>
     <id>http://abruzzi.github.com/2015/09/write-a-parser</id>
@@ -818,246 +1136,6 @@ Sat Oct 18 2014 23:00:00 GMT-0300 (BRT)
 <p>或者也可以使用一个Datepicker控件来获取日期字符串，然后保存：</p>
 
 <p><img src="/images/2014/09/date-picker-resized.png" alt="image" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[全球地震信息的可视化（使用OpenLayers）]]></title>
-    <link href="http://abruzzi.github.com/2014/04/render-geojson-by-using-openlayers/"/>
-    <updated>2014-04-15T21:33:00+10:00</updated>
-    <id>http://abruzzi.github.com/2014/04/render-geojson-by-using-openlayers</id>
-    <content type="html"><![CDATA[<h4>OpenLayers</h4>
-
-<p>使用<a href="http://openlayers.org/">OpenLayers</a>可以很容易的搭建基于Web的GIS系统，OpenLayers支持不同的数据源(符合WMS协议的服务器，Google Maps API, Bing Maps，KML以及<a href="http://geojson.org/">GeoJSON</a>等等)。通过将不同的数据源的数据整合，我们可以开发出丰富而用户友好的GIS系统。</p>
-
-<p>OpenLayers可以轻松的处理GeoJSON数据，并将其生成矢量层，我们可以将这个层叠加在其他数据源（比如OSM）提供的地图上，以得到一个完整的小应用。</p>
-
-<p>最后的运行结果是这样的：</p>
-
-<p><img src="/images/2014/04/openlayers-earthquake-resized.png" alt="image" /></p>
-
-<h4>GeoJSON</h4>
-
-<p><a href="http://www.usgs.gov/aboutusgs/">美国地理信息调查局</a>是一个科学组织，他公开了很多地球上的灾难信息，比如对地震的统计，并提供编程接口。它公开的地震统计信息，包含全世界各地报告过的地震，以及全美所有检测到的地震，并以多种周期（小时，天，周，月等），多种格式（GeoJSON，KML，Atom等），以便应用程序的开发者只用这些数据。</p>
-
-<h4>实现</h4>
-
-<h5>设置基本环境</h5>
-
-<p>我们将借助bower来安装所有的代码依赖。首先，我们需要bower将所有的包都安装在<code>components</code>目录下，这个可以通过在当前目录的<code>.bowerrc</code>文件中制定<code>directory</code>：</p>
-
-<p>```json
-{</p>
-
-<pre><code>"directory": "components"
-</code></pre>
-
-<p>}
-```</p>
-
-<p>然后运行bower安装jquery以及openlayers：</p>
-
-<p><code>sh
-$ bower install jquery
-$ bower install openlayers
-</code></p>
-
-<p>通过bower安装OpenLayers之后，可以通过OpenLayers自带的build工具将所有的源码合并压缩为一个文件：</p>
-
-<p><code>sh
-$ cd components/openlayers/build
-$ ./build.py #将会在当前目录下生成一个OpenLayers.js的文件
-$ mv OpenLayers.js ../
-</code></p>
-
-<p>然后，创建一个简单的HTML文件，引用jquery.js和OpenLayers.js，以及我们的入口脚本app.js，本文所有的代码都只是修改这个文件。</p>
-
-<p>```html
-&lt;!DOCTYPE HTML>
-<html></p>
-
-<pre><code>&lt;head&gt;
-    &lt;meta http-equiv="content-type" content="text/html; charset=utf-8" /&gt;
-    &lt;title&gt;Earthquake distribution&lt;/title&gt;
-    &lt;link rel="stylesheet" href="style.css" /&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;div id="container"&gt;
-        &lt;div id="map"&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-    &lt;script src="components/jquery/jquery.js" type="text/javascript"&gt;&lt;/script&gt;        
-    &lt;script src="components/openlayers/OpenLayers.js" type="text/javascript"&gt;&lt;/script&gt;        
-    &lt;script src="app.js" type="text/javascript"&gt;&lt;/script&gt;        
-&lt;/body&gt;
-</code></pre>
-
-<p></html>
-```</p>
-
-<p>还可以运行<code>bower init</code>来将生成<code>bower.json</code>，以方便别人使用我们的应用：</p>
-
-<p><code>js
-$ bower init
-</code></p>
-
-<h5>基本代码</h5>
-
-<p>一个最简单的OpenLayers应用，只需要7行代码：</p>
-
-<p>```js
-$(function() {</p>
-
-<pre><code>var map = new OpenLayers.Map("map");
-var osm = new OpenLayers.Layer.OSM();
-
-map.addLayers([osm]);
-map.zoomToMaxExtent();
-</code></pre>
-
-<p>});
-```</p>
-
-<p>这段代码在id为<code>map</code>的HTML元素创建了一个地图，这个地图上有一个叫OSM的层（即<a href="http://www.openstreetmap.org/">OpenStreetMap</a>，一个开源，开放的地图平台），并将地图缩小到边界范围（以获得最大的视野）:</p>
-
-<p><img src="/images/2014/04/openlayers-osm-resized.png" alt="image" /></p>
-
-<h5>生成矢量层</h5>
-
-<p>通过GeoJSON生成矢量图非常容易：</p>
-
-<p>```js
-var geo = new OpenLayers.Layer.Vector("EarthQuake", {</p>
-
-<pre><code>strategies: [new OpenLayers.Strategy.Fixed()],
-protocol: new OpenLayers.Protocol.HTTP({
-    url: '/all_day.geojson',
-    format: new OpenLayers.Format.GeoJSON({ignoreExtraDims: true})
-})
-</code></pre>
-
-<p>});
-```</p>
-
-<p>注意此处的<a href="http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson">all_day.geojson</a>是从USGS网站上下载的，过去一天中世界各地的所有地震统计。</p>
-
-<p>上边的代码创建了一个名称为<code>EarthQuake</code>的矢量层，<code>strategies</code>中的Fixed策略表示仅请求一次资源，然后缓存在前端，不再请求。<code>protocol</code>表明数据来源为<code>all_day.geojson</code>，格式为<code>OpenLayers.Format.GeoJSON</code>。由于USGS返回的地理信息除了经纬度还包含深度，而OpenLayers默认只处理经纬度的，因此需要此处的<code>ignoreExtraDims</code>来忽略那个额外的深度信息。</p>
-
-<p><img src="/images/2014/04/openlayers-geojson-resized.png" alt="image" /></p>
-
-<h5>定制样式</h5>
-
-<p>虽然我们已经加上了新的层，也可以看到很多表示地震的点信息，但是并不能看出哪些地震是严重的，比如里氏3级以下的地震，几乎没有危害，可以标注成一种颜色；而更高震级的可以标记成另外一种颜色。</p>
-
-<p>OpenLayers可以很容易的做到这个定制化:</p>
-
-<p>```js</p>
-
-<pre><code>var style = new OpenLayers.Style();
-
-var ruleLow = new OpenLayers.Rule({
-  filter: new OpenLayers.Filter.Function({
-        evaluate: function(properties) {
-            return properties.mag &lt; 3.0;
-        }
-    }),
-  symbolizer: {pointRadius: 3, fillColor: "green",
-               fillOpacity: 0.5, strokeColor: "black"}
-});
-
-var ruleHigh = new OpenLayers.Rule({
-  filter: new OpenLayers.Filter.Function({
-        evaluate: function(properties) {
-            return properties.mag &gt;= 3.0;
-        }
-    }),
-    symbolizer: {pointRadius: 5, fillColor: "red",
-               fillOpacity: 0.7, strokeColor: "black"}
-});
-
-style.addRules([ruleLow, ruleHigh]);
-
-geo.styleMap = new OpenLayers.StyleMap(style);
-</code></pre>
-
-<p>```</p>
-
-<p>首先创建一个Style对象，为Style添加两条规则Rule，然后将Style对象包装成StyleMap并赋值给表示地震的矢量层<code>earthquake</code>。</p>
-
-<p>对于规则ruleLow，我们定义了，当一个feature的属性值mag(震级)小于三的时候后，使用绿色的，半径为3px的小圆圈来表示。而ruleHigh则定义了当震级大于等于三的时候，用红色，半径为5px的圆圈来表示。</p>
-
-<p><img src="/images/2014/04/openlayers-geojson-styling-resized.png" alt="image" /></p>
-
-<h5>加上事件处理</h5>
-
-<p>虽然我们已经可以直观的根据震级不同而看到不同颜色的点，但是整个应用仍然没有多少意义：它不具备于用户的交互能力。我们需要添加上事件处理，当用户点击地图上的一个圆点的时候，应该看到一个更详细的窗口。</p>
-
-<p>```js
-var selectControl = new OpenLayers.Control.SelectFeature(geo, {</p>
-
-<pre><code>onSelect: onFeatureSelect,
-onUnselect: onFeatureUnselect 
-</code></pre>
-
-<p>});</p>
-
-<p>map.addControl(selectControl);
-selectControl.activate();</p>
-
-<p>function onFeatureSelect(feature) {</p>
-
-<pre><code>var html = "&lt;span&gt;"+feature.attributes.title+"&lt;/span&gt;";
-
-var popup = new OpenLayers.Popup.FramedCloud("popup",
-        feature.geometry.getBounds().getCenterLonLat(),
-        null,
-        html,
-        null,
-        true
-    );
-
-popup.panMapIfOutOfView = true;
-popup.autoSize = true;
-
-feature.popup = popup;
-
-map.addPopup(popup);
-</code></pre>
-
-<p>}</p>
-
-<p>function onFeatureUnselect(feature) {</p>
-
-<pre><code>map.removePopup(feature.popup);
-feature.popup.destroy();
-feature.popup = null;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>我们在地图上添加了一个<code>SelectFeature</code>元素，并注册了回调函数：当矢量层中的矢量被选中之后，函数<code>onFeatureSelect</code>将被执行，我们可以在这个函数中添加对弹出窗口的控制。当<code>onFeatureSelect</code>执行时，OpenLayers会将当前的Feature传递进来，我们可以动态的取得震级，标题，链接等信息，并展现给最终用户。</p>
-
-<p><img src="/images/2014/04/openlayers-geojson-popup-resized.png" alt="[image]" /></p>
-
-<p>如果将数据源扩大到本周的所有地震：</p>
-
-<p>```js
-var geo = new OpenLayers.Layer.Vector("EarthQuake", {</p>
-
-<pre><code>strategies: [new OpenLayers.Strategy.Fixed()],
-protocol: new OpenLayers.Protocol.HTTP({
-    url: '/all_week.geojson',
-    format: new OpenLayers.Format.GeoJSON({ignoreExtraDims: true})
-})
-</code></pre>
-
-<p>});
-```</p>
-
-<p><img src="/images/2014/04/openlayers-geojson-weekly-resized.png" alt="image" /></p>
-
-<p>完整的代码示例<a href="https://github.com/abruzzi/earthquake-viz">可以看这里</a>。</p>
 ]]></content>
   </entry>
   
