@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "工程中的编译原理 -- JavaScript版"
+title: "工程中的编译原理 -- Jison入门篇"
 date: 2015-09-30 18:45
 comments: true
 categories: 
