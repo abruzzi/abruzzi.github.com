@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-10-05T14:20:15+11:00</updated>
+  <updated>2015-11-01T18:18:29+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,208 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[看看这些年你都学了什么？]]></title>
+    <link href="http://abruzzi.github.com/2015/11/what-you-have-learnt-those-years/"/>
+    <updated>2015-11-01T17:03:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/11/what-you-have-learnt-those-years</id>
+    <content type="html"><![CDATA[<h3>数据可视化</h3>
+
+<p>多年下来，我的<code>Google Bookmarks</code>里已经有近万条的书签。大部分内容是我在读过一遍之后就收藏起来的，也有很多看了一眼之后，觉得不错，然后收藏起来准备以后读的（当然，你也知道，再也没有打开过）。</p>
+
+<p>有没有一个方法可以让我以可视化的方式，看到这些年我都学了那些东西呢？将书签列表作为源数据，然后将这些信息可视化出来会非常有意思：比如收藏夹中的热门词是什么，哪段时间收藏了多少条的书签（学习投入程度趋势）等等。</p>
+
+<p>下图是我的书签中，排行前<code>30</code>的关键字排序。可以明显的看出，我对于<code>JavaScript</code>的喜爱程度相当高，对<code>美食</code>的喜爱也超过了<code>python</code>和<code>linux</code>。</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/11/bookmarks-trending-resized.png" alt="bookmarks trending" /></p>
+
+<p>这里我将使用<code>python</code>，结合<code>python</code>的一些库来实现<code>书签可视化</code>。简而言之，整个过程可以分成这样几个步骤：</p>
+
+<ol>
+<li>将Google Bookmarks导出为本地文件</li>
+<li>将书签文件解析为容易处理的内部格式（比如python的dict等）</li>
+<li>由于书签中会有中文的句子，所以会涉及到分词</li>
+<li>统计词语的频率，并绘制成图标</li>
+</ol>
+
+
+<h4>数据源</h4>
+
+<p><code>Google Bookmarks</code>本身可以直接导出成<code>HTML</code>文件。该<code>HTML</code>文件包含了时间戳和书签的标题，我们可以通过<code>python</code>的库<code>BeautifulSoup</code>将HTML中的文本抽取出来：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">load_bookmarks_data</span><span class="p">():</span>
+</span><span class='line'>  <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s">&#39;bookmarks_10_21_15.html&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="s">&quot;html.parser&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">soup</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+</span><span class='line'>  
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">print</span> <span class="n">load_bookmarks_data</span><span class="p">()</span>    
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>BeautifulSoup</code>提供非常好用的API来抽取结构化文档中的内容。</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/11/bookmark-titles-resized.png" alt="bookmark titles" /></p>
+
+<h4>分词</h4>
+
+<p><code>BeautifulSoup</code>获得的是一条条独立的句子，我们需要使用分词器将所有的句子分解成片段。这里我使用了<code>jieba</code>（<a href="https://github.com/fxsjy/jieba">结巴分词</a>）分词器来完成这个任务：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">jieba</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="s">&quot;我在出报表，你的博客写的怎么样了&quot;</span>
+</span><span class='line'><span class="n">seg_list</span> <span class="o">=</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">seg_list</span><span class="p">:</span>
+</span><span class='line'>     <span class="k">print</span> <span class="n">seg</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将会输出：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">我</span>
+</span><span class='line'><span class="err">在</span>
+</span><span class='line'><span class="err">出</span>
+</span><span class='line'><span class="err">报表</span>
+</span><span class='line'><span class="err">，</span>
+</span><span class='line'><span class="err">你</span>
+</span><span class='line'><span class="err">的</span>
+</span><span class='line'><span class="err">博客</span>
+</span><span class='line'><span class="err">写</span>
+</span><span class='line'><span class="err">的</span>
+</span><span class='line'><span class="err">怎么样</span>
+</span><span class='line'><span class="err">了</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们定义一个方法来将上一步中的文本分词：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">extract_segments</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">seg_list</span> <span class="o">=</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="n">seg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">seg_list</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>分词之后，我们将单词转换为小写，并剔除掉那些长度小于1的字符串。这样可以保证所有的词都是词语。python的<code>list推导式</code>写起来非常简洁，一行代码就完成了<code>过滤</code>和<code>映射</code>的工作。</p>
+
+<h4>可视化</h4>
+
+<p>有了分好的词之后，只需要统计每个词出现的频率，然后按照频率来绘制图表。我们使用<code>python</code>标准库中的<code>Counter</code>来实现：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">tokenize</span><span class="p">():</span> 
+</span><span class='line'>  <span class="n">filtered</span> <span class="o">=</span> <span class="n">extract_segments</span><span class="p">(</span><span class="n">load_bookmarks_data</span><span class="p">())</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">Counter</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">filtered</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>要获取前<code>N</code>个，只需要使用<code>most_common(N)</code>即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">tokenize</span><span class="p">()</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[(</span><span class="s">u&#39;and&#39;</span><span class="p">,</span> <span class="mi">552</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;the&#39;</span><span class="p">,</span> <span class="mi">501</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;with&#39;</span><span class="p">,</span> <span class="mi">485</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;to&#39;</span><span class="p">,</span> <span class="mi">446</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;javascript&#39;</span><span class="p">,</span> <span class="mi">432</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;in&#39;</span><span class="p">,</span> <span class="mi">330</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;for&#39;</span><span class="p">,</span> <span class="mi">308</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;...&#39;</span><span class="p">,</span> <span class="mi">270</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;java&#39;</span><span class="p">,</span> <span class="mi">270</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;blog&#39;</span><span class="p">,</span> <span class="mi">269</span><span class="p">)]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有了数据之后，使用<code>matplotlib</code>做一个简单的<code>bar</code>图标：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">matplotlib</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">visualize</span><span class="p">():</span>
+</span><span class='line'>  <span class="n">frame</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">tokenize</span><span class="p">()</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;keywords&#39;</span><span class="p">,</span> <span class="s">&#39;frequencies&#39;</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">ax</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s">&#39;bar&#39;</span><span class="p">)</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;bookmarks_trending.png&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2015/11/bookmarks-trending-with-stops-resized.png" alt="" /></p>
+
+<h4>stopwords</h4>
+
+<p>不过，上图中有很多噪音信息，如<code>and</code>, <code>the</code>等，这些在所有文章中都会出现的词并没有实际意义，统称为<code>stopwords</code>。通常在计算过程中会将其忽略：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">tokenize</span><span class="p">():</span>  
+</span><span class='line'>  <span class="n">stoplist</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;me&#39;</span><span class="p">,</span> <span class="s">&#39;my&#39;</span><span class="p">,</span> <span class="s">&#39;myself&#39;</span><span class="p">,</span> <span class="s">&#39;we&#39;</span><span class="p">,</span> <span class="s">&#39;our&#39;</span><span class="p">,</span> <span class="s">&#39;ours&#39;</span><span class="p">,</span> <span class="s">&#39;ourselves&#39;</span><span class="p">,</span> <span class="s">&#39;you&#39;</span><span class="p">,</span> <span class="s">&#39;your&#39;</span><span class="p">,</span> <span class="s">&#39;yours&#39;</span><span class="p">,</span> <span class="s">&#39;yourself&#39;</span><span class="p">,</span> <span class="s">&#39;yourselves&#39;</span><span class="p">,</span> <span class="s">&#39;he&#39;</span><span class="p">,</span> <span class="s">&#39;him&#39;</span><span class="p">,</span> <span class="s">&#39;his&#39;</span><span class="p">,</span> <span class="s">&#39;himself&#39;</span><span class="p">,</span> <span class="s">&#39;she&#39;</span><span class="p">,</span> <span class="s">&#39;her&#39;</span><span class="p">,</span> <span class="s">&#39;hers&#39;</span><span class="p">,</span> <span class="s">&#39;herself&#39;</span><span class="p">,</span> <span class="s">&#39;it&#39;</span><span class="p">,</span> <span class="s">&#39;its&#39;</span><span class="p">,</span> <span class="s">&#39;itself&#39;</span><span class="p">,</span> <span class="s">&#39;they&#39;</span><span class="p">,</span> <span class="s">&#39;them&#39;</span><span class="p">,</span> <span class="s">&#39;their&#39;</span><span class="p">,</span> <span class="s">&#39;theirs&#39;</span><span class="p">,</span> <span class="s">&#39;themselves&#39;</span><span class="p">,</span> <span class="s">&#39;what&#39;</span><span class="p">,</span> <span class="s">&#39;which&#39;</span><span class="p">,</span> <span class="s">&#39;who&#39;</span><span class="p">,</span> <span class="s">&#39;whom&#39;</span><span class="p">,</span> <span class="s">&#39;this&#39;</span><span class="p">,</span> <span class="s">&#39;that&#39;</span><span class="p">,</span> <span class="s">&#39;these&#39;</span><span class="p">,</span> <span class="s">&#39;those&#39;</span><span class="p">,</span> <span class="s">&#39;am&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="s">&#39;are&#39;</span><span class="p">,</span> <span class="s">&#39;was&#39;</span><span class="p">,</span> <span class="s">&#39;were&#39;</span><span class="p">,</span> <span class="s">&#39;be&#39;</span><span class="p">,</span> <span class="s">&#39;been&#39;</span><span class="p">,</span> <span class="s">&#39;being&#39;</span><span class="p">,</span> <span class="s">&#39;have&#39;</span><span class="p">,</span> <span class="s">&#39;has&#39;</span><span class="p">,</span> <span class="s">&#39;had&#39;</span><span class="p">,</span> <span class="s">&#39;having&#39;</span><span class="p">,</span> <span class="s">&#39;do&#39;</span><span class="p">,</span> <span class="s">&#39;does&#39;</span><span class="p">,</span> <span class="s">&#39;did&#39;</span><span class="p">,</span> <span class="s">&#39;doing&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;an&#39;</span><span class="p">,</span> <span class="s">&#39;the&#39;</span><span class="p">,</span> <span class="s">&#39;and&#39;</span><span class="p">,</span> <span class="s">&#39;but&#39;</span><span class="p">,</span> <span class="s">&#39;if&#39;</span><span class="p">,</span> <span class="s">&#39;or&#39;</span><span class="p">,</span> <span class="s">&#39;because&#39;</span><span class="p">,</span> <span class="s">&#39;as&#39;</span><span class="p">,</span> <span class="s">&#39;until&#39;</span><span class="p">,</span> <span class="s">&#39;while&#39;</span><span class="p">,</span> <span class="s">&#39;of&#39;</span><span class="p">,</span> <span class="s">&#39;at&#39;</span><span class="p">,</span> <span class="s">&#39;by&#39;</span><span class="p">,</span> <span class="s">&#39;for&#39;</span><span class="p">,</span> <span class="s">&#39;with&#39;</span><span class="p">,</span> <span class="s">&#39;about&#39;</span><span class="p">,</span> <span class="s">&#39;against&#39;</span><span class="p">,</span> <span class="s">&#39;between&#39;</span><span class="p">,</span> <span class="s">&#39;into&#39;</span><span class="p">,</span> <span class="s">&#39;through&#39;</span><span class="p">,</span> <span class="s">&#39;during&#39;</span><span class="p">,</span> <span class="s">&#39;before&#39;</span><span class="p">,</span> <span class="s">&#39;after&#39;</span><span class="p">,</span> <span class="s">&#39;above&#39;</span><span class="p">,</span> <span class="s">&#39;below&#39;</span><span class="p">,</span> <span class="s">&#39;to&#39;</span><span class="p">,</span> <span class="s">&#39;from&#39;</span><span class="p">,</span> <span class="s">&#39;up&#39;</span><span class="p">,</span> <span class="s">&#39;down&#39;</span><span class="p">,</span> <span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="s">&#39;out&#39;</span><span class="p">,</span> <span class="s">&#39;on&#39;</span><span class="p">,</span> <span class="s">&#39;off&#39;</span><span class="p">,</span> <span class="s">&#39;over&#39;</span><span class="p">,</span> <span class="s">&#39;under&#39;</span><span class="p">,</span> <span class="s">&#39;again&#39;</span><span class="p">,</span> <span class="s">&#39;further&#39;</span><span class="p">,</span> <span class="s">&#39;then&#39;</span><span class="p">,</span> <span class="s">&#39;once&#39;</span><span class="p">,</span> <span class="s">&#39;here&#39;</span><span class="p">,</span> <span class="s">&#39;there&#39;</span><span class="p">,</span> <span class="s">&#39;when&#39;</span><span class="p">,</span> <span class="s">&#39;where&#39;</span><span class="p">,</span> <span class="s">&#39;why&#39;</span><span class="p">,</span> <span class="s">&#39;how&#39;</span><span class="p">,</span> <span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="s">&#39;any&#39;</span><span class="p">,</span> <span class="s">&#39;both&#39;</span><span class="p">,</span> <span class="s">&#39;each&#39;</span><span class="p">,</span> <span class="s">&#39;few&#39;</span><span class="p">,</span> <span class="s">&#39;more&#39;</span><span class="p">,</span> <span class="s">&#39;most&#39;</span><span class="p">,</span> <span class="s">&#39;other&#39;</span><span class="p">,</span> <span class="s">&#39;some&#39;</span><span class="p">,</span> <span class="s">&#39;such&#39;</span><span class="p">,</span> <span class="s">&#39;no&#39;</span><span class="p">,</span> <span class="s">&#39;nor&#39;</span><span class="p">,</span> <span class="s">&#39;not&#39;</span><span class="p">,</span> <span class="s">&#39;only&#39;</span><span class="p">,</span> <span class="s">&#39;own&#39;</span><span class="p">,</span> <span class="s">&#39;same&#39;</span><span class="p">,</span> <span class="s">&#39;so&#39;</span><span class="p">,</span> <span class="s">&#39;than&#39;</span><span class="p">,</span> <span class="s">&#39;too&#39;</span><span class="p">,</span> <span class="s">&#39;very&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="s">&#39;can&#39;</span><span class="p">,</span> <span class="s">&#39;will&#39;</span><span class="p">,</span> <span class="s">&#39;just&#39;</span><span class="p">,</span> <span class="s">&#39;don&#39;</span><span class="p">,</span> <span class="s">&#39;should&#39;</span><span class="p">,</span> <span class="s">&#39;now&#39;</span><span class="p">]</span>
+</span><span class='line'>  <span class="n">stoplist</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">&#39;...&#39;</span><span class="p">,</span> <span class="s">&#39;com&#39;</span><span class="p">,</span> <span class="s">&#39;using&#39;</span><span class="p">,</span> <span class="s">u&#39;使用&#39;</span><span class="p">,</span> <span class="s">&#39;blog&#39;</span><span class="p">,</span> <span class="s">u&#39;博客&#39;</span><span class="p">,</span> <span class="s">u&#39;博客园&#39;</span><span class="p">,</span> <span class="s">u&#39;做法&#39;</span><span class="p">,</span> <span class="s">u&#39;论坛&#39;</span><span class="p">,</span> <span class="s">&#39;part&#39;</span><span class="p">,</span> <span class="s">u&#39;部分&#39;</span><span class="p">,</span> <span class="s">u&#39;天下&#39;</span><span class="p">])</span>
+</span><span class='line'>  <span class="n">filtered</span> <span class="o">=</span> <span class="n">extract_segments</span><span class="p">(</span><span class="n">load_bookmarks_data</span><span class="p">())</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">return</span> <span class="n">Counter</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">filtered</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stoplist</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>重新绘制即可获得上文中的图：</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/11/bookmarks-trending-resized.png" alt="bookmarks trending" /></p>
+
+<p>完整的代码<a href="https://github.com/abruzzi/bookmarks-viz">请参考这里</a>。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[工程中的编译原理 -- Mapfile解析器]]></title>
@@ -5672,372 +5874,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 <p><img src="http://abruzzi.github.com/images/2015/01/feature-highlight-resized.png" alt="cucumber feature" /></p>
 
 <p>如果你经常写代码，喜欢分享自己学到的，并且喜欢以简短的代码来举例子，那么这个工具非常适合你。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[编写体面的UI测试]]></title>
-    <link href="http://abruzzi.github.com/2015/01/page-object-with-site-prism/"/>
-    <updated>2015-01-02T13:58:00+11:00</updated>
-    <id>http://abruzzi.github.com/2015/01/page-object-with-site-prism</id>
-    <content type="html"><![CDATA[<h3>PageObject简介</h3>
-
-<p><code>PageObject</code>是编写UI测试时的<a href="http://martinfowler.com/bliki/PageObject.html">一种模式</a>。简而言之，你可以将所有知道页面细节的部分放入到这个对象上，对于编写测试的人来说，一个<code>PageObject</code>代表了一个页面，或者页面上的一个区域（比如搜索框，搜索结果，侧边栏等都可能是一个独立的<code>Object</code>）。这样做的好处分为两个方面：</p>
-
-<ol>
-<li>封装了所有的实现细节（内部的HTML是如何组织的）</li>
-<li>对外的接口非常清晰，从而代码更加语义化</li>
-</ol>
-
-
-<p>我们这里列举一个简单的例子来说明：</p>
-
-<p>我们要测试的场景是：我们在一个搜索应用中，用户输入了<code>ThoughtWorks</code>，我们来判断搜索结果的第一页有<code>10</code>条结果。如果使用原生的<code>capybara</code>，代码大致会如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">visit</span> <span class="s1">&#39;/search&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">fill_in</span> <span class="s1">&#39;Search&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;ThoughtWorks&#39;</span>
-</span><span class='line'><span class="n">click_button</span> <span class="s1">&#39;#search&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">expect</span><span class="p">(</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;#result&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;.tips&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;10&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>首先我们进入<code>/search</code>页面，然后在<code>Search</code>中输入了<code>ThoughtWorks</code>关键字，然后点击<code>#search</code>按钮，最后判断<code>#result .tips</code>下有<code>10</code>的字样。</p>
-
-<p>如果使用<code>PageObject</code>，代码则会变成（<em>这个是伪代码</em>）：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">search</span> <span class="o">=</span> <span class="no">SearchBox</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="no">SearchResult</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">search</span><span class="o">.</span><span class="n">type</span> <span class="s2">&quot;ThoughtWorks&quot;</span>
-</span><span class='line'><span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>site_prism 简介</h3>
-
-<p><a href="https://github.com/natritmeyer/site_prism">site_prism</a>是一个构建在<a href="https://github.com/jnicklas/capybara">capybara</a>之上的用于建模<code>Page Object</code>的gem。使用<code>site_prism</code>可以很语义化的编写<code>Page Object</code>，可以使代码非常易读。</p>
-
-<p>位于<code>顶层</code>的<code>Page</code>对象可以拥有多个<code>Section</code>对象，每个<code>Section</code>可以对应页面上的一些逻辑上的块，比如内容区域，边栏等。对于现在流行的<code>SPA</code>，我们只需要一个<code>Page</code>和若干个<code>Section</code>就足够了。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">MovingHome</span> <span class="o">&lt;</span> <span class="no">SitePrism</span><span class="o">::</span><span class="no">Page</span>
-</span><span class='line'>  <span class="n">set_url</span> <span class="s1">&#39;http://localhost:8100/bundles/moving-home&#39;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:container</span><span class="p">,</span> <span class="s2">&quot;#tmsCheckout&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">section</span> <span class="ss">:personal</span><span class="p">,</span> <span class="no">PersonalSection</span><span class="p">,</span> <span class="s2">&quot;#acc-personal&quot;</span>
-</span><span class='line'>  <span class="n">section</span> <span class="ss">:contact</span><span class="p">,</span> <span class="no">ContactSection</span><span class="p">,</span> <span class="s2">&quot;#acc-contact&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>set_url</code>方法制定了如何到达当前页，也是<code>webdriver</code>会实际发送请求的<code>URL</code>。页面本身上可以用<code>element</code>方法来声明一个元素，以及该元素对应的CSS选择器，这样就可以通过元素的名称来访问该选择器对应的HTML元素了。</p>
-
-<p>比如上例中的<code>container</code>，我们在测试中就可以这样来访问它：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="vi">@moving</span> <span class="o">=</span> <span class="no">MovingHome</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="vi">@moving</span><span class="o">.</span><span class="n">load</span>
-</span><span class='line'>
-</span><span class='line'><span class="vi">@moving</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">should</span> <span class="n">be_visible</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而对应的<code>section</code>元素，则声明了一个块的名称，块的类和块的选择器。这样我们就可以通过名称来应用该块了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">set</span> <span class="s2">&quot;Juntao&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">expect</span><span class="p">(</span><span class="vi">@moving</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_personal</span>
-</span><span class='line'><span class="n">expect</span><span class="p">(</span><span class="vi">@moving</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_contact</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>have_</code>前缀加块的名称，用来判断该块是否可见（比如display: block）。</p>
-
-<h3>一个项目上的实例</h3>
-
-<p>目前项目上有一个页面需要添加一些新的特性，对应的需要添加一些UI测试。之前的所有代码都是面向过程的，代码非常多，重复代码都通过抽成一个函数来组织，无法和实际的页面模块对应起来。因此我使用<code>site_prism</code>做了一些尝试。</p>
-
-<p>业务场景是这样的：用户想要办理移机业务（比如搬家了，相应的宽带/有线电视要办理移机），这时候用户需要填写一些个人信息，联系方式，老地址，新地址等，这样我们就可以联系到他并帮他完成移机。而目前的页面也已经按照这些信息的关联度组织成了这样的形式：</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/01/moving-home-resized.png" alt="moving home" /></p>
-
-<p>可以看到，页面本身的组织已经比较清晰了，这非常方便我们抽取<code>PageObject</code>：每一个<code>块</code>都可以抽取为一个<code>Section</code>类的子类。</p>
-
-<h4>第一次尝试</h4>
-
-<p>比如对于个人信息这一个块：</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/01/personal-resized.png" alt="personal" /></p>
-
-<p>这个块包含称呼，姓名，出生日期等几部分，我们可以很容易找到对应的页面元素，并抽取为：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">PersonalSection</span> <span class="o">&lt;</span> <span class="no">SitePrism</span><span class="o">::</span><span class="no">Section</span>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:myservice</span><span class="p">,</span> <span class="s2">&quot;#personal-my-services&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:title</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.title&quot;</span>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:first</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.firstName&quot;</span>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:last</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.lastName&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:dob_day</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.dobDay&quot;</span>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:dob_month</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.dobMonth&quot;</span>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:dob_year</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.dobYear&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:summary</span><span class="p">,</span> <span class="s2">&quot;.tms-accordion-summary-content&quot;</span>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:next</span><span class="p">,</span> <span class="s2">&quot;.tms-btn-next&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最直接的使用方法就是直接调用<code>set</code>方法：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">def</span> <span class="nf">fulfill_personal</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">myservice</span><span class="o">.</span><span class="n">set</span> <span class="s2">&quot;MINE&quot;</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">select</span> <span class="s2">&quot;Mr&quot;</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">set</span> <span class="s2">&quot;Juntao&quot;</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">set</span> <span class="s2">&quot;Qiu&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">dob_day</span><span class="o">.</span><span class="n">select</span> <span class="s2">&quot;21&quot;</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">dob_month</span><span class="o">.</span><span class="n">select</span> <span class="s2">&quot;Jan&quot;</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">dob_year</span><span class="o">.</span><span class="n">select</span> <span class="s2">&quot;1985&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">click</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样在<code>Cucumber</code>测试中就可以写成：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">Given</span> <span class="sr">/I am on moving home page/</span> <span class="k">do</span>
-</span><span class='line'>  <span class="vi">@moving</span> <span class="o">=</span> <span class="no">MovingHome</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>      <span class="vi">@moving</span><span class="o">.</span><span class="n">load</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">When</span> <span class="sr">/I fulfill my personal information/</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">fulfill_personal</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>面向对象</h4>
-
-<p>这样的代码事实上已经沦为了面向过程的方式了，更好的做法是讲fulfill_personal放入<code>Personal</code>本身中：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">def</span> <span class="nf">fulfill</span><span class="p">(</span><span class="n">personal</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">myservice</span><span class="o">.</span><span class="n">set</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;myservice&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="n">title</span><span class="o">.</span><span class="n">select</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;title&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="n">first</span><span class="o">.</span><span class="n">set</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;first&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="n">last</span><span class="o">.</span><span class="n">set</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;last&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="n">dob_day</span><span class="o">.</span><span class="n">select</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;dob_day&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="n">dob_month</span><span class="o">.</span><span class="n">select</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;dob_month&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="n">dob_year</span><span class="o">.</span><span class="n">select</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;dob_year&quot;</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">next_button</span><span class="o">.</span><span class="n">click</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，外部的使用者只需要调用即可：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">fixture</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">::</span><span class="n">load_file</span><span class="p">(</span><span class="s1">&#39;fixtures/moving.yml&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">fulfill</span><span class="p">(</span><span class="n">fixture</span><span class="o">[</span><span class="s2">&quot;personal&quot;</span><span class="o">]</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>对应的<code>moving.yml</code>文件定义如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">personal</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">myservice</span><span class="p-Indicator">:</span> <span class="s">&quot;MINE&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">title</span><span class="p-Indicator">:</span> <span class="s">&quot;Mr&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">first</span><span class="p-Indicator">:</span> <span class="s">&quot;Juntao&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">last</span><span class="p-Indicator">:</span> <span class="s">&quot;Qiu&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">dob_day</span><span class="p-Indicator">:</span> <span class="s">&quot;1&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">dob_month</span><span class="p-Indicator">:</span> <span class="s">&quot;Jan&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">dob_year</span><span class="p-Indicator">:</span> <span class="s">&quot;1985&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Misc</h4>
-
-<p>为了达到视觉效果，UI上通常会有一些延迟的效果。比如点击一个按钮，在100ms之后弹出一个对话框，但是这种效果会导致测试的<code>随机</code>失败。</p>
-
-<p>为了解决这个问题，我们可以通过给元素添加<code>wait_until_</code>前缀来等待。比如我们的测试中，在点击了下一步的按钮之后，预期有一个<code>查看收费详情</code>的对话框出现。根据一般的实现方式，这个对话框是预先写在页面上的，然后在合适的实际通过<code>JavaScript</code>将其显示在页面上（这样我们就不能通过查看该元素<em>是否存在</em>在页面上来编写断言了）。</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/01/lightbox-resized.png" alt="lightbox" /></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">element</span> <span class="ss">:lightbox_view_fees</span><span class="p">,</span> <span class="s2">&quot;#tmsLBViewFees&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">Then</span> <span class="sr">/I can see the lightbox View Fees shows up/</span> <span class="k">do</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">wait_until_lightbox_view_fees_visible</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>最后的结论</h3>
-
-<p>通常，我们的UI测试会和<code>特性描述</code>写在一起，以<code>Cucumber</code>为例，在<code>feature</code>文件中，我们会编写诸如这样的描述：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">Feature</span><span class="p">:</span> <span class="no">Platinum</span> <span class="no">Move</span>
-</span><span class='line'>  <span class="no">Scenario</span><span class="p">:</span> <span class="no">Platinum</span> <span class="no">Move</span>
-</span><span class='line'>      <span class="no">Given</span> <span class="n">I</span> <span class="n">am</span> <span class="n">on</span> <span class="n">moving</span> <span class="n">home</span> <span class="n">page</span>
-</span><span class='line'>      <span class="no">When</span> <span class="n">I</span> <span class="nb">select</span> <span class="n">to</span> <span class="n">move</span> <span class="n">my</span> <span class="n">service</span> <span class="s2">&quot;Foxtel from Telstra&quot;</span>
-</span><span class='line'>      <span class="no">And</span> <span class="n">I</span> <span class="nb">select</span> <span class="n">a</span> <span class="s2">&quot;Telstra technician install&quot;</span>
-</span><span class='line'>      <span class="no">Then</span> <span class="n">I</span> <span class="n">can</span> <span class="n">see</span> <span class="n">the</span> <span class="n">lightbox</span> <span class="s2">&quot;View Fees&quot;</span> <span class="n">shows</span> <span class="n">up</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而一个良好的<code>实现</code>，我是说，像<code>feature</code>描述一样清晰的实现，可能是这样的：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">Given</span> <span class="sr">/I am on moving home page/</span> <span class="k">do</span>
-</span><span class='line'>  <span class="vi">@moving</span> <span class="o">=</span> <span class="no">MovingHome</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>      <span class="vi">@moving</span><span class="o">.</span><span class="n">load</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">When</span> <span class="sr">/I select to move my telstra service &quot;([^&quot;]*)&quot;/</span> <span class="k">do</span> <span class="o">|</span><span class="n">selected</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">setup_data</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">fulfill</span> <span class="n">selected</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Then</span> <span class="sr">/I can see the installation form/</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">expect</span><span class="p">(</span><span class="vi">@moving</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_move_service</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Then</span> <span class="sr">/I cannot see the installation form/</span> <span class="k">do</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">move_service</span><span class="o">.</span><span class="n">should_not</span> <span class="n">be_visible</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">And</span> <span class="sr">/I select a &quot;([^&quot;]*)&quot;/</span> <span class="k">do</span> <span class="o">|</span><span class="n">install</span><span class="o">|</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">move_service</span><span class="o">.</span><span class="n">select_install</span> <span class="n">install</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Then</span> <span class="sr">/I can see the lightbox &quot;([^&quot;]*)&quot; shows up/</span> <span class="k">do</span> <span class="o">|</span><span class="nb">name</span><span class="o">|</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">lightbox</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_visible</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>基本上，每个<code>step</code>仅仅对应1行（或者很少的几行）代码，而这些代码背后有一组组织良好的<code>PageObject</code>。</p>
 ]]></content>
   </entry>
   

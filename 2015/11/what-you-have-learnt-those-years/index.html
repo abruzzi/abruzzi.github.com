@@ -1,0 +1,437 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>看看这些年你都学了什么？ - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="数据可视化 多年下来，我的Google Bookmarks里已经有近万条的书签。大部分内容是我在读过一遍之后就收藏起来的，也有很多看了一眼之后，觉得不错，然后收藏起来准备以后读的（当然，你也知道，再也没有打开过）。 有没有一个方法可以让我以可视化的方式，看到这些年我都学了那些东西呢？ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2015/11/what-you-have-learnt-those-years">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">文章</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="/jsccp">JavaScript核心概念及实践</a></li>
+  <li><a href="/lwweb">轻量级Web应用开发</a></li>
+  <li><a href="/3p3w">三周三页面</a></li>
+  <li><a href="/about-me">关于我</a></li>
+</ul>
+
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">看看这些年你都学了什么？</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-01T17:03:00+11:00" pubdate data-updated="true">Nov 1<span>st</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>数据可视化</h3>
+
+<p>多年下来，我的<code>Google Bookmarks</code>里已经有近万条的书签。大部分内容是我在读过一遍之后就收藏起来的，也有很多看了一眼之后，觉得不错，然后收藏起来准备以后读的（当然，你也知道，再也没有打开过）。</p>
+
+<p>有没有一个方法可以让我以可视化的方式，看到这些年我都学了那些东西呢？将书签列表作为源数据，然后将这些信息可视化出来会非常有意思：比如收藏夹中的热门词是什么，哪段时间收藏了多少条的书签（学习投入程度趋势）等等。</p>
+
+<p>下图是我的书签中，排行前<code>30</code>的关键字排序。可以明显的看出，我对于<code>JavaScript</code>的喜爱程度相当高，对<code>美食</code>的喜爱也超过了<code>python</code>和<code>linux</code>。</p>
+
+<p><img src="/images/2015/11/bookmarks-trending-resized.png" alt="bookmarks trending" /></p>
+
+<p>这里我将使用<code>python</code>，结合<code>python</code>的一些库来实现<code>书签可视化</code>。简而言之，整个过程可以分成这样几个步骤：</p>
+
+<ol>
+<li>将Google Bookmarks导出为本地文件</li>
+<li>将书签文件解析为容易处理的内部格式（比如python的dict等）</li>
+<li>由于书签中会有中文的句子，所以会涉及到分词</li>
+<li>统计词语的频率，并绘制成图标</li>
+</ol>
+
+
+<h4>数据源</h4>
+
+<p><code>Google Bookmarks</code>本身可以直接导出成<code>HTML</code>文件。该<code>HTML</code>文件包含了时间戳和书签的标题，我们可以通过<code>python</code>的库<code>BeautifulSoup</code>将HTML中的文本抽取出来：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">load_bookmarks_data</span><span class="p">():</span>
+</span><span class='line'>  <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s">&#39;bookmarks_10_21_15.html&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="s">&quot;html.parser&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">soup</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+</span><span class='line'>  
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">print</span> <span class="n">load_bookmarks_data</span><span class="p">()</span>    
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>BeautifulSoup</code>提供非常好用的API来抽取结构化文档中的内容。</p>
+
+<p><img src="/images/2015/11/bookmark-titles-resized.png" alt="bookmark titles" /></p>
+
+<h4>分词</h4>
+
+<p><code>BeautifulSoup</code>获得的是一条条独立的句子，我们需要使用分词器将所有的句子分解成片段。这里我使用了<code>jieba</code>（<a href="https://github.com/fxsjy/jieba">结巴分词</a>）分词器来完成这个任务：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">jieba</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="s">&quot;我在出报表，你的博客写的怎么样了&quot;</span>
+</span><span class='line'><span class="n">seg_list</span> <span class="o">=</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">seg_list</span><span class="p">:</span>
+</span><span class='line'>     <span class="k">print</span> <span class="n">seg</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将会输出：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">我</span>
+</span><span class='line'><span class="err">在</span>
+</span><span class='line'><span class="err">出</span>
+</span><span class='line'><span class="err">报表</span>
+</span><span class='line'><span class="err">，</span>
+</span><span class='line'><span class="err">你</span>
+</span><span class='line'><span class="err">的</span>
+</span><span class='line'><span class="err">博客</span>
+</span><span class='line'><span class="err">写</span>
+</span><span class='line'><span class="err">的</span>
+</span><span class='line'><span class="err">怎么样</span>
+</span><span class='line'><span class="err">了</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们定义一个方法来将上一步中的文本分词：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">extract_segments</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">seg_list</span> <span class="o">=</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="n">seg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">seg_list</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>分词之后，我们将单词转换为小写，并剔除掉那些长度小于1的字符串。这样可以保证所有的词都是词语。python的<code>list推导式</code>写起来非常简洁，一行代码就完成了<code>过滤</code>和<code>映射</code>的工作。</p>
+
+<h4>可视化</h4>
+
+<p>有了分好的词之后，只需要统计每个词出现的频率，然后按照频率来绘制图表。我们使用<code>python</code>标准库中的<code>Counter</code>来实现：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">tokenize</span><span class="p">():</span> 
+</span><span class='line'>  <span class="n">filtered</span> <span class="o">=</span> <span class="n">extract_segments</span><span class="p">(</span><span class="n">load_bookmarks_data</span><span class="p">())</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">Counter</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">filtered</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>要获取前<code>N</code>个，只需要使用<code>most_common(N)</code>即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">tokenize</span><span class="p">()</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[(</span><span class="s">u&#39;and&#39;</span><span class="p">,</span> <span class="mi">552</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;the&#39;</span><span class="p">,</span> <span class="mi">501</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;with&#39;</span><span class="p">,</span> <span class="mi">485</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;to&#39;</span><span class="p">,</span> <span class="mi">446</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;javascript&#39;</span><span class="p">,</span> <span class="mi">432</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;in&#39;</span><span class="p">,</span> <span class="mi">330</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;for&#39;</span><span class="p">,</span> <span class="mi">308</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;...&#39;</span><span class="p">,</span> <span class="mi">270</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;java&#39;</span><span class="p">,</span> <span class="mi">270</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;blog&#39;</span><span class="p">,</span> <span class="mi">269</span><span class="p">)]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有了数据之后，使用<code>matplotlib</code>做一个简单的<code>bar</code>图标：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">matplotlib</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">visualize</span><span class="p">():</span>
+</span><span class='line'>  <span class="n">frame</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">tokenize</span><span class="p">()</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;keywords&#39;</span><span class="p">,</span> <span class="s">&#39;frequencies&#39;</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">ax</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s">&#39;bar&#39;</span><span class="p">)</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;bookmarks_trending.png&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2015/11/bookmarks-trending-with-stops-resized.png" alt="" /></p>
+
+<h4>stopwords</h4>
+
+<p>不过，上图中有很多噪音信息，如<code>and</code>, <code>the</code>等，这些在所有文章中都会出现的词并没有实际意义，统称为<code>stopwords</code>。通常在计算过程中会将其忽略：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">tokenize</span><span class="p">():</span>  
+</span><span class='line'>  <span class="n">stoplist</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;me&#39;</span><span class="p">,</span> <span class="s">&#39;my&#39;</span><span class="p">,</span> <span class="s">&#39;myself&#39;</span><span class="p">,</span> <span class="s">&#39;we&#39;</span><span class="p">,</span> <span class="s">&#39;our&#39;</span><span class="p">,</span> <span class="s">&#39;ours&#39;</span><span class="p">,</span> <span class="s">&#39;ourselves&#39;</span><span class="p">,</span> <span class="s">&#39;you&#39;</span><span class="p">,</span> <span class="s">&#39;your&#39;</span><span class="p">,</span> <span class="s">&#39;yours&#39;</span><span class="p">,</span> <span class="s">&#39;yourself&#39;</span><span class="p">,</span> <span class="s">&#39;yourselves&#39;</span><span class="p">,</span> <span class="s">&#39;he&#39;</span><span class="p">,</span> <span class="s">&#39;him&#39;</span><span class="p">,</span> <span class="s">&#39;his&#39;</span><span class="p">,</span> <span class="s">&#39;himself&#39;</span><span class="p">,</span> <span class="s">&#39;she&#39;</span><span class="p">,</span> <span class="s">&#39;her&#39;</span><span class="p">,</span> <span class="s">&#39;hers&#39;</span><span class="p">,</span> <span class="s">&#39;herself&#39;</span><span class="p">,</span> <span class="s">&#39;it&#39;</span><span class="p">,</span> <span class="s">&#39;its&#39;</span><span class="p">,</span> <span class="s">&#39;itself&#39;</span><span class="p">,</span> <span class="s">&#39;they&#39;</span><span class="p">,</span> <span class="s">&#39;them&#39;</span><span class="p">,</span> <span class="s">&#39;their&#39;</span><span class="p">,</span> <span class="s">&#39;theirs&#39;</span><span class="p">,</span> <span class="s">&#39;themselves&#39;</span><span class="p">,</span> <span class="s">&#39;what&#39;</span><span class="p">,</span> <span class="s">&#39;which&#39;</span><span class="p">,</span> <span class="s">&#39;who&#39;</span><span class="p">,</span> <span class="s">&#39;whom&#39;</span><span class="p">,</span> <span class="s">&#39;this&#39;</span><span class="p">,</span> <span class="s">&#39;that&#39;</span><span class="p">,</span> <span class="s">&#39;these&#39;</span><span class="p">,</span> <span class="s">&#39;those&#39;</span><span class="p">,</span> <span class="s">&#39;am&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="s">&#39;are&#39;</span><span class="p">,</span> <span class="s">&#39;was&#39;</span><span class="p">,</span> <span class="s">&#39;were&#39;</span><span class="p">,</span> <span class="s">&#39;be&#39;</span><span class="p">,</span> <span class="s">&#39;been&#39;</span><span class="p">,</span> <span class="s">&#39;being&#39;</span><span class="p">,</span> <span class="s">&#39;have&#39;</span><span class="p">,</span> <span class="s">&#39;has&#39;</span><span class="p">,</span> <span class="s">&#39;had&#39;</span><span class="p">,</span> <span class="s">&#39;having&#39;</span><span class="p">,</span> <span class="s">&#39;do&#39;</span><span class="p">,</span> <span class="s">&#39;does&#39;</span><span class="p">,</span> <span class="s">&#39;did&#39;</span><span class="p">,</span> <span class="s">&#39;doing&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;an&#39;</span><span class="p">,</span> <span class="s">&#39;the&#39;</span><span class="p">,</span> <span class="s">&#39;and&#39;</span><span class="p">,</span> <span class="s">&#39;but&#39;</span><span class="p">,</span> <span class="s">&#39;if&#39;</span><span class="p">,</span> <span class="s">&#39;or&#39;</span><span class="p">,</span> <span class="s">&#39;because&#39;</span><span class="p">,</span> <span class="s">&#39;as&#39;</span><span class="p">,</span> <span class="s">&#39;until&#39;</span><span class="p">,</span> <span class="s">&#39;while&#39;</span><span class="p">,</span> <span class="s">&#39;of&#39;</span><span class="p">,</span> <span class="s">&#39;at&#39;</span><span class="p">,</span> <span class="s">&#39;by&#39;</span><span class="p">,</span> <span class="s">&#39;for&#39;</span><span class="p">,</span> <span class="s">&#39;with&#39;</span><span class="p">,</span> <span class="s">&#39;about&#39;</span><span class="p">,</span> <span class="s">&#39;against&#39;</span><span class="p">,</span> <span class="s">&#39;between&#39;</span><span class="p">,</span> <span class="s">&#39;into&#39;</span><span class="p">,</span> <span class="s">&#39;through&#39;</span><span class="p">,</span> <span class="s">&#39;during&#39;</span><span class="p">,</span> <span class="s">&#39;before&#39;</span><span class="p">,</span> <span class="s">&#39;after&#39;</span><span class="p">,</span> <span class="s">&#39;above&#39;</span><span class="p">,</span> <span class="s">&#39;below&#39;</span><span class="p">,</span> <span class="s">&#39;to&#39;</span><span class="p">,</span> <span class="s">&#39;from&#39;</span><span class="p">,</span> <span class="s">&#39;up&#39;</span><span class="p">,</span> <span class="s">&#39;down&#39;</span><span class="p">,</span> <span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="s">&#39;out&#39;</span><span class="p">,</span> <span class="s">&#39;on&#39;</span><span class="p">,</span> <span class="s">&#39;off&#39;</span><span class="p">,</span> <span class="s">&#39;over&#39;</span><span class="p">,</span> <span class="s">&#39;under&#39;</span><span class="p">,</span> <span class="s">&#39;again&#39;</span><span class="p">,</span> <span class="s">&#39;further&#39;</span><span class="p">,</span> <span class="s">&#39;then&#39;</span><span class="p">,</span> <span class="s">&#39;once&#39;</span><span class="p">,</span> <span class="s">&#39;here&#39;</span><span class="p">,</span> <span class="s">&#39;there&#39;</span><span class="p">,</span> <span class="s">&#39;when&#39;</span><span class="p">,</span> <span class="s">&#39;where&#39;</span><span class="p">,</span> <span class="s">&#39;why&#39;</span><span class="p">,</span> <span class="s">&#39;how&#39;</span><span class="p">,</span> <span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="s">&#39;any&#39;</span><span class="p">,</span> <span class="s">&#39;both&#39;</span><span class="p">,</span> <span class="s">&#39;each&#39;</span><span class="p">,</span> <span class="s">&#39;few&#39;</span><span class="p">,</span> <span class="s">&#39;more&#39;</span><span class="p">,</span> <span class="s">&#39;most&#39;</span><span class="p">,</span> <span class="s">&#39;other&#39;</span><span class="p">,</span> <span class="s">&#39;some&#39;</span><span class="p">,</span> <span class="s">&#39;such&#39;</span><span class="p">,</span> <span class="s">&#39;no&#39;</span><span class="p">,</span> <span class="s">&#39;nor&#39;</span><span class="p">,</span> <span class="s">&#39;not&#39;</span><span class="p">,</span> <span class="s">&#39;only&#39;</span><span class="p">,</span> <span class="s">&#39;own&#39;</span><span class="p">,</span> <span class="s">&#39;same&#39;</span><span class="p">,</span> <span class="s">&#39;so&#39;</span><span class="p">,</span> <span class="s">&#39;than&#39;</span><span class="p">,</span> <span class="s">&#39;too&#39;</span><span class="p">,</span> <span class="s">&#39;very&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="s">&#39;can&#39;</span><span class="p">,</span> <span class="s">&#39;will&#39;</span><span class="p">,</span> <span class="s">&#39;just&#39;</span><span class="p">,</span> <span class="s">&#39;don&#39;</span><span class="p">,</span> <span class="s">&#39;should&#39;</span><span class="p">,</span> <span class="s">&#39;now&#39;</span><span class="p">]</span>
+</span><span class='line'>  <span class="n">stoplist</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">&#39;...&#39;</span><span class="p">,</span> <span class="s">&#39;com&#39;</span><span class="p">,</span> <span class="s">&#39;using&#39;</span><span class="p">,</span> <span class="s">u&#39;使用&#39;</span><span class="p">,</span> <span class="s">&#39;blog&#39;</span><span class="p">,</span> <span class="s">u&#39;博客&#39;</span><span class="p">,</span> <span class="s">u&#39;博客园&#39;</span><span class="p">,</span> <span class="s">u&#39;做法&#39;</span><span class="p">,</span> <span class="s">u&#39;论坛&#39;</span><span class="p">,</span> <span class="s">&#39;part&#39;</span><span class="p">,</span> <span class="s">u&#39;部分&#39;</span><span class="p">,</span> <span class="s">u&#39;天下&#39;</span><span class="p">])</span>
+</span><span class='line'>  <span class="n">filtered</span> <span class="o">=</span> <span class="n">extract_segments</span><span class="p">(</span><span class="n">load_bookmarks_data</span><span class="p">())</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">return</span> <span class="n">Counter</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">filtered</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stoplist</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>重新绘制即可获得上文中的图：</p>
+
+<p><img src="/images/2015/11/bookmarks-trending-resized.png" alt="bookmarks trending" /></p>
+
+<p>完整的代码<a href="https://github.com/abruzzi/bookmarks-viz">请参考这里</a>。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-01T17:03:00+11:00" pubdate data-updated="true">Nov 1<span>st</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/python/'>python</a>, <a class='category' href='/category/visualization/'>visualization</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2015/10/mapfile-parser/" title="Previous Post: 工程中的编译原理 -- Mapfile解析器">&laquo; 工程中的编译原理 -- Mapfile解析器</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2015/11/what-you-have-learnt-those-years/">看看这些年你都学了什么？</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/10/mapfile-parser/">工程中的编译原理 -- Mapfile解析器</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/09/write-a-parser/">工程中的编译原理 -- Jison入门篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/09/show-your-map-in-browser/">可视化你的足迹 - Web端</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/09/visualize-your-steps/">可视化你的足迹 - 服务器端</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2015/11/what-you-have-learnt-those-years/';
+        var disqus_url = 'http://abruzzi.github.com/2015/11/what-you-have-learnt-those-years/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
