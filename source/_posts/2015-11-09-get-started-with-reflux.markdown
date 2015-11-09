@@ -24,7 +24,7 @@ React在设计之初就只关注在View本身上，其余部分如`数据的获�
 
 ### Reflux简介
 
-简而言之，Reflux里有两个组件：Store和Action。Store负责和数据相关的内容：从服务器上获取数据，并更新与其绑定的React组件（view controller）;Action是一个事件的集合。Action和Store通过convention来连接起来。
+简而言之，[Reflux](https://github.com/reflux/refluxjs)里有两个组件：Store和Action。Store负责和数据相关的内容：从服务器上获取数据，并更新与其绑定的React组件（view controller）;Action是一个事件的集合。Action和Store通过convention来连接起来。
 
 具体来说，一个典型的过程是：
 
