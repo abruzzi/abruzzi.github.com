@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-11-10T00:40:11+11:00</updated>
+  <updated>2015-11-10T00:42:51+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -32,7 +32,7 @@
 
 <h3>Reflux简介</h3>
 
-<p>简而言之，Reflux里有两个组件：Store和Action。Store负责和数据相关的内容：从服务器上获取数据，并更新与其绑定的React组件（view controller）;Action是一个事件的集合。Action和Store通过convention来连接起来。</p>
+<p>简而言之，<a href="https://github.com/reflux/refluxjs">Reflux</a>里有两个组件：Store和Action。Store负责和数据相关的内容：从服务器上获取数据，并更新与其绑定的React组件（view controller）;Action是一个事件的集合。Action和Store通过convention来连接起来。</p>
 
 <p>具体来说，一个典型的过程是：</p>
 
