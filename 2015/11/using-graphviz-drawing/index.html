@@ -1,0 +1,1131 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>使用graphviz绘制流程图（2015版） - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="2015年11月10日更新
+在实践中，我又发现了一些graphviz的有趣的特性，比如时序图，rank以及图片节点等。在这里一并更新。 前言 日常的开发工作中，为代码添加注释是代码可维护性的一个重要方面，但是仅仅提供注释是不够的，特别是当系统功能越来越复杂，涉及到的模块越来越多的时候， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2015/11/using-graphviz-drawing">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">文章</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="/jsccp">JavaScript核心概念及实践</a></li>
+  <li><a href="/lwweb">轻量级Web应用开发</a></li>
+  <li><a href="/3p3w">三周三页面</a></li>
+  <li><a href="/about-me">关于我</a></li>
+</ul>
+
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">使用graphviz绘制流程图（2015版）</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-10T00:00:00+11:00" pubdate data-updated="true">Nov 10<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><hr />
+
+<p>2015年11月10日更新
+在实践中，我又发现了一些<code>graphviz</code>的有趣的特性，比如<code>时序图</code>，<code>rank</code>以及<code>图片节点</code>等。在这里一并更新。</p>
+
+<h2>前言</h2>
+
+<p>日常的开发工作中，为代码添加注释是代码可维护性的一个重要方面，但是仅仅提供注释是不够的，特别是当系统功能越来越复杂，涉及到的模块越来越多的时候，仅仅靠代码就很难从宏观的层次去理解。因此我们需要图例的支持，图例不仅仅包含功能之间的交互，也可以包含复杂的数据结构的示意图，数据流向等。</p>
+
+<p>但是，常用的UML建模工具，如<code>Visio</code>等都略显复杂，且体积庞大。对于开发人员，特别是后台开发人员来说，命令行，脚本才是最友好的，而图形界面会很大程度的限制开发效率。相对于鼠标，键盘才是开发人员最好的朋友。</p>
+
+<h3>graphviz简介</h3>
+
+<p>本文介绍一个高效而简洁的绘图工具<code>graphviz</code>。<code>graphviz</code>是贝尔实验室开发的一个开源的工具包，它使用一个特定的<code>DSL</code>(领域特定语言): <code>dot</code>作为脚本语言，然后使用布局引擎来解析此脚本，并完成自动布局。<code>graphviz</code>提供丰富的导出格式，如常用的图片格式，SVG，PDF格式等。</p>
+
+<p><code>graphviz</code>中包含了众多的布局器：</p>
+
+<ul>
+<li><code>dot</code> 默认布局方式，主要用于有向图</li>
+<li><code>neato</code> 基于spring-model(又称force-based)算法</li>
+<li><code>twopi</code> 径向布局</li>
+<li><code>circo</code> 圆环布局</li>
+<li><code>fdp</code> 用于无向图</li>
+</ul>
+
+
+<p><code>graphviz</code>的设计初衷是对<code>有向图/无向图</code>等进行自动布局，开发人员使用dot脚本定义图形元素，然后选择算法进行布局，最终导出结果。</p>
+
+<p>首先，在dot脚本中定义图的顶点和边，顶点和边都具有各自的属性，比如形状，颜色，填充模式，字体，样式等。然后使用合适的布局算法进行布局。布局算法除了绘制各个顶点和边之外，需要尽可能的将顶点均匀的分布在画布上，并且尽可能的减少边的交叉(如果交叉过多，就很难看清楚顶点之间的关系了)。所以使用<code>graphviz</code>的一般流程为：</p>
+
+<ul>
+<li>定义一个图，并向图中添加需要的顶点和边</li>
+<li>为顶点和边添加样式</li>
+<li>使用布局引擎进行绘制</li>
+</ul>
+
+
+<p>一旦熟悉这种开发模式，就可以快速的将你的想法绘制出来。配合一个良好的编辑器(vim/emacs)等，可以极大的提高开发效率，与常见的GUI应用的所见即所得模式对应，此模式称为所思即所得。比如在我的机器上，使用Sublime Text 编辑<code>dot</code>脚本，然后将<code>F7/Cmd-B</code>映射为调用<code>dot引擎</code>去绘制当前脚本，并打开一个新的窗口来显示运行结果：</p>
+
+<p><img src="/images/2015/11/workspace-resized.png" alt="workspace" /></p>
+
+<p>对于开发人员而言，经常会用到的图形绘制可能包括：函数调用关系，一个复杂的数据结构，系统的模块组成，抽象语法树等。</p>
+
+<h3>基础知识</h3>
+
+<p>graphviz包含3中元素，<code>图</code>，<code>顶点</code>和<code>边</code>。每个元素都可以具有各自的属性，用来定义字体，样式，颜色，形状等。下面是一些简单的示例，可以帮助我们快速的了解graphviz的基本用法。</p>
+
+<h4>第一个graphviz图</h4>
+
+<p>比如，要绘制一个有向图，包含4个节点<code>a,b,c,d</code>。其中<code>a</code>指向<code>b</code>，<code>b</code>和<code>c</code>指向<code>d</code>。可以定义下列脚本：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>digraph abc{
+</span><span class='line'>  a;
+</span><span class='line'>  b;
+</span><span class='line'>  c;
+</span><span class='line'>  d;
+</span><span class='line'> 
+</span><span class='line'>  a -&gt; b;
+</span><span class='line'>  b -&gt; d;
+</span><span class='line'>  c -&gt; d;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用<code>dot</code>布局方式，绘制出来的效果如下：</p>
+
+<p><img src="/images/2012/01/clip_image004.gif" alt="dot-simple" /></p>
+
+<p>默认的顶点中的文字为定义顶点变量的名称，形状为椭圆。边的默认样式为黑色实线箭头，我们可以在脚本中做一下修改，将顶点改为<code>方形</code>，边改为<code>虚线</code>。</p>
+
+<h4>定义顶点和边的样式</h4>
+
+<p>在<code>digraph</code>的花括号内，添加顶点和边的新定义：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>node [shape="record"];
+</span><span class='line'>edge [style="dashed"];</span></code></pre></td></tr></table></div></figure>
+
+
+<p>则绘制的效果如下：</p>
+
+<p><img src="/images/2012/01/clip_image006.gif" alt="dot-simple2" /></p>
+
+<h4>进一步修改顶点和边样式</h4>
+
+<p>进一步，我们将顶点<code>a</code>的颜色改为<code>淡绿色</code>，并将<code>c</code>到<code>d</code>的边改为<code>红色</code>，脚本如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>digraph abc{
+</span><span class='line'>  node [shape="record"];
+</span><span class='line'>  edge [style="dashed"];
+</span><span class='line'>   
+</span><span class='line'>  a [style="filled", color="black", fillcolor="chartreuse"];
+</span><span class='line'>  b;
+</span><span class='line'>  c;
+</span><span class='line'>  d;
+</span><span class='line'>   
+</span><span class='line'>  a -&gt; b;
+</span><span class='line'>  b -&gt; d;
+</span><span class='line'>  c -&gt; d [color="red"];
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>绘制的结果如下：</p>
+
+<p><img src="/images/2012/01/clip_image008.gif" alt="dot-simple3" /></p>
+
+<p>应当注意到，顶点和边都接受属性的定义，形式为在顶点和边的定义之后加上一个由方括号括起来的<code>key-value</code>列表，每个<code>key-value</code>对由逗号隔开。如果图中顶点和边采用统一的风格，则可以在图定义的首部定义<code>node</code>, <code>edge</code>的属性。比如上图中，定义所有的顶点为方框，所有的边为虚线，在具体的顶点和边之后定义的属性将覆盖此全局属性。如特定与<code>a</code>的绿色，<code>c</code>到<code>d</code>的边的红色。</p>
+
+<h4>以图片为节点</h4>
+
+<p>除了颜色，节点还可以使用图片。不过需要注意的是，在使用图片作为节点的时候，需要将本来的形状设置为<code>none</code>，并且将<code>label</code>置为空字符串，避免出现文字对图片的干扰。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>digraph abc{
+</span><span class='line'>  node [shape="record"];
+</span><span class='line'>  edge [style="dashed"];
+</span><span class='line'>   
+</span><span class='line'>  a [style="filled", color="black", fillcolor="chartreuse"];
+</span><span class='line'>  b;
+</span><span class='line'>  c [shape="none", image="logos/browser-icon-chrome-resized.png", label=""];
+</span><span class='line'>  d;
+</span><span class='line'>   
+</span><span class='line'>  a -&gt; b;
+</span><span class='line'>  b -&gt; d;
+</span><span class='line'>  c -&gt; d [color="red"];
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2015/11/image-node.png" alt="image-node" /></p>
+
+<h3>子图的绘制</h3>
+
+<p>graphviz支持子图，即图中的部分节点和边相对对立(软件的模块划分经常如此)。比如，我们可以将顶点c和d归为一个子图：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>digraph abc{
+</span><span class='line'>
+</span><span class='line'>  node [shape="record"];
+</span><span class='line'>  edge [style="dashed"];
+</span><span class='line'>   
+</span><span class='line'>  a [style="filled", color="black", fillcolor="chartreuse"];
+</span><span class='line'>  b;
+</span><span class='line'> 
+</span><span class='line'>    subgraph cluster_cd{
+</span><span class='line'>      label="c and d";
+</span><span class='line'>      bgcolor="mintcream";
+</span><span class='line'>      c;
+</span><span class='line'>      d;
+</span><span class='line'>    }
+</span><span class='line'> 
+</span><span class='line'>  a -&gt; b;
+</span><span class='line'>  b -&gt; d;
+</span><span class='line'>  c -&gt; d [color="red"];
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将<code>c</code>和<code>d</code>划分到<code>cluster_cd</code>这个子图中，标签为<code>c and d</code>,并添加背景色，以方便与主图区分开，绘制结果如下：</p>
+
+<p><img src="/images/2012/01/clip_image010.gif" alt="cluster" /></p>
+
+<p>应该注意的是，子图的名称必须以<code>cluster</code>开头，否则<code>graphviz</code>无法设别。</p>
+
+<h4>数据结构的可视化</h4>
+
+<p>实际开发中，经常要用到的是对复杂数据结构的描述，<code>graphviz</code>提供完善的机制来绘制此类图形。</p>
+
+<h5>一个hash表的数据结构</h5>
+
+<p>比如一个hash表的内容，可能具有下列结构：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="n">st_hash_type</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">compare</span><span class="p">)</span> <span class="p">();</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">hash</span><span class="p">)</span> <span class="p">();</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">struct</span> <span class="n">st_table_entry</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">hash</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">char</span> <span class="o">*</span><span class="n">key</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">char</span> <span class="o">*</span><span class="n">record</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">st_table_entry</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">struct</span> <span class="n">st_table</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">struct</span> <span class="n">st_hash_type</span> <span class="o">*</span><span class="n">type</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">num_bins</span><span class="p">;</span> <span class="cm">/* slot count */</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">num_entries</span><span class="p">;</span> <span class="cm">/* total number of entries */</span>
+</span><span class='line'>    <span class="k">struct</span> <span class="n">st_table_entry</span> <span class="o">**</span><span class="n">bins</span><span class="p">;</span> <span class="cm">/* slot */</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>绘制hash表的数据结构</h5>
+
+<p>从代码上看，由于结构体存在引用关系，不够清晰，如果层次较多，则很难以记住各个结构之间的关系，我们可以通过下图来更清楚的展示：</p>
+
+<p><img src="/images/2012/01/clip_image012.gif" alt="hash-datastruct" /></p>
+
+<p>脚本如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">digraph</span> <span class="n">st2</span><span class="p">{</span>
+</span><span class='line'>  <span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Verdana&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">rankdir</span><span class="o">=</span><span class="n">TB</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">node</span> <span class="p">[</span><span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Verdana&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;skyblue&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="s">&quot;record&quot;</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">edge</span> <span class="p">[</span><span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Verdana&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;crimson&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;solid&quot;</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">st_hash_type</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;{&lt;head&gt;st_hash_type|(*compare)|(*hash)}&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">st_table_entry</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;{&lt;head&gt;st_table_entry|hash|key|record|&lt;next&gt;next}&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">st_table</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;{st_table|&lt;type&gt;type|num_bins|num_entries|&lt;bins&gt;bins}&quot;</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nl">st_table:</span><span class="n">bins</span> <span class="o">-&gt;</span> <span class="n">st_table_entry</span><span class="o">:</span><span class="n">head</span><span class="p">;</span>
+</span><span class='line'>  <span class="nl">st_table:</span><span class="n">type</span> <span class="o">-&gt;</span> <span class="n">st_hash_type</span><span class="o">:</span><span class="n">head</span><span class="p">;</span>
+</span><span class='line'>  <span class="nl">st_table_entry:</span><span class="n">next</span> <span class="o">-&gt;</span> <span class="n">st_table_entry</span><span class="o">:</span><span class="n">head</span> <span class="p">[</span><span class="n">style</span><span class="o">=</span><span class="s">&quot;dashed&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;forestgreen&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>应该注意到，在顶点的形状为<code>record</code>的时候，<code>label</code>属性的语法比较奇怪，但是使用起来非常灵活。比如，用竖线”|”隔开的串会在绘制出来的节点中展现为一条分隔符。用<code>&lt;&gt;</code>括起来的串称为锚点，当一个节点具有多个锚点的时候，这个特性会非常有用，比如节点<code>st_table</code>的<code>type</code>属性指向<code>st_hash_type</code>，第4个属性指向<code>st_table_entry</code>等，都是通过锚点来实现的。</p>
+
+<p>我们发现，使用默认的<code>dot</code>布局后，绿色的这条边覆盖了数据结构<code>st_table_entry</code>，并不美观，因此可以使用别的布局方式来重新布局，如使用<code>circo</code>算法：</p>
+
+<p><img src="/images/2012/01/clip_image014.gif" alt="circo" /></p>
+
+<p>则可以得到更加合理的布局结果。</p>
+
+<h4>hash表的实例</h4>
+
+<p>另外，这个hash表的一个实例如下：</p>
+
+<p><img src="/images/2012/01/clip_image016.gif" alt="hash-instance" /></p>
+
+<p>脚本如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">digraph</span> <span class="n">st</span><span class="p">{</span>
+</span><span class='line'>  <span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Verdana&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">rankdir</span> <span class="o">=</span> <span class="n">LR</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">rotate</span> <span class="o">=</span> <span class="mi">90</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">node</span> <span class="p">[</span> <span class="n">shape</span><span class="o">=</span><span class="s">&quot;record&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">.1</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">.1</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">node</span> <span class="p">[</span><span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Verdana&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;skyblue&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="s">&quot;record&quot;</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">edge</span> <span class="p">[</span><span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Verdana&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;crimson&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;solid&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">node</span> <span class="p">[</span><span class="n">shape</span><span class="o">=</span><span class="s">&quot;plaintext&quot;</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">st_table</span> <span class="p">[</span><span class="n">label</span><span class="o">=&lt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="n">table</span> <span class="n">border</span><span class="o">=</span><span class="s">&quot;0&quot;</span> <span class="n">cellborder</span><span class="o">=</span><span class="s">&quot;1&quot;</span> <span class="n">cellspacing</span><span class="o">=</span><span class="s">&quot;0&quot;</span> <span class="n">align</span><span class="o">=</span><span class="s">&quot;left&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="n">tr</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="n">td</span><span class="o">&gt;</span><span class="n">st_table</span><span class="o">&lt;/</span><span class="n">td</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;/</span><span class="n">tr</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="n">tr</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="n">td</span><span class="o">&gt;</span><span class="n">num_bins</span><span class="o">=</span><span class="mi">5</span><span class="o">&lt;/</span><span class="n">td</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;/</span><span class="n">tr</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="n">tr</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="n">td</span><span class="o">&gt;</span><span class="n">num_entries</span><span class="o">=</span><span class="mi">3</span><span class="o">&lt;/</span><span class="n">td</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;/</span><span class="n">tr</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="n">tr</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="n">td</span> <span class="n">port</span><span class="o">=</span><span class="s">&quot;bins&quot;</span><span class="o">&gt;</span><span class="n">bins</span><span class="o">&lt;/</span><span class="n">td</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;/</span><span class="n">tr</span><span class="o">&gt;</span>
+</span><span class='line'>      <span class="o">&lt;/</span><span class="n">table</span><span class="o">&gt;</span>
+</span><span class='line'>  <span class="o">&gt;</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">node</span> <span class="p">[</span><span class="n">shape</span><span class="o">=</span><span class="s">&quot;record&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">num_bins</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot; &lt;b1&gt; | &lt;b2&gt; | &lt;b3&gt; | &lt;b4&gt; | &lt;b5&gt; &quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">2</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">node</span><span class="p">[</span> <span class="n">width</span><span class="o">=</span><span class="mi">2</span> <span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">entry_1</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;{&lt;e&gt;st_table_entry|&lt;next&gt;next}&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">entry_2</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;{&lt;e&gt;st_table_entry|&lt;next&gt;null}&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">entry_3</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;{&lt;e&gt;st_table_entry|&lt;next&gt;null}&quot;</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="nl">st_table:</span><span class="n">bins</span> <span class="o">-&gt;</span> <span class="n">num_bins</span><span class="o">:</span><span class="n">b1</span><span class="p">;</span>
+</span><span class='line'>  <span class="nl">num_bins:</span><span class="n">b1</span> <span class="o">-&gt;</span> <span class="n">entry_1</span><span class="o">:</span><span class="n">e</span><span class="p">;</span>
+</span><span class='line'>  <span class="nl">entry_1:</span><span class="n">next</span> <span class="o">-&gt;</span> <span class="n">entry_2</span><span class="o">:</span><span class="n">e</span><span class="p">;</span>
+</span><span class='line'>  <span class="nl">num_bins:</span><span class="n">b3</span> <span class="o">-&gt;</span> <span class="n">entry_3</span><span class="o">:</span><span class="n">e</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上例中可以看到，节点的<code>label</code>属性支持类似于<code>HTML</code>语言中的TABLE形式的定义，通过行列的数目来定义节点的形状，从而使得节点的组成更加灵活。</p>
+
+<h4>软件模块组成图</h4>
+
+<p>Apache httpd 模块关系</p>
+
+<p><img src="/images/2012/01/clip_image018.gif" alt="httpd" /></p>
+
+<p>在实际的开发中，随着系统功能的完善，软件整体的结构会越来越复杂，通常开发人员会将软件划分为可理解的多个子模块，各个子模块通过协作，完成各种各样的需求。</p>
+
+<p>下面有个例子，是某软件设计时的一个草稿：</p>
+
+<p><img src="/images/2012/01/clip_image020.gif" alt="idp" /></p>
+
+<p>IDP支持层为一个相对独立的子系统，其中包括如数据库管理器，配置信息管理器等模块，另外为了提供更大的灵活性，将很多其他的模块抽取出来作为外部模块，而支持层提供一个模块管理器，来负责加载/卸载这些外部的模块集合。</p>
+
+<p>这些模块间的关系较为复杂，并且有部分模块关系密切，应归类为一个子系统中，上图对应的<code>dot</code>脚本为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">digraph</span> <span class="n">idp_modules</span><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">rankdir</span> <span class="o">=</span> <span class="n">TB</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Microsoft YaHei&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">12</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">node</span> <span class="p">[</span> <span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Microsoft YaHei&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="s">&quot;record&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">edge</span> <span class="p">[</span> <span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Microsoft YaHei&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">12</span> <span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="n">subgraph</span> <span class="n">cluster_sl</span><span class="p">{</span>
+</span><span class='line'>          <span class="n">label</span><span class="o">=</span><span class="s">&quot;IDP支持层&quot;</span><span class="p">;</span>
+</span><span class='line'>          <span class="n">bgcolor</span><span class="o">=</span><span class="s">&quot;mintcream&quot;</span><span class="p">;</span>
+</span><span class='line'>          <span class="n">node</span> <span class="p">[</span><span class="n">shape</span><span class="o">=</span><span class="s">&quot;Mrecord&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;skyblue&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;filled&quot;</span><span class="p">];</span>
+</span><span class='line'>          <span class="n">network_mgr</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;网络管理器&quot;</span><span class="p">];</span>
+</span><span class='line'>          <span class="n">log_mgr</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;日志管理器&quot;</span><span class="p">];</span>
+</span><span class='line'>          <span class="n">module_mgr</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;模块管理器&quot;</span><span class="p">];</span>
+</span><span class='line'>          <span class="n">conf_mgr</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;配置管理器&quot;</span><span class="p">];</span>
+</span><span class='line'>          <span class="n">db_mgr</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;数据库管理器&quot;</span><span class="p">];</span>
+</span><span class='line'>      <span class="p">};</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="n">subgraph</span> <span class="n">cluster_md</span><span class="p">{</span>
+</span><span class='line'>          <span class="n">label</span><span class="o">=</span><span class="s">&quot;可插拔模块集&quot;</span><span class="p">;</span>
+</span><span class='line'>          <span class="n">bgcolor</span><span class="o">=</span><span class="s">&quot;lightcyan&quot;</span><span class="p">;</span>
+</span><span class='line'>          <span class="n">node</span> <span class="p">[</span><span class="n">color</span><span class="o">=</span><span class="s">&quot;chartreuse2&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;filled&quot;</span><span class="p">];</span>
+</span><span class='line'>          <span class="n">mod_dev</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;开发支持模块&quot;</span><span class="p">];</span>
+</span><span class='line'>          <span class="n">mod_dm</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;数据建模模块&quot;</span><span class="p">];</span>
+</span><span class='line'>          <span class="n">mod_dp</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;部署发布模块&quot;</span><span class="p">];</span>
+</span><span class='line'>      <span class="p">};</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">mod_dp</span> <span class="o">-&gt;</span> <span class="n">mod_dev</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;依赖...&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">mod_dp</span> <span class="o">-&gt;</span> <span class="n">mod_dm</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;依赖...&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">mod_dp</span> <span class="o">-&gt;</span> <span class="n">module_mgr</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;安装...&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;yellowgreen&quot;</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">mod_dev</span> <span class="o">-&gt;</span> <span class="n">mod_dm</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;依赖...&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">mod_dev</span> <span class="o">-&gt;</span> <span class="n">module_mgr</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;安装...&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;yellowgreen&quot;</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">mod_dm</span> <span class="o">-&gt;</span> <span class="n">module_mgr</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;安装...&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;yellowgreen&quot;</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>状态图</h4>
+
+<p>有限自动机示意图</p>
+
+<p><img src="/images/2012/01/clip_image022.gif" alt="fsm" /></p>
+
+<p>上图是一个简易有限自动机，接受<code>a</code>及<code>a</code>结尾的任意长度的串。其脚本定义如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">digraph</span> <span class="n">automata_0</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">size</span> <span class="o">=</span> <span class="s">&quot;8.5, 11&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Microsoft YaHei&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">node</span> <span class="p">[</span><span class="n">shape</span> <span class="o">=</span> <span class="n">circle</span><span class="p">,</span> <span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Microsoft YaHei&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">edge</span> <span class="p">[</span><span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Microsoft YaHei&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="mi">0</span> <span class="p">[</span> <span class="n">style</span> <span class="o">=</span> <span class="n">filled</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">lightgrey</span> <span class="p">];</span>
+</span><span class='line'>  <span class="mi">2</span> <span class="p">[</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">doublecircle</span> <span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="mi">0</span> <span class="o">-&gt;</span> <span class="mi">2</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;a &quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="mi">0</span> <span class="o">-&gt;</span> <span class="mi">1</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;other &quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="mi">1</span> <span class="o">-&gt;</span> <span class="mi">2</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;a &quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="mi">1</span> <span class="o">-&gt;</span> <span class="mi">1</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;other &quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="mi">2</span> <span class="o">-&gt;</span> <span class="mi">2</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;a &quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="mi">2</span> <span class="o">-&gt;</span> <span class="mi">1</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;other &quot;</span> <span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="s">&quot;Machine: a&quot;</span> <span class="p">[</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">plaintext</span> <span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>形状值为plaintext的表示不用绘制边框，仅展示纯文本内容，这个在绘图中，绘制指示性的文本时很有用，如上图中的<code>Machine: a</code>。</p>
+
+<h4>OSGi中模块的生命周期图</h4>
+
+<p>OSGi中，模块具有生命周期，从安装到卸载，可能的状态具有已安装，已就绪，正在启动，已启动，正在停止，已卸载等。如下图所示：</p>
+
+<p><img src="/images/2012/01/clip_image024.gif" alt="osgi" /></p>
+
+<p>对应的脚本如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">digraph</span> <span class="n">module_lc</span><span class="p">{</span>
+</span><span class='line'>  <span class="n">rankdir</span><span class="o">=</span><span class="n">TB</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Microsoft YaHei&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">12</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">node</span> <span class="p">[</span><span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Microsoft YaHei&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="s">&quot;Mrecord&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;skyblue&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;filled&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">edge</span> <span class="p">[</span><span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Microsoft YaHei&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;darkgreen&quot;</span> <span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">installed</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;已安装状态&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">resolved</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;已就绪状态&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">uninstalled</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;已卸载状态&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">starting</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;正在启动&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">active</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;已激活(运行)状态&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">stopping</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;正在停止&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">start</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="s">&quot;circle&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fixedsize</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;filled&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&quot;black&quot;</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">start</span> <span class="o">-&gt;</span> <span class="n">installed</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;安装&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">installed</span> <span class="o">-&gt;</span> <span class="n">uninstalled</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;卸载&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">installed</span> <span class="o">-&gt;</span> <span class="n">resolved</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;准备&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">installed</span> <span class="o">-&gt;</span> <span class="n">installed</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;更新&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">resolved</span> <span class="o">-&gt;</span> <span class="n">installed</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;更新&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">resolved</span> <span class="o">-&gt;</span> <span class="n">uninstalled</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;卸载&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">resolved</span> <span class="o">-&gt;</span> <span class="n">starting</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;启动&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">starting</span> <span class="o">-&gt;</span> <span class="n">active</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">active</span> <span class="o">-&gt;</span> <span class="n">stopping</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;停止&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">stopping</span> <span class="o">-&gt;</span> <span class="n">resolved</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>其他实例</h3>
+
+<p>一棵简单的抽象语法树(AST)</p>
+
+<p>表达式 <code>(3+4)*5</code> 在编译时期，会形成一棵语法树，一边在计算时，先计算<code>3+4</code>的值，最后与5相乘。</p>
+
+<p><img src="/images/2012/01/clip_image026.gif" alt="ast-calc" /></p>
+
+<p>对应的脚本如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">digraph</span> <span class="n">ast</span><span class="p">{</span>
+</span><span class='line'>  <span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Microsoft YaHei&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">node</span> <span class="p">[</span><span class="n">shape</span> <span class="o">=</span> <span class="n">circle</span><span class="p">,</span> <span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Microsoft YaHei&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">edge</span> <span class="p">[</span><span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Microsoft YaHei&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">node</span> <span class="p">[</span><span class="n">shape</span><span class="o">=</span><span class="s">&quot;plaintext&quot;</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">mul</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;mul(*)&quot;</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">add</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;add(+)&quot;</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">add</span> <span class="o">-&gt;</span> <span class="mi">3</span>
+</span><span class='line'>  <span class="n">add</span> <span class="o">-&gt;</span> <span class="mi">4</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">mul</span> <span class="o">-&gt;</span> <span class="n">add</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">mul</span> <span class="o">-&gt;</span> <span class="mi">5</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>简单的UML类图</h4>
+
+<p>下面是一简单的UML类图，<code>Dog</code>和<code>Cat</code>都是<code>Animal</code>的子类，<code>Dog</code>和<code>Cat</code>同属一个包，且有可能有联系<code>(0..n)</code>。</p>
+
+<p><img src="/images/2012/01/clip_image028.gif" alt="uml" /></p>
+
+<p>脚本：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">digraph</span> <span class="n">G</span><span class="p">{</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Courier New&quot;</span>
+</span><span class='line'>  <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">node</span> <span class="p">[</span> <span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Courier New&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="s">&quot;record&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">edge</span> <span class="p">[</span> <span class="n">fontname</span> <span class="o">=</span> <span class="s">&quot;Courier New&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">10</span> <span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">Animal</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;{Animal |+ name : String\l+ age : int\l|+ die() : void\l}&quot;</span> <span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="n">subgraph</span> <span class="n">clusterAnimalImpl</span><span class="p">{</span>
+</span><span class='line'>          <span class="n">bgcolor</span><span class="o">=</span><span class="s">&quot;yellow&quot;</span>
+</span><span class='line'>          <span class="n">Dog</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;{Dog||+ bark() : void\l}&quot;</span> <span class="p">];</span>
+</span><span class='line'>          <span class="n">Cat</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;{Cat||+ meow() : void\l}&quot;</span> <span class="p">];</span>
+</span><span class='line'>      <span class="p">};</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">edge</span> <span class="p">[</span> <span class="n">arrowhead</span> <span class="o">=</span> <span class="s">&quot;empty&quot;</span> <span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">Dog</span><span class="o">-&gt;</span><span class="n">Animal</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">Cat</span><span class="o">-&gt;</span><span class="n">Animal</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">Dog</span><span class="o">-&gt;</span><span class="n">Cat</span> <span class="p">[</span><span class="n">arrowhead</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;0..*&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>状态图</h4>
+
+<p><img src="/images/2012/01/clip_image030.gif" alt="status-chart" /></p>
+
+<p>脚本：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">digraph</span> <span class="n">finite_state_machine</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">rankdir</span> <span class="o">=</span> <span class="n">LR</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">size</span> <span class="o">=</span> <span class="s">&quot;8,5&quot;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">node</span> <span class="p">[</span><span class="n">shape</span> <span class="o">=</span> <span class="n">doublecircle</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">LR_0</span> <span class="n">LR_3</span> <span class="n">LR_4</span> <span class="n">LR_8</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">node</span> <span class="p">[</span><span class="n">shape</span> <span class="o">=</span> <span class="n">circle</span><span class="p">];</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">LR_0</span> <span class="o">-&gt;</span> <span class="n">LR_2</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;SS(B)&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">LR_0</span> <span class="o">-&gt;</span> <span class="n">LR_1</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;SS(S)&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">LR_1</span> <span class="o">-&gt;</span> <span class="n">LR_3</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;S($end)&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">LR_2</span> <span class="o">-&gt;</span> <span class="n">LR_6</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;SS(b)&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">LR_2</span> <span class="o">-&gt;</span> <span class="n">LR_5</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;SS(a)&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">LR_2</span> <span class="o">-&gt;</span> <span class="n">LR_4</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;S(A)&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">LR_5</span> <span class="o">-&gt;</span> <span class="n">LR_7</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;S(b)&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">LR_5</span> <span class="o">-&gt;</span> <span class="n">LR_5</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;S(a)&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">LR_6</span> <span class="o">-&gt;</span> <span class="n">LR_6</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;S(b)&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">LR_6</span> <span class="o">-&gt;</span> <span class="n">LR_5</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;S(a)&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">LR_7</span> <span class="o">-&gt;</span> <span class="n">LR_8</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;S(b)&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">LR_7</span> <span class="o">-&gt;</span> <span class="n">LR_5</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;S(a)&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">LR_8</span> <span class="o">-&gt;</span> <span class="n">LR_6</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;S(b)&quot;</span> <span class="p">];</span>
+</span><span class='line'>  <span class="n">LR_8</span> <span class="o">-&gt;</span> <span class="n">LR_5</span> <span class="p">[</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&quot;S(a)&quot;</span> <span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>时序图</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">digraph</span> <span class="n">G</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">rankdir</span><span class="o">=</span><span class="s">&quot;LR&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">node</span><span class="p">[</span><span class="n">shape</span><span class="o">=</span><span class="s">&quot;point&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">edge</span><span class="p">[</span><span class="n">arrowhead</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&quot;dashed&quot;</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">rank</span><span class="o">=</span><span class="s">&quot;same&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">edge</span><span class="p">[</span><span class="n">style</span><span class="o">=</span><span class="s">&quot;solided&quot;</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">LC</span><span class="p">[</span><span class="n">shape</span><span class="o">=</span><span class="s">&quot;plaintext&quot;</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">LC</span> <span class="o">-&gt;</span> <span class="n">step00</span> <span class="o">-&gt;</span> <span class="n">step01</span> <span class="o">-&gt;</span> <span class="n">step02</span> <span class="o">-&gt;</span> <span class="n">step03</span> <span class="o">-&gt;</span> <span class="n">step04</span> <span class="o">-&gt;</span> <span class="n">step05</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">rank</span><span class="o">=</span><span class="s">&quot;same&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">edge</span><span class="p">[</span><span class="n">style</span><span class="o">=</span><span class="s">&quot;solided&quot;</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">Agency</span><span class="p">[</span><span class="n">shape</span><span class="o">=</span><span class="s">&quot;plaintext&quot;</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">Agency</span> <span class="o">-&gt;</span> <span class="n">step10</span> <span class="o">-&gt;</span> <span class="n">step11</span> <span class="o">-&gt;</span> <span class="n">step12</span> <span class="o">-&gt;</span> <span class="n">step13</span> <span class="o">-&gt;</span> <span class="n">step14</span> <span class="o">-&gt;</span> <span class="n">step15</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">rank</span><span class="o">=</span><span class="s">&quot;same&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">edge</span><span class="p">[</span><span class="n">style</span><span class="o">=</span><span class="s">&quot;solided&quot;</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">Agent</span><span class="p">[</span><span class="n">shape</span><span class="o">=</span><span class="s">&quot;plaintext&quot;</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">Agent</span> <span class="o">-&gt;</span> <span class="n">step20</span> <span class="o">-&gt;</span> <span class="n">step21</span> <span class="o">-&gt;</span> <span class="n">step22</span> <span class="o">-&gt;</span> <span class="n">step23</span> <span class="o">-&gt;</span> <span class="n">step24</span> <span class="o">-&gt;</span> <span class="n">step25</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">step00</span> <span class="o">-&gt;</span> <span class="n">step10</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;sends email new custumer&quot;</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="s">&quot;normal&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">step11</span> <span class="o">-&gt;</span> <span class="n">step01</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;declines&quot;</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="s">&quot;normal&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">step12</span> <span class="o">-&gt;</span> <span class="n">step02</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;accepts&quot;</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="s">&quot;normal&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">step13</span> <span class="o">-&gt;</span> <span class="n">step23</span> <span class="p">[</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;forward to&quot;</span><span class="p">,</span> <span class="n">arrowhead</span><span class="o">=</span><span class="s">&quot;normal&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">step24</span> <span class="o">-&gt;</span> <span class="n">step14</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">step14</span> <span class="o">-&gt;</span> <span class="n">step04</span> <span class="p">[</span><span class="n">arrowhead</span><span class="o">=</span><span class="s">&quot;normal&quot;</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>rankdir="LR"</code>表示，布局从左<code>L</code>到右<code>R</code>。可以看到，在代码中有<code>{}</code>括起来的部分。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">rank</span><span class="o">=</span><span class="s">&quot;same&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">edge</span><span class="p">[</span><span class="n">style</span><span class="o">=</span><span class="s">&quot;solided&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">Agency</span><span class="p">[</span><span class="n">shape</span><span class="o">=</span><span class="s">&quot;plaintext&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">Agency</span> <span class="o">-&gt;</span> <span class="n">step10</span> <span class="o">-&gt;</span> <span class="n">step11</span> <span class="o">-&gt;</span> <span class="n">step12</span> <span class="o">-&gt;</span> <span class="n">step13</span> <span class="o">-&gt;</span> <span class="n">step14</span> <span class="o">-&gt;</span> <span class="n">step15</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>每一个<code>rank="same"</code>的block中的所有节点都会在同一条线上。我们设置了所有的线为虚线，但是在该block中，将线改为<code>solided</code>。</p>
+
+<p><img src="/images/2015/11/seq.png" alt="seq" /></p>
+
+<h3>附录</h3>
+
+<p>事实上，从<code>dot</code>的语法及上述的示例中，很容易看出，dot脚本很容易被其他语言生成。比如，使用一些简单的数据库查询就可以生成数据库中的ER图的dot脚本。</p>
+
+<p>如果你追求高效的开发速度，并希望快速的将自己的想法画出来，那么<code>graphviz</code>是一个很不错的选择。</p>
+
+<p>当然，<code>graphviz</code>也有一定的局限，比如绘制时序图(序列图)就很难实现。<code>graphviz</code>的节点出现在画布上的位置事实上是不确定的，依赖于所使用的布局算法，而不是在脚本中出现的位置，这可能使刚开始接触<code>graphviz</code>的开发人员有点不适应。<code>graphviz</code>的强项在于自动布局，当图中的顶点和边的数目变得很多的时候，才能很好的体会这一特性的好处：</p>
+
+<p><img src="/images/2012/01/clip_image034.gif" alt="complex" /></p>
+
+<p>比如上图，或者较上图更复杂的图，如果采用手工绘制显然是不可能的，只能通过<code>graphviz</code>提供的自动布局引擎来完成。如果仅用于展示模块间的关系，子模块与子模块间通信的方式，模块的逻辑位置等，<code>graphviz</code>完全可以胜任，但是如果图中对象的物理位置必须是准确的，如节点A必须位于左上角，节点B必须与A相邻等特性，使用<code>graphviz</code>则很难做到。毕竟，它的强项是自动布局，事实上，所有的节点对与布局引擎而言，权重在初始时都是相同的，只是在渲染之后，节点的大小，形状等特性才会影响权重。</p>
+
+<p>本文只是初步介绍了<code>graphviz</code>的简单应用，如图的定义，顶点/边的属性定义，如果运行等，事实上还有很多的属性，如画布的大小，字体的选择，颜色列表等，大家可以通过<code>graphviz</code>的官网来找到更详细的资料。</p>
+
+<p>文中的代码都已经在<a href="https://github.com/abruzzi/graphviz-scripts">Github</a>上。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-10T00:00:00+11:00" pubdate data-updated="true">Nov 10<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/graphviz/'>Graphviz</a>, <a class='category' href='/category/linux-unix/'>Linux/UNIX</a>, <a class='category' href='/category/tools/'>Tools</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2015/11/get-started-with-reflux/" title="Previous Post: 你为什么应该试一试Reflux？">&laquo; 你为什么应该试一试Reflux？</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2015/11/using-graphviz-drawing/">使用graphviz绘制流程图（2015版）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/11/get-started-with-reflux/">你为什么应该试一试Reflux？</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/11/what-you-have-learnt-those-years/">看看这些年你都学了什么？</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/10/mapfile-parser/">工程中的编译原理 -- Mapfile解析器</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2015/09/write-a-parser/">工程中的编译原理 -- Jison入门篇</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2015/11/using-graphviz-drawing/';
+        var disqus_url = 'http://abruzzi.github.com/2015/11/using-graphviz-drawing/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

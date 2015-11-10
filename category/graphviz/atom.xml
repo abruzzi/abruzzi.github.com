@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Graphviz | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/graphviz/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2015-11-10T20:31:28+11:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[使用graphviz绘制流程图（2015版）]]></title>
+    <link href="http://abruzzi.github.com/2015/11/using-graphviz-drawing/"/>
+    <updated>2015-11-10T00:00:00+11:00</updated>
+    <id>http://abruzzi.github.com/2015/11/using-graphviz-drawing</id>
+    <content type="html"><![CDATA[<hr />
+
+<p>2015年11月10日更新
+在实践中，我又发现了一些<code>graphviz</code>的有趣的特性，比如<code>时序图</code>，<code>rank</code>以及<code>图片节点</code>等。在这里一并更新。</p>
+
+<h2>前言</h2>
+
+<p>日常的开发工作中，为代码添加注释是代码可维护性的一个重要方面，但是仅仅提供注释是不够的，特别是当系统功能越来越复杂，涉及到的模块越来越多的时候，仅仅靠代码就很难从宏观的层次去理解。因此我们需要图例的支持，图例不仅仅包含功能之间的交互，也可以包含复杂的数据结构的示意图，数据流向等。</p>
+
+<p>但是，常用的UML建模工具，如<code>Visio</code>等都略显复杂，且体积庞大。对于开发人员，特别是后台开发人员来说，命令行，脚本才是最友好的，而图形界面会很大程度的限制开发效率。相对于鼠标，键盘才是开发人员最好的朋友。</p>
+
+<h3>graphviz简介</h3>
+
+<p>本文介绍一个高效而简洁的绘图工具<code>graphviz</code>。<code>graphviz</code>是贝尔实验室开发的一个开源的工具包，它使用一个特定的<code>DSL</code>(领域特定语言): <code>dot</code>作为脚本语言，然后使用布局引擎来解析此脚本，并完成自动布局。<code>graphviz</code>提供丰富的导出格式，如常用的图片格式，SVG，PDF格式等。</p>
+
+<p><code>graphviz</code>中包含了众多的布局器：</p>
+
+<ul>
+<li><code>dot</code> 默认布局方式，主要用于有向图</li>
+<li><code>neato</code> 基于spring-model(又称force-based)算法</li>
+<li><code>twopi</code> 径向布局</li>
+<li><code>circo</code> 圆环布局</li>
+<li><code>fdp</code> 用于无向图</li>
+</ul>
+
+
+<p><code>graphviz</code>的设计初衷是对<code>有向图/无向图</code>等进行自动布局，开发人员使用dot脚本定义图形元素，然后选择算法进行布局，最终导出结果。</p>
+
+<p>首先，在dot脚本中定义图的顶点和边，顶点和边都具有各自的属性，比如形状，颜色，填充模式，字体，样式等。然后使用合适的布局算法进行布局。布局算法除了绘制各个顶点和边之外，需要尽可能的将顶点均匀的分布在画布上，并且尽可能的减少边的交叉(如果交叉过多，就很难看清楚顶点之间的关系了)。所以使用<code>graphviz</code>的一般流程为：</p>
+
+<ul>
+<li>定义一个图，并向图中添加需要的顶点和边</li>
+<li>为顶点和边添加样式</li>
+<li>使用布局引擎进行绘制</li>
+</ul>
+
+
+<p>一旦熟悉这种开发模式，就可以快速的将你的想法绘制出来。配合一个良好的编辑器(vim/emacs)等，可以极大的提高开发效率，与常见的GUI应用的所见即所得模式对应，此模式称为所思即所得。比如在我的机器上，使用Sublime Text 编辑<code>dot</code>脚本，然后将<code>F7/Cmd-B</code>映射为调用<code>dot引擎</code>去绘制当前脚本，并打开一个新的窗口来显示运行结果：</p>
+
+<p><img src="/images/2015/11/workspace-resized.png" alt="workspace" /></p>
+
+<p>对于开发人员而言，经常会用到的图形绘制可能包括：函数调用关系，一个复杂的数据结构，系统的模块组成，抽象语法树等。</p>
+
+<h3>基础知识</h3>
+
+<p>graphviz包含3中元素，<code>图</code>，<code>顶点</code>和<code>边</code>。每个元素都可以具有各自的属性，用来定义字体，样式，颜色，形状等。下面是一些简单的示例，可以帮助我们快速的了解graphviz的基本用法。</p>
+
+<h4>第一个graphviz图</h4>
+
+<p>比如，要绘制一个有向图，包含4个节点<code>a,b,c,d</code>。其中<code>a</code>指向<code>b</code>，<code>b</code>和<code>c</code>指向<code>d</code>。可以定义下列脚本：</p>
+
+<p>```
+digraph abc{</p>
+
+<pre><code>a;
+b;
+c;
+d;
+
+a -&gt; b;
+b -&gt; d;
+c -&gt; d;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>使用<code>dot</code>布局方式，绘制出来的效果如下：</p>
+
+<p><img src="/images/2012/01/clip_image004.gif" alt="dot-simple" /></p>
+
+<p>默认的顶点中的文字为定义顶点变量的名称，形状为椭圆。边的默认样式为黑色实线箭头，我们可以在脚本中做一下修改，将顶点改为<code>方形</code>，边改为<code>虚线</code>。</p>
+
+<h4>定义顶点和边的样式</h4>
+
+<p>在<code>digraph</code>的花括号内，添加顶点和边的新定义：</p>
+
+<p><code>
+node [shape="record"];
+edge [style="dashed"];
+</code></p>
+
+<p>则绘制的效果如下：</p>
+
+<p><img src="/images/2012/01/clip_image006.gif" alt="dot-simple2" /></p>
+
+<h4>进一步修改顶点和边样式</h4>
+
+<p>进一步，我们将顶点<code>a</code>的颜色改为<code>淡绿色</code>，并将<code>c</code>到<code>d</code>的边改为<code>红色</code>，脚本如下：</p>
+
+<p>```
+digraph abc{</p>
+
+<pre><code>node [shape="record"];
+edge [style="dashed"];
+
+a [style="filled", color="black", fillcolor="chartreuse"];
+b;
+c;
+d;
+
+a -&gt; b;
+b -&gt; d;
+c -&gt; d [color="red"];
+</code></pre>
+
+<p>}
+```
+绘制的结果如下：</p>
+
+<p><img src="/images/2012/01/clip_image008.gif" alt="dot-simple3" /></p>
+
+<p>应当注意到，顶点和边都接受属性的定义，形式为在顶点和边的定义之后加上一个由方括号括起来的<code>key-value</code>列表，每个<code>key-value</code>对由逗号隔开。如果图中顶点和边采用统一的风格，则可以在图定义的首部定义<code>node</code>, <code>edge</code>的属性。比如上图中，定义所有的顶点为方框，所有的边为虚线，在具体的顶点和边之后定义的属性将覆盖此全局属性。如特定与<code>a</code>的绿色，<code>c</code>到<code>d</code>的边的红色。</p>
+
+<h4>以图片为节点</h4>
+
+<p>除了颜色，节点还可以使用图片。不过需要注意的是，在使用图片作为节点的时候，需要将本来的形状设置为<code>none</code>，并且将<code>label</code>置为空字符串，避免出现文字对图片的干扰。</p>
+
+<p>```
+digraph abc{</p>
+
+<pre><code>node [shape="record"];
+edge [style="dashed"];
+
+a [style="filled", color="black", fillcolor="chartreuse"];
+b;
+c [shape="none", image="logos/browser-icon-chrome-resized.png", label=""];
+d;
+
+a -&gt; b;
+b -&gt; d;
+c -&gt; d [color="red"];
+</code></pre>
+
+<p>}
+```</p>
+
+<p><img src="/images/2015/11/image-node.png" alt="image-node" /></p>
+
+<h3>子图的绘制</h3>
+
+<p>graphviz支持子图，即图中的部分节点和边相对对立(软件的模块划分经常如此)。比如，我们可以将顶点c和d归为一个子图：</p>
+
+<p>```
+digraph abc{</p>
+
+<pre><code>node [shape="record"];
+edge [style="dashed"];
+
+a [style="filled", color="black", fillcolor="chartreuse"];
+b;
+
+subgraph cluster_cd{
+    label="c and d";
+    bgcolor="mintcream";
+    c;
+    d;
+}
+
+a -&gt; b;
+b -&gt; d;
+c -&gt; d [color="red"];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>将<code>c</code>和<code>d</code>划分到<code>cluster_cd</code>这个子图中，标签为<code>c and d</code>,并添加背景色，以方便与主图区分开，绘制结果如下：</p>
+
+<p><img src="/images/2012/01/clip_image010.gif" alt="cluster" /></p>
+
+<p>应该注意的是，子图的名称必须以<code>cluster</code>开头，否则<code>graphviz</code>无法设别。</p>
+
+<h4>数据结构的可视化</h4>
+
+<p>实际开发中，经常要用到的是对复杂数据结构的描述，<code>graphviz</code>提供完善的机制来绘制此类图形。</p>
+
+<h5>一个hash表的数据结构</h5>
+
+<p>比如一个hash表的内容，可能具有下列结构：</p>
+
+<p>```c
+struct st_hash_type {</p>
+
+<pre><code>int (*compare) ();
+int (*hash) ();
+</code></pre>
+
+<p>};</p>
+
+<p>struct st_table_entry {</p>
+
+<pre><code>unsigned int hash;
+char *key;
+char *record;
+st_table_entry *next;
+</code></pre>
+
+<p>};</p>
+
+<p>struct st_table {</p>
+
+<pre><code>struct st_hash_type *type;
+int num_bins; /* slot count */
+int num_entries; /* total number of entries */
+struct st_table_entry **bins; /* slot */
+</code></pre>
+
+<p>};
+```</p>
+
+<h5>绘制hash表的数据结构</h5>
+
+<p>从代码上看，由于结构体存在引用关系，不够清晰，如果层次较多，则很难以记住各个结构之间的关系，我们可以通过下图来更清楚的展示：</p>
+
+<p><img src="/images/2012/01/clip_image012.gif" alt="hash-datastruct" /></p>
+
+<p>脚本如下：</p>
+
+<p>```
+digraph st2{</p>
+
+<pre><code>fontname = "Verdana";
+fontsize = 10;
+rankdir=TB;
+
+node [fontname = "Verdana", fontsize = 10, color="skyblue", shape="record"];
+
+edge [fontname = "Verdana", fontsize = 10, color="crimson", style="solid"];
+
+st_hash_type [label="{&lt;head&gt;st_hash_type|(*compare)|(*hash)}"];
+st_table_entry [label="{&lt;head&gt;st_table_entry|hash|key|record|&lt;next&gt;next}"];
+st_table [label="{st_table|&lt;type&gt;type|num_bins|num_entries|&lt;bins&gt;bins}"];
+
+st_table:bins -&gt; st_table_entry:head;
+st_table:type -&gt; st_hash_type:head;
+st_table_entry:next -&gt; st_table_entry:head [style="dashed", color="forestgreen"];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>应该注意到，在顶点的形状为<code>record</code>的时候，<code>label</code>属性的语法比较奇怪，但是使用起来非常灵活。比如，用竖线”|”隔开的串会在绘制出来的节点中展现为一条分隔符。用<code>&lt;&gt;</code>括起来的串称为锚点，当一个节点具有多个锚点的时候，这个特性会非常有用，比如节点<code>st_table</code>的<code>type</code>属性指向<code>st_hash_type</code>，第4个属性指向<code>st_table_entry</code>等，都是通过锚点来实现的。</p>
+
+<p>我们发现，使用默认的<code>dot</code>布局后，绿色的这条边覆盖了数据结构<code>st_table_entry</code>，并不美观，因此可以使用别的布局方式来重新布局，如使用<code>circo</code>算法：</p>
+
+<p><img src="/images/2012/01/clip_image014.gif" alt="circo" /></p>
+
+<p>则可以得到更加合理的布局结果。</p>
+
+<h4>hash表的实例</h4>
+
+<p>另外，这个hash表的一个实例如下：</p>
+
+<p><img src="/images/2012/01/clip_image016.gif" alt="hash-instance" /></p>
+
+<p>脚本如下：</p>
+
+<p>```
+digraph st{</p>
+
+<pre><code>fontname = "Verdana";
+fontsize = 10;
+rankdir = LR;
+rotate = 90;
+
+node [ shape="record", width=.1, height=.1];
+node [fontname = "Verdana", fontsize = 10, color="skyblue", shape="record"];
+
+edge [fontname = "Verdana", fontsize = 10, color="crimson", style="solid"];
+node [shape="plaintext"];
+
+st_table [label=&lt;
+    &lt;table border="0" cellborder="1" cellspacing="0" align="left"&gt;
+    &lt;tr&gt;
+    &lt;td&gt;st_table&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+    &lt;td&gt;num_bins=5&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+    &lt;td&gt;num_entries=3&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+    &lt;td port="bins"&gt;bins&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/table&gt;
+&gt;];
+
+node [shape="record"];
+num_bins [label=" &lt;b1&gt; | &lt;b2&gt; | &lt;b3&gt; | &lt;b4&gt; | &lt;b5&gt; ", height=2];
+node[ width=2 ];
+
+entry_1 [label="{&lt;e&gt;st_table_entry|&lt;next&gt;next}"];
+entry_2 [label="{&lt;e&gt;st_table_entry|&lt;next&gt;null}"];
+entry_3 [label="{&lt;e&gt;st_table_entry|&lt;next&gt;null}"];
+
+st_table:bins -&gt; num_bins:b1;
+num_bins:b1 -&gt; entry_1:e;
+entry_1:next -&gt; entry_2:e;
+num_bins:b3 -&gt; entry_3:e;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>上例中可以看到，节点的<code>label</code>属性支持类似于<code>HTML</code>语言中的TABLE形式的定义，通过行列的数目来定义节点的形状，从而使得节点的组成更加灵活。</p>
+
+<h4>软件模块组成图</h4>
+
+<p>Apache httpd 模块关系</p>
+
+<p><img src="/images/2012/01/clip_image018.gif" alt="httpd" /></p>
+
+<p>在实际的开发中，随着系统功能的完善，软件整体的结构会越来越复杂，通常开发人员会将软件划分为可理解的多个子模块，各个子模块通过协作，完成各种各样的需求。</p>
+
+<p>下面有个例子，是某软件设计时的一个草稿：</p>
+
+<p><img src="/images/2012/01/clip_image020.gif" alt="idp" /></p>
+
+<p>IDP支持层为一个相对独立的子系统，其中包括如数据库管理器，配置信息管理器等模块，另外为了提供更大的灵活性，将很多其他的模块抽取出来作为外部模块，而支持层提供一个模块管理器，来负责加载/卸载这些外部的模块集合。</p>
+
+<p>这些模块间的关系较为复杂，并且有部分模块关系密切，应归类为一个子系统中，上图对应的<code>dot</code>脚本为：</p>
+
+<p>```
+digraph idp_modules{</p>
+
+<pre><code>rankdir = TB;
+fontname = "Microsoft YaHei";
+fontsize = 12;
+
+node [ fontname = "Microsoft YaHei", fontsize = 12, shape = "record" ]; 
+edge [ fontname = "Microsoft YaHei", fontsize = 12 ];
+
+    subgraph cluster_sl{
+        label="IDP支持层";
+        bgcolor="mintcream";
+        node [shape="Mrecord", color="skyblue", style="filled"];
+        network_mgr [label="网络管理器"];
+        log_mgr [label="日志管理器"];
+        module_mgr [label="模块管理器"];
+        conf_mgr [label="配置管理器"];
+        db_mgr [label="数据库管理器"];
+    };
+
+    subgraph cluster_md{
+        label="可插拔模块集";
+        bgcolor="lightcyan";
+        node [color="chartreuse2", style="filled"];
+        mod_dev [label="开发支持模块"];
+        mod_dm [label="数据建模模块"];
+        mod_dp [label="部署发布模块"];
+    };
+
+mod_dp -&gt; mod_dev [label="依赖..."];
+mod_dp -&gt; mod_dm [label="依赖..."];
+mod_dp -&gt; module_mgr [label="安装...", color="yellowgreen", arrowhead="none"];
+mod_dev -&gt; mod_dm [label="依赖..."];
+mod_dev -&gt; module_mgr [label="安装...", color="yellowgreen", arrowhead="none"];
+mod_dm -&gt; module_mgr [label="安装...", color="yellowgreen", arrowhead="none"];
+</code></pre>
+
+<p>}
+```</p>
+
+<h4>状态图</h4>
+
+<p>有限自动机示意图</p>
+
+<p><img src="/images/2012/01/clip_image022.gif" alt="fsm" /></p>
+
+<p>上图是一个简易有限自动机，接受<code>a</code>及<code>a</code>结尾的任意长度的串。其脚本定义如下：</p>
+
+<p>```
+digraph automata_0 {</p>
+
+<pre><code>size = "8.5, 11";
+fontname = "Microsoft YaHei";
+fontsize = 10;
+
+node [shape = circle, fontname = "Microsoft YaHei", fontsize = 10];
+edge [fontname = "Microsoft YaHei", fontsize = 10];
+
+0 [ style = filled, color=lightgrey ];
+2 [ shape = doublecircle ];
+
+0 -&gt; 2 [ label = "a " ];
+0 -&gt; 1 [ label = "other " ];
+1 -&gt; 2 [ label = "a " ];
+1 -&gt; 1 [ label = "other " ];
+2 -&gt; 2 [ label = "a " ];
+2 -&gt; 1 [ label = "other " ];
+
+"Machine: a" [ shape = plaintext ];
+</code></pre>
+
+<p>}
+```</p>
+
+<p>形状值为plaintext的表示不用绘制边框，仅展示纯文本内容，这个在绘图中，绘制指示性的文本时很有用，如上图中的<code>Machine: a</code>。</p>
+
+<h4>OSGi中模块的生命周期图</h4>
+
+<p>OSGi中，模块具有生命周期，从安装到卸载，可能的状态具有已安装，已就绪，正在启动，已启动，正在停止，已卸载等。如下图所示：</p>
+
+<p><img src="/images/2012/01/clip_image024.gif" alt="osgi" /></p>
+
+<p>对应的脚本如下：</p>
+
+<p>```
+digraph module_lc{</p>
+
+<pre><code>rankdir=TB;
+fontname = "Microsoft YaHei";
+fontsize = 12;
+
+node [fontname = "Microsoft YaHei", fontsize = 12, shape = "Mrecord", color="skyblue", style="filled"]; 
+edge [fontname = "Microsoft YaHei", fontsize = 12, color="darkgreen" ];
+
+installed [label="已安装状态"];
+resolved [label="已就绪状态"];
+uninstalled [label="已卸载状态"];
+starting [label="正在启动"];
+active [label="已激活(运行)状态"];
+stopping [label="正在停止"];
+start [label="", shape="circle", width=0.5, fixedsize=true, style="filled", color="black"];
+
+start -&gt; installed [label="安装"];
+installed -&gt; uninstalled [label="卸载"];
+installed -&gt; resolved [label="准备"];
+installed -&gt; installed [label="更新"];
+resolved -&gt; installed [label="更新"];
+resolved -&gt; uninstalled [label="卸载"];
+resolved -&gt; starting [label="启动"];
+starting -&gt; active [label=""];
+active -&gt; stopping [label="停止"];
+stopping -&gt; resolved [label=""]; 
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>其他实例</h3>
+
+<p>一棵简单的抽象语法树(AST)</p>
+
+<p>表达式 <code>(3+4)*5</code> 在编译时期，会形成一棵语法树，一边在计算时，先计算<code>3+4</code>的值，最后与5相乘。</p>
+
+<p><img src="/images/2012/01/clip_image026.gif" alt="ast-calc" /></p>
+
+<p>对应的脚本如下：</p>
+
+<p>```
+digraph ast{</p>
+
+<pre><code>fontname = "Microsoft YaHei";
+fontsize = 10;
+
+node [shape = circle, fontname = "Microsoft YaHei", fontsize = 10];
+edge [fontname = "Microsoft YaHei", fontsize = 10];
+node [shape="plaintext"];
+
+mul [label="mul(*)"];
+add [label="add(+)"];
+
+add -&gt; 3
+add -&gt; 4;
+mul -&gt; add;
+mul -&gt; 5;
+</code></pre>
+
+<p>}
+```</p>
+
+<h4>简单的UML类图</h4>
+
+<p>下面是一简单的UML类图，<code>Dog</code>和<code>Cat</code>都是<code>Animal</code>的子类，<code>Dog</code>和<code>Cat</code>同属一个包，且有可能有联系<code>(0..n)</code>。</p>
+
+<p><img src="/images/2012/01/clip_image028.gif" alt="uml" /></p>
+
+<p>脚本：</p>
+
+<p>```
+digraph G{</p>
+
+<pre><code>fontname = "Courier New"
+fontsize = 10
+
+node [ fontname = "Courier New", fontsize = 10, shape = "record" ];
+edge [ fontname = "Courier New", fontsize = 10 ];
+
+Animal [ label = "{Animal |+ name : String\l+ age : int\l|+ die() : void\l}" ];
+
+    subgraph clusterAnimalImpl{
+        bgcolor="yellow"
+        Dog [ label = "{Dog||+ bark() : void\l}" ];
+        Cat [ label = "{Cat||+ meow() : void\l}" ];
+    };
+
+edge [ arrowhead = "empty" ];
+
+Dog-&gt;Animal;
+Cat-&gt;Animal;
+Dog-&gt;Cat [arrowhead="none", label="0..*"];
+</code></pre>
+
+<p>}
+```</p>
+
+<h4>状态图</h4>
+
+<p><img src="/images/2012/01/clip_image030.gif" alt="status-chart" /></p>
+
+<p>脚本：</p>
+
+<p>```
+digraph finite_state_machine {</p>
+
+<pre><code>rankdir = LR;
+size = "8,5"
+
+node [shape = doublecircle]; 
+
+LR_0 LR_3 LR_4 LR_8;
+
+node [shape = circle];
+
+LR_0 -&gt; LR_2 [ label = "SS(B)" ];
+LR_0 -&gt; LR_1 [ label = "SS(S)" ];
+LR_1 -&gt; LR_3 [ label = "S($end)" ];
+LR_2 -&gt; LR_6 [ label = "SS(b)" ];
+LR_2 -&gt; LR_5 [ label = "SS(a)" ];
+LR_2 -&gt; LR_4 [ label = "S(A)" ];
+LR_5 -&gt; LR_7 [ label = "S(b)" ];
+LR_5 -&gt; LR_5 [ label = "S(a)" ];
+LR_6 -&gt; LR_6 [ label = "S(b)" ];
+LR_6 -&gt; LR_5 [ label = "S(a)" ];
+LR_7 -&gt; LR_8 [ label = "S(b)" ];
+LR_7 -&gt; LR_5 [ label = "S(a)" ];
+LR_8 -&gt; LR_6 [ label = "S(b)" ];
+LR_8 -&gt; LR_5 [ label = "S(a)" ];
+</code></pre>
+
+<p>}
+```</p>
+
+<h4>时序图</h4>
+
+<p>```
+digraph G {</p>
+
+<pre><code>rankdir="LR"; 
+node[shape="point", width=0, height=0]; 
+edge[arrowhead="none", style="dashed"] 
+
+{ 
+    rank="same"; 
+    edge[style="solided"];
+    LC[shape="plaintext"]; 
+    LC -&gt; step00 -&gt; step01 -&gt; step02 -&gt; step03 -&gt; step04 -&gt; step05; 
+} 
+
+{ 
+    rank="same"; 
+    edge[style="solided"];
+    Agency[shape="plaintext"];
+    Agency -&gt; step10 -&gt; step11 -&gt; step12 -&gt; step13 -&gt; step14 -&gt; step15; 
+} 
+
+{ 
+    rank="same"; 
+    edge[style="solided"];
+    Agent[shape="plaintext"];
+    Agent -&gt; step20 -&gt; step21 -&gt; step22 -&gt; step23 -&gt; step24 -&gt; step25; 
+} 
+
+step00 -&gt; step10 [label="sends email new custumer", arrowhead="normal"]; 
+step11 -&gt; step01 [label="declines", arrowhead="normal"]; 
+step12 -&gt; step02 [label="accepts", arrowhead="normal"]; 
+step13 -&gt; step23 [label="forward to", arrowhead="normal"]; 
+step24 -&gt; step14; 
+step14 -&gt; step04 [arrowhead="normal"]; 
+</code></pre>
+
+<p>}
+```</p>
+
+<p><code>rankdir="LR"</code>表示，布局从左<code>L</code>到右<code>R</code>。可以看到，在代码中有<code>{}</code>括起来的部分。</p>
+
+<p>```
+{</p>
+
+<pre><code>rank="same"; 
+edge[style="solided"];
+Agency[shape="plaintext"];
+Agency -&gt; step10 -&gt; step11 -&gt; step12 -&gt; step13 -&gt; step14 -&gt; step15; 
+</code></pre>
+
+<p>}
+```</p>
+
+<p>每一个<code>rank="same"</code>的block中的所有节点都会在同一条线上。我们设置了所有的线为虚线，但是在该block中，将线改为<code>solided</code>。</p>
+
+<p><img src="/images/2015/11/seq.png" alt="seq" /></p>
+
+<h3>附录</h3>
+
+<p>事实上，从<code>dot</code>的语法及上述的示例中，很容易看出，dot脚本很容易被其他语言生成。比如，使用一些简单的数据库查询就可以生成数据库中的ER图的dot脚本。</p>
+
+<p>如果你追求高效的开发速度，并希望快速的将自己的想法画出来，那么<code>graphviz</code>是一个很不错的选择。</p>
+
+<p>当然，<code>graphviz</code>也有一定的局限，比如绘制时序图(序列图)就很难实现。<code>graphviz</code>的节点出现在画布上的位置事实上是不确定的，依赖于所使用的布局算法，而不是在脚本中出现的位置，这可能使刚开始接触<code>graphviz</code>的开发人员有点不适应。<code>graphviz</code>的强项在于自动布局，当图中的顶点和边的数目变得很多的时候，才能很好的体会这一特性的好处：</p>
+
+<p><img src="/images/2012/01/clip_image034.gif" alt="complex" /></p>
+
+<p>比如上图，或者较上图更复杂的图，如果采用手工绘制显然是不可能的，只能通过<code>graphviz</code>提供的自动布局引擎来完成。如果仅用于展示模块间的关系，子模块与子模块间通信的方式，模块的逻辑位置等，<code>graphviz</code>完全可以胜任，但是如果图中对象的物理位置必须是准确的，如节点A必须位于左上角，节点B必须与A相邻等特性，使用<code>graphviz</code>则很难做到。毕竟，它的强项是自动布局，事实上，所有的节点对与布局引擎而言，权重在初始时都是相同的，只是在渲染之后，节点的大小，形状等特性才会影响权重。</p>
+
+<p>本文只是初步介绍了<code>graphviz</code>的简单应用，如图的定义，顶点/边的属性定义，如果运行等，事实上还有很多的属性，如画布的大小，字体的选择，颜色列表等，大家可以通过<code>graphviz</code>的官网来找到更详细的资料。</p>
+
+<p>文中的代码都已经在<a href="https://github.com/abruzzi/graphviz-scripts">Github</a>上。</p>
+]]></content>
+  </entry>
+  
+</feed>

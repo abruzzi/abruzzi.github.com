@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="一个神奇的Bug 目前项目是一个非常传统的Web应用，其中有个页面需要用户填写自己的个人信息，包括姓名和出生日期。非常简单的一个小片段，UI看起来是这个样子的： 没有使用现成的datepicker，某个开发人员只是简单的自己收集了一下年，月，日信息， &hellip;">
+  <meta name="description" content="千古谜题 &#8212; 中午吃啥？ 如果要列出一些日常最频繁的会问/被问的问题的一个列表，吃啥？绝对会排在前三位，对于程序员来说，一样频繁的还有诸如这是谁写的？，这尼玛啥意思啊？之类。 吃啥作为一个每天都会面对的问题，我们自然而言会想很多办法，比如随大流，其他人去哪儿我们跟着就行， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,236 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2014/09/simple-idea-and-simple-script/">一个简单的午餐推荐脚本</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-18T21:55:00+10:00" pubdate data-updated="true">Sep 18<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>千古谜题 &#8212; 中午吃啥？</h3>
+
+<p>如果要列出一些日常最频繁的会问/被问的问题的一个列表，<strong><em>吃啥？</em></strong>绝对会排在前三位，对于程序员来说，一样频繁的还有诸如<strong><em>这是谁写的？</em></strong>，<strong><em>这尼玛啥意思啊？</em></strong>之类。</p>
+
+<p><strong>吃啥</strong>作为一个每天都会面对的问题，我们自然而言会想很多办法，比如随大流，其他人去哪儿我们跟着就行，但是这种方法最大的问题是：大部分人其实都没有很好的想法，大家都很迷茫。作为程序员，一个非常直观的想法就是找出一个列表，然后随机/伪随机的从这个列表中拿出一条来作为推荐。</p>
+
+<h4>基本思路</h4>
+
+<p>一个基本的思路是这样的，或者说，要开发的软件应该满足这几个基本的需求</p>
+
+<ol>
+<li>维护一个饭店/饭菜的列表</li>
+<li>随机的从这个列表中取出一项</li>
+<li>每天定时的触发，比如<strong>11:30</strong>准时提醒</li>
+<li>这个工具最终要以弹出窗口等方式来提醒</li>
+</ol>
+
+
+<p>饭店/饭菜的列表比较容易，比如一个静态的JSON文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;关中客大碗面&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;王华峰肉夹馍&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;傻得帽冒菜&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;蒸饺&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;樊家肉夹馍&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;马奴哈羊肉泡馍&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;子午路张记肉夹馍&quot;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;东滩水盆&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后我们需要一个小程序来读取这段JSON，并已随机/伪随机的方式返回一个推荐：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># encoding: UTF-8</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">first</span>
+</span><span class='line'>    <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;food.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">)</span><span class="o">.</span><span class="n">shuffle</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="s2">&quot;name&quot;</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;今天去吃</span><span class="si">#{</span><span class="n">first</span><span class="si">}</span><span class="s2">吧?&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>测试一下，将上边这个ruby程序运行几次，可以得到一下结果：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>ruby lunch.rb
+</span><span class='line'>今天去吃东滩水盆吧?
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ruby lunch.rb
+</span><span class='line'>今天去吃子午路张记肉夹馍吧?
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ruby lunch.rb
+</span><span class='line'>今天去吃傻得帽冒菜吧?
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>ruby lunch.rb
+</span><span class='line'>今天去吃马奴哈羊肉泡馍吧?
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>效果不错，最起码它可以在控制台上打印比较随机的一个推荐了。</p>
+
+<h4>界面</h4>
+
+<p>最开始界面当然会考虑用诸如Sinatra做一个Web页面，然后吃饭前大家派代表去摇一下，然后听天由命。但是这样的弊端是不直观，用户需要打开该网站，然后主动的获取信息。</p>
+
+<p>我们更想要的是<strong>推送</strong>的方式来获得这个信息，经过简单的测试，发现Mac系统自带的<code>osascript</code>比较适合，这个工具可以执行苹果的脚本语言<a href="https://developer.apple.com/library/mac/documentation/AppleScript/Conceptual/AppleScriptX/AppleScriptX.html">AppleScript</a>，当然还可以执行<a href="https://developer.apple.com/library/mac/documentation/applescript/conceptual/applescriptx/concepts/osa.html">OSA</a>，不过这篇的重点并不是这个，我们可以在另一篇文件中讨论这个主题。</p>
+
+<p>比如一个很简单的<code>osascript</code>脚本是这样的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='applescript'><span class='line'><span class="nb">display</span> <span class="nv">notification</span> <span class="s2">&quot;Hello, world&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在命令行输入：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>osascript hello.osa
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>来执行这个脚本，这时你会看到一个弹出窗口：</p>
+
+<p><img src="/images/2014/09/hello-osa-resized.png" alt="image" /></p>
+
+<p>可以通过指定title来设置弹出窗口的标题：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='applescript'><span class='line'><span class="nb">display</span> <span class="nv">notification</span> <span class="s2">&quot;Hello, world&quot;</span> <span class="nv">with</span> <span class="na">title</span> <span class="s2">&quot;This is Title&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2014/09/hello-osa-with-title-resized.png" alt="image" /></p>
+
+<p>这样我们的实现就比较容易了，一个最简单的版本如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">chisha</span><span class="o">=</span><span class="sb">`</span>ruby lunch.rb<span class="sb">`</span>
+</span><span class='line'>osascript -e <span class="s2">&quot;display notification \&quot;${chisha}\&quot; with title \&quot;Chisha?\&quot;&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先执行<code>ruby lunch.rb</code>得到一个推荐的饭店，然后将这个饭店名称传入osascript来生成通知：</p>
+
+<p><img src="/images/2014/09/chisha-resized.png" alt="image" /></p>
+
+<h4>定时任务</h4>
+
+<p>有了这个脚本，我们可以很容易的使用<code>crontab</code>将其作为定时任务，比如将上述的脚本保存为<code>lunch.sh</code>，然后定义一个<code>crontab</code>脚本：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>crontab -l
+</span><span class='line'>30 11 * * 1-5 /Users/jtqiu/develop/ruby/chisha/lunch.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个脚本会在每周的周一到周五的中午11点30分执行一次，对于<a href="http://en.wikipedia.org/wiki/Cron">crontab的语法</a>请参考此处。</p>
+
+<p>一个直观的图示如下：</p>
+
+<p><img src="/images/2014/09/crontab-syntax.gif" alt="image" /></p>
+
+<p>图片来源(http://www.webenabled.com/sites/default/files/crontab-syntax.gif)</p>
+
+<p>对应的<a href="https://github.com/abruzzi/chisha">代码都放在Github上</a>，而且这个README是我目前写的最详细的一个，:)。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2391,158 +2621,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/01/use-yahoo-pipe-service-to-aggregate-blogs-you-care/">使用 Yahoo Pipes 服务做内容聚合 &#8211; ThoughtWorks好声音</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-01-01T19:48:00+11:00" pubdate data-updated="true">Jan 1<span>st</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>ThoughtWorks好声音</h3>
-
-<p><a href="http://voice.thoughtworkers.org/">ThoughtWorks好声音</a>是一个聚合网站，内容来自众ThoughtWorker的博客，我们每周会汇聚一次，从众多的博客中挑选出一些P2(软件卓越)相关的主题，然后编为一辑，再分享出去。</p>
-
-<p>但是从近100个博客中找P2相关的内容，这件事本身非常繁琐，如果每周都做这个重复劳动的话，那么软件卓越从何谈起呢？作为以解放人类为己任的程序员，我们绝对不能忍受纯体力的劳动。</p>
-
-<h4>获取博客地址列表</h4>
-
-<p>之前郑晔做了一个<a href="https://jinshuju.net/">金数据</a>的统计，请各位同事把自己的名字和博客地址登记在一个金数据的表单上：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/01/blog-colllecting.png" alt="image" /></p>
-
-<p>接下来第一步就是把网页上的所有地址取下来，这一步很容易，从金数据的页面上用jQuery找到表格的第二列，然后将其中的文字取出来：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;table tr td:nth-child(2)&quot;</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">item</span><span class="p">).</span><span class="nx">text</span><span class="p">().</span><span class="nx">trim</span><span class="p">();</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>写到这里突发奇想，能不能用phantomjs去把这个动作自动化？</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">page</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">status</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">status</span> <span class="o">!==</span> <span class="s1">&#39;success&#39;</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Unable to access network&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">page</span><span class="p">.</span><span class="nx">injectJs</span><span class="p">(</span><span class="s1">&#39;jquery.js&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">links</span> <span class="o">=</span> <span class="nx">page</span><span class="p">.</span><span class="nx">evaluate</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;table tr td:nth-child(2)&quot;</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">).</span><span class="nx">text</span><span class="p">().</span><span class="nx">trim</span><span class="p">();</span>
-</span><span class='line'>            <span class="p">});</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">underscore</span><span class="p">(</span><span class="nx">links</span><span class="p">).</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s1">&#39;^(https|http)&#39;</span><span class="p">).</span><span class="nx">test</span><span class="p">(</span><span class="nx">item</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>                <span class="k">return</span> <span class="s2">&quot;http://&quot;</span> <span class="o">+</span> <span class="nx">item</span><span class="p">;</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>            <span class="k">return</span> <span class="nx">item</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">});</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="nx">phantom</span><span class="p">.</span><span class="nx">exit</span><span class="p">();</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，results数组中就包含了所有的博客链接了，而且有的同事比较懒，提供的URL中不包含<code>http</code>，这段代码还顺手给这样的url添加了头尾。</p>
-
-<p>然后<strong>第二步</strong>，我<strong>想象</strong>着应该再写个脚本，在这个数组中得每个url的后边加上诸如<code>rss</code>或者<code>atom.xml</code>之类的后缀，然后去获取每个博客的rss文件，然后根据这些信息做一些事情。吃午饭的过程中我还在想象这个工具分为几个模块，用什么样的语言来做开发等等细节。</p>
-
-<p>吃完午饭，突然想起来之前熊杰貌似发过一个yahoo pipes生成的rss，我在邮件中翻出来之后，失望的发现我自己的博客都不在里边，想想熊杰貌似还在乌干达援助非洲人民，那就自己动手重新定义一个吧。</p>
-
-<h4>Yahoo pipes 服务</h4>
-
-<p><a href="http://pipes.yahoo.com/pipes/">Yahoo pipes</a>是一个用来定制聚合的服务，只需要定义好数据源(通常是rss/atom)，然后定义一些操作，比如排序，去重，联合等等。最后这个pipe会生成一个结果集，这些特性简直就是为我们这个需求定制的：</p>
-
-<ol>
-<li>将博客地址+&#8217;/rss&#8217; / 博客地址+&#8217;/atom.xml&#8217; 添加到一个个的fetcher上</li>
-<li>将这些fetcher联合起来</li>
-<li>将联合的结果排序(按照发表日期/更新日期)</li>
-<li>生成最后的rss</li>
-</ol>
-
-
-<p>yahoo pipes提供的编辑器非常简单易用：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/01/single-pipe.png" alt="image" /></p>
-
-<p>而且在编辑界面底下有一个预览界面：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/01/single-preview.png" alt="image" /></p>
-
-<p>当然，当定义好完整的pipe之后，我们的ThoughtWorks好声音的源看起来是这样的：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/01/tvot-pipe-resized.png" alt="image" /></p>
-
-<p>运行这个pipe之后，得到一个preview的界面：</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/01/tvot-pipe-run-resized.png" alt="image" /></p>
-
-<p>最后，可以将这个pipe公开发布，或者将这个pipe生成的rss订阅到阅读器中，比如<a href="http://www.vienna-rss.org/">vienna</a>:</p>
-
-<p><img src="http://abruzzi.github.com/images/2014/01/vienna-resized.png" alt="image" /></p>
-
-<p>然后就可以一目了然的看到最近有哪些ThoughtWorker更新了自己的博客，又有那些是P2相关的，可以<code>理论上</code>减轻我们编辑很多的工作量。</p>
-
-<h4>结论</h4>
-
-<p>手里是锤子的时候，看着周围的东西都像钉子。有时候，那些又酷又炫的技巧/工具可能并非必须。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/5/">&larr; Older</a>
@@ -2560,6 +2638,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/11/using-graphviz-drawing/">使用graphviz绘制流程图（2015版）</a>
+      </li>
+    
+      <li class="post">
         <a href="/2015/11/get-started-with-reflux/">你为什么应该试一试Reflux？</a>
       </li>
     
@@ -2573,10 +2655,6 @@
     
       <li class="post">
         <a href="/2015/09/write-a-parser/">工程中的编译原理 &#8211; Jison入门篇</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/09/show-your-map-in-browser/">可视化你的足迹 - Web端</a>
       </li>
     
   </ul>
