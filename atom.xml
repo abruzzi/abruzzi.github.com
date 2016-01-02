@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-11-10T20:31:28+11:00</updated>
+  <updated>2016-01-02T20:39:46+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,136 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[我的2015]]></title>
+    <link href="http://abruzzi.github.com/2016/01/my-2015/"/>
+    <updated>2016-01-02T19:54:00+11:00</updated>
+    <id>http://abruzzi.github.com/2016/01/my-2015</id>
+    <content type="html"><![CDATA[<h1>2015年总结</h1>
+
+<p>2015年在不经意间就过去了。又是一年。按照惯例，我会在年末回顾一下这一年自己的进步，收获以及一些感慨（牢骚）。然后对来年做一点展望，看看什么地方可以做的更好。</p>
+
+<h2>项目经历</h2>
+
+<p>今年基本上经历了三个项目，性质也都不一样：</p>
+
+<ul>
+<li>海外交付</li>
+<li>国内交付</li>
+<li>国内售前</li>
+</ul>
+
+
+<p>3月前的项目以及没有什么印象了，依稀觉得项目上的所有实践都是“错”的，可能由于太过与荒诞，所以大脑自行将这段抹去了。</p>
+
+<p>4月到6月在深圳的一个国内交付项目上，交付压力还挺大。不过也是在这个项目上，非常直接的体会到了其他角色的不容易。无论是客户的接口人，客户的项目经理，客户的领导，我们的开发，我们的UX，项目经理，还有交付的lead，所有人都不容易。</p>
+
+<p><a href="http://icodeit.org/2015/07/is-project-manager-a-fool/">《项目经理是大傻逼吗》</a>这篇文章就是为了纪念这个项目，或者说是被这个项目驱动出来的。</p>
+
+<p>6月之后回到办公室，在一个海外交付项目上。说是一个项目，中间其实换了6，7个不同的工作内容（出钱的是同一个客户而已）。总之一片混乱，所幸我们在10月前就结束了和这个客户的合作。这个项目事实上除了锻炼项目上人的耐心外，基本毫无益处。甚至对于很多毕业生来说，是深刻的伤害。</p>
+
+<p>10月之后，我难得的在beach上待了下来，而且一待就是3个月。中间在一个联合国的项目上工作了2周，然后就是为另外一个咨询项目准备了几周方案。当然，闲是不可能闲着的。在beach上，如果不出意外，肯定会比项目上更忙！比如打黑工啊，内部什么系统的改进啊，总是有好多事情。</p>
+
+<p>由于有一些本地的项目机会，而我又不在具体项目上，就来做这个售前的角色。帮助客户梳理需求，分析问题，设计方案，计算工作量等等。但是这个过程往往循环往复，一轮接着一轮，在合同确认之前，需要很多次讨论和交流。这应该不会是我自己的一个方向，在项目上写代码，培养新人，分享自己的学习所得，和他人一起进步，是我自己比较有热情的方向。</p>
+
+<h2>技术方面</h2>
+
+<p>在海外交付项目上，乏善足陈，项目中用到的也是非常厚重，已经至少10年的技术。通常来看，这样的大组织，没有人对要做的事情真正关心。好不容易遇到一个特别靠谱的人，结果我们的项目又结束了。国内项目上倒是有很多有意思的东西：</p>
+
+<ul>
+<li>如何在前端代码中很好的使用MVC</li>
+<li>流畅的前端开发模式</li>
+<li>如何做前端的测试</li>
+</ul>
+
+
+<p>上面这三点，我希望可以找时间整理出一本电子书，可以让没有<code>工程级</code>做过项目的前端工程师能有一个参考。</p>
+
+<p>另一方面，由于项目的压力，和项目人员的特殊性（开发就俩人，一个做前端，一个做后端，要集成就pair一下），所以很多实践都没有应用，比如结对，自动化测试等，做的都不够好。虽然我们很推崇，强调CI/CD的实践，但是当和客户的后端系统集成时，就各种悲剧。</p>
+
+<p>联合国的项目上，技术栈比较新颖，上一家的技术人员使用了他们当时能找到的所有酷炫的新技术，并用在了项目中，然后他们公司被收购。留给我们的在今年来看，依然是<a href="http://icodeit.org/2015/11/get-started-with-reflux/">比较新的</a>：</p>
+
+<ul>
+<li>React</li>
+<li>Reflux</li>
+<li>ES6</li>
+<li>mocha/chai</li>
+</ul>
+
+
+<p>而在国内售前，基本上没有写过一行代码，更多是更高层次（高不一定是好哦）的工作。确认需求，估算工作量，确定方案（前后端测试，开发方式，部署策略，自动化测试等等）。</p>
+
+<p>2016年，我希望可以多学习一些具体的编程知识，比如：</p>
+
+<ul>
+<li>mongodb</li>
+<li>数据分析，数据挖掘</li>
+<li>容器技术如docker</li>
+</ul>
+
+
+<h2>书籍</h2>
+
+<p>今年读了一些技术方面的书，更多的则是一些非技术类的。《自私的基因》是在2012年11月去墨尔本时，在广州白云机场买的，路上10个小时，读了几页。直到2015年才又拿起来，读了两章左右，基本上颠覆了我之前建立的对“进化论”的认识。</p>
+
+<p>另外读了一些科普类的，比如《哲学家在干了些什么》，《上帝掷骰子吗》等，又扫了一次盲。再就是一些佛教相关的书籍，《西藏生死书》，《能断：金刚经》，《正见》等，人生观和价值观得到了刷新。</p>
+
+<p>技术类的，主要是一些与具体技术关系不太大的，比如《恰如其分的软件架构》，《企业级应用架构模式》，《发布！》，《实例化需求》，《持续发布》之类。</p>
+
+<p>虽然竣工于2014年，但是我的一本著作和一本译作都是2015年才发布出来，那就算作2015年的吧：</p>
+
+<ul>
+<li><a href="http://www.amazon.cn/gp/product/B012R5A1NQ">《轻量级Web应用开发》</a></li>
+<li><a href="http://www.amazon.cn/dp/B015317A94">《7周7Web框架》</a></li>
+</ul>
+
+
+<h2>社区</h2>
+
+<p>今年在深圳的时候，有幸和ThoughtWorks的首席科学家<code>马丁.福勒</code>在同一次活动中作为讲师。</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/01/shenzhen-resized.jpg" alt="shenzhen" /></p>
+
+<p>回到西安之后，在本地社区中还讲过一个<code>前端工程师需要掌握的技能列表</code>的session</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/01/xian-resized.jpg" alt="xian" /></p>
+
+<p>2016年希望可以做一些更加深入的topic，以及一些更有意思，可以帮助到更多已经<code>在路上</code>的工程师们。</p>
+
+<h2>People Development</h2>
+
+<p>这个不知道如何翻译了，但是确实做了一些具体的事情：</p>
+
+<ul>
+<li>给我的sponsee们安排了读书会</li>
+<li>组织了一次《编写可维护的JavaScript》的workshop</li>
+<li>组织sponsee来做一个side project</li>
+<li>组织《Web开发实战》的workshop</li>
+</ul>
+
+
+<p>我自己总结出来了一套组织workshop的方式，其实很简单：</p>
+
+<ol>
+<li>做好计划，做好课表，做好课件</li>
+<li>找学员，同时从学员里找出<code>有基础，而且有意愿接着run workshop的人</code></li>
+<li>讲课，收集feedback，并改进课表，课件</li>
+<li>将run workshop的任务传递给那些<code>有基础，而且有意愿接着run workshop的人</code></li>
+</ol>
+
+
+<p>2016年希望可以找到更多的<code>候选人</code>，并帮助他们成为更好的讲师，教练。</p>
+
+<h2>总的感悟</h2>
+
+<p>总体的感觉是很忙，各种事情千头万绪，没有了清晰的一个vision，也没有了指导，自身的发展方向也变得模糊起来。一部分原因可能是压力的方向变了，在项目上的单一的压力下总是可以找出一些事情来的，但是在项目之外，各种可见不可见的压力都慢慢浮现。对于这些隐形的，不可见的，但是又可以感受到的压力，需要认真思索对策，然后想办法搞定。</p>
+
+<p>学习上有点“半瓶醋”的感觉，很多技术都接触了，但是不见得深入。缺乏空杯心态，这个是2016年希望自己能改进的地方。另一方面，希望在一个IT系统的架构层面有一些积累，以便在考虑项目的问题时，能够更加全面，而不至于陷入细节，只见树木，不见森林。</p>
+
+<p>2016，当然还会很忙，只是希望忙的过程中可以多一些快乐。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用graphviz绘制流程图（2015版）]]></title>
@@ -6698,214 +6828,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">alias </span><span class="nv">sd</span><span class="o">=</span><span class="s1">&#39;svn diff | dos2unix | colordiff | less -s -M +Gg&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux命令行中的7个小技巧]]></title>
-    <link href="http://abruzzi.github.com/2015/02/linux-tips/"/>
-    <updated>2015-02-14T17:48:00+11:00</updated>
-    <id>http://abruzzi.github.com/2015/02/linux-tips</id>
-    <content type="html"><![CDATA[<h3>Linux命令行中的7个小技巧</h3>
-
-<p>命令行是开发者的好朋友，<code>*nix</code>系统（包括Mac OS X和各种Linux）都自带了强大的Shell环境，作为一个专业的程序员，Shell是离不开的。这里总结了几个常用的小技巧，都是我自己平时经常用，而又不想每次都去Google的。</p>
-
-<h4>如何知道哪个进程在监听4000端口？</h4>
-
-<p>当启动服务时，经常会遇到想要<code>Address already in use</code>这样的异常，那么如何知道是哪个进程占用了该端口呢？</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsof -i :4000
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>lsof</code>会列出系统目前打开的文件（List open files，Linux世界中，一切都是文件），<code>-i</code>表示网络地址（Internet address），注意此处的冒号。如果不带参数，lsof会列出所有打开的网络地址：</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/02/lsof-resized.png" alt="lsof" /></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsof -i :4000
-</span><span class='line'>COMMAND   PID  USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
-</span><span class='line'>ruby    32303 jtqiu    7u  IPv4 0x947b402a4bb8370b      0t0  TCP *:terabase <span class="o">(</span>LISTEN<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Shell中如何设置代理？</h4>
-
-<p>很多公司都会有一个代理服务器供员工上外网使用，命令行中设置代理非常容易：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">export </span><span class="nv">http_proxy</span><span class="o">=</span><span class="s2">&quot;http://username:password@hosename:port&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果密码中有特设字符，比如<code>$</code>的话，需要转义一下。使用URLEncoding即可，比如<code>$</code>就是<code>%24</code>。最简单的就是在Chrome的<code>Console</code>中输入<code>encodeURIComponent("$")</code>来获得转义字符。</p>
-
-<p>如果不想对某些地址使用代理，可以设置<code>no_proxy</code>环境变量：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">export </span><span class="nv">no_proxy</span><span class="o">=</span><span class="s2">&quot;127.0.0.1, localhost, *.cnn.com, 192.168.1.10, domain.com:8080&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>如何为svn中的脚本设置可执行属性</h4>
-
-<p>你在Linux下创建了一个可执行脚本<code>e2e_test.sh</code>，但是团队里的其他人工作在Windows系统上，当你提交可执行脚本之后，他们checkout的是一个不能执行的文件！（其实也在情理之中，Windows这种垃圾货什么时候正常过呢？）</p>
-
-<p>这时候可以通过给这个脚本设置一个<code>svn</code>的属性:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>svn propset svn:executable <span class="s2">&quot;*&quot;</span> e2e_test.sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样在Windows上才heckout之后就正常了。</p>
-
-<h4>在Bash脚本中如何判断一个文件是否可执行？</h4>
-
-<p>有时候我们在<code>Bash</code>中需要判断某个文件是否可以执行，这行脚本可以解救你：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="k">if</span> <span class="o">[</span> -x <span class="nv">$FILENAME</span> <span class="o">]</span>; <span class="k">then</span>
-</span><span class='line'>  <span class="c"># the file is executable</span>
-</span><span class='line'><span class="k">fi</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>判断某个文件是否存在的脚本为：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="k">if</span> <span class="o">[</span> -f <span class="nv">$FILENAME</span> <span class="o">]</span>; <span class="k">then</span>
-</span><span class='line'>  <span class="c"># the file is existing</span>
-</span><span class='line'><span class="k">fi</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>我正在用的Linux是哪个发行版？</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsb_release -a
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在<code>SUSE</code>系统中运行这条命令可以得到这样的输出:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsb_release -a
-</span><span class='line'>LSB Version:    core-2.0-noarch:core-3.0-noarch:core-2.0-x86_64:core-3.0-x86_64:desktop-3.1-amd64:desktop-3.1-noarch:graphics-2.0-amd64:graphics-2.0-noarch:graphics-3.1-amd64:graphics-3.1-noarch
-</span><span class='line'>Distributor ID: SUSE LINUX
-</span><span class='line'>Description:    SUSE Linux Enterprise Server 10 <span class="o">(</span>x86_64<span class="o">)</span>
-</span><span class='line'>Release:        10
-</span><span class='line'>Codename:       n/a
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而在<code>ubuntu</code>上则为:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsb_release  -a
-</span><span class='line'>No LSB modules are available.
-</span><span class='line'>Distributor ID: Ubuntu
-</span><span class='line'>Description:    Ubuntu 12.04.3 LTS
-</span><span class='line'>Release:        12.04
-</span><span class='line'>Codename:       precise
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>与之相关的还有个问题是我当前的操作系统是<code>32位还是64为呢</code>?</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>uname -m
-</span><span class='line'>x86_64
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者使用<code>file</code>命令来查看系统自带的执行文件的元数据信息:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>file /usr/bin/file
-</span><span class='line'>/usr/bin/file: ELF 64-bit LSB executable, x86-64, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, dynamically linked <span class="o">(</span>uses shared libs<span class="o">)</span>, <span class="k">for </span>GNU/Linux 2.6.15, BuildID<span class="o">[</span>sha1<span class="o">]=</span>0xe04b36145abc21d863652b93e6a0d069f7dfd3f4, stripped
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>查找文件(跳过某些指定目录)</h4>
-
-<p>你想要统计系统中所有的<code>JavaScript</code>文件的数量，但是又不想把外部的库文件（位于<code>libs</code>目录中）统计在内：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>find . -path ./libs -prune -o -name <span class="s2">&quot;*.js&quot;</span> | wc -l
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里大概解释一下，上面的命令其实等于这条命令的缩写：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>find . -path ./libs -a -prune -o -name <span class="s2">&quot;*.js&quot;</span> | wc -l
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>也即</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>find . -path ./libs -and -prune -or -name <span class="s2">&quot;*.js&quot;</span> | wc -l
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>翻译成伪代码相当于：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;./libs&quot;</span>
-</span><span class='line'>    <span class="n">prune</span>
-</span><span class='line'><span class="k">else</span>
-</span><span class='line'>    <span class="n">find_by_name</span> <span class="s2">&quot;*.js&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>断点续传</h4>
-
-<p>下载了一半，网络断了。小文件的话大不了重来一次，但是如果是一个7G的镜像呢？好在我们有<code>wget -c</code>。<code>wget</code>基本上是Linux中下载软件的标配了，它有很多的参数，甚至可以将整个静态网站克隆到本地，断点续传当然是支持的了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>wget -c https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-4.6.0-0-virtualbox.7z --no-check-certificate
-</span><span class='line'>--2014-05-08 12:32:25--  https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-4.6.0-0-virtualbox.7z
-</span><span class='line'>Connecting to 172.19.6.47:8080... connected.
-</span><span class='line'>Proxy request sent, awaiting response... 206 Partial Content
-</span><span class='line'>Length: 3393638045 <span class="o">(</span>3.2G<span class="o">)</span>, 2951427152 <span class="o">(</span>2.7G<span class="o">)</span> remaining <span class="o">[</span>text/plain<span class="o">]</span>
-</span><span class='line'>Saving to: <span class="sb">`</span>cloudera-quickstart-vm-4.6.0-0-virtualbox.7z<span class="err">&#39;</span>
-</span><span class='line'>
-</span><span class='line'>13% <span class="o">[</span>++++++++++                                                                      <span class="o">]</span> 450,866,893 57.8K/s  eta 3h 57m
 </span></code></pre></td></tr></table></div></figure>
 
 ]]></content>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ThoughtWorks | I code it]]></title>
   <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2015-11-10T20:31:28+11:00</updated>
+  <updated>2016-01-02T20:39:46+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,136 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[我的2015]]></title>
+    <link href="http://abruzzi.github.com/2016/01/my-2015/"/>
+    <updated>2016-01-02T19:54:00+11:00</updated>
+    <id>http://abruzzi.github.com/2016/01/my-2015</id>
+    <content type="html"><![CDATA[<h1>2015年总结</h1>
+
+<p>2015年在不经意间就过去了。又是一年。按照惯例，我会在年末回顾一下这一年自己的进步，收获以及一些感慨（牢骚）。然后对来年做一点展望，看看什么地方可以做的更好。</p>
+
+<h2>项目经历</h2>
+
+<p>今年基本上经历了三个项目，性质也都不一样：</p>
+
+<ul>
+<li>海外交付</li>
+<li>国内交付</li>
+<li>国内售前</li>
+</ul>
+
+
+<p>3月前的项目以及没有什么印象了，依稀觉得项目上的所有实践都是“错”的，可能由于太过与荒诞，所以大脑自行将这段抹去了。</p>
+
+<p>4月到6月在深圳的一个国内交付项目上，交付压力还挺大。不过也是在这个项目上，非常直接的体会到了其他角色的不容易。无论是客户的接口人，客户的项目经理，客户的领导，我们的开发，我们的UX，项目经理，还有交付的lead，所有人都不容易。</p>
+
+<p><a href="http://icodeit.org/2015/07/is-project-manager-a-fool/">《项目经理是大傻逼吗》</a>这篇文章就是为了纪念这个项目，或者说是被这个项目驱动出来的。</p>
+
+<p>6月之后回到办公室，在一个海外交付项目上。说是一个项目，中间其实换了6，7个不同的工作内容（出钱的是同一个客户而已）。总之一片混乱，所幸我们在10月前就结束了和这个客户的合作。这个项目事实上除了锻炼项目上人的耐心外，基本毫无益处。甚至对于很多毕业生来说，是深刻的伤害。</p>
+
+<p>10月之后，我难得的在beach上待了下来，而且一待就是3个月。中间在一个联合国的项目上工作了2周，然后就是为另外一个咨询项目准备了几周方案。当然，闲是不可能闲着的。在beach上，如果不出意外，肯定会比项目上更忙！比如打黑工啊，内部什么系统的改进啊，总是有好多事情。</p>
+
+<p>由于有一些本地的项目机会，而我又不在具体项目上，就来做这个售前的角色。帮助客户梳理需求，分析问题，设计方案，计算工作量等等。但是这个过程往往循环往复，一轮接着一轮，在合同确认之前，需要很多次讨论和交流。这应该不会是我自己的一个方向，在项目上写代码，培养新人，分享自己的学习所得，和他人一起进步，是我自己比较有热情的方向。</p>
+
+<h2>技术方面</h2>
+
+<p>在海外交付项目上，乏善足陈，项目中用到的也是非常厚重，已经至少10年的技术。通常来看，这样的大组织，没有人对要做的事情真正关心。好不容易遇到一个特别靠谱的人，结果我们的项目又结束了。国内项目上倒是有很多有意思的东西：</p>
+
+<ul>
+<li>如何在前端代码中很好的使用MVC</li>
+<li>流畅的前端开发模式</li>
+<li>如何做前端的测试</li>
+</ul>
+
+
+<p>上面这三点，我希望可以找时间整理出一本电子书，可以让没有<code>工程级</code>做过项目的前端工程师能有一个参考。</p>
+
+<p>另一方面，由于项目的压力，和项目人员的特殊性（开发就俩人，一个做前端，一个做后端，要集成就pair一下），所以很多实践都没有应用，比如结对，自动化测试等，做的都不够好。虽然我们很推崇，强调CI/CD的实践，但是当和客户的后端系统集成时，就各种悲剧。</p>
+
+<p>联合国的项目上，技术栈比较新颖，上一家的技术人员使用了他们当时能找到的所有酷炫的新技术，并用在了项目中，然后他们公司被收购。留给我们的在今年来看，依然是<a href="http://icodeit.org/2015/11/get-started-with-reflux/">比较新的</a>：</p>
+
+<ul>
+<li>React</li>
+<li>Reflux</li>
+<li>ES6</li>
+<li>mocha/chai</li>
+</ul>
+
+
+<p>而在国内售前，基本上没有写过一行代码，更多是更高层次（高不一定是好哦）的工作。确认需求，估算工作量，确定方案（前后端测试，开发方式，部署策略，自动化测试等等）。</p>
+
+<p>2016年，我希望可以多学习一些具体的编程知识，比如：</p>
+
+<ul>
+<li>mongodb</li>
+<li>数据分析，数据挖掘</li>
+<li>容器技术如docker</li>
+</ul>
+
+
+<h2>书籍</h2>
+
+<p>今年读了一些技术方面的书，更多的则是一些非技术类的。《自私的基因》是在2012年11月去墨尔本时，在广州白云机场买的，路上10个小时，读了几页。直到2015年才又拿起来，读了两章左右，基本上颠覆了我之前建立的对“进化论”的认识。</p>
+
+<p>另外读了一些科普类的，比如《哲学家在干了些什么》，《上帝掷骰子吗》等，又扫了一次盲。再就是一些佛教相关的书籍，《西藏生死书》，《能断：金刚经》，《正见》等，人生观和价值观得到了刷新。</p>
+
+<p>技术类的，主要是一些与具体技术关系不太大的，比如《恰如其分的软件架构》，《企业级应用架构模式》，《发布！》，《实例化需求》，《持续发布》之类。</p>
+
+<p>虽然竣工于2014年，但是我的一本著作和一本译作都是2015年才发布出来，那就算作2015年的吧：</p>
+
+<ul>
+<li><a href="http://www.amazon.cn/gp/product/B012R5A1NQ">《轻量级Web应用开发》</a></li>
+<li><a href="http://www.amazon.cn/dp/B015317A94">《7周7Web框架》</a></li>
+</ul>
+
+
+<h2>社区</h2>
+
+<p>今年在深圳的时候，有幸和ThoughtWorks的首席科学家<code>马丁.福勒</code>在同一次活动中作为讲师。</p>
+
+<p><img src="/images/2016/01/shenzhen-resized.jpg" alt="shenzhen" /></p>
+
+<p>回到西安之后，在本地社区中还讲过一个<code>前端工程师需要掌握的技能列表</code>的session</p>
+
+<p><img src="/images/2016/01/xian-resized.jpg" alt="xian" /></p>
+
+<p>2016年希望可以做一些更加深入的topic，以及一些更有意思，可以帮助到更多已经<code>在路上</code>的工程师们。</p>
+
+<h2>People Development</h2>
+
+<p>这个不知道如何翻译了，但是确实做了一些具体的事情：</p>
+
+<ul>
+<li>给我的sponsee们安排了读书会</li>
+<li>组织了一次《编写可维护的JavaScript》的workshop</li>
+<li>组织sponsee来做一个side project</li>
+<li>组织《Web开发实战》的workshop</li>
+</ul>
+
+
+<p>我自己总结出来了一套组织workshop的方式，其实很简单：</p>
+
+<ol>
+<li>做好计划，做好课表，做好课件</li>
+<li>找学员，同时从学员里找出<code>有基础，而且有意愿接着run workshop的人</code></li>
+<li>讲课，收集feedback，并改进课表，课件</li>
+<li>将run workshop的任务传递给那些<code>有基础，而且有意愿接着run workshop的人</code></li>
+</ol>
+
+
+<p>2016年希望可以找到更多的<code>候选人</code>，并帮助他们成为更好的讲师，教练。</p>
+
+<h2>总的感悟</h2>
+
+<p>总体的感觉是很忙，各种事情千头万绪，没有了清晰的一个vision，也没有了指导，自身的发展方向也变得模糊起来。一部分原因可能是压力的方向变了，在项目上的单一的压力下总是可以找出一些事情来的，但是在项目之外，各种可见不可见的压力都慢慢浮现。对于这些隐形的，不可见的，但是又可以感受到的压力，需要认真思索对策，然后想办法搞定。</p>
+
+<p>学习上有点“半瓶醋”的感觉，很多技术都接触了，但是不见得深入。缺乏空杯心态，这个是2016年希望自己能改进的地方。另一方面，希望在一个IT系统的架构层面有一些积累，以便在考虑项目的问题时，能够更加全面，而不至于陷入细节，只见树木，不见森林。</p>
+
+<p>2016，当然还会很忙，只是希望忙的过程中可以多一些快乐。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[项目经理是大傻B吗？]]></title>
@@ -445,469 +575,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 <p><img src="/images/2014/12/my-card-resized.png" alt="name card" /></p>
 
 <p>希望来年可以在自己努力的路上看到一些成果吧。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[从一个小例子学习TDD]]></title>
-    <link href="http://abruzzi.github.com/2014/11/tdd-step-by-step/"/>
-    <updated>2014-11-09T15:07:00+11:00</updated>
-    <id>http://abruzzi.github.com/2014/11/tdd-step-by-step</id>
-    <content type="html"><![CDATA[<h3>示例的需求描述</h3>
-
-<p>今天我们需要完成的需求是这样的：</p>
-
-<p>对于一个给定的字符串，如果其中<code>元音</code>字母数目在整个字符串中的比例超过了30%，则将该<code>元音</code>字母替换成字符串<code>mommy</code>，额外的，在替换时，如果有连续的元音出现，则仅替换一次。</p>
-
-<p>如果用<code>实例化需求</code>(<a href="http://specificationbyexample.com/">Specification by Example</a>)的方式来描述的话，需求可以转换成这样几条实例：</p>
-
-<ol>
-<li><code>hmm</code>经过处理之后，应该保持原状</li>
-<li><code>she</code>经过处理之后，应该被替换为<code>shmommy</code></li>
-<li><code>hear</code>经过处理之后，应该被替换为<code>hmommyr</code></li>
-</ol>
-
-
-<p>当然，也可以加入一些边界值的检测，比如包含数字，大小写混杂的场景来验证，不过我们暂时可以将这些场景抛开，而仅仅关注与TDD本身。</p>
-
-<h4>为什么选择这个<code>奇怪的</code>例子</h4>
-
-<p>我记得在学校的时候，最害怕看到的就是书上举的各种离<code>生活</code>很远的例子，比如国外的书籍经常举汽车的例子，有引擎，有面板，但是作为一个只是能看到街上跑的车的穷学生，实际无法理解其中的关联关系。</p>
-
-<p>其实，另外一种令人不那么舒服的例子是那种纯粹为了示例而编写的例子，现实世界中可能永远都不可能见到这样的代码，比如我们今天用到的例子。</p>
-
-<p>当然，这种纯粹的例子也有其存在的价值：在脱离开复杂的细节之后，尽量的让读者专注于某个方面，从而达到对某方面练习的目的。因为跟现实完全相关的例子往往会变得复杂，很容易让读者转而去考虑复杂性本身，而忽略了对实践/练习的思考。</p>
-
-<h4>TDD步骤</h4>
-
-<p>通常的描述中，<code>TDD</code>有三个步骤：</p>
-
-<ol>
-<li>先编写一个测试，由于此时没有任何实现，因此测试会失败</li>
-<li>编写实现，以最快，最简单的方式，此时测试会通过</li>
-<li>查看实现/测试，有没有改进的余地，如果有的话就用重构的方式来优化，并在重构之后保证测试通过</li>
-</ol>
-
-
-<p><img src="/images/2014/11/tdd.png" alt="tdd" /></p>
-
-<p>它的好处显而易见：</p>
-
-<ol>
-<li>时时关注于实现功能，这样不会跑偏</li>
-<li>每个功能都有测试覆盖，一旦改错，就会有测试失败</li>
-<li>重构时更有信心，不用怕破坏掉已有的功能</li>
-<li>测试即文档，而且是不会过期的文档，因为一旦实现变化，相关测试就会失败</li>
-</ol>
-
-
-<p>使用<code>TDD</code>，一个重要的实践是<code>测试先行</code>。其实在编写任何测试之前，更重要的一个步骤是<code>任务分解</code>(Tasking)。只有当任务分解到恰当的粒度，整个过程才可能变得比较顺畅。</p>
-
-<p>回到我们的例子，我们在知道整个需求的前提下，如何进行任务分解呢？作为<code>实现优先</code>的程序员，很可能会考虑诸如空字符串，元音比例是否到达30%等功能。这当然没有孰是孰非的问题，不过当需求本身就很复杂的情况下，这种直接面向实现的方式可能会导致越走越偏，考虑的越来越复杂，而耗费了几个小时的设计之后发现没有任何的实际进度。</p>
-
-<p>如果是采用<code>TDD</code>的方式，下面的方式是一种可能的任务分解：</p>
-
-<ol>
-<li>输入一个非元音字符，并预期返回字符本身</li>
-<li>输入一个元音，并预期返回<code>mommy</code></li>
-<li>输入一个元音超过30%的字符串，并预期元音被替换</li>
-<li>输入一个元音超过30%，并且存在连续元音的字符串，并预期只被替换一次</li>
-</ol>
-
-
-<p>当然，这个任务分解可能并不是<code>最好的</code>，但是是一个比较清晰的分解。</p>
-
-<h3>实践</h3>
-
-<h4>第一个任务</h4>
-
-<p>在本文中，我们将使用JavaScript来完成该功能的编写，测试框架采用了<a href="http://jasmine.github.io/2.0/introduction.html">Jasmine</a>，这里有一个<a href="https://github.com/abruzzi/tdd-boilerplate">模板项目</a>，使用它你可以快速的启动，并跟着本教程一起实践。</p>
-
-<p>根据任务分解，我们编写的第一个测试是：</p>
-
-<p>```js
-describe("mommify", function() {</p>
-
-<pre><code>it("should return h when given h", function() {
-    var expected = "h";
-
-    var result = mommify("h");
-
-    expect(result).toEqual(expected);
-});
-</code></pre>
-
-<p>});
-```</p>
-
-<p>这个测试中有三行代码，这也是一般测试的标准写法，简称<code>3A</code>：</p>
-
-<ol>
-<li>组织数据（Arrange）</li>
-<li>执行需要被测的函数（Action）</li>
-<li>验证结果（Assertion）</li>
-</ol>
-
-
-<p>运行这个测试，此时由于还没有实现代码，因此Jasmine会报告失败。接下来我们用最快速的方法来编写实现，就目前来看，最简单的方式就是：</p>
-
-<p>```js
-function mommify() {</p>
-
-<pre><code>return "h";
-</code></pre>
-
-<p>}
-```</p>
-
-<p>可能有人觉得这种实现太过狡猾，但是从<code>TDD</code>的角度来说，它确实能够令测试通过。这时候，我们需要编写另外一个测试来<code>驱动</code>出正确的行为：</p>
-
-<p>```js
-it("should return m when given m", function() {</p>
-
-<pre><code>var expected = "m";
-
-var result = mommify("m");
-
-expect(result).toEqual(expected);
-</code></pre>
-
-<p>});
-```</p>
-
-<p>这样，我们的实现就不能仅仅返回一个"h"了，就现在来看，最简单的方式是输入什么就返回什么：</p>
-
-<p>```js
-function mommify(word) {</p>
-
-<pre><code>return word;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>很好，这样我们的第一个<code>任务</code>已经完成了！我们已经经历了<code>失败-成功</code>的循环，这时候需要<code>review</code>一下代码，以保证代码是干净的：实现上来说，并没有可以优化的地方，但是我们发现两个测试用例其实测试的是同一件事情，因此可以删掉一个。</p>
-
-<p>是的，测试代码也是代码，我们需要小心的维护它，以保证所有的代码都是干净的。</p>
-
-<h4>第二个任务</h4>
-
-<p>我们可以开始元音字母的子任务了，很容易想到的一个测试用例为：</p>
-
-<p>```js
-it("should return mommy when given a", function() {</p>
-
-<pre><code>var expected = "mommy";
-
-var result = mommify("a");
-
-expect(result).toEqual(expected);
-</code></pre>
-
-<p>});
-```</p>
-
-<p>测试失败之后，能想到的最快速的方式是做一个简单的判断：</p>
-
-<p>```js
-function mommify(word) {</p>
-
-<pre><code>if(word == "a") {
-    return "mommy";
-}
-return word;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>这样测试又会通过，接下来就是重复5个元音的场景，不过使用JavaScript可以很容易的将这5个场景归为一组：</p>
-
-<p>```js
-it("should return mommy when given a vowel", function() {</p>
-
-<pre><code>var expected = "mommy";
-
-["a", "e", "i", "o", "u"].forEach(function(word) {
-    var result = mommify(word);
-    expect(result).toEqual(expected);
-});
-</code></pre>
-
-<p>});
-```</p>
-
-<p>而实现则对一个的会变成（记住，用最简单的方式）：</p>
-
-<p>```js
-function mommify(word) {</p>
-
-<pre><code>if(word == "a" || word == "e" || word == "i" || word == "o" || word == "u") {
-    return "mommy";
-}
-return word;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>好了，测试通过了。又是进行重构的时间了，现在看看实现，简直不忍卒读，我们使用JavaScript的字符串的<code>indexOf</code>方法可以简化这段代码：</p>
-
-<p>```js
-function mommify(word) {</p>
-
-<pre><code>if("aeiou".indedOf(word) &gt;= 0) {
-    return "mommy";
-}
-return word;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>好多了！我想你现在已经或多或少的体会到了<code>TDD</code>中<code>任务分解</code>的好处了：进度可以掌握，而且目标非常明确，每一步都有相应的产出。</p>
-
-<h4>第三个任务</h4>
-
-<p>和之前一样，我们还是从测试开始：</p>
-
-<p>```js
-it("should mommify if the vowels greater than 30%", function() {</p>
-
-<pre><code>var expected = "shmommy";
-var result = mommify("she");
-
-expect(result).toEqual(expected);
-</code></pre>
-
-<p>});
-```</p>
-
-<p>现在有一点点挑战了，因为我们的实现上一直都是单一的字符串，现在有多个了，不过没有关系，我们先按照最简单的方式来实现就对了：</p>
-
-<p>```js
-function mommify(word) {</p>
-
-<pre><code>var count = 0;
-for(var i = 0; i &lt; word.length; i++) {
-    if("aeiou".indexOf(word[i]) &gt;= 0) {
-        count += 1;
-    }
-}
-
-var str = "";
-
-if(count/word.length &gt;= 0.30) {
-    for(var i = 0; i &lt; word.length; i++) {
-        if("aeiou".indexOf(word[i]) &gt;= 0) {
-            str += "mommy";
-        } else {
-            str += word[i];
-        }
-    }
-} else {
-    str = word;
-}
-
-return str;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>无论如何，测试通过了，我们首先计算了<code>元音</code>所占的比重，如果超过30%，则替换对应的字符，否则直接返回传入的字符串。</p>
-
-<p>从现在来看，函数<code>mommify</code>中已经有了较多的逻辑，而且有一些重复的判断出现了（<code>"aeuio".indedOf</code>），是时候做一些重构了。</p>
-
-<p>首先将相对独立的计算元音比重的部分抽取成一个函数：</p>
-
-<p>```js
-function countVowels(word) {</p>
-
-<pre><code>var count = 0;
-
-for(var i = 0; i &lt; word.length; i++) {
-    if("aeiou".indexOf(word[i]) &gt;= 0) {
-        count += 1;
-    }
-}
-
-return count;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>然后，将重复的<code>"aeiou".indexOf</code>部分抽取为一个独立函数：</p>
-
-<p>```js
-function isVowel(character) {</p>
-
-<pre><code>return "aeiou".indexOf(character) &gt;= 0;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>这样本来的代码就被简化成了：</p>
-
-<p>```js
-function mommify(word) {</p>
-
-<pre><code>var count = countVowels(word);
-var str = "";
-
-if(count/word.length &gt;= 0.30) {
-    for(var i = 0; i &lt; word.length; i++) {
-        if(isVowel(word[i])) {
-            str += "mommy";
-        } else {
-            str += word[i];
-        }
-    }
-} else {
-    str = word;
-}
-
-return str;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>如果细细读下来，就会发现发现对于元音是否超过30%的判断比较突兀，这里确实了一个<code>业务概念</code>，就是说，此处的<code>if</code>判断并不表意，更好的写法是讲它抽取为一个函数：</p>
-
-<p>```js
-function shouldBeMommify(word) {</p>
-
-<pre><code>var count = countVowels(word);
-return count/word.length &gt;= 0.30;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>并且，替换元音的部分，我们也可以从主函数中挪出来，得到一个小函数：</p>
-
-<p>```js</p>
-
-<p>function replace(word) {</p>
-
-<pre><code>var str = "";
-
-for(var i = 0; i &lt; word.length; i++) {
-    if(isVowel(word[i])) {
-        str += "mommy";
-    } else {
-        str += word[i];
-    }
-}
-
-return str;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>这样，主函数得到了进一步的简化：</p>
-
-<p>```js
-function mommify(word) {</p>
-
-<pre><code>if(shouldBeMommify(word)) {
-    return replace(word);
-} else {
-    return word;
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>太好了，现在<code>mommify</code>就更加清晰了，并且每个抽取出来的函数都有了更具意义的名字，更清晰的职责。</p>
-
-<h4>第四个任务</h4>
-
-<p>经过了第三步，相信你已经对如何进行<code>TDD</code>有了很好的认识，而且也更有信心进行下一个任务了。同样，我们需要先编写测试用例：</p>
-
-<p>```js
-it("should not mommify if there are vowels sequences", function() {</p>
-
-<pre><code>var expected = "shmommyr";
-var result = mommify("shear");
-
-expect(result).toEqual(expected);
-</code></pre>
-
-<p>});
-```</p>
-
-<p>现在的问题关键是需要判断一个字符串中的前一个是否元音，由于我们之前已经做了足够的重构，现在需要修改的函数就变成了<code>replace</code>子函数，而不是主入口<code>mommify</code>了：</p>
-
-<p>```js
-function replace(word) {</p>
-
-<pre><code>var str = "";
-
-for(var i = 0; i &lt; word.length; i++) {
-    if(isVowel(word[i])) {
-        if(!isVowel(word[i-1])) {
-            str += "mommy";
-        } else {
-            str += "";
-        }
-    } else {
-        str += word[i];
-    }
-}
-
-return str;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>测试通过之后，我们可以大胆的进行重构，抽取新的函数<code>next</code>：</p>
-
-<p>```js
-function next(current, previous) {</p>
-
-<pre><code>var next = "";
-
-if(isVowel(current)) {
-    if(!isVowel(previous)) {
-        next = "mommy";
-    }
-} else {
-    next = current;
-}
-
-return next;
-</code></pre>
-
-<p>}</p>
-
-<p>function replace(word) {</p>
-
-<pre><code>var str = "";
-
-for(var i = 0; i &lt; word.length; i++) {
-    str += next(word[i], word[i-1]);
-}
-
-return str;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>最后，如果你想看完整的/最新的代码，可以<a href="https://github.com/abruzzi/mommifier">在github上</a>找到。</p>
-
-<h4>结束（？）</h4>
-
-<p>重构是一个永无止境的实践，你可以不断的抽取，简化，重组。比如上例中对于常量的使用，对于JavaScript中的for的使用等，都可以更进一步。但是你需要权衡，适可而止，如果不小心做的太过，则可能引起过渡设计：引入太过的概念，过于简化的接口等。</p>
-
-<p><code>TDD</code>是一种容易付诸实践的开发方式，在小的，简单的例子上如此，在大的，复杂的场景下也是如此。它优美且高效的地方在于：不假设任何人可以一次就写出完善的应用，而是鼓励小步前进，快速反馈，快速迭代。而演化到最后，得到的往往就是孜孜以求的优美设计。</p>
 ]]></content>
   </entry>
   
