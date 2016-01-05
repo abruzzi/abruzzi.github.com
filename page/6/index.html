@@ -9,7 +9,8 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Grape简介 Grape是一个基于Rack的非常轻量级的框架，用于快速的开发API。一般来说，Rails对于单独的API来说，太过于重量级；而Sinatra虽然足够小巧，但是又没有为开发API提供足够的默认支持（如果从可控制性，灵活性上来说，Sinatra可能更好一些， &hellip;">
+  <meta name="description" content="Grunt简介 Grunt是一个基于JavaScript的构建工具。和其他的构建工具类似，grunt主要用于一些将一些繁琐的工作自动化，比如运行测试，代码的静态检查，压缩JavaScript源代码等等。 安装grunt-cli 要在命令行运行grunt，需要安装grunt的命令行工具： 1
+$ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +83,250 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/10/using-grunt-as-your-build-tool/">使用Grunt作为构建工具(build Tool)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-07T18:14:00+11:00" pubdate data-updated="true">Oct 7<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Grunt简介</h3>
+
+<p>Grunt是一个基于JavaScript的构建工具。和其他的构建工具类似，grunt主要用于一些将一些繁琐的工作自动化，比如运行测试，代码的静态检查，压缩JavaScript源代码等等。</p>
+
+<h4>安装grunt-cli</h4>
+
+<p>要在命令行运行grunt，需要安装grunt的命令行工具：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g grunt-cli</span></code></pre></td></tr></table></div></figure>
+
+
+<p>grunt-cli本身并不会提供Grunt构建工具，而只是一个Grunt的调用器。<code>-g</code>参数表示将grunt-cli安装在全局的路径中，这样我们可以在不同的项目中使用grunt-cli，而由于grunt-cli本身只是一个调用器，所以对于不同的项目，真正运行的Grunt可以是不同的版本，而命令行的借口则完全一致。</p>
+
+<p>grunt-cli提供的命令行可执行文件的名称为<code>grunt</code>，这个工具每次运行时都会检查当前目录下的Grunt。</p>
+
+<h4>使用grunt-cli</h4>
+
+<p>如果在一个既有的npm模块中，可以很容易的加入grunt的支持，只需要修改package.json，加入依赖，然后运行<code>npm install</code>来完成依赖的安装即可。</p>
+
+<p>如果是一个新启动的项目，那么在项目中添加两个文件：package.json和Gruntfile。其中package.json用来定义当前项目是一个npm的模块，而Gruntfile用来定义具体的任务，以及加载Grunt的其他插件(Grunt提供丰富的插件，比如运行测试，代码静态检查等功能都是通过插件来完成的)</p>
+
+<h4>package.json</h4>
+
+<p>package.json定义了一个工程的元数据，这些数据被npm管理器来使用，npm本身提供了<code>init</code>参数可以很容易的生成一个package.json文件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm init </span></code></pre></td></tr></table></div></figure>
+
+
+<p>根据提示可以很容易的生成一个新的package.json</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "name": "chapter-testing",
+</span><span class='line'>  "version": "0.0.0",
+</span><span class='line'>  "description": "This is the demo for how to use grunt.js",
+</span><span class='line'>  "main": "my.conf.js",
+</span><span class='line'>  "directories": {
+</span><span class='line'>    "test": "test"
+</span><span class='line'>  },
+</span><span class='line'>  "scripts": {
+</span><span class='line'>    "test": "echo \"Error: no test specified\" && exit 1"
+</span><span class='line'>  },
+</span><span class='line'>  "author": "Juntao",
+</span><span class='line'>  "license": "BSD-2-Clause"
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一般来说，package.json文件中有一个<code>devDependencies</code>的小节，定义了本项目的外部依赖。</p>
+
+<p>可以通过运行</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install grunt --save-dev</span></code></pre></td></tr></table></div></figure>
+
+
+<p>来为工程文件package.json添加<code>devDependencies</code>小节的定义：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>"devDependencies": {
+</span><span class='line'>  "grunt": "~0.4.1"
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>该命令会为工程添加一条依赖关系，如果别人拿到这个文件，就可以在本地“复原”你的开发环境，以保证整个团队使用同样地<strong>库</strong>文件。</p>
+
+<p>完成之后，该命令会在本地生成一个目录(如果没有的话)<code>node_modules</code>，其中包括了完成的Grunt的可执行文件，这时候在命令行运行grunt(由grunt-cli提供的命令行工具)，就会尝试在此目录中查找Grunt的可执行文件。</p>
+
+<h4>Gruntfile</h4>
+
+<p>要运行Grunt，还需要定义你自己的任务，默认的任务定义在Gruntfile中，Gruntfile有一定的格式。</p>
+
+<p>所有的任务需要定义在一个函数中：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module.exports = function(grunt) {
+</span><span class='line'>  // task defination
+</span><span class='line'>};</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一般而言，使用Grunt会读取一些项目的信息(定义在package.json中)：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
+</span><span class='line'>    pkg: grunt.file.readJSON('package.json')
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p>亦可以在这个时刻指定一些其他的插件的选项：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
+</span><span class='line'>    pkg: grunt.file.readJSON('package.json'),
+</span><span class='line'>    jshint: {
+</span><span class='line'>        all: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js']
+</span><span class='line'>    }
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后需要加载其他的插件(如果需要的话)</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-contrib-jshint');</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，需要指定一个grunt的入口任务(<code>default</code>任务)：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.registerTask('default', function() {
+</span><span class='line'>  console.log("default task");
+</span><span class='line'>});
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后运行<code>grunt</code>，我们此处定义的default任务仅仅在控制台上打印一行字符串:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ grunt
+</span><span class='line'>Running "default" task
+</span><span class='line'>default task
+</span><span class='line'>
+</span><span class='line'>Done, without errors.</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Grunt插件</h3>
+
+<p>Grunt已经得到了很多的开源软件贡献者的支持，已经又众多的插件被开发出来。比如:</p>
+
+<ol>
+<li><a href="https://github.com/gruntjs/grunt-contrib-jshint">grunt-contrib-jshint</a></li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-uglify">grunt-contrib-uglify</a></li>
+<li><a href="https://github.com/gruntjs/grunt-contrib-qunit">grunt-contrib-qunit</a></li>
+<li><a href="https://github.com/karma-runner/grunt-karma">grunt-karma</a></li>
+</ol>
+
+
+<p>等等，使用这些插件可以快速的为你的项目开发提供很多的便利，以grunt-jshint为例，
+首先需要安装此插件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install grunt-contrib-jshint --save-dev</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在grunt.initConfig中指定jshint需要的参数：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.initConfig({
+</span><span class='line'>    jshint: {
+</span><span class='line'>        files: ['js/*.js'],
+</span><span class='line'>        options: {
+</span><span class='line'>            ignores: ['js/jquery*.js']
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>});</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后加载此插件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.loadNpmTasks('grunt-contrib-jshint');</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，可以将<code>jshint</code>加入到默认的任务中：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>grunt.registerTask('default', ['jshint']);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行结果<code>可能</code>如下:</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/10/jshint.png" alt="image" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1893,73 +2138,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao/">JavaScript核心概念及实践勘误表</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-16T11:29:00+10:00" pubdate data-updated="true">May 16<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>《JavaScript核心概念及实践》勘误表</h3>
-
-<p><a href="http://icodeit.org/jsccp/">JavaScript核心概念及实践</a>一书已经于2013年5月出版，由于时间原因以及作者的疏于检查，导致书中出现了一些错别字词等错误，现在将错误及更正列于此页，作者为对读者朋友带来的不便表示深深的歉意。</p>
-
-<hr />
-
-<p>第一章第12页</p>
-
-<p>“则向控制台打印：goodbay” 应为 “则向控制台打印：<strong>goodbye</strong>”</p>
-
-<hr />
-
-<p>第二章第19页</p>
-
-<p>“var y = x + &#8220;2&#8221;;// => 32” 注释中的数字32应为字符串类型 “var y = x + &#8220;2&#8221;;// => <strong>&#8220;32&#8221;</strong>”</p>
-
-<hr />
-
-<p>第三章第36页</p>
-
-<p>“对函数customize(options)的调用 constomize” 应为 “<strong>customize</strong>”。</p>
-
-<p>同一页，3.4小节
-“反回给前端的仍然是 JSON 对象” 应为 “<strong>返回</strong>给前端的仍然是 JSON 对象”</p>
-
-<hr />
-
-<p><a href="http://book.douban.com/review/5960403/">这里有</a>一个非常仔细，质量很高的勘误表，由网友 @RednaxelaFX 整理。</p>
-
-<hr />
-
-<p>这个页面将维持更新，如果有新的错误被发现，我会第一时间更新书籍的电子版本，并在此页面上更新。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/7/">&larr; Older</a>
@@ -1977,6 +2155,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2016/01/how-to-summarize-privious-project/">如何持久化你的项目经历</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/01/my-2015/">我的2015</a>
       </li>
     
@@ -1990,10 +2172,6 @@
     
       <li class="post">
         <a href="/2015/11/what-you-have-learnt-those-years/">看看这些年你都学了什么？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/10/mapfile-parser/">工程中的编译原理 &#8211; Mapfile解析器</a>
       </li>
     
   </ul>
