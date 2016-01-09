@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ThoughtWorks | I code it]]></title>
   <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-01-05T12:51:10+11:00</updated>
+  <updated>2016-01-10T01:17:48+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,293 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[穷人的持续集成与持续交付]]></title>
+    <link href="http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1/"/>
+    <updated>2016-01-09T23:34:00+11:00</updated>
+    <id>http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1</id>
+    <content type="html"><![CDATA[<h1>基于免费服务的持续交付环境</h1>
+
+<p>本文将使用一些免费的服务来为你的项目搭建<code>持续交付</code>平台，这些服务包括</p>
+
+<ul>
+<li>持续集成环境</li>
+<li>持续部署环境</li>
+<li>服务端应用托管</li>
+</ul>
+
+
+<p>以及一些可以用于本地开发使用的开源工具如：</p>
+
+<ul>
+<li><a href="https://github.com/abruzzi/node-build-monitor">基于Node的构建monitor</a></li>
+<li><a href="https://toolbelt.heroku.com/">Heroku的命令行工具</a></li>
+<li><a href="https://github.com/travis-ci/travis.rb">Travis CI的命令行工具</a></li>
+</ul>
+
+
+<p>除此之外，我们在过程中编写的脚本还可以用以本地构建，如果你的团队中正好已经有CI工具/CD工具，将这些脚本集成进去也是一件非常容易的事情。</p>
+
+<p><img src="/images/2016/01/heroku-log-resized.png" alt="heroku real time log" /></p>
+
+<h2>背景知识</h2>
+
+<h3>软件的度量</h3>
+
+<p>传统的管理方法论，在软件开发这个领域来说基本上是不工作的。软件项目的不确定性使得人们畏惧，管理者希望通过一些数字，指标来让自己感到某种虚幻的“掌控感”。软件行数，测试覆盖率，代码故障率等数字的名声基本上已经很糟了，经常有人拿来讽刺那些追求虚幻掌控感的“领导”。</p>
+
+<p>但是有一个数字，即使最顽固的“自由主义者”也会认为是有意义的，那就是周期时间（cycle time）。简而言之，就是一个需求从产生到最终上线所需要的时间。其中包括了需求分析，设计，编码，测试，部署，运维等活动，可能还会包含后续的监控。</p>
+
+<p>其实不论是瀑布模型，还是迭代开发的方式，或者其他的方法论，周期时间的缩短都是至关重要的。而具体到周期内，单纯的开发时间变长或者测试时间变长都无关紧要。比如项目A的开发时间是测试时间的2倍，项目B则恰恰反过来，这并不能说A做的比B好，真正有意义的是A的周期时间是否比B更短。</p>
+
+<p>单纯改善项目过程中的某一个阶段的时间，可能并不能达到预期的目的。局部优化并不一定会带来全局的优化。换言之，<strong>通过某些策略来提高软件测试的效率未必能减少周期时间！</strong>。</p>
+
+<h3>持续交付</h3>
+
+<p>传统情况下，企业要进行软件开发，从用户研究到产品上线，其中会花费数月，甚至数年（我的一位印度同事给我聊起过，他的上家公司做产品，从版本启动到版本上线需要整整两年时间！）。而且一旦软件需求发生变更，又有需要数月才能将变更发布上线。除了为变更提交代码外，还有很多额外的回归测试，发布计划，运维部门的进度等等。而市场机会千变万化，在特定的时间窗口中，企业的竞争者可能早已发布并占领了相当大的市场份额。</p>
+
+<p>在软件工程领域，人们提出了持续交付（continuous delivery）的概念，它旨在减少周期时间，强调在任何时刻软件都处于可发布状态。采用这种实践，我们可以频繁，快速，安全的将需求的变化发布出来，交由真实世界的用户来使用，在为用户带来价值的同时，我们也可以快速，持续的得到反馈，并激励新的变化产生（新的商业创新，新的模式等）。</p>
+
+<p>持续交付包含了自动化构建，自动化测试以及自动化部署等过程，持续改进开发流程中的问题，并促进开发人员，测试人员，运维人员之间的协作，团队可以在分钟级别将变更发布上线。</p>
+
+<h3>持续交付相关技术及实践</h3>
+
+<ul>
+<li>版本控制（配置管理）</li>
+<li>持续集成CI</li>
+<li>自动化测试</li>
+<li>构建工具及构建脚本</li>
+<li>部署流水线</li>
+</ul>
+
+
+<p>团队通过版本控制来进行协作，所有的代码会在持续集成环境中编译，代码静态检查/分析，自动化测试（还可能产生报告等）。除此之外，CI还还需要有自动化验收测试，自动化回归测试等。</p>
+
+<p>持续交付则更进一步，它将环境准备，持续集成，自动化部署等放在了一起。通过全自动（有些过程可以设置为手动，比如发布到产品环境）的方式，使得软件可以一键发布。如果上线后发现严重defect，还支持一键回滚的机制（其实就是将之前的一个稳定版本做一次发布，由于发布流程已经经过千锤百炼，所以发布本身就变得非常轻松，安全）</p>
+
+<h2>实例</h2>
+
+<p>我在<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">《前后端分离了，然后呢？》</a>这篇文章中，提到了一个叫做<code>bookmarks</code>的应用，这个应用是一个前后端分离的非常彻底的应用。</p>
+
+<p>我们这里会再次使用这个应用作为实例，并采用不同的两个免费服务（<a href="https://travis-ci.org">travis-ci</a>和<a href="https://snap-ci.com">snap-ci</a>）来完成<code>持续部署</code>环境的搭建。</p>
+
+<h3>服务器端</h3>
+
+<p><code>bookmarks-server</code>是一个基于<code>spring-boot</code>的纯粹的<code>API</code>，它可以被打包成一个<code>jar</code>包，然后通过命令行启动运行。在本文中，我们我们将会将这个server部署到<a href="https://dashboard.heroku.com/">heroku</a>平台上。</p>
+
+<p>首先需要定义一个<code>Procfile</code>，这个是我们应用的入口，<code>heroku</code>根据这个文件来明确以何种方式来启动我们的应用：</p>
+
+<p><code>
+web: java -Dserver.port=$PORT -jar build/libs/bookmarks-server-0.1.0.jar --spring.profiles.active=staging
+</code></p>
+
+<p>由于我们在本地使用的使用<code>mysql</code>，而<code>heroku</code>默认的是<code>postgres</code>数据库，因此需要在<code>application.yml</code>中额外配置</p>
+
+<p>```yml
+spring:
+  profiles: staging</p>
+
+<p>  datasource:</p>
+
+<pre><code>driverClassName: org.postgresql.Driver
+url: ${JDBC_DATABASE_URL}
+username: ${DATABASE_USER}
+password: ${DATABASE_PASS}
+</code></pre>
+
+<p>  jpa:</p>
+
+<pre><code>database_platform: org.hibernate.dialect.PostgreSQLDialect
+hibernate:
+  ddl-auto: update
+</code></pre>
+
+<p>```</p>
+
+<p>有了这些配置后，我们需要创建一个<code>heroku</code>应用：</p>
+
+<p><code>sh
+$ heroku create
+Created http://quiet-atoll-8237.herokuapp.com/ | git@heroku.com:quiet-atoll-8237.git
+</code></p>
+
+<p>创建之后，我们可以在界面上对这个应用进行一些配置（当然，也可以通过命令行，具体参看<code>heroku help</code>）。为了支持数据库，需要为我们的应用添加一个<code>postgres</code>的AddOn。添加之后，<code>heroku</code>会为我们提供一个<code>postgres</code>的连接地址，格式大概是这样：</p>
+
+<p><code>
+postgres://username:password@host:port/database
+</code></p>
+
+<p>然后我们需要在<code>Heroku</code>的配置界面中配置一些环境变量：</p>
+
+<p><img src="/images/2016/01/heroku-config-resized.png" alt="heroku env config" /></p>
+
+<p>这样，当应用部署到<code>Heroku</code>上之后，我们的应用就可以读到这些配置了（注意<code>application.yml</code>中的环境变量<code>JDBC_DATABASE_URL</code>）。</p>
+
+<h4>搭建持续集成环境</h4>
+
+<p>持续集成环境，这里我们选用最简单的<code>travis-ci</code>，它可以很容易的与<code>github</code>集成。</p>
+
+<ul>
+<li>在项目X中定义一个<code>.travis.yml</code>的文件</li>
+<li>将你的代码push到github上</li>
+<li>绑定github帐号到<code>travis</code></li>
+<li>在<code>travis</code>中启用项目X</li>
+</ul>
+
+
+<p>这个<code>.travis.yml</code>因项目而异，我们这里的项目是<code>spring-boot</code>，所以只需要指定<code>java</code>即可：</p>
+
+<p><code>yml
+language: java
+</code></p>
+
+<p>如果是<code>java</code>项目，并且项目中有<code>build.gradle</code>，<code>travis-ci</code>会自动执行<code>gradle check</code>任务。</p>
+
+<h4>自动化部署</h4>
+
+<p>当CI运行成功之后，我们需要<code>travis-ci</code>帮我们将应用程序发布到<code>heroku</code>上，这时候需要做一些修改。最简单的方式是直接安装<code>travis-ci</code>的命令行工具到本地：</p>
+
+<p><code>sh
+$ gem install travis -v 1.8.0 --no-rdoc --no-ri
+</code></p>
+
+<p>然后通过<code>heroku</code>的<code>auth:token</code>命令获得<code>heroku</code>的token，在加密并写入<code>.travis.yml</code>：</p>
+
+<p>```sh
+$ heroku auth:token
+00xxxxxxxxxxxxx55d11dbd0cxxxxxxxxxxfe067</p>
+
+<p>$ travis encrypt 00xxxxxxxxxxxxx55d11dbd0cxxxxxxxxxxfe067 --add
+```</p>
+
+<p>当然可以合并为一条命令：</p>
+
+<p><code>sh
+$ travis encrypt $(heroku auth:token) --add
+</code></p>
+
+<p>将加密过的token存入<code>.travis.yml</code>文件。最后的结果大致如下：</p>
+
+<p>```yml
+language: java
+deploy:
+  provider: heroku
+  api_key:</p>
+
+<pre><code>secure: ...
+</code></pre>
+
+<p>  app: quiet-atoll-8237
+```</p>
+
+<p>注意此处的<code>app</code>，正是我们的App的名字。另外，还需要给<code>build.gradle</code>添加一个名叫<code>stage</code>的task，<code>travis</code>在deploy时需要这个<code>task</code>：</p>
+
+<p>```groovy
+task stage {</p>
+
+<pre><code>dependsOn build
+</code></pre>
+
+<p>}
+```</p>
+
+<p><img src="/images/2016/01/travis-deploy-resized.png" alt="travis deploy" /></p>
+
+<p>这样，我们只需要在本地的一个提交，一切都会自动化起来：</p>
+
+<ul>
+<li>travis会执行<code>gradle check</code></li>
+<li><code>gradle check</code>会编译并运行自动化测试</li>
+<li><code>travis</code>会部署应用到<code>heroku</code>上</li>
+<li><code>heroku</code>会自动重启服务</li>
+</ul>
+
+
+<p>我们可以在本地进行简单的测试（注意此处我们的<code>staging</code>环境的URL）：</p>
+
+<p>```sh
+$ curl https://quiet-atoll-8237.herokuapp.com/api/feeds -s | jq .
+[
+  {</p>
+
+<pre><code>"id": 1,
+"url": "http://icodeit.org/2016/01/how-to-summarize-privious-project/",
+"title": "如何持久化你的项目经历",
+"author": "icodit.org",
+"summary": "通常来说，下项目总是一件比较高兴的事（大部分团队还会一起吃个饭庆祝一下）。",
+"publishDate": "2016-01-07"
+</code></pre>
+
+<p>  },
+  {</p>
+
+<pre><code>"id": 2,
+"url": "http://icodeit.org/2015/11/get-started-with-reflux/",
+"title": "你为什么应该试一试Reflux？",
+"author": "icodit.org",
+"summary": "React在设计之初就只关注在View本身上，其余部分如数据的获取，事件处理等，全然不在考虑之内。",
+"publishDate": "2016-01-09"
+</code></pre>
+
+<p>  }
+]
+```</p>
+
+<p>完整的<a href="https://github.com/abruzzi/bookmarks-server">代码在这里</a>。</p>
+
+<h2>其他</h2>
+
+<h3>CI monitor</h3>
+
+<p><a href="https://github.com/abruzzi/node-build-monitor">node-build-monitor</a>是一个非常容易配置，使用的CI monitor，我们只需要进行简单地配置，就可以将<code>travis</code>的状态可视化出来</p>
+
+<p>```json
+{
+  "monitor": {</p>
+
+<pre><code>"interval": 2000,
+"numberOfBuilds": 12,
+"debug": true
+</code></pre>
+
+<p>  },
+  "services": [</p>
+
+<pre><code>{
+  "name": "Travis",
+  "configuration": {
+    "slug": "abruzzi/bookmarks-server"
+  }
+}
+</code></pre>
+
+<p>  ]
+}
+```</p>
+
+<p>不过这个工具会在有网络异常时自动终止，我们可以通过一个简单的脚本来在它终止时自动重启：</p>
+
+<p>```sh</p>
+
+<h1>!/bin/bash</h1>
+
+<p>until node app/app.js
+do</p>
+
+<pre><code>echo "restarting..."
+</code></pre>
+
+<p>done
+```</p>
+
+<p><img src="/images/2016/01/ci-monitor-resized.png" alt="CI Monitor" /></p>
+
+<h2>小结</h2>
+
+<p>通过<code>travis</code>和<code>heroku</code>这样的免费服务，我们就可以轻松的将自己的项目做到持续集成+持续交付。我们后端的服务相对来说是比较容易的，但是涉及到一个前后端分离的架构，如何做到静态内容的托管，打包，部署，并和后端API集成起来，我会在下一篇文章中详细解释。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[如何持久化你的项目经历]]></title>
@@ -477,121 +764,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 <h3>总结</h3>
 
 <p>我们缺的从来都不是前端/后端工程师，而是<strong>工程师</strong>(或者那些会系统思考，并总是想着解决问题的人)。角色划分在大的机构内可能是有意义的，就像历史上工厂里，工人被分为车工，钳工，木工，电工。但是这种模式在软件开发中未必好用，<strong>具体而微</strong>的小团队可能更具竞争力。而在一个个的小团队中，再细分前端后端就显得比较滑稽了。团队中的每个成员都应该具备基本的端到端能力（不仅仅是开发，更应该是具有业务上下文，即每个人都清楚我们要交付的最终产品是什么，以及这个产品是如何帮助最终用户的），每个成员也都需要为最终的交付物负责，而不是为自己的职责负责。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[在ThoughtWorks我们做内部培训？]]></title>
-    <link href="http://abruzzi.github.com/2015/01/how-we-do-training-in-thoughtworks/"/>
-    <updated>2015-01-25T01:20:00+11:00</updated>
-    <id>http://abruzzi.github.com/2015/01/how-we-do-training-in-thoughtworks</id>
-    <content type="html"><![CDATA[<h3>ThoughtWorks内部培训</h3>
-
-<p>对新人的培训是每个企业都绕不开的一个话题，企业当然想要每个新人都能直接独当一面，最好可以直接上项目贡献自己的价值。但是从经验来看，所有新人到一个新环境都需要学习很多不同的新东西（新技术，框架，语言，工作方式等等），而每个企业对于培训新人都有各种各样的策略，比如老人带新人，比如扔到项目上让新人自己学。</p>
-
-<p>在ThoughtWorks，我们有着丰富的培训方式，有面向社招的，有面向毕业生的，有民间自发的，有官方组织的，有内部的，也有面向社区的。</p>
-
-<h4>TWU</h4>
-
-<p>TWU全称ThoughtWorks University，面向毕业生，入职之后的第一堂课。TWU的地点设在印度，之前在班加罗尔，后来改到了普内。每一期5周，学生们需要和和全球其他国家地区的同学一起，一般会尽量将各个地区的学生打乱安排，尽量让学生体会多元化的文化，培训内容设计公司文化，软件开发方法论，敏捷开发（Project SImulation）实践等，同时还需要保证学生有足够的代码练习机会。</p>
-
-<p>我在2013年作为讲师参加了一起TWU，对我自己的帮助也非常大，在和来自不同地区的讲师一起备课，学习中学习到了很多的东西，之前似是而非的一些概念也得到了纠正。</p>
-
-<p><img src="/images/2015/02/twu33-resized.png" alt="twu" /></p>
-
-<h4>TWI</h4>
-
-<p>TWI全称ThoughtWorks Immersion，面向有经验的社招同事，主要涉及的内容为公司文化（合作，沟通），专业服务（如何专业的解决客户的问题），软件开发流程，敏捷开发方法论等。</p>
-
-<p>我在2012年时参加过TWI，并整理了几篇相关文章，可以参考<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-1/">这里</a>，<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-2/">这里</a>还有<a href="http://icodeit.org/2012/08/thoughtworks-immersion-day-3/">这里</a>。</p>
-
-<p><img src="/images/2015/01/twi-resized.png" alt="twi" /></p>
-
-<h4>Session</h4>
-
-<p>Office局限在ThoughtWorks办公室之内，内容随意，参加不参加随意，可以随时加入或随时离开。虽然内容没有限制，但是大多数时候分享的都是技术主题。比如<code>自动化部署</code>，<code>自动测试</code>，<code>Spring 4</code>，<code>Ruby中的构建工具</code>等等。</p>
-
-<p>Sessoin的形式是主讲者找一个自己感兴趣的主题，一个人讲，其他参与者听，鼓励互动。时间一般控制在一个小时以内，所以一般选择在中午饭的时候，有的session会给大家订饭，一边吃一边听。</p>
-
-<p>虽然大部分Sessoin的主题是技术相关的，但是并不局限于此。比如旅游见闻，历史，财务，摄影等等，都可以分享，有时候这些趣味性的Session的参与者更多。</p>
-
-<p><img src="/images/2015/01/session-resized.png" alt="session" /></p>
-
-<h4>WorkShop</h4>
-
-<p>Office之内，内容随意，以动手为主，讲解为辅。</p>
-
-<ul>
-<li>HTML/CSS</li>
-<li>Testable JavaScript</li>
-<li>设计工作坊</li>
-<li>OO BootCamp</li>
-<li>Ruby BootCamp</li>
-</ul>
-
-
-<p>一般来说，Workshop都会组成一个系列，通常会占用几天到几周不等。参与者需要带上电脑，在课堂上进行练习之外，课后还会有一些练习。</p>
-
-<p><img src="/images/2015/01/workshop-resized.png" alt="" /></p>
-
-<p><a href="http://icodeit.org/3-pages-in-3-weeks/">3周3页面</a>和<a href="http://icodeit.org/lwweb/">可测试的JavaScript</a>是我去年做的两个Workshop。由于Workshop会在下班后或者中午的休息时间，公司会为每个参与者订饭，以节省时间。</p>
-
-<h4>郑大晔校</h4>
-
-<p>面向刚刚得到offer的毕业生，在上项目之前，我们希望学生的基本技术达到特定的水平，因此设置了一系列的练习。包括</p>
-
-<ul>
-<li>编程基础</li>
-<li>开发流程</li>
-<li>工作方式</li>
-<li>公司文化</li>
-</ul>
-
-
-<p>等等。郑大晔校的周期为每周一次，一次一天。涉及的内容会与大多数项目上的要求一致，比如西安office的Java/Ruby项目居多，我们的课程安排就会涉及到<code>Java/Ruby</code>方面。当然，各种软技能如工作方式也会在课程中涉及，尽量的寓教于乐。</p>
-
-<p>每期郑大晔校大概会有10周，学生入职之后有的会直接去TWU，有的则会在项目上工作一段时间再去TWU。</p>
-
-<p><img src="/images/2015/01/zhengda-resized.png" alt="" /></p>
-
-<h4>组内培训</h4>
-
-<p>各个组内自行组织，并不要求其他同事参加。比如某个项目需要一些<code>docker</code>的知识，或者需要<code>AngularJS</code>相关的培训，一方面是找自己组内的专家组织一次内部培训，，另一种是找办公室内相关的专家来进行培训，形式比较灵活。</p>
-
-<ul>
-<li>项目中已经在使用的技术</li>
-<li>项目中将要使用的技术</li>
-<li>请别的组的专家来咨询</li>
-</ul>
-
-
-<p><img src="/images/2015/01/group-resized.png" alt="group learn" /></p>
-
-<h4>社区</h4>
-
-<ul>
-<li>OpenParty</li>
-<li>Rails Girl</li>
-</ul>
-
-
-<p><img src="/images/2015/02/rails-girl-session-resized.png" alt="rails girl" /></p>
-
-<h4>问题</h4>
-
-<ul>
-<li>谁当讲师</li>
-<li>活动经费</li>
-<li>内容如何持久化（人，内部知识分享系统）</li>
-<li>如何保证效果（宽松）</li>
-</ul>
-
-
-<p>由于对任何的话题都没有限制，也没有对参与者的限制，因此任何人只要感兴趣都可以作为讲师。而又由于没有任何的强制措施，参与者和主讲者都凭着自己的热情来组织，这也算是比较独树一帜的事情。</p>
-
-<p>而关于内容的持久化，更多的是为参与者打开一扇新的窗户，或者说洒下一些火星，而至于火星如何形成燎原之势，则完全在参与者自己的自觉。好多次和客户分享了我们的培训机制之后，被问到最多的问题是如何<code>强迫</code>参与者产生热情？</p>
-
-<p>这个问题在ThoughtWorks不是问题，我们在一个人进入公司的最开始，也就是面试的时候，就考察了他的热情，如果在热情上有缺陷，则很可能会直接拒掉，免得破坏我们好不容易构建起来的学习氛围。</p>
 ]]></content>
   </entry>
   

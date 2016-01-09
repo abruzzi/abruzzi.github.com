@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-01-05T12:51:10+11:00</updated>
+  <updated>2016-01-10T01:17:48+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,338 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[穷人的持续集成与持续交付]]></title>
+    <link href="http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1/"/>
+    <updated>2016-01-09T23:34:00+11:00</updated>
+    <id>http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1</id>
+    <content type="html"><![CDATA[<h1>基于免费服务的持续交付环境</h1>
+
+<p>本文将使用一些免费的服务来为你的项目搭建<code>持续交付</code>平台，这些服务包括</p>
+
+<ul>
+<li>持续集成环境</li>
+<li>持续部署环境</li>
+<li>服务端应用托管</li>
+</ul>
+
+
+<p>以及一些可以用于本地开发使用的开源工具如：</p>
+
+<ul>
+<li><a href="https://github.com/abruzzi/node-build-monitor">基于Node的构建monitor</a></li>
+<li><a href="https://toolbelt.heroku.com/">Heroku的命令行工具</a></li>
+<li><a href="https://github.com/travis-ci/travis.rb">Travis CI的命令行工具</a></li>
+</ul>
+
+
+<p>除此之外，我们在过程中编写的脚本还可以用以本地构建，如果你的团队中正好已经有CI工具/CD工具，将这些脚本集成进去也是一件非常容易的事情。</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/01/heroku-log-resized.png" alt="heroku real time log" /></p>
+
+<h2>背景知识</h2>
+
+<h3>软件的度量</h3>
+
+<p>传统的管理方法论，在软件开发这个领域来说基本上是不工作的。软件项目的不确定性使得人们畏惧，管理者希望通过一些数字，指标来让自己感到某种虚幻的“掌控感”。软件行数，测试覆盖率，代码故障率等数字的名声基本上已经很糟了，经常有人拿来讽刺那些追求虚幻掌控感的“领导”。</p>
+
+<p>但是有一个数字，即使最顽固的“自由主义者”也会认为是有意义的，那就是周期时间（cycle time）。简而言之，就是一个需求从产生到最终上线所需要的时间。其中包括了需求分析，设计，编码，测试，部署，运维等活动，可能还会包含后续的监控。</p>
+
+<p>其实不论是瀑布模型，还是迭代开发的方式，或者其他的方法论，周期时间的缩短都是至关重要的。而具体到周期内，单纯的开发时间变长或者测试时间变长都无关紧要。比如项目A的开发时间是测试时间的2倍，项目B则恰恰反过来，这并不能说A做的比B好，真正有意义的是A的周期时间是否比B更短。</p>
+
+<p>单纯改善项目过程中的某一个阶段的时间，可能并不能达到预期的目的。局部优化并不一定会带来全局的优化。换言之，<strong>通过某些策略来提高软件测试的效率未必能减少周期时间！</strong>。</p>
+
+<h3>持续交付</h3>
+
+<p>传统情况下，企业要进行软件开发，从用户研究到产品上线，其中会花费数月，甚至数年（我的一位印度同事给我聊起过，他的上家公司做产品，从版本启动到版本上线需要整整两年时间！）。而且一旦软件需求发生变更，又有需要数月才能将变更发布上线。除了为变更提交代码外，还有很多额外的回归测试，发布计划，运维部门的进度等等。而市场机会千变万化，在特定的时间窗口中，企业的竞争者可能早已发布并占领了相当大的市场份额。</p>
+
+<p>在软件工程领域，人们提出了持续交付（continuous delivery）的概念，它旨在减少周期时间，强调在任何时刻软件都处于可发布状态。采用这种实践，我们可以频繁，快速，安全的将需求的变化发布出来，交由真实世界的用户来使用，在为用户带来价值的同时，我们也可以快速，持续的得到反馈，并激励新的变化产生（新的商业创新，新的模式等）。</p>
+
+<p>持续交付包含了自动化构建，自动化测试以及自动化部署等过程，持续改进开发流程中的问题，并促进开发人员，测试人员，运维人员之间的协作，团队可以在分钟级别将变更发布上线。</p>
+
+<h3>持续交付相关技术及实践</h3>
+
+<ul>
+<li>版本控制（配置管理）</li>
+<li>持续集成CI</li>
+<li>自动化测试</li>
+<li>构建工具及构建脚本</li>
+<li>部署流水线</li>
+</ul>
+
+
+<p>团队通过版本控制来进行协作，所有的代码会在持续集成环境中编译，代码静态检查/分析，自动化测试（还可能产生报告等）。除此之外，CI还还需要有自动化验收测试，自动化回归测试等。</p>
+
+<p>持续交付则更进一步，它将环境准备，持续集成，自动化部署等放在了一起。通过全自动（有些过程可以设置为手动，比如发布到产品环境）的方式，使得软件可以一键发布。如果上线后发现严重defect，还支持一键回滚的机制（其实就是将之前的一个稳定版本做一次发布，由于发布流程已经经过千锤百炼，所以发布本身就变得非常轻松，安全）</p>
+
+<h2>实例</h2>
+
+<p>我在<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">《前后端分离了，然后呢？》</a>这篇文章中，提到了一个叫做<code>bookmarks</code>的应用，这个应用是一个前后端分离的非常彻底的应用。</p>
+
+<p>我们这里会再次使用这个应用作为实例，并采用不同的两个免费服务（<a href="https://travis-ci.org">travis-ci</a>和<a href="https://snap-ci.com">snap-ci</a>）来完成<code>持续部署</code>环境的搭建。</p>
+
+<h3>服务器端</h3>
+
+<p><code>bookmarks-server</code>是一个基于<code>spring-boot</code>的纯粹的<code>API</code>，它可以被打包成一个<code>jar</code>包，然后通过命令行启动运行。在本文中，我们我们将会将这个server部署到<a href="https://dashboard.heroku.com/">heroku</a>平台上。</p>
+
+<p>首先需要定义一个<code>Procfile</code>，这个是我们应用的入口，<code>heroku</code>根据这个文件来明确以何种方式来启动我们的应用：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>web: java -Dserver.port=$PORT -jar build/libs/bookmarks-server-0.1.0.jar --spring.profiles.active=staging</span></code></pre></td></tr></table></div></figure>
+
+
+<p>由于我们在本地使用的使用<code>mysql</code>，而<code>heroku</code>默认的是<code>postgres</code>数据库，因此需要在<code>application.yml</code>中额外配置</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">spring</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">profiles</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">staging</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="l-Scalar-Plain">datasource</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">driverClassName</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">org.postgresql.Driver</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">url</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">${JDBC_DATABASE_URL}</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">${DATABASE_USER}</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">${DATABASE_PASS}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="l-Scalar-Plain">jpa</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">database_platform</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">org.hibernate.dialect.PostgreSQLDialect</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">hibernate</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">ddl-auto</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">update</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有了这些配置后，我们需要创建一个<code>heroku</code>应用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>heroku create
+</span><span class='line'>Created http://quiet-atoll-8237.herokuapp.com/ | git@heroku.com:quiet-atoll-8237.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>创建之后，我们可以在界面上对这个应用进行一些配置（当然，也可以通过命令行，具体参看<code>heroku help</code>）。为了支持数据库，需要为我们的应用添加一个<code>postgres</code>的AddOn。添加之后，<code>heroku</code>会为我们提供一个<code>postgres</code>的连接地址，格式大概是这样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>postgres://username:password@host:port/database
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后我们需要在<code>Heroku</code>的配置界面中配置一些环境变量：</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/01/heroku-config-resized.png" alt="heroku env config" /></p>
+
+<p>这样，当应用部署到<code>Heroku</code>上之后，我们的应用就可以读到这些配置了（注意<code>application.yml</code>中的环境变量<code>JDBC_DATABASE_URL</code>）。</p>
+
+<h4>搭建持续集成环境</h4>
+
+<p>持续集成环境，这里我们选用最简单的<code>travis-ci</code>，它可以很容易的与<code>github</code>集成。</p>
+
+<ul>
+<li>在项目X中定义一个<code>.travis.yml</code>的文件</li>
+<li>将你的代码push到github上</li>
+<li>绑定github帐号到<code>travis</code></li>
+<li>在<code>travis</code>中启用项目X</li>
+</ul>
+
+
+<p>这个<code>.travis.yml</code>因项目而异，我们这里的项目是<code>spring-boot</code>，所以只需要指定<code>java</code>即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">language</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">java</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果是<code>java</code>项目，并且项目中有<code>build.gradle</code>，<code>travis-ci</code>会自动执行<code>gradle check</code>任务。</p>
+
+<h4>自动化部署</h4>
+
+<p>当CI运行成功之后，我们需要<code>travis-ci</code>帮我们将应用程序发布到<code>heroku</code>上，这时候需要做一些修改。最简单的方式是直接安装<code>travis-ci</code>的命令行工具到本地：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>gem install travis -v 1.8.0 --no-rdoc --no-ri
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后通过<code>heroku</code>的<code>auth:token</code>命令获得<code>heroku</code>的token，在加密并写入<code>.travis.yml</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>heroku auth:token
+</span><span class='line'>00xxxxxxxxxxxxx55d11dbd0cxxxxxxxxxxfe067
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>travis encrypt 00xxxxxxxxxxxxx55d11dbd0cxxxxxxxxxxfe067 --add
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然可以合并为一条命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>travis encrypt <span class="k">$(</span>heroku auth:token<span class="k">)</span> --add
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将加密过的token存入<code>.travis.yml</code>文件。最后的结果大致如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">language</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">java</span>
+</span><span class='line'><span class="l-Scalar-Plain">deploy</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">heroku</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">api_key</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">secure</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">...</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">app</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">quiet-atoll-8237</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意此处的<code>app</code>，正是我们的App的名字。另外，还需要给<code>build.gradle</code>添加一个名叫<code>stage</code>的task，<code>travis</code>在deploy时需要这个<code>task</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">task</span> <span class="n">stage</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">dependsOn</span> <span class="n">build</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2016/01/travis-deploy-resized.png" alt="travis deploy" /></p>
+
+<p>这样，我们只需要在本地的一个提交，一切都会自动化起来：</p>
+
+<ul>
+<li>travis会执行<code>gradle check</code></li>
+<li><code>gradle check</code>会编译并运行自动化测试</li>
+<li><code>travis</code>会部署应用到<code>heroku</code>上</li>
+<li><code>heroku</code>会自动重启服务</li>
+</ul>
+
+
+<p>我们可以在本地进行简单的测试（注意此处我们的<code>staging</code>环境的URL）：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl https://quiet-atoll-8237.herokuapp.com/api/feeds -s | jq .
+</span><span class='line'><span class="o">[</span>
+</span><span class='line'>  <span class="o">{</span>
+</span><span class='line'>    <span class="s2">&quot;id&quot;</span>: 1,
+</span><span class='line'>    <span class="s2">&quot;url&quot;</span>: <span class="s2">&quot;http://icodeit.org/2016/01/how-to-summarize-privious-project/&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;title&quot;</span>: <span class="s2">&quot;如何持久化你的项目经历&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;author&quot;</span>: <span class="s2">&quot;icodit.org&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;summary&quot;</span>: <span class="s2">&quot;通常来说，下项目总是一件比较高兴的事（大部分团队还会一起吃个饭庆祝一下）。&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;publishDate&quot;</span>: <span class="s2">&quot;2016-01-07&quot;</span>
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'>  <span class="o">{</span>
+</span><span class='line'>    <span class="s2">&quot;id&quot;</span>: 2,
+</span><span class='line'>    <span class="s2">&quot;url&quot;</span>: <span class="s2">&quot;http://icodeit.org/2015/11/get-started-with-reflux/&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;title&quot;</span>: <span class="s2">&quot;你为什么应该试一试Reflux？&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;author&quot;</span>: <span class="s2">&quot;icodit.org&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;summary&quot;</span>: <span class="s2">&quot;React在设计之初就只关注在View本身上，其余部分如数据的获取，事件处理等，全然不在考虑之内。&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;publishDate&quot;</span>: <span class="s2">&quot;2016-01-09&quot;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>完整的<a href="https://github.com/abruzzi/bookmarks-server">代码在这里</a>。</p>
+
+<h2>其他</h2>
+
+<h3>CI monitor</h3>
+
+<p><a href="https://github.com/abruzzi/node-build-monitor">node-build-monitor</a>是一个非常容易配置，使用的CI monitor，我们只需要进行简单地配置，就可以将<code>travis</code>的状态可视化出来</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">&quot;monitor&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;interval&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;numberOfBuilds&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;debug&quot;</span><span class="p">:</span> <span class="kc">true</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nt">&quot;services&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Travis&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;configuration&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;slug&quot;</span><span class="p">:</span> <span class="s2">&quot;abruzzi/bookmarks-server&quot;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">]</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>不过这个工具会在有网络异常时自动终止，我们可以通过一个简单的脚本来在它终止时自动重启：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">until </span>node app/app.js
+</span><span class='line'><span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="nb">echo</span> <span class="s2">&quot;restarting...&quot;</span>
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2016/01/ci-monitor-resized.png" alt="CI Monitor" /></p>
+
+<h2>小结</h2>
+
+<p>通过<code>travis</code>和<code>heroku</code>这样的免费服务，我们就可以轻松的将自己的项目做到持续集成+持续交付。我们后端的服务相对来说是比较容易的，但是涉及到一个前后端分离的架构，如何做到静态内容的托管，打包，部署，并和后端API集成起来，我会在下一篇文章中详细解释。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[如何持久化你的项目经历]]></title>
@@ -6331,495 +6663,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 
 
 <p>可以看到，使用<code>underscore.js</code>提供的众多API，可以写出非常简洁，表意的代码来。这也是函数式编程逐步占领<code>主流</code>编程世界的一个重要原因吧。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[underscore.js中的函数式编程]]></title>
-    <link href="http://abruzzi.github.com/2015/02/functional-programming-in-underscore-dot-js/"/>
-    <updated>2015-02-20T20:11:00+11:00</updated>
-    <id>http://abruzzi.github.com/2015/02/functional-programming-in-underscore-dot-js</id>
-    <content type="html"><![CDATA[<h2>JavaScript中的map/reduce</h2>
-
-<p>在过去的10年间，不论你是否对大数据有所涉足，你肯定听过<code>map/reduce</code>这个貌似很高大上的词。这个高大上的词事实上来自于<code>函数式编程</code>世界。<code>map</code>的意思是影射，即将一个集合中的内容，通过应用某种函数，形成另外一个集合。<code>reduce</code>表示求和，或者规约，即将一个集合以某种函数规约为一个值。</p>
-
-<p><a href="http://underscorejs.org/">underscore.js</a>是一个<code>非常强大</code>的JavaScript库，也是我的工具箱里的必备品。事实上在我自己的小项目中，我更倾向于使用<code>jQuery</code>+<code>underscore.js</code>来完成所有的功能，而不是使用诸如<code>AngularJS</code>之类的框架。</p>
-
-<p>作为一个库，<code>underscore.js</code>提供了丰富的API来操作JavaScript中的集合，对象，函数等，可以节省程序员大量的时间，我们在这篇文章中来看看<code>underscore.js</code>中基本的函数式编程特性。</p>
-
-<h3>使用map消除for-loop</h3>
-
-<p>我们先来看一个小例子：我们要编写一个名为<code>makeQuery</code>的函数，它接受一个JavaScript对象和一个分隔符，然后将JavaScript对象展开，形成<code>key=value[分隔符key=value]</code>的形式。正如下面这个测试所反映的：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;make query from object&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">cookies</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;JSESSIONID&quot;</span><span class="o">:</span> <span class="s2">&quot;6C729E682C05AA56017E3D1675CE8E5F&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;_USER&quot;</span><span class="o">:</span> <span class="s2">&quot;GEO-NASTAR&quot;</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="s2">&quot;JSESSIONID=6C729E682C05AA56017E3D1675CE8E5F;_USER=GEO-NASTAR&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">makeQuery</span><span class="p">(</span><span class="nx">cookies</span><span class="p">,</span> <span class="s2">&quot;;&quot;</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>一个直接的解决方案是：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">makeQuery</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">delimiter</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">strArray</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">strArray</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">key</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">key</span><span class="p">]);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">strArray</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">delimiter</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们再来看另外一个小例子：给定一个字符串（人名）数组，将数组中的所有人名都变成大写字母开头。正如下面这个测试所反映：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;capitalize&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;juanchen&quot;</span><span class="p">,</span> <span class="s2">&quot;mingliang&quot;</span><span class="p">,</span> <span class="s2">&quot;lu&quot;</span><span class="p">,</span> <span class="s2">&quot;juntao&quot;</span><span class="p">];</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Juanchen&quot;</span><span class="p">,</span> <span class="s2">&quot;Mingliang&quot;</span><span class="p">,</span> <span class="s2">&quot;Lu&quot;</span><span class="p">,</span> <span class="s2">&quot;Juntao&quot;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">capitalize</span><span class="p">(</span><span class="nx">names</span><span class="p">)).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>一个可能的函数如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">capitalize</span><span class="p">(</span><span class="nx">strArrays</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>     <span class="kd">var</span> <span class="nx">newArray</span><span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>
-</span><span class='line'>     <span class="nx">strArrays</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">str</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nx">toUpperCase</span><span class="p">()</span> <span class="o">+</span> <span class="nx">str</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>          <span class="nx">newArray</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">str</span><span class="p">);</span>
-</span><span class='line'>     <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>     <span class="k">return</span> <span class="nx">newArray</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果仔细观看这两函数实现，会发现虽然做的事情完全不同（一个做对象到字符串到的连接，一个做字符串的首字母大写转换），但是如果从稍微高一点的抽象层次来看，会发现其实这两个函数式<code>一样的</code>！！</p>
-
-<p>如果写成伪代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">xxx</span><span class="p">(</span><span class="nx">array</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">newArray</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">forLoop</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">newArray</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">doSomething</span><span class="p">(</span><span class="nx">item</span><span class="p">));</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">newArray</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>即，声明一个新的数组，迭代传入的数组，然后做<code>某种操作</code>，将结果存入数组，最后返回该数组。由于JavaScript是一个支持函数式变成范式的语言，我们可以将<code>某种操作</code>从外部传入，这样，这部分代码就可以被重用了！！</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">xxx</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="nx">func</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">newArray</span> <span class="o">=</span> <span class="p">[];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">forLoop</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="nx">func</span><span class="p">(</span><span class="nx">item</span><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">newArray</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>看着很眼熟对吧，没错，这就是<code>map</code>操作。目前<code>V8</code>引擎已经把这个操作内置到了语言级别了，你可以直接在数组上调用<code>map</code>来完成映射的操作。不过我们这篇文章的主角是<code>underscore.js</code>，因此来看看在<code>underscore.js</code>里怎么使用<code>map</code>吧，还是上面这两个例子：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">makeQuery</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="nx">delimiter</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nx">key</span> <span class="o">+</span> <span class="s1">&#39;=&#39;</span> <span class="o">+</span> <span class="nx">value</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}).</span><span class="nx">join</span><span class="p">(</span><span class="nx">delimiter</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">capitalize</span><span class="p">(</span><span class="nx">items</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">items</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nx">item</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nx">toUpperCase</span><span class="p">()</span> <span class="o">+</span> <span class="nx">item</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">toLowerCase</span><span class="p">();</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>对比一下会发现，我们已经将<code>for</code>语句消除掉了（它被内置到了<code>_.map</code>函数中了）。这是一个非常伟大的提升，而代码更加表意。</p>
-
-<h3>使用reduce简化<code>规约</code></h3>
-
-<p>我们来看另一个例子：给定一个工资列表，我们要计算公司为我们交纳的公积金的总和，假设比率为15%。测试如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;calculate rate&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">rate</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">;</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">salaries</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3200.00</span><span class="p">,</span> <span class="mf">1768.00</span><span class="p">,</span> <span class="mf">4020.00</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">total</span> <span class="o">=</span> <span class="nx">calcRate</span><span class="p">(</span><span class="nx">salaries</span><span class="p">,</span> <span class="nx">rate</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">total</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mf">1348.2</span><span class="p">);</span>
-</span><span class='line'><span class="p">})</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>一个直观的实现如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">calcRate</span> <span class="p">(</span><span class="nx">salaries</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">rate</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">;</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">minimunCost</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">salaries</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">salary</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">minimunCost</span> <span class="o">+=</span> <span class="nx">salary</span> <span class="o">*</span> <span class="nx">rate</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">minimunCost</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>再来看一个例子：我们有一个单词列表，需要统计出每个单词出现的次数。测试如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;count word&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">words</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="s2">&quot;my&quot;</span><span class="p">,</span> <span class="s2">&quot;friend&quot;</span><span class="p">,</span> <span class="s2">&quot;my&quot;</span><span class="p">,</span> <span class="s2">&quot;heart&quot;</span><span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">count</span><span class="p">(</span><span class="nx">words</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">[</span><span class="s2">&quot;hello&quot;</span><span class="p">]).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">[</span><span class="s2">&quot;my&quot;</span><span class="p">]).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">[</span><span class="s2">&quot;friend&quot;</span><span class="p">]).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">[</span><span class="s2">&quot;heart&quot;</span><span class="p">]).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>一个直接的实现函数如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">count</span><span class="p">(</span><span class="nx">words</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{};</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">words</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">result</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">result</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>现在再来仔细对比这两个实现，如果从稍微<code>高级别</code>的层次来抽象，会发现这两段代码是<code>一样的</code>，如果写成伪代码的话，看起来是这样的：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">xxx</span><span class="p">(</span><span class="nx">array</span> <span class="p">[,</span><span class="nx">func</span><span class="p">])</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">array</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">result</span> <span class="o">+=</span> <span class="nx">func</span><span class="p">(</span><span class="nx">item</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意可以传入一个可选的<code>func</code>作为计算子，另外此处的<code>+=</code>表示某种形式的累加（count函数中的复赋值其实是另一种形式的累加）。</p>
-
-<p>这种<code>传入一个数组，通过某种形式的累加而生成一个单独的值</code>的计算，被称为<code>reduce</code>函数。当然，现在<code>V8</code>引擎已经内置了对<code>reduce</code>的支持。我们来看看在<code>underscore.js</code>中如何使用<code>reduce</code>：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">calcRate</span><span class="p">(</span><span class="nx">items</span><span class="p">,</span> <span class="nx">rate</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="nx">items</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">total</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nx">total</span> <span class="o">+</span> <span class="nx">value</span> <span class="o">*</span> <span class="nx">rate</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">},</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">count</span><span class="p">(</span><span class="nx">words</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="nx">words</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">frequencies</span><span class="p">,</span> <span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">frequencies</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">},</span> <span class="p">{});</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>_.reduce</code>接受三个参数，分别是集合，累加器，和一个可选的初始值。应该注意的是第二个参数是一个函数，而这个函数的参数需要特别说明：第一个参数是上一次累加器的返回值，在迭代的第一次，这个值是调用<code>_.reduce</code>时传入的初始值。</p>
-
-<p>以<code>calcRate</code>为例，调用
-<code>calcRate([1000, 2000, 1500], 0.15)</code>时，第一次调用中间匿名函数时，total的值为初始值<code>0</code>；第二次则为<code>0+1000*0.15 = 150</code>；第三次则为<code>150+2000*0.15 = 450</code>。</p>
-
-<h3>一个实际的例子</h3>
-
-<p>如果纯粹列举<code>underscore.js</code>的特性，难免变得枯燥，我们来编写一个<code>实际</code>的例子来学习<code>map/reduce</code>的用法。</p>
-
-<p>假设我们有一段文本：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span>
-</span><span class='line'><span class="s2">&quot;Hello darkness, my old friend,</span>
-</span><span class='line'><span class="s2">I&#39;ve come to talk with you again,</span>
-</span><span class='line'><span class="s2">Because a vision softly creeping,</span>
-</span><span class='line'><span class="s2">Left its seeds while I was sleeping,</span>
-</span><span class='line'><span class="s2">And the vision that was planted in my brain</span>
-</span><span class='line'><span class="s2">Still remains</span>
-</span><span class='line'><span class="s2">Within the sound of silence.</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">In restless dreams I walked alone</span>
-</span><span class='line'><span class="s2">Narrow streets of cobblestone,</span>
-</span><span class='line'><span class="s2">&#39;Neath the halo of a street lamp,</span>
-</span><span class='line'><span class="s2">I turned my collar to the cold and damp</span>
-</span><span class='line'><span class="s2">When my eyes were stabbed by the flash of a neon light</span>
-</span><span class='line'><span class="s2">That split the night</span>
-</span><span class='line'><span class="s2">And touched the sound of silence.</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">And in the naked light I saw</span>
-</span><span class='line'><span class="s2">Ten thousand people, maybe more.</span>
-</span><span class='line'><span class="s2">People talking without speaking,</span>
-</span><span class='line'><span class="s2">People hearing without listening,</span>
-</span><span class='line'><span class="s2">People writing songs that voices never share</span>
-</span><span class='line'><span class="s2">And no one dared</span>
-</span><span class='line'><span class="s2">Disturb the sound of silence.&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们来统计一下每个单词出现的次数，<strong>不区分</strong>大小写。JavaScript中的字符串对象有一个<code>match</code>方法，<code>match</code>的参数可以是正则表达式，返回该字符串的第一个匹配：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="s2">&quot;hello world&quot;</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/</span><span class="p">)</span>
-</span><span class='line'><span class="c1">//[&quot;hello&quot;]</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&quot;... hello world&quot;</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/</span><span class="p">)</span>
-</span><span class='line'><span class="c1">//[&quot;hello&quot;]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意<code>...</code>没有匹配正则表达式<code>\w</code>。当参数为带有<code>g</code>(global)选项的正则表达式时，该函数会返回所有匹配该正则表达式的数组：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="s2">&quot;hello world&quot;</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/g</span><span class="p">)</span>
-</span><span class='line'><span class="c1">//[&quot;hello&quot;, &quot;world&quot;]</span>
-</span><span class='line'>
-</span><span class='line'><span class="s2">&quot;... hello world&quot;</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/g</span><span class="p">)</span>
-</span><span class='line'><span class="c1">//[&quot;hello&quot;, &quot;world&quot;]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有了这个<code>match</code>我们就可以很容易的将上述的文本分割为一个单词的数组，而根据要求，我们需要将所有的单词都转成小写。</p>
-
-<p>可以先编写一个分割文本并转换小写的函数：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">text2words</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/g</span><span class="p">),</span> <span class="kd">function</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">word</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而对应的count函数则为：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">count</span><span class="p">(</span><span class="nx">words</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="nx">words</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">frequencies</span><span class="p">,</span> <span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">frequencies</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">},</span> <span class="p">{});</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><del>
-还可以使用<code>underscore.js</code>的链式操作，使用<code>_(object)</code>生成一个<code>underscore</code>包装过的对象。然后就可以使用<code>_(object).map(...).reduce(...)</code>的形式了：
-</del></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">count</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">mapped</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/g</span><span class="p">)).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">word</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span><span class="nx">mapped</span><span class="p">).</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">frequencies</span><span class="p">,</span> <span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">frequencies</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">},</span> <span class="p">{});</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们在下一篇文章中将介绍如何将这些API用连式操作连起来。</p>
-
-<p>&#8220;`</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/02/wordcount-resized.png" alt="wordcount" /></p>
 ]]></content>
   </entry>
   

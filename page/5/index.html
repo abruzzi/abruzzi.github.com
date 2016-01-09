@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="GIS系统如何工作 去年十二月中旬从RCA项目上下来之后，就一直在一个GIS项目上做咨询。在新的项目上，日常工作的重点主要是放在前端开发上（比如AngularJS，Grunt，Jamsine之类），对于业务（与GIS相关）方面，则完全没有涉及。 虽说之前也接触过一点GIS相关的开发， &hellip;">
+  <meta name="description" content="渲染引擎Mapnik 上一篇文章中大概介绍了Mapnik，它是一个渲染引擎，一般开发中都会使用他的python的bind做开发。 Mapnik的文档写的比较详细，我们这里只是做一些必要的介绍，详细的细节可以参看Mapnik在Github上的文档。 在Mac下，安装Mapnik十分容易， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,358 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2014/04/setup-map-server-by-mapnik/">搭建地图服务器（使用Mapnik）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-12T14:07:00+10:00" pubdate data-updated="true">Apr 12<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>渲染引擎Mapnik</h4>
+
+<p><a href="http://icodeit.org/2014/04/intro-map-gis/">上一篇文章</a>中大概介绍了<a href="https://github.com/mapnik">Mapnik</a>，它是一个渲染引擎，一般开发中都会使用他的python的bind做开发。</p>
+
+<p>Mapnik的文档写的比较详细，我们这里只是做一些必要的介绍，详细的细节可以参看Mapnik在<a href="https://github.com/mapnik/mapnik/wiki">Github上的文档</a>。</p>
+
+<p>在Mac下，安装Mapnik十分容易，使用brew即可，注意我们在此处带上<code>--with-postgresql</code>选项，使得Mapnik可以通过PostGIS来访问数据库：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>brew install mapnik --with-postgresql
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装完成之后，可以通过一个小的python脚本来测试：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">mapnik</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s">&#39;red&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">zoom_all</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">mapnik</span><span class="o">.</span><span class="n">render_to_file</span><span class="p">(</span><span class="nb">map</span><span class="p">,</span> <span class="s">&#39;red.png&#39;</span><span class="p">,</span> <span class="s">&#39;png&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这段脚本可以在当前目录下生成一个红色的256x256的小图片。好了，有了渲染引擎，我们需要一些数据来进行渲染了。</p>
+
+<h4>数据源</h4>
+
+<p>最通用的数据格式为Shapefiles，目前有很多的免费地理信息供公共下载，我们可以从<a href="http://metro.teczno.com/">Metro的站点</a>上下载一些小的数据文件。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm2pgsql-shapefiles.zip
+</span><span class='line'><span class="nv">$ </span>mkdir chengdu
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>chengdu
+</span><span class='line'><span class="nv">$ </span>unzip chengdu.osm2pgsql-shapefiles.zip
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样就得到了一组文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>find . -name <span class="s2">&quot;*.shp&quot;</span>
+</span><span class='line'>./chengdu.osm-line.shp
+</span><span class='line'>./chengdu.osm-point.shp
+</span><span class='line'>./chengdu.osm-polygon.shp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>每一个shp文件都会对应几个其他类型的文件，比如投影信息，属性表等。仅仅查看shp的话，有表示所有点的文件chengdu.osm-line.shp，又表示所有线的chengdu.osm-line.shp，以及表示所有面（区域）的chengdu.osm-polygon.shp文件。</p>
+
+<p>有了这些文件，我们就可以做一些测试了，比如我们首先加载所有的线条，并根据这些线条生成一个图层：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">mapnik</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s">&#39;#ffffff&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">style</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Style</span><span class="p">()</span>
+</span><span class='line'><span class="n">rule</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Rule</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">point_symbolizer</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">PointSymbolizer</span><span class="p">()</span>
+</span><span class='line'><span class="n">rule</span><span class="o">.</span><span class="n">symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point_symbolizer</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">style</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">append_style</span><span class="p">(</span><span class="s">&#39;default&#39;</span><span class="p">,</span> <span class="n">style</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ds_point</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Shapefile</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="s">&#39;chengdu.osm-point.shp&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">point</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="s">&#39;point&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">point</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">ds_point</span>
+</span><span class='line'><span class="n">point</span><span class="o">.</span><span class="n">styles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;default&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">zoom_all</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">mapnik</span><span class="o">.</span><span class="n">render_to_file</span><span class="p">(</span><span class="nb">map</span><span class="p">,</span> <span class="s">&#39;chengdu.png&#39;</span><span class="p">,</span> <span class="s">&#39;png&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以得到：</p>
+
+<p><img src="/images/2014/04/chengdu-point.png" alt="points" /></p>
+
+<p>这里介绍一下Mapnik中的一些概念：一个Map可以包含若干个层（Layer），每个层可以独立着色，即可以为每个层定制样式（Style），每个样式由若干个规则组成（Rule）。每个规则由是由若干个符号定制。</p>
+
+<p><img src="/images/2014/04/chengdu-line.png" alt="lines" /></p>
+
+<p>如果将两者重叠，则可以得到：</p>
+
+<p><img src="/images/2014/04/chengdu-point-and-line.png" alt="lines" /></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">polygon_symbolizer</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">PolygonSymbolizer</span><span class="p">(</span><span class="n">mapnik</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s">&#39;#c8102e&#39;</span><span class="p">))</span>
+</span><span class='line'><span class="n">polygon_rule</span><span class="o">.</span><span class="n">symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">polygon_symbolizer</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ds_polygon</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Shapefile</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="s">&#39;chengdu.osm-polygon.shp&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">polygon</span> <span class="o">=</span> <span class="n">mapnik</span><span class="o">.</span><span class="n">Layer</span><span class="p">(</span><span class="s">&#39;polygon&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="n">polygon</span><span class="o">.</span><span class="n">datasource</span> <span class="o">=</span> <span class="n">ds_polygon</span>
+</span><span class='line'><span class="n">polygon</span><span class="o">.</span><span class="n">styles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;polygon&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">map</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2014/04/chengdu-polygon.png" alt="image" /></p>
+
+<p>将这三个层叠加在一起，会得到最终的结果：</p>
+
+<p><img src="/images/2014/04/chengdu-point-and-line-and-polygon.png" alt="lines" /></p>
+
+<h4>数据转化</h4>
+
+<p>在进一步之前，我们需要将数据存储在数据库中。我们可以将shapefile通过转化存入到数据库中。PostGIS本身自带了一个用于此作用的工具：<code>shp2pgsql</code>。可以通过这个工具来先将shapefile导入到数据库中。也可以直接导入别的开放数据，比如很多OSM格式的数据源，我们此处仅仅简单的从别的数据源将OSM格式的数据下载并导入到PostGIS中。</p>
+
+<p>创建数据库<code>chengdu</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>createdb chengdu -O gis -E UTF8 -e
+</span><span class='line'>CREATE DATABASE chengdu OWNER gis ENCODING <span class="s1">&#39;UTF8&#39;</span>;
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>psql -U gis -d chengdu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>登陆PostGres，然后为数据库<code>chengdu</code>启动PostGIS扩展：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="c1">-- Enable PostGIS (includes raster)</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">postgis</span><span class="p">;</span>
+</span><span class='line'><span class="c1">-- Enable Topology</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">postgis_topology</span><span class="p">;</span>
+</span><span class='line'><span class="c1">-- fuzzy matching needed for Tiger</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">fuzzystrmatch</span><span class="p">;</span>
+</span><span class='line'><span class="c1">-- Enable US Tiger Geocoder</span>
+</span><span class='line'><span class="k">CREATE</span> <span class="n">EXTENSION</span> <span class="n">postgis_tiger_geocoder</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm.bz2
+</span><span class='line'><span class="nv">$ </span>bunzip2 -d chengdu.osm.bz2
+</span><span class='line'><span class="nv">$ </span>osm2pgsql -U gis -d chengdu -s -S ./default.style chengdu.osm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个命令将chengdu.osm导入到了名称为<code>chengdu</code>的数据库中。</p>
+
+<p>可以通过SQL命令查看其中的数据：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">select</span> <span class="n">ST_Extent</span><span class="p">(</span><span class="n">ST_Transform</span><span class="p">(</span><span class="n">way</span><span class="p">,</span><span class="mi">4326</span><span class="p">))</span> <span class="k">from</span> <span class="n">planet_osm_roads</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>结果如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sql'><span class='line'>                            <span class="n">st_extent</span>
+</span><span class='line'><span class="c1">--------------------------------------------------------------------------</span>
+</span><span class='line'> <span class="n">BOX</span><span class="p">(</span><span class="mi">103</span><span class="p">.</span><span class="mi">564165069794</span> <span class="mi">30</span><span class="p">.</span><span class="mi">3634139134986</span><span class="p">,</span><span class="mi">104</span><span class="p">.</span><span class="mi">554549945024</span> <span class="mi">30</span><span class="p">.</span><span class="mi">9869936005376</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="mi">1</span> <span class="k">row</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>WMS服务器</h4>
+
+<p>生成图片之后，我们还需要将这些图片切成瓦片，然后公开给外部以便使用。Mapnik提供了切图的功能，并且还提供一个实现了<a href="https://github.com/mapnik/OGCServer">WMS协议的服务器</a>，以便使用。</p>
+
+<p>安装这个OGCServer服务器非常容易：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git clone git@github.com:mapnik/OGCServer.git
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>OGCServer
+</span><span class='line'><span class="nv">$ </span>sudo python setup.py install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是OGCServer的启动，需要一个配置XML配置文件，这个配置文件可以由Mapnik提供的工具集生成：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn co http://svn.openstreetmap.org/applications/rendering/mapnik/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个svn仓库中包含了众多的小工具，generate_xml.py用于生成Mapnik的样式文件，generate_image.py用于生成图片，generate_tiles.py用于生成众多的瓦片。</p>
+
+<p>此处我们将使用<code>generate_xml.py</code>来创建一个地图样式文件，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">cd </span>svn.openstreetmap.org/applications/rendering/mapnik/
+</span><span class='line'><span class="nv">$ </span>./generate_xml.py osm.xml chengdu.xml --dbname chengdu --user gis --accept-none
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>generate_xml.py根据osm.xml作为模板，生成<code>chengdu.xml</code>。这个文件即可用于测试OGCServer：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>OGCServer chengdu.xml
+</span><span class='line'>Listening at 0.0.0.0:8000....
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在浏览器中查看：</p>
+
+<p><img src="/images/2014/04/ogcserver-localhost-resized.png" alt="ogcserver" /></p>
+
+<h4>使用OpenLayers测试</h4>
+
+<p>有了一张图片，那么我们就需要有更多的图片组成的瓦片，这就需要使用引入GIS的前端利器OpenLayers了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="k">$(function</span><span class="o">(</span><span class="k">)</span> <span class="o">{</span>
+</span><span class='line'>    var map, layer;
+</span><span class='line'>    <span class="nv">map</span> <span class="o">=</span> new OpenLayers.Map<span class="o">(</span><span class="s1">&#39;map&#39;</span>, <span class="o">{})</span>;
+</span><span class='line'>
+</span><span class='line'>    <span class="nv">layer</span> <span class="o">=</span> new OpenLayers.Layer.WMS<span class="o">(</span><span class="s1">&#39;Tile Cache&#39;</span>,
+</span><span class='line'>        <span class="s1">&#39;http://localhost:8000/?&#39;</span>, <span class="o">{</span>
+</span><span class='line'>            layers: <span class="s1">&#39;__all__&#39;</span>,
+</span><span class='line'>            format: <span class="s1">&#39;image/png&#39;</span>
+</span><span class='line'>        <span class="o">})</span>;
+</span><span class='line'>
+</span><span class='line'>    map.addLayer<span class="o">(</span>layer<span class="o">)</span>;
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span>!map.getCenter<span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        map.zoomToMaxExtent<span class="o">()</span>;
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">})</span>;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2014/04/openlayers-chengdu-resized.png" alt="openlayers" /></p>
+
+<p><img src="/images/2014/04/openlayers-chengdu-detail-resized.png" alt="openlayers" /></p>
+
+<p>应该注意的是，此处在OpenLayers中使用了来自与OSM导入的数据，而并非Shapefile中的数据（Shapefile中仅有三个层次，point, line, polygon）。而OSM的数据则丰富的多。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2034,203 +2386,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/10/using-karma-as-the-javascript-test-runner/">使用Karma运行JavaScript测试</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-10-08T10:36:00+11:00" pubdate data-updated="true">Oct 8<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Karma 简介</h3>
-
-<p>Karma是一个JavaScript的测试运行器。事实上，Karma更是一个测试环境，使用Karma可以很方便的的运行测试(方便到你感觉不到它的实际存在)。</p>
-
-<p>一般的TDD的开发流程为：</p>
-
-<ol>
-<li>编写测试(一个会失败的case)</li>
-<li>运行测试，并看到这个测试失败</li>
-<li>编写代码(足够让测试通过的代码)</li>
-<li>运行测试，并看到测试通过</li>
-<li>重构</li>
-<li>运行测试，并看到测试通过</li>
-</ol>
-
-
-<p>然后<strong>如此循环</strong>，而在前端开发中，很长一段时间，这个流程受限于开发环境，比如添加了一个新的JavaScript源文件，开发者需要在HTML中引入相应地文件，以及响应的测试文件，然后刷新页面(有时候还需要清空浏览器缓存)。</p>
-
-<p>在这个过程中，开发者真正关注的就是编写测试，运行测试，编写实现，重构等等，需要不断的重复这个过程。而不是关注如刷新页面，清空缓存，修改HTML对脚本的引用等武馆的工作。</p>
-
-<p>Karma就是这样一个开发环境，开发者指定需要测试的脚本/测试文件，需要运行的浏览器等信息，Karma会在后台自动监控文件的修改，并启动一个浏览器与Karma的服务器连接，这样当源代码或者测试发生修改后，Karma会自动运行测试。</p>
-
-<p>开发者可以指定不同的浏览器，甚至可以跨设备。由于Karma只是一个运行器，你可以使用项目中正在使用的测试框架如Jasmine，QUnit等，甚至可以自定义适配器来支持你自己的测试框架。</p>
-
-<h3>运行Karma</h3>
-
-<p>Karma需要一个配置文件来知道哪些文件需要被加载，需要被监控(当文件内容发生变化时，尝试运行测试)，这个配置文件可以通过Karma自带的参数来生成。</p>
-
-<h4>基本使用</h4>
-
-<p>Karma被实现为一个npm的包，所以可以通过</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ npm install -g karma</span></code></pre></td></tr></table></div></figure>
-
-
-<p>安装之后，可以生成karma需要的配置文件：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ karma init my.conf.js</span></code></pre></td></tr></table></div></figure>
-
-
-<p>karma会让你回答一些问题，比如是哪种测试框架，哪些文件需要被测试，哪些浏览器需要被考虑等。生成的配置文件的一个片段是：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>// base path, that will be used to resolve files and exclude
-</span><span class='line'>basePath = ''; 
-</span><span class='line'>
-</span><span class='line'>// list of files / patterns to load in the browser
-</span><span class='line'>files = [ 
-</span><span class='line'>  JASMINE,
-</span><span class='line'>  JASMINE_ADAPTER,
-</span><span class='line'>  'src/**/*.js',
-</span><span class='line'>  'test/**/*spec.js'
-</span><span class='line'>];
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>// web server port
-</span><span class='line'>port = 9876;
-</span><span class='line'>
-</span><span class='line'>// browsers
-</span><span class='line'>browsers = ['Chrome'];
-</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<p><strong>更新</strong>
-新的配置文件生成脚本会生成更加<strong>模块化</strong>的配置：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>module.exports = function(config) {
-</span><span class='line'>  config.set({
-</span><span class='line'>  
-</span><span class='line'>    frameworks: ['jasmine'],
-</span><span class='line'>
-</span><span class='line'>    files: [
-</span><span class='line'>      'src/**/*.js',
-</span><span class='line'>      'test/**/*spec.js'
-</span><span class='line'>    ],
-</span><span class='line'>
-</span><span class='line'>    port: 9876,
-</span><span class='line'>
-</span><span class='line'>    browsers: ['Chrome'],
-</span><span class='line'>
-</span><span class='line'>    singleRun: true
-</span><span class='line'>    
-</span><span class='line'>  });
-</span><span class='line'>};
-</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<p>生成配置文件之后，可以通过命令来启动Karma服务器，同时指定使用<code>my.conf.js</code>文件作为配置：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ karma start my.conf.js</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2013/10/karma-run-resized.png" alt="image" /></p>
-
-<h4>调试及其他</h4>
-
-<p>很多时候，我们只想要运行某一个suite中的所有测试用例，而不是整个工程，比如在Jasmine中：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>describe("Controller User", function() {
-</span><span class='line'>  it("add user", function() {});
-</span><span class='line'>  it("search users", function() {});
-</span><span class='line'>  it("delete user", function() {});
-</span><span class='line'>})</span></code></pre></td></tr></table></div></figure>
-
-
-<p>只需要将<code>describe</code>修改为<code>ddescribe</code>即可，类似的，如果只需要运行某一个测试用例，只需要将<code>it</code>修改为<code>iit</code>即可。</p>
-
-<p>这在运行调试某个测试或者某段特定代码时非常好用。另外，Karma还提供了debugger功能，在测试用例中加入：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>debugger;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>即可。由于在运行时，karma实际上会启动一个真实地浏览器，所以可以在浏览器的developer-tool中进行实际的调试。需要注意的是，当进入调试模式时，需要启动developer-tool(在Karma启动的那个浏览器窗口中)。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/10/karma-debug-resized.png" alt="image" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/6/">&larr; Older</a>
@@ -2248,6 +2403,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2016/01/a-poor-mans-cd-part1/">穷人的持续集成与持续交付</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/01/how-to-summarize-privious-project/">如何持久化你的项目经历</a>
       </li>
     
@@ -2261,10 +2420,6 @@
     
       <li class="post">
         <a href="/2015/11/get-started-with-reflux/">你为什么应该试一试Reflux？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/11/what-you-have-learnt-those-years/">看看这些年你都学了什么？</a>
       </li>
     
   </ul>
