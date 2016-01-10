@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>穷人的持续集成与持续交付 - I code it</title>
+  <title>穷人的持续集成与持续交付（上） - I code it</title>
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="基于免费服务的持续交付环境 本文将使用一些免费的服务来为你的项目搭建持续交付平台，这些服务包括 持续集成环境
+  <meta name="description" content="服务器端应用的持续交付 本文将使用一些免费的服务来为你的项目搭建持续交付平台，这些服务包括 持续集成环境
 持续部署环境
 服务端应用托管 以及一些可以用于本地开发使用的开源工具如： 基于Node的构建monitor
 Heroku的命令行工具
@@ -89,7 +89,7 @@ Travis CI的命令行工具 除此之外， &hellip;">
   
   <header>
     
-      <h1 class="entry-title">穷人的持续集成与持续交付</h1>
+      <h1 class="entry-title">穷人的持续集成与持续交付（上）</h1>
     
     
       <p class="meta">
@@ -112,7 +112,7 @@ Travis CI的命令行工具 除此之外， &hellip;">
   </header>
 
 
-<div class="entry-content"><h1>基于免费服务的持续交付环境</h1>
+<div class="entry-content"><h1>服务器端应用的持续交付</h1>
 
 <p>本文将使用一些免费的服务来为你的项目搭建<code>持续交付</code>平台，这些服务包括</p>
 
@@ -171,13 +171,15 @@ Travis CI的命令行工具 除此之外， &hellip;">
 
 <p>持续交付则更进一步，它将环境准备，持续集成，自动化部署等放在了一起。通过全自动（有些过程可以设置为手动，比如发布到产品环境）的方式，使得软件可以一键发布。如果上线后发现严重defect，还支持一键回滚的机制（其实就是将之前的一个稳定版本做一次发布，由于发布流程已经经过千锤百炼，所以发布本身就变得非常轻松，安全）</p>
 
+<p>这篇文章中，我们会使用<code>git</code>+<code>github</code>作为版本控制工具，<code>travis-ci</code>作为持续集成环境，<code>gradle</code>作为构建工具，<code>Heroku</code>作为应用的部署环境。这些工具都是免费服务，如果你需要更高级的功能（比如更多的并发数，更大的数据库），则可以选择付费套餐。不过对于我们平时的大部分side project来说，免费服务已经足够。</p>
+
 <h2>实例</h2>
 
 <p>我在<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">《前后端分离了，然后呢？》</a>这篇文章中，提到了一个叫做<code>bookmarks</code>的应用，这个应用是一个前后端分离的非常彻底的应用。</p>
 
 <p>我们这里会再次使用这个应用作为实例，并采用不同的两个免费服务（<a href="https://travis-ci.org">travis-ci</a>和<a href="https://snap-ci.com">snap-ci</a>）来完成<code>持续部署</code>环境的搭建。</p>
 
-<h3>服务器端</h3>
+<h3>bookmarks服务器</h3>
 
 <p><code>bookmarks-server</code>是一个基于<code>spring-boot</code>的纯粹的<code>API</code>，它可以被打包成一个<code>jar</code>包，然后通过命令行启动运行。在本文中，我们我们将会将这个server部署到<a href="https://dashboard.heroku.com/">heroku</a>平台上。</p>
 
@@ -469,6 +471,11 @@ Travis CI的命令行工具 除此之外， &hellip;">
 
 
     </p>
+    <p class="meta">
+      <a href="/2016/01/a-poor-mans-cd-part1/">原始链接</a>，
+<strong>版权声明</strong>：自由转载-非商用-非衍生-保持署名| <a href='http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh'>Creative Commons BY-NC-ND 3.0</a>
+    </p>
+    
     
       <div class="sharing">
   
@@ -477,13 +484,13 @@ Travis CI的命令行工具 除此之外， &hellip;">
 </div>
 
     
-    <p class="meta">
-      版权声明：自由转载-非商用-非衍生-保持署名| <a href='http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh'>Creative Commons BY-NC-ND 3.0</a>
-    </p>
+
     <p class="meta">
       
         <a class="basic-alignment left" href="/2016/01/how-to-summarize-privious-project/" title="Previous Post: 如何持久化你的项目经历">&laquo; 如何持久化你的项目经历</a>
       
+      
+        <a class="basic-alignment right" href="/2016/01/a-poor-mans-cd-part2/" title="Next Post: 穷人的持续集成与持续交付（下）">穷人的持续集成与持续交付（下） &raquo;</a>
       
     </p>
   </footer>
@@ -505,7 +512,11 @@ Travis CI的命令行工具 除此之外， &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/2016/01/a-poor-mans-cd-part1/">穷人的持续集成与持续交付</a>
+        <a href="/2016/01/a-poor-mans-cd-part2/">穷人的持续集成与持续交付（下）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2016/01/a-poor-mans-cd-part1/">穷人的持续集成与持续交付（上）</a>
       </li>
     
       <li class="post">
@@ -518,10 +529,6 @@ Travis CI的命令行工具 除此之外， &hellip;">
     
       <li class="post">
         <a href="/2015/11/using-graphviz-drawing/">使用graphviz绘制流程图（2015版）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2015/11/get-started-with-reflux/">你为什么应该试一试Reflux？</a>
       </li>
     
   </ul>

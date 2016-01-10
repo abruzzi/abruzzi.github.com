@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ThoughtWorks | I code it]]></title>
   <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-01-10T14:02:18+11:00</updated>
+  <updated>2016-01-10T16:05:07+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,11 +14,272 @@
 
   
   <entry>
-    <title type="html"><![CDATA[穷人的持续集成与持续交付]]></title>
+    <title type="html"><![CDATA[穷人的持续集成与持续交付（下）]]></title>
+    <link href="http://abruzzi.github.com/2016/01/a-poor-mans-cd-part2/"/>
+    <updated>2016-01-10T14:05:00+11:00</updated>
+    <id>http://abruzzi.github.com/2016/01/a-poor-mans-cd-part2</id>
+    <content type="html"><![CDATA[<h1>客户端程序的的持续交付</h1>
+
+<p><a href="http://icodeit.org/2016/01/a-poor-mans-cd-part1/">上篇文章</a>介绍了如何使用一些免费的服务来实现服务器端API的持续集成、持续交付环境的搭建。有了服务端，自然需要有消费者，在本文中我们将使用另外一个工具来实现纯前端的站点的部署。</p>
+
+<p>其中包括：</p>
+
+<ul>
+<li>持续集成（单元测试，集成测试等）</li>
+<li>持续部署/持续交付</li>
+<li>静态站点托管</li>
+</ul>
+
+
+<p>除此之外，我们还会涉及到：</p>
+
+<ul>
+<li><a href="https://github.com/natritmeyer/site_prism">自动化UI测试site_prism</a></li>
+<li>静态站点的发布脚本</li>
+<li>aws的<a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">命令行工具</a></li>
+</ul>
+
+
+<p>我们的应用最后看起来是这样子的。</p>
+
+<p><img src="/images/2016/01/bookmarks-app-resized.png" alt="bookmarks app" /></p>
+
+<h2>技术选型</h2>
+
+<p>我们在本文中，将采取另外一套免费服务来完成环境的搭建</p>
+
+<ul>
+<li><a href="http://www.thoughtworks.com/">ThoughtWorks</a>出品的<a href="https://snap-ci.com/">Snap CI</a>作为持续集成/持续交付环境</li>
+<li><a href="https://console.aws.amazon.com/s3/home?region=us-west-2">AWS的S3</a>作为应用发布的地方</li>
+</ul>
+
+
+<p><code>Snap CI</code>是一个非常易于使用的持续交付环境，由于很多关于持续集成，持续交付的概念和实践都跟<code>ThoughtWorks</code>有关，所以这个产品对于构建，流水线，部署等等的支持也都做的非常好。</p>
+
+<p><code>S3</code>是亚马逊的云存储平台，我们可以将静态资源完全托管在其上。<code>S3</code>的另一个好处是它可以将你的文件变成一个Web Site，比如你的目录中有<code>index.html</code>，这个文件就可以作为你的站点首页被其他人访问。这个对于我们这个前后端分离项目来说非常有用，我们的<code>css</code>，<code>js</code>，<code>font</code>文件，还有入口文件<code>index.html</code>都可以托管于其上。</p>
+
+<h2>实例</h2>
+
+<p>在本文的例子中，我们将定义3个<code>stage</code>。<code>Snap CI</code>将一次发布分为若干个<code>stage</code>，每个<code>stage</code>只做一件事情，如果一个<code>stage</code>失败了，后边的就不会接着执行。</p>
+
+<p>我们的3个<code>stage</code>分别为：</p>
+
+<ol>
+<li>单元测试</li>
+<li>集成测试</li>
+<li>部署</li>
+</ol>
+
+
+<h3>准备工作</h3>
+
+<p><code>bookmarks-frontend</code>是一个纯前端的应用，它会消费后端提供的API，但是其实它并不知道（也不应该知道）后端的API部署在什么地方：</p>
+
+<p>```js</p>
+
+<p>$(function() {</p>
+
+<pre><code>var feeds = $.get(config.backend+'/api/feeds');
+var favorite = $.get(config.backend+'/api/fav-feeds/1');
+
+$.when(feeds, favorite).then(function(feeds, favorite) {
+    //...
+});
+</code></pre>
+
+<p>});
+```</p>
+
+<p>由于我们在本地开发时，需要<code>backend</code>指向本地的服务器，而发布之后，则希望它指向<a href="http://icodeit.org/2016/01/a-poor-mans-cd-part1/">上一篇文章</a>中提到的服务器，因此我们需要编写一点构建脚本来完成这件事儿：</p>
+
+<p>```js
+var backend = 'http://quiet-atoll-8237.herokuapp.com';</p>
+
+<p>gulp.task('prepareConfig', function() {</p>
+
+<pre><code>gulp.src(['assets/templates/config.js'])
+.pipe(replace(/#backend#/g, 'http://localhost:8100'))
+.pipe(gulp.dest('assets/script/'));
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task('prepareRelease', function() {</p>
+
+<pre><code>gulp.src(['assets/templates/config.js'])
+.pipe(replace(/#backend#/g, backend))
+.pipe(gulp.dest('assets/script/'));
+</code></pre>
+
+<p>});
+```</p>
+
+<p>我们定义了两个<code>gulp</code>的task，本地开发时，使用<code>prepareConfig</code>，要发布时，使用<code>prepareRelease</code>，然后定义一个简单的模板文件<code>config.js</code>：</p>
+
+<p>```js
+module.exports = {</p>
+
+<pre><code>backend: '#backend#'
+</code></pre>
+
+<p>}
+```</p>
+
+<p>然后可以很简单的包装一下，方便本地开发和发布：</p>
+
+<p><code>js
+gulp.task('dev', ['prepareConfig', 'browserify', 'concatcss']);
+gulp.task('build', ['prepareConfig', 'script', 'css']);
+gulp.task('release', ['prepareRelease', 'script', 'css']);
+</code></p>
+
+<p>这样，我们在本地开发时，只需要简单的执行：</p>
+
+<p><code>sh
+$ gulp
+</code></p>
+
+<p>即可。而在发布阶段，只需要执行：</p>
+
+<p><code>sh
+$ gulp release
+</code></p>
+
+<h3>单元测试</h3>
+
+<p>我们在<code>Snap CI</code>上将<code>github</code>上的代码库关联起来，然后添加一个名叫<code>unit-test</code>的<code>stage</code>，指定这个<code>stage</code>对应的命令为：</p>
+
+<p><code>sh
+npm install
+gulp
+</code></p>
+
+<p><img src="/images/2016/01/snap-ci-unit-resized.png" alt="Snap CI unit" /></p>
+
+<p>这样，每当我们有新的提交之后，<code>Snap CI</code>都会拿到新代码，并执行上述命令，如果执行成功，则本地构建成功。</p>
+
+<h3>集成测试</h3>
+
+<p>由于采取的是<strong>前后端分离</strong>的策略，我们的应用可以完全独立与后端进行开发，因此我们设置了一个<code>fake server</code>，具体细节可以参考<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">我之前的博客</a>，也可以看源码。不过这里我们要为集成测试编写一个脚本，并在<code>Snap CI</code>上执行。</p>
+
+<p>```sh</p>
+
+<h1>!/bin/bash</h1>
+
+<p>export PORT=8100
+bundle install</p>
+
+<h1>launch the application</h1>
+
+<p>echo "launch the application"
+ruby app.rb 2>&amp;1 &amp;
+PID=$!</p>
+
+<h1>wait for it to start up</h1>
+
+<p>sleep 3</p>
+
+<h1>run the rspec tests and record the status</h1>
+
+<p>rspec
+RES=$?</p>
+
+<h1>terminate after rspec</h1>
+
+<p>echo "terminate the application"
+kill -9 $PID</p>
+
+<h1>now we know whether the rspec success or not</h1>
+
+<p>exit $RES
+```</p>
+
+<p>这个脚本中，首先安装所有的<code>gems</code>，然后启动<code>fake server</code>并将这个server放置在后台运行，然后执行<code>rspec</code>。当<code>rspec</code>测试执行完成之后，我们终止服务进行，然后返回结果状态码。</p>
+
+<p>这里使用了<code>capybara</code>和<code>poltergeist</code>来做UI测试，<code>capybara</code>会驱动<code>phantomjs</code>来在内存中运行浏览器，并执行定义好的<code>UI</code>测试，比如此处，我们的UI测试：</p>
+
+<p>```rb
+require 'spec_helper'</p>
+
+<p>describe 'Feeds List Page' do</p>
+
+<pre><code>let(:list_page) {FeedListPage.new}
+
+before do
+    list_page.load
+end
+
+it 'user can see a banner and some feeds' do
+    expect(list_page).to have_banner
+    expect(list_page).to have_feeds
+end
+
+##...
+</code></pre>
+
+<p>end
+```</p>
+
+<p><img src="/images/2016/01/snap-ci-it-resized.png" alt="Snap CI logs" /></p>
+
+<h3>部署</h3>
+
+<p>首先需要在<code>S3</code>上创建一个<code>bucket</code>，命名为<code>bookmarks-frontend</code>。然后为其设置<code>static website hosting</code>，这时候<code>AWS</code>会assign一个新的域名给你，比如<code>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/</code>。</p>
+
+<p>然后你需要将这个<code>bucket</code>设置成<code>public</code>，这样其他人才可以访问你的<code>bucket</code>。</p>
+
+<p><img src="/images/2016/01/aws-s3-public-resized.png" alt="AWS S3" /></p>
+
+<p>有了这个之后，我们来编写一个小脚本，这个脚本可以将本地的文件上传至S3。</p>
+
+<p>```sh</p>
+
+<h1>!/bin/bash</h1>
+
+<h1>install gulp and its dependencies</h1>
+
+<p>npm install</p>
+
+<h1>package stuff, and point the server to the right place</h1>
+
+<p>gulp release</p>
+
+<h1>upload the whold folder</h1>
+
+<p>aws s3 cp public/ s3://bookmarks-frontend \</p>
+
+<pre><code>--recursive \
+--region us-west-2 \
+--acl public-read
+</code></pre>
+
+<p>```</p>
+
+<p><code>aws</code>命令是<code>aws command line</code>提供的，另外我们需要在环境变量中设置AWS提供给你的token：</p>
+
+<p><code>sh
+AWS_ACCESS_KEY_ID=xxxxxxxxxx
+AWS_SECRET_ACCESS_KEY=xxxxxxxxxx
+</code></p>
+
+<p>然后我们就可以将本地的<code>public</code>目录递归的上传到S3的对应目录了！</p>
+
+<p><img src="/images/2016/01/snap-ci-pipeline-resized.png" alt="snap ci pipeline" /></p>
+
+<p>完整的代码可以在<a href="https://github.com/abruzzi/bookmarks-frontend">此处下载</a>。</p>
+
+<h2>总结</h2>
+
+<p>我们前端的持续交付也介绍完了。现在前后端应用完全独立，发布也互不影响。不论是服务器端新增加了API，还是添加了新数据，客户端的发布都不受影响；同样，修改样式，添加新的<code>JavaScript</code>也完全不会影响后端。更重要的是，所有的发布都是一键式的，开发者只需要一个<code>git push</code>就可以享受这些免费服务提供的自动构建，自动化测试以及自动部署的功能。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[穷人的持续集成与持续交付（上）]]></title>
     <link href="http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1/"/>
     <updated>2016-01-09T23:34:00+11:00</updated>
     <id>http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1</id>
-    <content type="html"><![CDATA[<h1>基于免费服务的持续交付环境</h1>
+    <content type="html"><![CDATA[<h1>服务器端应用的持续交付</h1>
 
 <p>本文将使用一些免费的服务来为你的项目搭建<code>持续交付</code>平台，这些服务包括</p>
 
@@ -77,13 +338,15 @@
 
 <p>持续交付则更进一步，它将环境准备，持续集成，自动化部署等放在了一起。通过全自动（有些过程可以设置为手动，比如发布到产品环境）的方式，使得软件可以一键发布。如果上线后发现严重defect，还支持一键回滚的机制（其实就是将之前的一个稳定版本做一次发布，由于发布流程已经经过千锤百炼，所以发布本身就变得非常轻松，安全）</p>
 
+<p>这篇文章中，我们会使用<code>git</code>+<code>github</code>作为版本控制工具，<code>travis-ci</code>作为持续集成环境，<code>gradle</code>作为构建工具，<code>Heroku</code>作为应用的部署环境。这些工具都是免费服务，如果你需要更高级的功能（比如更多的并发数，更大的数据库），则可以选择付费套餐。不过对于我们平时的大部分side project来说，免费服务已经足够。</p>
+
 <h2>实例</h2>
 
 <p>我在<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">《前后端分离了，然后呢？》</a>这篇文章中，提到了一个叫做<code>bookmarks</code>的应用，这个应用是一个前后端分离的非常彻底的应用。</p>
 
 <p>我们这里会再次使用这个应用作为实例，并采用不同的两个免费服务（<a href="https://travis-ci.org">travis-ci</a>和<a href="https://snap-ci.com">snap-ci</a>）来完成<code>持续部署</code>环境的搭建。</p>
 
-<h3>服务器端</h3>
+<h3>bookmarks服务器</h3>
 
 <p><code>bookmarks-server</code>是一个基于<code>spring-boot</code>的纯粹的<code>API</code>，它可以被打包成一个<code>jar</code>包，然后通过命令行启动运行。在本文中，我们我们将会将这个server部署到<a href="https://dashboard.heroku.com/">heroku</a>平台上。</p>
 
@@ -607,163 +870,6 @@ do</p>
 <p>按照经验，项目从来就不会按照计划进行，在做好一个粗略的计划之后，PM的职责更多的是进行动态调整。所以团队内部至少需要保持信息的流通，虽然可能短期来看可能会影响开发速度，但是从整体上来看，可以减少很多不必要的浪费。</p>
 
 <p>简而言之，要站在别人的角度考虑问题：<strong>如果换做是你，你会怎么做？</strong></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[我们真的缺前端工程师吗？]]></title>
-    <link href="http://abruzzi.github.com/2015/06/do-we-really-short-for-front-end-developer/"/>
-    <updated>2015-06-14T23:33:00+10:00</updated>
-    <id>http://abruzzi.github.com/2015/06/do-we-really-short-for-front-end-developer</id>
-    <content type="html"><![CDATA[<h3>前言</h3>
-
-<p>这两天在好几个地方都看到了一篇关于<a href="http://chuansong.me/n/1369941">为什么整个互联网行业都缺前端工程师？</a>的文章，文章本身是去年的，中心思想是：其实我们并不缺前端工程师，我们缺的是优秀的前端工程师。我还是比较同意作者观点的，不过略有意犹未尽的感觉。于是我结合自己的经验，也来聊一下这个话题：<strong>我们真的缺前端工程师吗？</strong></p>
-
-<p><code>
-These walls are kind of funny like that. First you hate them, then you get used to them.Enough time passed, get so you depend on them. That’s institutionalising.
-</code></p>
-
-<p>传统软件公司划分开发者的方式下，在前端部门的程序员永远不会去读缓存数据部分的代码，设计师也不太可能去和开发坐在一起，开发也不知道软件最终软件会以何种方式部署在服务器上。</p>
-
-<h3>什么是“前端”工程师</h3>
-
-<p>我在招聘广告和办公室的一些对话中，听到了一个新的角色：UI Dev，事实上我在知乎上还回答过一个<a href="http://www.zhihu.com/question/30170650">关于ThoughtWorks的UI Dev的问题</a>。简而言之，UI Dev可以快速的把设计师的作品实现为HTML/CSS/JavaScript代码。</p>
-
-<p><img src="/images/2015/06/website-development-resized.png" alt="front-end development" /></p>
-
-<p>如果按照这个标准，我觉得UI Dev对自己的要求太低了。毕竟要学会HTML/CSS实现mockup并不困难，但是成为一名前端工程师则需要掌握更多的知识：</p>
-
-<ul>
-<li>会用PS来进行图片的处理（比如切图，微调等）</li>
-<li>用HTML/CSS实现mockup（可能还有<a href="http://sass-lang.com/">SASS</a>/<a href="http://lesscss.org/">LESS</a>等工具）</li>
-<li>熟悉JavaScript（比如前端的MVVM框架，客户端模板）</li>
-<li>前端开发的工作流程（代码检查，精简化，模块化CSS，LiveReload，调试）</li>
-<li>编写测试（静态检查，单元测试）</li>
-<li>跨浏览器、跨设备的解决方法（不同分辨率，不同厂商）</li>
-<li>会根据项目的特点选择不同的前端技术栈（移动端，Web站点，响应式设计等）</li>
-</ul>
-
-
-<p>在有了基础的HTML/CSS/JS技能之后，你会尝试做的更好：</p>
-
-<ul>
-<li>如何更高效的操作DOM</li>
-<li>如何将CSS写的更加清晰易懂</li>
-<li>如何编写更加易于维护的代码（更有意义的单元测试）</li>
-<li>如何组织大型的项目结构，模块化，组件化等等</li>
-</ul>
-
-
-<p>这些要求事实上已经不那么容易做到了。它可能会花费你2到3年时间来完全掌握。但是2到3年之后，即便你已经成为了一个“合格的”前端工程师，这也还远远不够。在现实世界中，一个软件产品除了前端，还有非常广阔的空间，还有很多有趣的东西值得学习：</p>
-
-<ul>
-<li>HTTP协议本身（缓存，鉴权）</li>
-<li>Web容器/HTTP服务器如何工作</li>
-<li>无状态的Web应用的工作原理（如何让网站正确地运行在集群上）</li>
-<li>动态，静态内容如何分离部署（反向代理配置）</li>
-<li>安全机制如何配置</li>
-<li>监控机制如何配置</li>
-</ul>
-
-
-<p>有了这些，也算是有点端到端的意思了。这时你也已经不是一个“纯前端”工程师了，系统中的大部分问题你都可以搞定，不过日常工作中可能更多的职责还是做前端的开发。但是这些还不够，软件除了交付之外，还有一些非功能性的需求：</p>
-
-<ul>
-<li>端到端测试（UI测试，比如<a href="http://www.seleniumhq.org/">selenium server</a>/web driver）</li>
-<li>devops（比如数据库环境，测试服务器，CI服务器的自动化provision）</li>
-<li>基本的UI设计原则（在某些页面确实的情况下，根据系统的已有UI做设计）</li>
-<li>数据库性能优化</li>
-<li>性能测试</li>
-</ul>
-
-
-<p><del>不过这些还只是我对于Web开发这个领域的总结。其他领域，比如大数据，机器学习，GIS，图像/视频处理等等。</del></p>
-
-<p>这时候，你才能算是一个严格意义上的“前端”工程师。不从系统的角度来思考，不真正做一些后端开发/配置，并不能算是前端工程师，或者可以被称为<em>偏前端</em>工程师（partial frontend developer）。但是即使称为上边这样的“前端工程师”，我想这离一个优秀的工程师还是有<strong>很大差距</strong>的。</p>
-
-<p>我跟一位<a href="http://www.caicaiwan.com/">设计师同事</a>聊过这个问题：</p>
-
-<p><code>
-Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找到一些卡片（story卡或者需求文档说明书），然后撸袖子开干，干的过程中有很多自以为是的理解，同样有一些自以为是的牛逼实践（TDD啊，自动化啊），最后功能做完，大功告成，然后接着做下一个卡片。传统的Dev，或者苦逼屌丝程序员的世界就是这样的：需求从哪儿来，不知道；做完之后谁来负责质量，不知道；最终上线的时候怎么发布，不知道；线上有问题了怎么办，不知道。
-</code></p>
-
-<p>以及</p>
-
-<p><code>
-在ThoughtWorks，Dev的工作有了很大的变化，一个最明显的变化是边界的模糊。比如很多项目都不设QA角色，所有人都对质量负责，都做测试，也有OPs角色，但是大部分非生产环境都是Dev自己发布。也就是说，软件/项目生命周期中的大部分实践我们都能涉足，而且可以带来改进，提升效率。但是这只是往下游（从开发，到测试，到部署，到运维），反过来看上游，比如需求从哪儿来，Dev还是不知道。这毫无疑问是一个令人沮丧的事实，因为这需求的产生才是核心，也就是我昨天跟你聊的：一个idea如何变成一个可视化的原型，然后进一步演进为项目原型？
-</code></p>
-
-<p>开发工作不应该仅仅局限在编码上，作为开发者/工程师，应该尽可能的多了解一些上下文：比如我们的项目最终是给谁用的，需求从何而来，项目是如何部署在线上的等等。</p>
-
-<p><img src="/images/2015/06/software-life-cycle-resized.png" alt="software life cycle" /></p>
-
-<p>简而言之，开发者视野应该放开开阔一些。不要将自己局限在某种角色上，不但不要局限在前端/后端开发上，压根就不要局限在开发这种角色本身上，你在系统中，可以是设计师，还可以是业务分析师。虽然不一定最终要你去转行做BA，或者UX，但是更广阔的视野可以使你更加高效的发挥自己的作用，也可以在和别的角色互动式，快速的了解上下文。</p>
-
-<p>我所理解的，前端不一定要熟知所有这些知识和技能，但是<strong>一定不要认为自己做好了前端的一亩三分地就足够了</strong>，不要给自己设限。跨界会给你带来难以估量的好处，一个角色做久了，难免会产生一些盲点。这时候，换个视角，从其他角色的角度来看待你的工作，又会有很多新的发现。而且不仅如此，很可能你会发现之前很麻烦，很难搞定的事情，在新的方法/视角下变得很容易。</p>
-
-<h3>我的故事</h3>
-
-<h4>其实，我是一名后端开发</h4>
-
-<p>工作之后，我在很长一段时间是专注于“非前端”的领域。和很多刚入行的新人一样，我对计算机能触及的几乎一切领域都感兴趣：语言解释器，人工智能（遗传算法，隐式马尔科夫模型，自动纠错，模式识别），嵌入式开发，图形处理，操作系统的进程调度，进程间通信，多线程模型，各种脚本语言（python，ruby，JavaScript等等），另外，日常开发流程中的一些工具的定制化也会花去我很多的时间，比如如何配置vim，写几个小脚本来和编辑器做集成等等。更别说那些令人一听就觉得激动的编程范式：面向对象，基于消息总线，函数式编程等等。如果你感兴趣，可以看看我<a href="http://abruzzi.iteye.com/">几年前的博客</a>。</p>
-
-<p>我的上一家公司的产品是一个省级电网的收费/计费系统（电其实和我们在超市里购买的其他生活用品一样，也是一种商品）。我在那里工作了差不多两年，日常的开发方式就是ssh登陆到RHEL（Redhat Enterprise Linux）服务器上，用vim（当然有一堆的vim插件）开发C代码，调试器是gdb（对，就是那个很牛逼，但是对新手特别不友好的gdb）。</p>
-
-<p>我们用C语言给Apache的httpd写了一个扩展module，大约相当于现在rack里的中间件，这个module要和后端的一个要复杂的多的模块通信，其中不但涉及网络通信，还有*nix管道，缓冲，并发等等考虑。在这两年里，我几乎没有碰过任何的Web界面上的东西（除了用php写了一两百行的页面之外）。</p>
-
-<p>在加入这家公司之前，我在一家用Java做报表的公司工作，技术栈为J2EE。其中有一些前端的工作，但是并不很多，而且说实话，我当时有些看不太上这些技术。HTML/CSS在我心目中的地位比线程池，语言解析等差远了，所以我也没有认真地去系统学习。</p>
-
-<p>在加入ThoughtWorks之前，在“前端”方面，唯一算是比较擅长的也不过是写JavaScript，而且对于前端的MVVM框架，双向绑定，模块化等高级货都没听过。且不能论HTML/CSS的最佳实践，连根据设计稿做出一个静态页面的的能力也不具备。我之前有一点JSP/HTML经验，而CSS经验也并没有超出如何画一个细线表格的范畴。换句话说，我的前端（特别是HTML/CSS）是最近才学会的。</p>
-
-<h4>ThoughtWorks的开发</h4>
-
-<p>在ThoughtWorks，很多团队是按照feature团队来组建的。相对于传统的component团队（按部门划分，比如研发组，测试组，设计组等，每个组还有可能会再细分成如用户调研，流程设计，视觉设计等等），feature团队里配备了软件开发过程中需要的几乎所有角色：业务分析，测试工程师，开发工程师，设计师（设计师一般不会常驻），有的团队还有项目经理的角色。</p>
-
-<p>在feature团队里，你可以很容易看到不同的角色是如何工作的，很多时候，开发会和设计师一起来调整颜色，排版，布局，也可能和测试一起编写自动化测试用例，showcase等。也就是说，角色之间的藩篱在淡化，而就开发这一种角色而言，对于前端/后端的区分也会显得非常模糊，因为需求划分之后的story（敏捷开发中的一个术语，其实就是需求的一种展现方式）是端到端的，比如一个商品列表展示的story，会包括</p>
-
-<ul>
-<li>数据库的表结构</li>
-<li>访问数据库的<a href="https://en.wikipedia.org/wiki/Object-relational_mapping">ORM</a>部分，</li>
-<li>使用ORM的业务逻辑service</li>
-<li>响应客户端的controller（消费JSON或者XML的HTTP接口）</li>
-<li>发送请求，处理响应的JavaScript代码</li>
-<li>和设计稿一致的CSS样式</li>
-</ul>
-
-
-<p>而且在这个过程中还会涉及到一些外围的工具</p>
-
-<ul>
-<li>虚拟机环境准备</li>
-<li>数据库连接</li>
-<li>自动化测试（单元测试，集成测试，可能还有UI测试）</li>
-<li>数据库迁移脚本</li>
-</ul>
-
-
-<p>在这个过程中，开发者需要掌握和开发过程相关的一切实践中的一切工具.</p>
-
-<p>在我的<a href="http://www.thoughtworks.com/">ThoughtWorks</a>的第一个项目中，我是以Java开发工程师角色加入的，下项目的时候，我学会了自动化provision，<a href="https://cucumber.io/">cucumber</a>测试工具，Rails，<a href="https://gradle.org/">gradle</a>（没错，我之前用Java都是用IDE构建的，在Linux世界我用make），<a href="http://jasmine.github.io/2.0/introduction.html">jasmine</a>测试工具，<a href="http://backbonejs.org/">Backbone.js</a>，haml.js。</p>
-
-<p>第二个项目的时候，我是以前端工程师角色加入，下项目的时候，我学会了nginx配置缓存、负载均衡服务器，<a href="http://gatling.io/">gatling</a>测试工具，Hadoop/Spark等的集群配置，还有一些和项目相关的<a href="http://icodeit.org/2014/04/intro-map-gis/">GIS（地理信息系统）</a>的技术栈，前后端分离策略等。</p>
-
-<p>第三个项目我是以Java开发工程师角色加入的，下项目的时候，我学会了如何做性能测试，如何建立<a href="http://dashing.io/#setup">一个漂亮的Dashboard</a>（可以用来展现CI等），而且在业余时间系统的学习了CSS3和HTML5，将之前零敲碎打的那些知识串起来，这些总结做了几次内部培训后，还整理成了<a href="https://selfstore.io/products/348">一本电子书</a>。</p>
-
-<p>第四个项目我又变成了一个前端工程师，但是这个项目有意思的地方是跟mobile相关，于是页面性能，体验又变成了一个重点，下项目的时候，我对无状态的Web应用，session的持久化，<a href="https://www.gitbook.com/book/juntao/3-web-designs-in-3-weeks/details">CSS3的动画</a>，用Backbone.js组织多页面的方式等等又有了新的理解。</p>
-
-<p>如果这些经历造成了你觉得我很牛的错觉，那我应该道歉。我觉得自己勉强可以算是个合格的程序员：对学习保持着热情，对解决问题保持着热情，仅此而已。在项目上，如果我发现了问题，我就想办法解决，如果属于知识欠缺，那我就会去学习。我还远远没有到达精通这些技术的地步，但是在工程实践领域，根据<a href="https://en.wikipedia.org/wiki/Pareto_principle">80/20原则</a>，这些粗浅的知识足以解决80%的问题，而另外的20%，我们才真正需要一个专家来帮忙。也就是说，团队里需要有一个能解决20%的问题的前端工程师，而其他的80%的前端工作，应该可以被其他所有的开发完成，对于后端开发也是一样。</p>
-
-<p><del>尝试从系统级别去解决一个问题，而不是将问题抛给另外一个角色（后端工程师，UX或者QA）</del></p>
-
-<p>我是一个Dev，但是花了一些时间来学习界面设计，这里是我从设计到实现的两个小页面：</p>
-
-<p><img src="/images/2015/06/ilearn-resized.png" alt="ilearn" /></p>
-
-<p><img src="/images/2015/06/lightweight-resized.png" alt="lightweight" /></p>
-
-<h3>总结</h3>
-
-<p>我们缺的从来都不是前端/后端工程师，而是<strong>工程师</strong>(或者那些会系统思考，并总是想着解决问题的人)。角色划分在大的机构内可能是有意义的，就像历史上工厂里，工人被分为车工，钳工，木工，电工。但是这种模式在软件开发中未必好用，<strong>具体而微</strong>的小团队可能更具竞争力。而在一个个的小团队中，再细分前端后端就显得比较滑稽了。团队中的每个成员都应该具备基本的端到端能力（不仅仅是开发，更应该是具有业务上下文，即每个人都清楚我们要交付的最终产品是什么，以及这个产品是如何帮助最终用户的），每个成员也都需要为最终的交付物负责，而不是为自己的职责负责。</p>
 ]]></content>
   </entry>
   

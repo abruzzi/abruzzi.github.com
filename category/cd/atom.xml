@@ -4,7 +4,7 @@
   <title><![CDATA[Category: CD | I code it]]></title>
   <link href="http://abruzzi.github.com/category/cd/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-01-10T14:02:18+11:00</updated>
+  <updated>2016-01-10T16:05:07+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,11 +14,272 @@
 
   
   <entry>
-    <title type="html"><![CDATA[穷人的持续集成与持续交付]]></title>
+    <title type="html"><![CDATA[穷人的持续集成与持续交付（下）]]></title>
+    <link href="http://abruzzi.github.com/2016/01/a-poor-mans-cd-part2/"/>
+    <updated>2016-01-10T14:05:00+11:00</updated>
+    <id>http://abruzzi.github.com/2016/01/a-poor-mans-cd-part2</id>
+    <content type="html"><![CDATA[<h1>客户端程序的的持续交付</h1>
+
+<p><a href="http://icodeit.org/2016/01/a-poor-mans-cd-part1/">上篇文章</a>介绍了如何使用一些免费的服务来实现服务器端API的持续集成、持续交付环境的搭建。有了服务端，自然需要有消费者，在本文中我们将使用另外一个工具来实现纯前端的站点的部署。</p>
+
+<p>其中包括：</p>
+
+<ul>
+<li>持续集成（单元测试，集成测试等）</li>
+<li>持续部署/持续交付</li>
+<li>静态站点托管</li>
+</ul>
+
+
+<p>除此之外，我们还会涉及到：</p>
+
+<ul>
+<li><a href="https://github.com/natritmeyer/site_prism">自动化UI测试site_prism</a></li>
+<li>静态站点的发布脚本</li>
+<li>aws的<a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">命令行工具</a></li>
+</ul>
+
+
+<p>我们的应用最后看起来是这样子的。</p>
+
+<p><img src="/images/2016/01/bookmarks-app-resized.png" alt="bookmarks app" /></p>
+
+<h2>技术选型</h2>
+
+<p>我们在本文中，将采取另外一套免费服务来完成环境的搭建</p>
+
+<ul>
+<li><a href="http://www.thoughtworks.com/">ThoughtWorks</a>出品的<a href="https://snap-ci.com/">Snap CI</a>作为持续集成/持续交付环境</li>
+<li><a href="https://console.aws.amazon.com/s3/home?region=us-west-2">AWS的S3</a>作为应用发布的地方</li>
+</ul>
+
+
+<p><code>Snap CI</code>是一个非常易于使用的持续交付环境，由于很多关于持续集成，持续交付的概念和实践都跟<code>ThoughtWorks</code>有关，所以这个产品对于构建，流水线，部署等等的支持也都做的非常好。</p>
+
+<p><code>S3</code>是亚马逊的云存储平台，我们可以将静态资源完全托管在其上。<code>S3</code>的另一个好处是它可以将你的文件变成一个Web Site，比如你的目录中有<code>index.html</code>，这个文件就可以作为你的站点首页被其他人访问。这个对于我们这个前后端分离项目来说非常有用，我们的<code>css</code>，<code>js</code>，<code>font</code>文件，还有入口文件<code>index.html</code>都可以托管于其上。</p>
+
+<h2>实例</h2>
+
+<p>在本文的例子中，我们将定义3个<code>stage</code>。<code>Snap CI</code>将一次发布分为若干个<code>stage</code>，每个<code>stage</code>只做一件事情，如果一个<code>stage</code>失败了，后边的就不会接着执行。</p>
+
+<p>我们的3个<code>stage</code>分别为：</p>
+
+<ol>
+<li>单元测试</li>
+<li>集成测试</li>
+<li>部署</li>
+</ol>
+
+
+<h3>准备工作</h3>
+
+<p><code>bookmarks-frontend</code>是一个纯前端的应用，它会消费后端提供的API，但是其实它并不知道（也不应该知道）后端的API部署在什么地方：</p>
+
+<p>```js</p>
+
+<p>$(function() {</p>
+
+<pre><code>var feeds = $.get(config.backend+'/api/feeds');
+var favorite = $.get(config.backend+'/api/fav-feeds/1');
+
+$.when(feeds, favorite).then(function(feeds, favorite) {
+    //...
+});
+</code></pre>
+
+<p>});
+```</p>
+
+<p>由于我们在本地开发时，需要<code>backend</code>指向本地的服务器，而发布之后，则希望它指向<a href="http://icodeit.org/2016/01/a-poor-mans-cd-part1/">上一篇文章</a>中提到的服务器，因此我们需要编写一点构建脚本来完成这件事儿：</p>
+
+<p>```js
+var backend = 'http://quiet-atoll-8237.herokuapp.com';</p>
+
+<p>gulp.task('prepareConfig', function() {</p>
+
+<pre><code>gulp.src(['assets/templates/config.js'])
+.pipe(replace(/#backend#/g, 'http://localhost:8100'))
+.pipe(gulp.dest('assets/script/'));
+</code></pre>
+
+<p>});</p>
+
+<p>gulp.task('prepareRelease', function() {</p>
+
+<pre><code>gulp.src(['assets/templates/config.js'])
+.pipe(replace(/#backend#/g, backend))
+.pipe(gulp.dest('assets/script/'));
+</code></pre>
+
+<p>});
+```</p>
+
+<p>我们定义了两个<code>gulp</code>的task，本地开发时，使用<code>prepareConfig</code>，要发布时，使用<code>prepareRelease</code>，然后定义一个简单的模板文件<code>config.js</code>：</p>
+
+<p>```js
+module.exports = {</p>
+
+<pre><code>backend: '#backend#'
+</code></pre>
+
+<p>}
+```</p>
+
+<p>然后可以很简单的包装一下，方便本地开发和发布：</p>
+
+<p><code>js
+gulp.task('dev', ['prepareConfig', 'browserify', 'concatcss']);
+gulp.task('build', ['prepareConfig', 'script', 'css']);
+gulp.task('release', ['prepareRelease', 'script', 'css']);
+</code></p>
+
+<p>这样，我们在本地开发时，只需要简单的执行：</p>
+
+<p><code>sh
+$ gulp
+</code></p>
+
+<p>即可。而在发布阶段，只需要执行：</p>
+
+<p><code>sh
+$ gulp release
+</code></p>
+
+<h3>单元测试</h3>
+
+<p>我们在<code>Snap CI</code>上将<code>github</code>上的代码库关联起来，然后添加一个名叫<code>unit-test</code>的<code>stage</code>，指定这个<code>stage</code>对应的命令为：</p>
+
+<p><code>sh
+npm install
+gulp
+</code></p>
+
+<p><img src="/images/2016/01/snap-ci-unit-resized.png" alt="Snap CI unit" /></p>
+
+<p>这样，每当我们有新的提交之后，<code>Snap CI</code>都会拿到新代码，并执行上述命令，如果执行成功，则本地构建成功。</p>
+
+<h3>集成测试</h3>
+
+<p>由于采取的是<strong>前后端分离</strong>的策略，我们的应用可以完全独立与后端进行开发，因此我们设置了一个<code>fake server</code>，具体细节可以参考<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">我之前的博客</a>，也可以看源码。不过这里我们要为集成测试编写一个脚本，并在<code>Snap CI</code>上执行。</p>
+
+<p>```sh</p>
+
+<h1>!/bin/bash</h1>
+
+<p>export PORT=8100
+bundle install</p>
+
+<h1>launch the application</h1>
+
+<p>echo "launch the application"
+ruby app.rb 2>&amp;1 &amp;
+PID=$!</p>
+
+<h1>wait for it to start up</h1>
+
+<p>sleep 3</p>
+
+<h1>run the rspec tests and record the status</h1>
+
+<p>rspec
+RES=$?</p>
+
+<h1>terminate after rspec</h1>
+
+<p>echo "terminate the application"
+kill -9 $PID</p>
+
+<h1>now we know whether the rspec success or not</h1>
+
+<p>exit $RES
+```</p>
+
+<p>这个脚本中，首先安装所有的<code>gems</code>，然后启动<code>fake server</code>并将这个server放置在后台运行，然后执行<code>rspec</code>。当<code>rspec</code>测试执行完成之后，我们终止服务进行，然后返回结果状态码。</p>
+
+<p>这里使用了<code>capybara</code>和<code>poltergeist</code>来做UI测试，<code>capybara</code>会驱动<code>phantomjs</code>来在内存中运行浏览器，并执行定义好的<code>UI</code>测试，比如此处，我们的UI测试：</p>
+
+<p>```rb
+require 'spec_helper'</p>
+
+<p>describe 'Feeds List Page' do</p>
+
+<pre><code>let(:list_page) {FeedListPage.new}
+
+before do
+    list_page.load
+end
+
+it 'user can see a banner and some feeds' do
+    expect(list_page).to have_banner
+    expect(list_page).to have_feeds
+end
+
+##...
+</code></pre>
+
+<p>end
+```</p>
+
+<p><img src="/images/2016/01/snap-ci-it-resized.png" alt="Snap CI logs" /></p>
+
+<h3>部署</h3>
+
+<p>首先需要在<code>S3</code>上创建一个<code>bucket</code>，命名为<code>bookmarks-frontend</code>。然后为其设置<code>static website hosting</code>，这时候<code>AWS</code>会assign一个新的域名给你，比如<code>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/</code>。</p>
+
+<p>然后你需要将这个<code>bucket</code>设置成<code>public</code>，这样其他人才可以访问你的<code>bucket</code>。</p>
+
+<p><img src="/images/2016/01/aws-s3-public-resized.png" alt="AWS S3" /></p>
+
+<p>有了这个之后，我们来编写一个小脚本，这个脚本可以将本地的文件上传至S3。</p>
+
+<p>```sh</p>
+
+<h1>!/bin/bash</h1>
+
+<h1>install gulp and its dependencies</h1>
+
+<p>npm install</p>
+
+<h1>package stuff, and point the server to the right place</h1>
+
+<p>gulp release</p>
+
+<h1>upload the whold folder</h1>
+
+<p>aws s3 cp public/ s3://bookmarks-frontend \</p>
+
+<pre><code>--recursive \
+--region us-west-2 \
+--acl public-read
+</code></pre>
+
+<p>```</p>
+
+<p><code>aws</code>命令是<code>aws command line</code>提供的，另外我们需要在环境变量中设置AWS提供给你的token：</p>
+
+<p><code>sh
+AWS_ACCESS_KEY_ID=xxxxxxxxxx
+AWS_SECRET_ACCESS_KEY=xxxxxxxxxx
+</code></p>
+
+<p>然后我们就可以将本地的<code>public</code>目录递归的上传到S3的对应目录了！</p>
+
+<p><img src="/images/2016/01/snap-ci-pipeline-resized.png" alt="snap ci pipeline" /></p>
+
+<p>完整的代码可以在<a href="https://github.com/abruzzi/bookmarks-frontend">此处下载</a>。</p>
+
+<h2>总结</h2>
+
+<p>我们前端的持续交付也介绍完了。现在前后端应用完全独立，发布也互不影响。不论是服务器端新增加了API，还是添加了新数据，客户端的发布都不受影响；同样，修改样式，添加新的<code>JavaScript</code>也完全不会影响后端。更重要的是，所有的发布都是一键式的，开发者只需要一个<code>git push</code>就可以享受这些免费服务提供的自动构建，自动化测试以及自动部署的功能。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[穷人的持续集成与持续交付（上）]]></title>
     <link href="http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1/"/>
     <updated>2016-01-09T23:34:00+11:00</updated>
     <id>http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1</id>
-    <content type="html"><![CDATA[<h1>基于免费服务的持续交付环境</h1>
+    <content type="html"><![CDATA[<h1>服务器端应用的持续交付</h1>
 
 <p>本文将使用一些免费的服务来为你的项目搭建<code>持续交付</code>平台，这些服务包括</p>
 
@@ -77,13 +338,15 @@
 
 <p>持续交付则更进一步，它将环境准备，持续集成，自动化部署等放在了一起。通过全自动（有些过程可以设置为手动，比如发布到产品环境）的方式，使得软件可以一键发布。如果上线后发现严重defect，还支持一键回滚的机制（其实就是将之前的一个稳定版本做一次发布，由于发布流程已经经过千锤百炼，所以发布本身就变得非常轻松，安全）</p>
 
+<p>这篇文章中，我们会使用<code>git</code>+<code>github</code>作为版本控制工具，<code>travis-ci</code>作为持续集成环境，<code>gradle</code>作为构建工具，<code>Heroku</code>作为应用的部署环境。这些工具都是免费服务，如果你需要更高级的功能（比如更多的并发数，更大的数据库），则可以选择付费套餐。不过对于我们平时的大部分side project来说，免费服务已经足够。</p>
+
 <h2>实例</h2>
 
 <p>我在<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">《前后端分离了，然后呢？》</a>这篇文章中，提到了一个叫做<code>bookmarks</code>的应用，这个应用是一个前后端分离的非常彻底的应用。</p>
 
 <p>我们这里会再次使用这个应用作为实例，并采用不同的两个免费服务（<a href="https://travis-ci.org">travis-ci</a>和<a href="https://snap-ci.com">snap-ci</a>）来完成<code>持续部署</code>环境的搭建。</p>
 
-<h3>服务器端</h3>
+<h3>bookmarks服务器</h3>
 
 <p><code>bookmarks-server</code>是一个基于<code>spring-boot</code>的纯粹的<code>API</code>，它可以被打包成一个<code>jar</code>包，然后通过命令行启动运行。在本文中，我们我们将会将这个server部署到<a href="https://dashboard.heroku.com/">heroku</a>平台上。</p>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-01-10T14:02:18+11:00</updated>
+  <updated>2016-01-10T16:05:07+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,11 +14,328 @@
 
   
   <entry>
-    <title type="html"><![CDATA[穷人的持续集成与持续交付]]></title>
+    <title type="html"><![CDATA[穷人的持续集成与持续交付（下）]]></title>
+    <link href="http://abruzzi.github.com/2016/01/a-poor-mans-cd-part2/"/>
+    <updated>2016-01-10T14:05:00+11:00</updated>
+    <id>http://abruzzi.github.com/2016/01/a-poor-mans-cd-part2</id>
+    <content type="html"><![CDATA[<h1>客户端程序的的持续交付</h1>
+
+<p><a href="http://icodeit.org/2016/01/a-poor-mans-cd-part1/">上篇文章</a>介绍了如何使用一些免费的服务来实现服务器端API的持续集成、持续交付环境的搭建。有了服务端，自然需要有消费者，在本文中我们将使用另外一个工具来实现纯前端的站点的部署。</p>
+
+<p>其中包括：</p>
+
+<ul>
+<li>持续集成（单元测试，集成测试等）</li>
+<li>持续部署/持续交付</li>
+<li>静态站点托管</li>
+</ul>
+
+
+<p>除此之外，我们还会涉及到：</p>
+
+<ul>
+<li><a href="https://github.com/natritmeyer/site_prism">自动化UI测试site_prism</a></li>
+<li>静态站点的发布脚本</li>
+<li>aws的<a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">命令行工具</a></li>
+</ul>
+
+
+<p>我们的应用最后看起来是这样子的。</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/01/bookmarks-app-resized.png" alt="bookmarks app" /></p>
+
+<h2>技术选型</h2>
+
+<p>我们在本文中，将采取另外一套免费服务来完成环境的搭建</p>
+
+<ul>
+<li><a href="http://www.thoughtworks.com/">ThoughtWorks</a>出品的<a href="https://snap-ci.com/">Snap CI</a>作为持续集成/持续交付环境</li>
+<li><a href="https://console.aws.amazon.com/s3/home?region=us-west-2">AWS的S3</a>作为应用发布的地方</li>
+</ul>
+
+
+<p><code>Snap CI</code>是一个非常易于使用的持续交付环境，由于很多关于持续集成，持续交付的概念和实践都跟<code>ThoughtWorks</code>有关，所以这个产品对于构建，流水线，部署等等的支持也都做的非常好。</p>
+
+<p><code>S3</code>是亚马逊的云存储平台，我们可以将静态资源完全托管在其上。<code>S3</code>的另一个好处是它可以将你的文件变成一个Web Site，比如你的目录中有<code>index.html</code>，这个文件就可以作为你的站点首页被其他人访问。这个对于我们这个前后端分离项目来说非常有用，我们的<code>css</code>，<code>js</code>，<code>font</code>文件，还有入口文件<code>index.html</code>都可以托管于其上。</p>
+
+<h2>实例</h2>
+
+<p>在本文的例子中，我们将定义3个<code>stage</code>。<code>Snap CI</code>将一次发布分为若干个<code>stage</code>，每个<code>stage</code>只做一件事情，如果一个<code>stage</code>失败了，后边的就不会接着执行。</p>
+
+<p>我们的3个<code>stage</code>分别为：</p>
+
+<ol>
+<li>单元测试</li>
+<li>集成测试</li>
+<li>部署</li>
+</ol>
+
+
+<h3>准备工作</h3>
+
+<p><code>bookmarks-frontend</code>是一个纯前端的应用，它会消费后端提供的API，但是其实它并不知道（也不应该知道）后端的API部署在什么地方：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">feeds</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">backend</span><span class="o">+</span><span class="s1">&#39;/api/feeds&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">favorite</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">backend</span><span class="o">+</span><span class="s1">&#39;/api/fav-feeds/1&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">favorite</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">favorite</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="c1">//...</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>由于我们在本地开发时，需要<code>backend</code>指向本地的服务器，而发布之后，则希望它指向<a href="http://icodeit.org/2016/01/a-poor-mans-cd-part1/">上一篇文章</a>中提到的服务器，因此我们需要编写一点构建脚本来完成这件事儿：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">backend</span> <span class="o">=</span> <span class="s1">&#39;http://quiet-atoll-8237.herokuapp.com&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;prepareConfig&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">([</span><span class="s1">&#39;assets/templates/config.js&#39;</span><span class="p">])</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/#backend#/g</span><span class="p">,</span> <span class="s1">&#39;http://localhost:8100&#39;</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">gulp</span><span class="p">.</span><span class="nx">dest</span><span class="p">(</span><span class="s1">&#39;assets/script/&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;prepareRelease&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">([</span><span class="s1">&#39;assets/templates/config.js&#39;</span><span class="p">])</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/#backend#/g</span><span class="p">,</span> <span class="nx">backend</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">gulp</span><span class="p">.</span><span class="nx">dest</span><span class="p">(</span><span class="s1">&#39;assets/script/&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们定义了两个<code>gulp</code>的task，本地开发时，使用<code>prepareConfig</code>，要发布时，使用<code>prepareRelease</code>，然后定义一个简单的模板文件<code>config.js</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">backend</span><span class="o">:</span> <span class="s1">&#39;#backend#&#39;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后可以很简单的包装一下，方便本地开发和发布：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;dev&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;prepareConfig&#39;</span><span class="p">,</span> <span class="s1">&#39;browserify&#39;</span><span class="p">,</span> <span class="s1">&#39;concatcss&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;build&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;prepareConfig&#39;</span><span class="p">,</span> <span class="s1">&#39;script&#39;</span><span class="p">,</span> <span class="s1">&#39;css&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;release&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;prepareRelease&#39;</span><span class="p">,</span> <span class="s1">&#39;script&#39;</span><span class="p">,</span> <span class="s1">&#39;css&#39;</span><span class="p">]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，我们在本地开发时，只需要简单的执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>gulp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>即可。而在发布阶段，只需要执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>gulp release
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>单元测试</h3>
+
+<p>我们在<code>Snap CI</code>上将<code>github</code>上的代码库关联起来，然后添加一个名叫<code>unit-test</code>的<code>stage</code>，指定这个<code>stage</code>对应的命令为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>npm install
+</span><span class='line'>gulp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2016/01/snap-ci-unit-resized.png" alt="Snap CI unit" /></p>
+
+<p>这样，每当我们有新的提交之后，<code>Snap CI</code>都会拿到新代码，并执行上述命令，如果执行成功，则本地构建成功。</p>
+
+<h3>集成测试</h3>
+
+<p>由于采取的是<strong>前后端分离</strong>的策略，我们的应用可以完全独立与后端进行开发，因此我们设置了一个<code>fake server</code>，具体细节可以参考<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">我之前的博客</a>，也可以看源码。不过这里我们要为集成测试编写一个脚本，并在<code>Snap CI</code>上执行。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">export </span><span class="nv">PORT</span><span class="o">=</span>8100
+</span><span class='line'>bundle install
+</span><span class='line'>
+</span><span class='line'><span class="c"># launch the application</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;launch the application&quot;</span>
+</span><span class='line'>ruby app.rb 2&gt;&amp;1 &amp;
+</span><span class='line'><span class="nv">PID</span><span class="o">=</span><span class="nv">$!</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># wait for it to start up</span>
+</span><span class='line'>sleep 3
+</span><span class='line'>
+</span><span class='line'><span class="c"># run the rspec tests and record the status</span>
+</span><span class='line'>rspec
+</span><span class='line'><span class="nv">RES</span><span class="o">=</span><span class="nv">$?</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># terminate after rspec</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;terminate the application&quot;</span>
+</span><span class='line'><span class="nb">kill</span> -9 <span class="nv">$PID</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># now we know whether the rspec success or not</span>
+</span><span class='line'><span class="nb">exit</span> <span class="nv">$RES</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个脚本中，首先安装所有的<code>gems</code>，然后启动<code>fake server</code>并将这个server放置在后台运行，然后执行<code>rspec</code>。当<code>rspec</code>测试执行完成之后，我们终止服务进行，然后返回结果状态码。</p>
+
+<p>这里使用了<code>capybara</code>和<code>poltergeist</code>来做UI测试，<code>capybara</code>会驱动<code>phantomjs</code>来在内存中运行浏览器，并执行定义好的<code>UI</code>测试，比如此处，我们的UI测试：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">describe</span> <span class="s1">&#39;Feeds List Page&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">let</span><span class="p">(</span><span class="ss">:list_page</span><span class="p">)</span> <span class="p">{</span><span class="no">FeedListPage</span><span class="o">.</span><span class="n">new</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">before</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">list_page</span><span class="o">.</span><span class="n">load</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">it</span> <span class="s1">&#39;user can see a banner and some feeds&#39;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">list_page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_banner</span>
+</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">list_page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_feeds</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="c1">##...</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://abruzzi.github.com/images/2016/01/snap-ci-it-resized.png" alt="Snap CI logs" /></p>
+
+<h3>部署</h3>
+
+<p>首先需要在<code>S3</code>上创建一个<code>bucket</code>，命名为<code>bookmarks-frontend</code>。然后为其设置<code>static website hosting</code>，这时候<code>AWS</code>会assign一个新的域名给你，比如<code>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/</code>。</p>
+
+<p>然后你需要将这个<code>bucket</code>设置成<code>public</code>，这样其他人才可以访问你的<code>bucket</code>。</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/01/aws-s3-public-resized.png" alt="AWS S3" /></p>
+
+<p>有了这个之后，我们来编写一个小脚本，这个脚本可以将本地的文件上传至S3。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># install gulp and its dependencies</span>
+</span><span class='line'>npm install
+</span><span class='line'>
+</span><span class='line'><span class="c"># package stuff, and point the server to the right place</span>
+</span><span class='line'>gulp release
+</span><span class='line'>
+</span><span class='line'><span class="c"># upload the whold folder</span>
+</span><span class='line'>aws s3 cp public/ s3://bookmarks-frontend <span class="se">\</span>
+</span><span class='line'>  --recursive <span class="se">\</span>
+</span><span class='line'>  --region us-west-2 <span class="se">\</span>
+</span><span class='line'>  --acl public-read
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>aws</code>命令是<code>aws command line</code>提供的，另外我们需要在环境变量中设置AWS提供给你的token：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span>xxxxxxxxxx
+</span><span class='line'><span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span>xxxxxxxxxx
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后我们就可以将本地的<code>public</code>目录递归的上传到S3的对应目录了！</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/01/snap-ci-pipeline-resized.png" alt="snap ci pipeline" /></p>
+
+<p>完整的代码可以在<a href="https://github.com/abruzzi/bookmarks-frontend">此处下载</a>。</p>
+
+<h2>总结</h2>
+
+<p>我们前端的持续交付也介绍完了。现在前后端应用完全独立，发布也互不影响。不论是服务器端新增加了API，还是添加了新数据，客户端的发布都不受影响；同样，修改样式，添加新的<code>JavaScript</code>也完全不会影响后端。更重要的是，所有的发布都是一键式的，开发者只需要一个<code>git push</code>就可以享受这些免费服务提供的自动构建，自动化测试以及自动部署的功能。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[穷人的持续集成与持续交付（上）]]></title>
     <link href="http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1/"/>
     <updated>2016-01-09T23:34:00+11:00</updated>
     <id>http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1</id>
-    <content type="html"><![CDATA[<h1>基于免费服务的持续交付环境</h1>
+    <content type="html"><![CDATA[<h1>服务器端应用的持续交付</h1>
 
 <p>本文将使用一些免费的服务来为你的项目搭建<code>持续交付</code>平台，这些服务包括</p>
 
@@ -77,13 +394,15 @@
 
 <p>持续交付则更进一步，它将环境准备，持续集成，自动化部署等放在了一起。通过全自动（有些过程可以设置为手动，比如发布到产品环境）的方式，使得软件可以一键发布。如果上线后发现严重defect，还支持一键回滚的机制（其实就是将之前的一个稳定版本做一次发布，由于发布流程已经经过千锤百炼，所以发布本身就变得非常轻松，安全）</p>
 
+<p>这篇文章中，我们会使用<code>git</code>+<code>github</code>作为版本控制工具，<code>travis-ci</code>作为持续集成环境，<code>gradle</code>作为构建工具，<code>Heroku</code>作为应用的部署环境。这些工具都是免费服务，如果你需要更高级的功能（比如更多的并发数，更大的数据库），则可以选择付费套餐。不过对于我们平时的大部分side project来说，免费服务已经足够。</p>
+
 <h2>实例</h2>
 
 <p>我在<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">《前后端分离了，然后呢？》</a>这篇文章中，提到了一个叫做<code>bookmarks</code>的应用，这个应用是一个前后端分离的非常彻底的应用。</p>
 
 <p>我们这里会再次使用这个应用作为实例，并采用不同的两个免费服务（<a href="https://travis-ci.org">travis-ci</a>和<a href="https://snap-ci.com">snap-ci</a>）来完成<code>持续部署</code>环境的搭建。</p>
 
-<h3>服务器端</h3>
+<h3>bookmarks服务器</h3>
 
 <p><code>bookmarks-server</code>是一个基于<code>spring-boot</code>的纯粹的<code>API</code>，它可以被打包成一个<code>jar</code>包，然后通过命令行启动运行。在本文中，我们我们将会将这个server部署到<a href="https://dashboard.heroku.com/">heroku</a>平台上。</p>
 
@@ -6136,533 +6455,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 <p>因此我们通过上面的计算就可以得到需要的结果了：</p>
 
 <p><img src="http://abruzzi.github.com/images/2015/02/with-legend-resized.png" alt="with legend" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[underscore.js中的集合操作]]></title>
-    <link href="http://abruzzi.github.com/2015/02/collection-operations-in-underscore-dot-js/"/>
-    <updated>2015-02-21T12:48:00+11:00</updated>
-    <id>http://abruzzi.github.com/2015/02/collection-operations-in-underscore-dot-js</id>
-    <content type="html"><![CDATA[<h2>underscore.js中的集合操作</h2>
-
-<p><a href="icodeit.org/2015/02/functional-programming-in-underscore-dot-js/">书接前文</a>，我们在上一篇中将一个文本划分成了单词的数组，并统计了每个单词出现的频率。现在我们需要将排行前10的单词找出来。那么第一步就是将所有单词按照频率排序，然后将这个集合的前10个拿出来。</p>
-
-<p><code>underscore.js</code>为集合提供了丰富的API，这与函数式编程的鼻祖<code>LISP</code>语言有着直接的继承关系。<code>LISP</code>围绕着<code>List</code>提供了的众多函数。</p>
-
-<h3>排序</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">contacts</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Juntao&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">29</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Abruzzi&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">30</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Sara&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">29</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">];</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>比如想要将上面这个集合按照<code>age</code>排序，可以使用<code>sortBy</code>函数：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">sorted</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">contacts</span><span class="p">).</span><span class="nx">sortBy</span><span class="p">(</span><span class="s2">&quot;age&quot;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>默认的<code>sortBy</code>的返回值是按照升序排列的，不过JavaScript的数组原生就有reverse的API用以翻转数组，因此如果要得到降序的排列，只需要：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">sorted</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">contacts</span><span class="p">).</span><span class="nx">sortBy</span><span class="p">(</span><span class="s2">&quot;age&quot;</span><span class="p">).</span><span class="nx">reverse</span><span class="p">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>抽取</h3>
-
-<p>有时候，我们需要从众多的信息中抽取自己关心的，比如上例中的<code>contacts</code>集合，我们在界面上仅仅需要<code>name</code>属性组成的集合，这时候可以通过<code>pluck</code>来完成抽取：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">names</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">contacts</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="c1">//[&quot;juntao&quot;, &quot;abruzzi&quot;, &quot;sara&quot;]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>underscore.js</code>默认的<code>pluck</code>只能抽取一层，如果遇到下面这种场景：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">contacts</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Juntao&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">29</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;address&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="s2">&quot;street&quot;</span><span class="o">:</span> <span class="s2">&quot;Dengling Rd&quot;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>      <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Sara&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">29</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;address&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>          <span class="s2">&quot;street&quot;</span><span class="o">:</span> <span class="s2">&quot;Zhangba 4th Rd&quot;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>想要抽取<code>address.street</code>就无能为力了，不过我们可以很容易的增强一下<code>pluck</code>的功能。先来写一个小测试：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;deep pluck&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">contacts</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Juntao&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">29</span><span class="p">,</span>
-</span><span class='line'>            <span class="s2">&quot;address&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>                <span class="s2">&quot;street&quot;</span><span class="o">:</span> <span class="s2">&quot;Dengling Rd&quot;</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">];</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">deeppluck</span><span class="p">(</span><span class="nx">contacts</span><span class="p">,</span> <span class="s2">&quot;address.street&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s2">&quot;Dengling Rd&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后是实现：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">deeppluck</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span> <span class="nx">property</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="nx">property</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span> <span class="nx">property</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">object</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">origin</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">chain</span> <span class="o">=</span> <span class="nx">property</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">_</span><span class="p">(</span><span class="nx">chain</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">object</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">key</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">return</span> <span class="nx">object</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样就可以深度的抽取了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">deeppluck</span><span class="p">(</span><span class="nx">contacts</span><span class="p">,</span> <span class="s2">&quot;address.street&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="c1">//[&quot;Dengling Rd&quot;, &quot;Zhangba 4th Rd&quot;]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>underscore</code>提供了类似于<code>Ruby</code>中的<code>mixin</code>扩展，这样就可以将我们自定义的函数添加到<code>underscore</code>中了。扩展方法很容易，只需要为<code>mixin</code>传入一个键值对(<code>函数名：函数</code>)即可：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">_</span><span class="p">.</span><span class="nx">mixin</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">deeppluck</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span> <span class="nx">property</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nx">property</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span> <span class="nx">property</span><span class="p">)</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kd">var</span> <span class="nx">object</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">origin</span><span class="p">);</span>
-</span><span class='line'>      <span class="kd">var</span> <span class="nx">chain</span> <span class="o">=</span> <span class="nx">property</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nx">_</span><span class="p">(</span><span class="nx">chain</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>          <span class="nx">object</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">key</span><span class="p">);</span>
-</span><span class='line'>      <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">return</span> <span class="nx">object</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样<code>deeppluck</code>就和其他<code>underscore</code>内置的API一样被使用了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">_</span><span class="p">.</span><span class="nx">deeppluck</span><span class="p">(</span><span class="nx">contacts</span><span class="p">,</span> <span class="s2">&quot;address.street&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="c1">//[&quot;Dengling Rd&quot;, &quot;Zhangba 4th Rd&quot;]</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">_</span><span class="p">(</span><span class="nx">contacts</span><span class="p">).</span><span class="nx">deeppluck</span><span class="p">(</span><span class="s2">&quot;address.street&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="c1">//[&quot;Dengling Rd&quot;, &quot;Zhangba 4th Rd&quot;]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>按照频率排序单词列表</h3>
-
-<p>好了，有了这些基础知识，我们来完成今天的变成任务吧。我们昨天得到的数据格式是这样的：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="nt">&quot;drools&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;extends&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;rete&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;by&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;optimizing&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;the&quot;</span><span class="p">:</span> <span class="mi">23</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;propagation&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;from&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;objecttypenode&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;to&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;alphanode&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;using&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;hashing&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;each&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;time&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-</span><span class='line'>    <span class="err">...</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个格式无法使用<code>sortBy</code>，那么最简单的方式就是做一下<code>map</code>操作，使其变为：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">[</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="nt">&quot;word&quot;</span><span class="p">:</span> <span class="s2">&quot;drools&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">3</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="nt">&quot;word&quot;</span><span class="p">:</span> <span class="s2">&quot;extends&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">2</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="err">...</span>
-</span><span class='line'><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>根据昨天学到的<code>_.map</code>，很容易写出：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">sortWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">mapped</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>            <span class="s2">&quot;word&quot;</span><span class="o">:</span> <span class="nx">key</span><span class="p">,</span>
-</span><span class='line'>            <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="nx">value</span>
-</span><span class='line'>        <span class="p">};</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span><span class="nx">mapped</span><span class="p">).</span><span class="nx">sortBy</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">).</span><span class="nx">reverse</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>取出指定数目的元素</h3>
-
-<p>由于<code>sortWords</code>返回的是一个JavaScript原生的数组，我们可以使用原生的API来取出前10个元素：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">sorted</span> <span class="o">=</span> <span class="nx">sortWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">)</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">top10</span> <span class="o">=</span> <span class="nx">sorted</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>不过<code>underscore.js</code>提供更友好的<code>take</code>函数：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">sorted</span> <span class="o">=</span> <span class="nx">sortWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">);</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">top10</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">sorted</span><span class="p">).</span><span class="nx">take</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>基于已经学习到的这些API，我们可以包装一下，形成这样以一个函数：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">topWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">mapped</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>            <span class="s2">&quot;word&quot;</span><span class="o">:</span> <span class="nx">key</span><span class="p">,</span>
-</span><span class='line'>            <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="nx">value</span>
-</span><span class='line'>        <span class="p">};</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">sorted</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">mapped</span><span class="p">).</span><span class="nx">sortBy</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">).</span><span class="nx">reverse</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span><span class="nx">_</span><span class="p">(</span><span class="nx">sorted</span><span class="p">).</span><span class="nx">take</span><span class="p">(</span><span class="nx">n</span><span class="p">)).</span><span class="nx">pluck</span><span class="p">(</span><span class="s2">&quot;word&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个函数可以取出频率最高的前N个单词：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">topWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class='line'><span class="c1">//[&quot;the&quot;]</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">topWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-</span><span class='line'><span class="c1">//[&quot;the&quot;, &quot;a&quot;, &quot;to&quot;]</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">topWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-</span><span class='line'><span class="c1">//[&quot;the&quot;, &quot;a&quot;, &quot;to&quot;, &quot;is&quot;, &quot;and&quot;, &quot;input&quot;, &quot;as&quot;, &quot;alphanode&quot;, &quot;we&quot;, &quot;objects&quot;]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当然，上面的代码可以略微压缩一下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">topWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span><span class="nx">_</span><span class="p">(</span><span class="nx">_</span><span class="p">(</span><span class="nx">_</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>            <span class="s2">&quot;word&quot;</span><span class="o">:</span> <span class="nx">key</span><span class="p">,</span>
-</span><span class='line'>            <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="nx">value</span>
-</span><span class='line'>        <span class="p">};</span>
-</span><span class='line'>    <span class="p">})).</span><span class="nx">sortBy</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">).</span><span class="nx">reverse</span><span class="p">()).</span><span class="nx">take</span><span class="p">(</span><span class="nx">n</span><span class="p">)).</span><span class="nx">pluck</span><span class="p">(</span><span class="s2">&quot;word&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>啊偶，有点难看了。幸好<code>underscore.js</code>提供了链式操作</p>
-
-<h3>链式操作</h3>
-
-<p>如果你用过jQuery，那么应该对链式操作非常熟悉了。链式操作写起来非常顺畅，代码也会非常的语义化。<code>underscore.js</code>中也支持将代码写成链式的，API为<code>chain</code>，<code>chain</code>返回的是一个包装过的<code>underscore</code>对象，到链结束的时候，需要调用<code>value</code>来获取最终的结果：</p>
-
-<p>比如</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">count</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">mapped</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/g</span><span class="p">)).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">word</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">(</span><span class="nx">mapped</span><span class="p">).</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">frequencies</span><span class="p">,</span> <span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">frequencies</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">},</span> <span class="p">{});</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>可以简化为：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">count</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">chain</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\w+/g</span><span class="p">))</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">word</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">frequencies</span><span class="p">,</span> <span class="nx">word</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">frequencies</span><span class="p">[</span><span class="nx">word</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">frequencies</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">},</span> <span class="p">{})</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">value</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>同样，我们刚才<code>简化</code>过的那段很难看的代码也可以写成：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">topWords</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">chain</span><span class="p">(</span><span class="nx">wordMap</span><span class="p">)</span>
-</span><span class='line'>        <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>                <span class="s2">&quot;word&quot;</span><span class="o">:</span> <span class="nx">key</span><span class="p">,</span>
-</span><span class='line'>                <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="nx">value</span>
-</span><span class='line'>            <span class="p">};</span>
-</span><span class='line'>        <span class="p">})</span>
-</span><span class='line'>        <span class="p">.</span><span class="nx">sortBy</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">)</span>
-</span><span class='line'>        <span class="p">.</span><span class="nx">reverse</span><span class="p">()</span>
-</span><span class='line'>        <span class="p">.</span><span class="nx">take</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span>
-</span><span class='line'>        <span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="s2">&quot;word&quot;</span><span class="p">)</span>
-</span><span class='line'>        <span class="p">.</span><span class="nx">value</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最终，我们的代码就被缩减成了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">top10</span> <span class="o">=</span> <span class="nx">topWords</span><span class="p">(</span><span class="nx">count</span><span class="p">(</span><span class="nx">text</span><span class="p">),</span> <span class="mi">10</span><span class="p">);</span>
-</span><span class='line'><span class="c1">//[&quot;the&quot;, &quot;a&quot;, &quot;to&quot;, &quot;is&quot;, &quot;and&quot;, &quot;input&quot;, &quot;as&quot;, &quot;alphanode&quot;, &quot;we&quot;, &quot;objects&quot;]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>可以看到，使用<code>underscore.js</code>提供的众多API，可以写出非常简洁，表意的代码来。这也是函数式编程逐步占领<code>主流</code>编程世界的一个重要原因吧。</p>
 ]]></content>
   </entry>
   
