@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "穷人的持续集成与持续交付"
+title: "穷人的持续集成与持续交付（上）"
 date: 2016-01-09 23:34
 comments: true
 categories: 
@@ -8,7 +8,7 @@ categories:
 - ThoughtWorks
 ---
 
-# 基于免费服务的持续交付环境
+# 服务器端应用的持续交付
 
 本文将使用一些免费的服务来为你的项目搭建`持续交付`平台，这些服务包括
 
@@ -58,13 +58,15 @@ categories:
 
 持续交付则更进一步，它将环境准备，持续集成，自动化部署等放在了一起。通过全自动（有些过程可以设置为手动，比如发布到产品环境）的方式，使得软件可以一键发布。如果上线后发现严重defect，还支持一键回滚的机制（其实就是将之前的一个稳定版本做一次发布，由于发布流程已经经过千锤百炼，所以发布本身就变得非常轻松，安全）
 
+这篇文章中，我们会使用`git`+`github`作为版本控制工具，`travis-ci`作为持续集成环境，`gradle`作为构建工具，`Heroku`作为应用的部署环境。这些工具都是免费服务，如果你需要更高级的功能（比如更多的并发数，更大的数据库），则可以选择付费套餐。不过对于我们平时的大部分side project来说，免费服务已经足够。
+
 ## 实例
 
 我在[《前后端分离了，然后呢？》](http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/)这篇文章中，提到了一个叫做`bookmarks`的应用，这个应用是一个前后端分离的非常彻底的应用。
 
 我们这里会再次使用这个应用作为实例，并采用不同的两个免费服务（[travis-ci](https://travis-ci.org)和[snap-ci](https://snap-ci.com)）来完成`持续部署`环境的搭建。
 
-### 服务器端
+### bookmarks服务器
 
 `bookmarks-server`是一个基于`spring-boot`的纯粹的`API`，它可以被打包成一个`jar`包，然后通过命令行启动运行。在本文中，我们我们将会将这个server部署到[heroku](https://dashboard.heroku.com/)平台上。
 
