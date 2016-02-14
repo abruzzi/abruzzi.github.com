@@ -1,0 +1,311 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>技术的执念 - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="知识漩涡 只需稍加留意，我们就会发现自己被各种技术，工具包围。ThoughtWorks的技术雷达差不多每隔半年就会更新一次，而项目中更是会遇到很多已经从技术雷达上消失的技术，项目上的旧技术/旧框架还在服役，新的技术/工具/语言/框架又在迅速的出现，有些昙花一现，迅速被新的后来者取代，有的留下来了， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2016/02/pitfall-of-technology">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">文章</a></li>
+  <li><a href="/blog/archives">归档</a></li>
+  <li><a href="/jsccp">JavaScript核心概念及实践</a></li>
+  <li><a href="/lwweb">轻量级Web应用开发</a></li>
+  <li><a href="/3p3w">三周三页面</a></li>
+  <li><a href="/about-me">关于我</a></li>
+</ul>
+
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">技术的执念</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-14T17:34:00+11:00" pubdate data-updated="true">Feb 14<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>知识漩涡</h2>
+
+<p>只需稍加留意，我们就会发现自己被各种技术，工具包围。<a href="https://www.thoughtworks.com/radar">ThoughtWorks的技术雷达</a>差不多每隔半年就会更新一次，而项目中更是会遇到很多已经从技术雷达上消失的技术，项目上的旧技术/旧框架还在服役，新的技术/工具/语言/框架又在迅速的出现，有些昙花一现，迅速被新的后来者取代，有的留下来了，不过也都在不断的演化，改变（不兼容的API，不同的版本等等随处可见）。</p>
+
+<p>如果你不幸是一个前端工程师，那么这个更新速度还要更加迅速。三年前<code>Backbone</code>是主流，两年前是<code>Angular.js</code>，去年是<code>React</code>，紧接着<code>Flux</code>，<code>Reflux</code>等作为React的扩展而成为了新的主流；<code>Grunt</code>流行过一段时间，很快被<code>Gulp</code>替代，而新的<code>Webpack</code>又依稀有大一统的趋势。每周几乎都能看到新的框架涌现，双向绑定，虚拟DOM，事件代理，同构，后端渲染，更友好的语法糖，更快的执行速度等等等等，几乎任何一个方向都有无穷无尽的变化。</p>
+
+<p><img src="/images/2016/02/full-stack-js-resized.png" alt="full stack js" /></p>
+
+<p>而后端也好不到哪里去，容器技术，Web框架，ORM，构建脚本，自动化测试工具，依赖管理，应用服务器等等，你总有很多的选项，却又无法在事先区分到底哪个技术/工具更靠谱，更适合项目。</p>
+
+<p>置身其中，往往有眼花缭乱，应接不暇的感觉。知识工作者当然需要<strong>终身不断</strong>的学习，但是像目前这种节奏，我很怀疑这是一种健康的状态。周围经常有人抱怨，好不容易上手了一个前端的MVC框架，一看周围的项目，大家已经在spike另外的框架/工具了（这意味着你在项目上无法使用该框架了……）。仅仅从学习的速度上来讲，我们已经远远无法跟上科技演化的节奏了，这是<strong>人类</strong>自身的一种限制。</p>
+
+<h3>知识的陷阱</h3>
+
+<p>假设你在一个<code>Ruby</code>项目上，学习了<code>Rails/ActiveRecord/RSpec/MySQL</code>。如果下一个项目还是<code>Ruby</code>，同样的技术站，你会觉得这是一种重复，因为除了业务逻辑、业务对象变化了之外，并没有新的内容，还是<strong>同样的</strong>技术。如果下一个项目是<code>Python</code>，技术栈变成了<code>Django/nose/PostgreSQL</code>，你可能会觉得有所提升，因为学到了不同的技术，框架，共建工具，测试工具等等，其实仔细观察，这还是一种重复，古人云：“换汤不换药”者，是也。</p>
+
+<p>在目前我们所处的时代，信息以远远超过人们能接受的速度不断的被创造出来，一方面信息传播的速度大大提升了，另一方面是信息传播的渠道也极具多样化。我们无时无刻不被过载的信息包围着，即使你不主动的去尝试获取新的信息，手机App里的微信，微博，Flipboard，Pocket，知乎，开发者头条，Feedly，果壳，丁香园等等的推送已经足以提供给你足够的信息（大部分甚至都来不及消费就变成了历史信息而被忽略）。</p>
+
+<p>以我自己为例，从2015年10月到现在（2016年2月），我学习了很多东西，看一下下面这张图：</p>
+
+<p><img src="/images/2016/02/tech-tree.png" alt="tech tree" /></p>
+
+<p>图中的灰色方框中的内容是项目要求的知识，另外的则是我根据自己的兴趣学习的（两者基本上各占一半）。事实上有很多内容（尤其是根据自己兴趣学习的）在真正要使用时，可能还需要学一遍。这些内容可能让我产生了<strong>我学到了好多东西</strong>的错觉。其实这个在另一个角度显现了技术人员的一个误区：以为自己可以掌握所有软件开发相关的知识（或者说太过于纵容自己的好奇心和兴趣）。</p>
+
+<h2>过载的信息</h2>
+
+<p>身处这样的信息过载环境，我们很难不为自己对信息的缺乏而感到不安，担心自己错过了什么重要的信息，这种担心和焦虑会促使我们进一步将时间消耗在对信息的获取上，从而更无暇思考什么是真正重要的。</p>
+
+<p><a href="http://book.douban.com/subject/1013208/">《如何阅读一本书》</a>将书分为两类：一种是提供资讯/信息（known）的，一种是帮助你理解（understand）信息的。相对于理解来讲，资讯本身其实并不那么重要。我们大部分人目前采用的碎片化的阅读方式无法提供给我们足够的“理解力”。我们都有这样的体验，有些书特别耗费脑力，读起来很累，而另一些书则非常轻松，易于消费。碎片话的阅读方式易于消费，只需要很少的思考就可以读懂，但是危害严重，它们并不会让帮助你提升理解力。</p>
+
+<p>但是直觉上我们会选择容易的事情来做，虽然这种浅层次的阅读只对扩展信息/资讯有帮助，对提升理解力则几乎无用。而我们在处理日常工作中的问题时，能真正帮助的，只有理解了的那部分知识。我在2014年，曾经有几个月屏蔽了所有微信，微博，内容聚合类的应用，也尽量少的去技术论坛，每天就是写代码，读纸质书，除了最初几天的忐忑之外，整个过程的收获非常大（而且也没有漏掉任何重要的信息）。</p>
+
+<h3>知识框架</h3>
+
+<p>技术人员有时候会有一种想要把所有技术都掌握的<code>执念</code>，这在局外人来看是一种荒诞不经的想法，但是置身其中，你很难看出这一点。毕竟，有意思的东西是在太多了，各种范式的编程语言，编译器技术，人工智能，数据可视化，地理信息系统，嵌入式设备，软硬件结合，大数据，自动化测试等等，每一个方向都有无穷无尽的有意思的东西。</p>
+
+<p>但是在知识规模如此巨大的今天，一个人是无法掌握所有技术的（更不用说新的技术还在不断的涌现出来）！这就要求我们有节制的来聚焦在某些技术上，而视其他技术如无物。当然这需要很大的勇气和魄力，不过唯有如此，技术人员才有可能有真正的长进和成就。</p>
+
+<p>我基于自己的经验，绘制了一个<code>Web开发</code>方面的知识框架，这个框架上包含了一个比较全的技能/知识集合，也是我认为一个<code>Web开发</code>人员应该掌握的一些知识点。</p>
+
+<p><img src="/images/2016/02/knowledge-framework.png" alt="knowledge framework" /></p>
+
+<p>在成为一个专家之前，你需要先对要学习的领域有一个全面的认识。也就是说，做<code>Web开发</code>，需要尽可能覆盖到这个框架上的所有点。一旦完成了这棵树上的所有节点，就不用再去做第二次了，这时候你可以尝试找到树上的某一个分支，深入下去。这个听起来好像和我之前文章中的观点有所矛盾，其实不然。我在<a href="http://icodeit.org/2015/06/do-we-really-short-for-front-end-developer/">《我们真的缺前端工程师》</a>一文中提到过，工程师不应该将自己束缚在前端开发上，要了解整个软件开发的全生命周期。这里的观点其实是一致的，即首先要了解软件开发全生命周期中的所有节点，然后再有所侧重的去找自己的兴趣点来发展，即：先建立广度，再建立深度。</p>
+
+<h2>应对方法</h2>
+
+<h3>对于知识的陷阱</h3>
+
+<p>当因自己的兴趣（而不是项目驱动，也就是没有实际的土壤来验证）而想要学习一个新的知识时，对照<code>知识框架</code>，如果发现你已经在历史上学过它了，那就强迫自己放弃这个念头。比如如果你很熟悉用<code>rspec</code>来编写测试，忽然有一天心血来潮，想要学习JUnit，正确的做法就是泡杯茶，等这种冲动自己过去。相信我，一旦有了Java项目，你可以非常快速的掌握JUnit，而且很快会找到对应的feature，就像一个长期工作在Java技术栈上的同事那样！</p>
+
+<h3>对于过载的信息</h3>
+
+<p>实践中，首先要令自己相信：<code>你无法掌握所有的知识，即使仅仅在软件开发领域</code>。有了这个大前提之后，你只需要采取<code>先建立广度，再建立深度</code>的原则即可：</p>
+
+<ul>
+<li>做减法（在建立了<code>知识框架</code>之后，有针对性的学习）</li>
+<li>主动，深度阅读经典</li>
+<li>为那些<code>有趣但非自己关注方向</code>的知识赋予较低的优先级</li>
+</ul>
+
+
+<p>另外，还可以尝试将微信，微博关闭一段时间，或者至少可以不去点那些朋友圈里的<code>《老X聊微服务》</code>或者<code>《12个你不知道的Sublime技巧》</code>文章，保持专注，保持简单。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-14T17:34:00+11:00" pubdate data-updated="true">Feb 14<span>th</span>, 2016</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/thoughtworks/'>ThoughtWorks</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      <a href="/2016/02/pitfall-of-technology/">原始链接</a>，
+<strong>版权声明</strong>：自由转载-非商用-非衍生-保持署名| <a href='http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh'>Creative Commons BY-NC-ND 3.0</a>
+    </p>
+    
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2016/01/for-those-dev-who-doesnt-want-to-be-a-ux-cannot-be-a-good-consulant/" title="Previous Post: 不想当UX的开发不是好咨询师">&laquo; 不想当UX的开发不是好咨询师</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2016/02/pitfall-of-technology/">技术的执念</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2016/01/for-those-dev-who-doesnt-want-to-be-a-ux-cannot-be-a-good-consulant/">不想当UX的开发不是好咨询师</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2016/01/how-to-facilitate/">当我们谈论引导时，我们谈些什么？</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2016/01/a-poor-mans-cd-part2/">穷人的持续集成与持续交付（下）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2016/01/a-poor-mans-cd-part1/">穷人的持续集成与持续交付（上）</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2016/02/pitfall-of-technology/';
+        var disqus_url = 'http://abruzzi.github.com/2016/02/pitfall-of-technology/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
