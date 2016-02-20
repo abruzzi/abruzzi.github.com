@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: docker | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/docker/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2016-02-20T18:40:28+11:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[CI上的Web前端性能测试]]></title>
+    <link href="http://abruzzi.github.com/2016/02/performance-testing-in-ci/"/>
+    <updated>2016-02-20T18:18:00+11:00</updated>
+    <id>http://abruzzi.github.com/2016/02/performance-testing-in-ci</id>
+    <content type="html"><![CDATA[<h2>Web站点的响应速度</h2>
+
+<p>雅虎在2006年就发布了一份提升Web站点响应速度的<a href="https://developer.yahoo.com/performance/rules.html">最佳实践指南</a>。该指南包含了35条规则，分为7个类别。这些规则已经被广泛使用，并指导人们在新的站点设计时更有针对性的考虑问题。这份指南已经成了Web前端性能度量的一个事实标准了。</p>
+
+<p><a href="http://yslow.org/">YSlow</a>是一个基于这份指南的测试工具，它可以测试一个站点是否“慢”，以及为什么“慢”？你可以通过很多方式来使用<a href="http://yslow.org/">YSlow</a>，比如Firefox，Chrome的插件，命令行工具，甚至PhantomJS这样的无头（Headless）浏览器。YSlow会检测你的站点中的资源是否没有压缩，是否缺失了超时设置，更进一步，它还会检测你的JS/CSS是否已经压缩/精简化，图片的尺寸，是否使用了CDN等等很多的维度。它还可以生成很多格式的报告，比如打分信息，TAP协议的输出，以及junit测试报告的格式。</p>
+
+<p>我们这里讨论如何在持续集成服务器上设置一个<code>YSlow</code>任务，这个任务会在每次构建之后，测试你应用的性能指标，以帮助你更快的发现和定位问题。当然，我推荐你在<code>staging</code>环境，很多开发者在测试环境，本地开发环境都会启动很多对<code>Debug</code>友好的设置，比如未压缩的JS/CSS，没有超时设置的响应等，这会导致该构建任务的<code>打分</code>不够准确。</p>
+
+<p><img src="/images/2016/02/jenkins-report-resized.png" alt="jenkins failure" /></p>
+
+<h3>搭建CI环境</h3>
+
+<p>按照传统方式，如果要搭建一个这样的CI任务，我们需要至少做这样一些事情：</p>
+
+<ul>
+<li>安装JDK</li>
+<li>安装Jenkins</li>
+<li>安装<a href="http://phantomjs.org/">PhantomJS</a></li>
+<li>安装<a href="http://yslow.org/phantomjs/">YSlow.js脚本</a></li>
+</ul>
+
+
+<p>然后设置环境变量，在Jenkins上创建任务，并运行YSlow.js脚本。这个任务很简单，只需要设置好参数，然后将结果输出为Jenkins上的报告即可。比如：</p>
+
+<p><code>sh
+$ phantomjs /var/share/yslow.js -i grade -threshold "B" -f junit \
+http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/ &gt; yslow.xml
+</code></p>
+
+<ul>
+<li><code>-i grade</code> 展示打分（grade）信息（还可以是basic/stats/all）等</li>
+<li><code>-threshold "B"</code> 指定失败的阈值为B</li>
+<li><code>-f junit</code> 输出为<code>junit</code>识别的XML格式</li>
+</ul>
+
+
+<p>这里的阈值可以是数字（0-100分），字母（A-F级别）或者一个JSON字符串（混合使用）</p>
+
+<p><code>sh
+-threshold '{"overall": "B", "ycdn": "F", "yexpires": 85}'
+</code></p>
+
+<p>上面的命令会测试站点<code>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/</code>的各项指标，并应用雅虎的那35条规则，并最终生成一个<code>junit</code>测试报告格式的文件：<code>yslow.xml</code>。</p>
+
+<p>但是维护CI环境是一个比较麻烦的事情，而且既然每个项目都可能会用到这样的<code>基础设施</code>，一种好的做法就是将其做成一个<code>镜像</code>保存起来，以方便其他项目的复用！这里我们使用<code>docker</code>来安装和配置我们的CI环境，配置完成之后，我们可以将<code>docker</code>的镜像分享给其他团队，也可以供我们在下一个项目中使用。</p>
+
+<h3>基于docker/docker-compose的环境搭建</h3>
+
+<p>在<a href="https://www.docker.com/">docker</a>出现之前，我们要搭建一个<code>测试</code>或者<code>staging</code>环境，往往需要很多个不同角色的机器：有专门的数据库服务器，文件服务器，缓存服务器，Web服务器，反向代理等等。这样在成本上显然是个不小的开销，如果将所有不同的组件部署在同一台机器上，则又可能互相干扰，只需要一个小小的失误，整个系统就需要重新配置。更可怕的是，这个环境和生产系统不一致，那么很可能真实的错误要等到系统上线之后才会被发现。</p>
+
+<p>比如在2012年，我所在的一个项目中，客户的系统采用传统的J2EE架构。本地开发中，我们使用了Jetty作为容器，而<code>测试</code>和<code>Staging</code>环境使用了Tomcat。由于Tomcat对空格的处理和Jetty有所不同，我们在本地测试通过，并且运行良好的代码，在<code>Staging</code>变得完全不能工作。这个问题花费了团队很多时间来排查错误。</p>
+
+<p>在<code>docker</code>出现之后，我们可以在一台物理机器上运行多个互不干涉的容器，每个容器可以是一个组件（比如运行数据库的容器，Web服务器容器等等）。这样不但缩减了成本，而且可以让我们的环境尽可能和生产环境一致（有的项目甚至直接将CI出来的镜像应用到生产中）。不过对多个容器的管理是一个很麻烦的事情，好在<code>docker</code>提供了<a href="https://docs.docker.com/compose/overview/">docker-compose</a>工具来解决这个问题。使用<code>docker-compose</code>可以定义一组互相独立，但是又可以协作在一起的容器，这样我们可以很容易的搭建一个<code>仿生产</code>环境。</p>
+
+<p>比如我们可以定义个<code>docker-compse.yml</code></p>
+
+<p>```yml
+app:
+  build: .
+  links:</p>
+
+<pre><code>- db:postgres
+</code></pre>
+
+<p>  ports:</p>
+
+<pre><code>- 8000:8000
+</code></pre>
+
+<p>  volumes:</p>
+
+<pre><code>- .:/app
+</code></pre>
+
+<p>  working_dir: /app
+  entrypoint: /app/start.sh
+  environment:</p>
+
+<pre><code>JDBC_DATABASE_URL: jdbc:postgresql://postgres:5432/bookmarks
+DATABASE_USER: bookmarks-user
+DATABASE_PASS: bookmarks-password
+</code></pre>
+
+<p>db:
+  image: postgres:9.3
+  ports:</p>
+
+<pre><code>- 5432:5432
+</code></pre>
+
+<p>  environment:</p>
+
+<pre><code>POSTGRES_DB: bookmarks
+POSTGRES_USER: bookmarks-user
+POSTGRES_PASSWORD: bookmarks-password
+</code></pre>
+
+<p>```</p>
+
+<p>这个<code>docker-compose</code>定义了两个组件，<code>app</code>和<code>db</code>。<code>db</code>使用了<code>postgres:9.3</code>镜像，并设置了自己的环境变量。<code>app</code>则从当前目录<code>.</code>构建一个新的镜像，<code>app</code>与<code>db</code>通过<code>links</code>属性连接起来。</p>
+
+<p>如果在当前目录执行<code>docker-compose build</code>命令，<code>docker-compose</code>会找到本地的<code>Dockerfile</code>，然后构建出一个<code>docker</code>的镜像，并启动该容器，同时，它还会启动<code>postgres:9.3</code>容器作为数据库组件。这样我们的环境就被完整的搭建好了。</p>
+
+<h4>搭建CI环境</h4>
+
+<p>```yml
+app:
+  build: .
+  ports:</p>
+
+<pre><code>- 8080:8080
+- 50000:50000
+</code></pre>
+
+<p>  volumes:</p>
+
+<pre><code>- ./data:/var/jenkins_home
+</code></pre>
+
+<p>```</p>
+
+<p>这个配置，表明我们会根据当前目录的<code>Dockerfile</code>来构建一个镜像。</p>
+
+<p>通过命令<code>volumns</code>，我们将本地目录<code>./data</code>映射为<code>jenkins_home</code>，这样我们定义的job信息，以及插件的安装都会放到本地的目录中，方便管理。配置完成之后，构建并启动该容器：</p>
+
+<p>```
+FROM jenkins:latest</p>
+
+<h1>Env</h1>
+
+<p>ENV PHANTOMJS_VERSION 1.9.6
+ENV PHANTOMJS_YSLOW_VERSION 3.1.8
+ENV SHARE_BIN /var/share</p>
+
+<h1>Install stuff by using root</h1>
+
+<p>USER root
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y git wget libfreetype6 libfontconfig bzip2</p>
+
+<p>RUN mkdir -p $SHARE_BIN</p>
+
+<p>RUN wget -q --no-check-certificate -O /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 \
+https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2
+RUN tar -xjf /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 -C /tmp
+RUN rm -f /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2
+RUN mv /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64/ $SHARE_BIN/phantomjs
+RUN ln -s $SHARE_BIN/phantomjs/bin/phantomjs /usr/bin/phantomjs</p>
+
+<p>RUN wget -q --no-check-certificate -O /tmp/yslow-phantomjs-$PHANTOMJS_YSLOW_VERSION.zip \
+http://yslow.org/yslow-phantomjs-$PHANTOMJS_YSLOW_VERSION.zip
+RUN unzip /tmp/yslow-phantomjs-$PHANTOMJS_YSLOW_VERSION.zip -d $SHARE_BIN/
+USER jenkins
+```</p>
+
+<p>执行下面的命令来设置并启动CI服务器：</p>
+
+<p><code>sh
+docker-compose up
+</code></p>
+
+<p><img src="/images/2016/02/jenkins-in-docker-resized.png" alt="jenkins in docker" /></p>
+
+<p>创建新任务，并指定该任务执行的命令为：</p>
+
+<p><code>sh
+$ phantomjs /var/share/yslow.js -i grade -threshold "B" -f junit \
+http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/ &gt; yslow.xml
+</code></p>
+
+<p>由于此时<code>phantomjs</code>已经被安装到了容器中，我们可以直接在jenkins中使用。运行结束之后，这个命令会生成一个报告：</p>
+
+<p><img src="/images/2016/02/jenkins-report-resized.png" alt="jenkins failure" /></p>
+
+<ul>
+<li>没有压缩内容</li>
+<li>没有添加过期的头信息</li>
+</ul>
+
+
+<p>在产品环境，我们需要使用反向代理来添加这些头信息，以保证最终用户在使用Web站点时的体验。</p>
+
+<h3>总结</h3>
+
+<p>我们只需要很少的配置就可以设置好一个工作良好的CI任务，这样在程序员某天引入了未经压缩的JS/CSS或者UX不小心提供了巨大而未经处理的图片时，你可以尽快的得到通知，并在正是上线之前发现这些问题。</p>
+
+<p><a href="https://github.com/abruzzi/phantomjs-yslow">代码配置</a>在这里。</p>
+]]></content>
+  </entry>
+  
+</feed>

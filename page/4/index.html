@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="依照惯例，我每年在元旦时候都会写一篇回顾，总结过去，展望未来。不过很少跟上一年指定的计划真正去比较，一般都是列举一下这一年做的事情。 大致分下来，可以分为上半年和下半年两部分，这当然不是废话。因为上半年和下半年分别在两个完全不同的项目上工作。 技术咨询项目 上半年在一个国内咨询项目上， &hellip;">
+  <meta name="description" content="PageObject简介 PageObject是编写UI测试时的一种模式。简而言之，你可以将所有知道页面细节的部分放入到这个对象上，对于编写测试的人来说，一个PageObject代表了一个页面，或者页面上的一个区域（比如搜索框，搜索结果，侧边栏等都可能是一个独立的Object）。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,399 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/01/page-object-with-site-prism/">编写体面的UI测试</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-02T13:58:00+11:00" pubdate data-updated="true">Jan 2<span>nd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>PageObject简介</h3>
+
+<p><code>PageObject</code>是编写UI测试时的<a href="http://martinfowler.com/bliki/PageObject.html">一种模式</a>。简而言之，你可以将所有知道页面细节的部分放入到这个对象上，对于编写测试的人来说，一个<code>PageObject</code>代表了一个页面，或者页面上的一个区域（比如搜索框，搜索结果，侧边栏等都可能是一个独立的<code>Object</code>）。这样做的好处分为两个方面：</p>
+
+<ol>
+<li>封装了所有的实现细节（内部的HTML是如何组织的）</li>
+<li>对外的接口非常清晰，从而代码更加语义化</li>
+</ol>
+
+
+<p>我们这里列举一个简单的例子来说明：</p>
+
+<p>我们要测试的场景是：我们在一个搜索应用中，用户输入了<code>ThoughtWorks</code>，我们来判断搜索结果的第一页有<code>10</code>条结果。如果使用原生的<code>capybara</code>，代码大致会如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">visit</span> <span class="s1">&#39;/search&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">fill_in</span> <span class="s1">&#39;Search&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;ThoughtWorks&#39;</span>
+</span><span class='line'><span class="n">click_button</span> <span class="s1">&#39;#search&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">expect</span><span class="p">(</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;#result&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;.tips&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;10&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先我们进入<code>/search</code>页面，然后在<code>Search</code>中输入了<code>ThoughtWorks</code>关键字，然后点击<code>#search</code>按钮，最后判断<code>#result .tips</code>下有<code>10</code>的字样。</p>
+
+<p>如果使用<code>PageObject</code>，代码则会变成（<em>这个是伪代码</em>）：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">search</span> <span class="o">=</span> <span class="no">SearchBox</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="no">SearchResult</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">search</span><span class="o">.</span><span class="n">type</span> <span class="s2">&quot;ThoughtWorks&quot;</span>
+</span><span class='line'><span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>site_prism 简介</h3>
+
+<p><a href="https://github.com/natritmeyer/site_prism">site_prism</a>是一个构建在<a href="https://github.com/jnicklas/capybara">capybara</a>之上的用于建模<code>Page Object</code>的gem。使用<code>site_prism</code>可以很语义化的编写<code>Page Object</code>，可以使代码非常易读。</p>
+
+<p>位于<code>顶层</code>的<code>Page</code>对象可以拥有多个<code>Section</code>对象，每个<code>Section</code>可以对应页面上的一些逻辑上的块，比如内容区域，边栏等。对于现在流行的<code>SPA</code>，我们只需要一个<code>Page</code>和若干个<code>Section</code>就足够了。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">MovingHome</span> <span class="o">&lt;</span> <span class="no">SitePrism</span><span class="o">::</span><span class="no">Page</span>
+</span><span class='line'>  <span class="n">set_url</span> <span class="s1">&#39;http://localhost:8100/bundles/moving-home&#39;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">element</span> <span class="ss">:container</span><span class="p">,</span> <span class="s2">&quot;#tmsCheckout&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">section</span> <span class="ss">:personal</span><span class="p">,</span> <span class="no">PersonalSection</span><span class="p">,</span> <span class="s2">&quot;#acc-personal&quot;</span>
+</span><span class='line'>  <span class="n">section</span> <span class="ss">:contact</span><span class="p">,</span> <span class="no">ContactSection</span><span class="p">,</span> <span class="s2">&quot;#acc-contact&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>set_url</code>方法制定了如何到达当前页，也是<code>webdriver</code>会实际发送请求的<code>URL</code>。页面本身上可以用<code>element</code>方法来声明一个元素，以及该元素对应的CSS选择器，这样就可以通过元素的名称来访问该选择器对应的HTML元素了。</p>
+
+<p>比如上例中的<code>container</code>，我们在测试中就可以这样来访问它：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="vi">@moving</span> <span class="o">=</span> <span class="no">MovingHome</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'><span class="vi">@moving</span><span class="o">.</span><span class="n">load</span>
+</span><span class='line'>
+</span><span class='line'><span class="vi">@moving</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">should</span> <span class="n">be_visible</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而对应的<code>section</code>元素，则声明了一个块的名称，块的类和块的选择器。这样我们就可以通过名称来应用该块了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">set</span> <span class="s2">&quot;Juntao&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">expect</span><span class="p">(</span><span class="vi">@moving</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_personal</span>
+</span><span class='line'><span class="n">expect</span><span class="p">(</span><span class="vi">@moving</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_contact</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>have_</code>前缀加块的名称，用来判断该块是否可见（比如display: block）。</p>
+
+<h3>一个项目上的实例</h3>
+
+<p>目前项目上有一个页面需要添加一些新的特性，对应的需要添加一些UI测试。之前的所有代码都是面向过程的，代码非常多，重复代码都通过抽成一个函数来组织，无法和实际的页面模块对应起来。因此我使用<code>site_prism</code>做了一些尝试。</p>
+
+<p>业务场景是这样的：用户想要办理移机业务（比如搬家了，相应的宽带/有线电视要办理移机），这时候用户需要填写一些个人信息，联系方式，老地址，新地址等，这样我们就可以联系到他并帮他完成移机。而目前的页面也已经按照这些信息的关联度组织成了这样的形式：</p>
+
+<p><img src="/images/2015/01/moving-home-resized.png" alt="moving home" /></p>
+
+<p>可以看到，页面本身的组织已经比较清晰了，这非常方便我们抽取<code>PageObject</code>：每一个<code>块</code>都可以抽取为一个<code>Section</code>类的子类。</p>
+
+<h4>第一次尝试</h4>
+
+<p>比如对于个人信息这一个块：</p>
+
+<p><img src="/images/2015/01/personal-resized.png" alt="personal" /></p>
+
+<p>这个块包含称呼，姓名，出生日期等几部分，我们可以很容易找到对应的页面元素，并抽取为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">PersonalSection</span> <span class="o">&lt;</span> <span class="no">SitePrism</span><span class="o">::</span><span class="no">Section</span>
+</span><span class='line'>  <span class="n">element</span> <span class="ss">:myservice</span><span class="p">,</span> <span class="s2">&quot;#personal-my-services&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">element</span> <span class="ss">:title</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.title&quot;</span>
+</span><span class='line'>  <span class="n">element</span> <span class="ss">:first</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.firstName&quot;</span>
+</span><span class='line'>  <span class="n">element</span> <span class="ss">:last</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.lastName&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">element</span> <span class="ss">:dob_day</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.dobDay&quot;</span>
+</span><span class='line'>  <span class="n">element</span> <span class="ss">:dob_month</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.dobMonth&quot;</span>
+</span><span class='line'>  <span class="n">element</span> <span class="ss">:dob_year</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.dobYear&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">element</span> <span class="ss">:summary</span><span class="p">,</span> <span class="s2">&quot;.tms-accordion-summary-content&quot;</span>
+</span><span class='line'>  <span class="n">element</span> <span class="ss">:next</span><span class="p">,</span> <span class="s2">&quot;.tms-btn-next&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最直接的使用方法就是直接调用<code>set</code>方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">def</span> <span class="nf">fulfill_personal</span>
+</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">myservice</span><span class="o">.</span><span class="n">set</span> <span class="s2">&quot;MINE&quot;</span>
+</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">select</span> <span class="s2">&quot;Mr&quot;</span>
+</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">set</span> <span class="s2">&quot;Juntao&quot;</span>
+</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">set</span> <span class="s2">&quot;Qiu&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">dob_day</span><span class="o">.</span><span class="n">select</span> <span class="s2">&quot;21&quot;</span>
+</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">dob_month</span><span class="o">.</span><span class="n">select</span> <span class="s2">&quot;Jan&quot;</span>
+</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">dob_year</span><span class="o">.</span><span class="n">select</span> <span class="s2">&quot;1985&quot;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">click</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样在<code>Cucumber</code>测试中就可以写成：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">Given</span> <span class="sr">/I am on moving home page/</span> <span class="k">do</span>
+</span><span class='line'>  <span class="vi">@moving</span> <span class="o">=</span> <span class="no">MovingHome</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>      <span class="vi">@moving</span><span class="o">.</span><span class="n">load</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">When</span> <span class="sr">/I fulfill my personal information/</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">fulfill_personal</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>面向对象</h4>
+
+<p>这样的代码事实上已经沦为了面向过程的方式了，更好的做法是讲fulfill_personal放入<code>Personal</code>本身中：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">def</span> <span class="nf">fulfill</span><span class="p">(</span><span class="n">personal</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">myservice</span><span class="o">.</span><span class="n">set</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;myservice&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="n">title</span><span class="o">.</span><span class="n">select</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;title&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="n">first</span><span class="o">.</span><span class="n">set</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;first&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="n">last</span><span class="o">.</span><span class="n">set</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;last&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="n">dob_day</span><span class="o">.</span><span class="n">select</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;dob_day&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="n">dob_month</span><span class="o">.</span><span class="n">select</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;dob_month&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="n">dob_year</span><span class="o">.</span><span class="n">select</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;dob_year&quot;</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">next_button</span><span class="o">.</span><span class="n">click</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，外部的使用者只需要调用即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">fixture</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">::</span><span class="n">load_file</span><span class="p">(</span><span class="s1">&#39;fixtures/moving.yml&#39;</span><span class="p">)</span>
+</span><span class='line'><span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">fulfill</span><span class="p">(</span><span class="n">fixture</span><span class="o">[</span><span class="s2">&quot;personal&quot;</span><span class="o">]</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对应的<code>moving.yml</code>文件定义如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">personal</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">myservice</span><span class="p-Indicator">:</span> <span class="s">&quot;MINE&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">title</span><span class="p-Indicator">:</span> <span class="s">&quot;Mr&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">first</span><span class="p-Indicator">:</span> <span class="s">&quot;Juntao&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">last</span><span class="p-Indicator">:</span> <span class="s">&quot;Qiu&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">dob_day</span><span class="p-Indicator">:</span> <span class="s">&quot;1&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">dob_month</span><span class="p-Indicator">:</span> <span class="s">&quot;Jan&quot;</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">dob_year</span><span class="p-Indicator">:</span> <span class="s">&quot;1985&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Misc</h4>
+
+<p>为了达到视觉效果，UI上通常会有一些延迟的效果。比如点击一个按钮，在100ms之后弹出一个对话框，但是这种效果会导致测试的<code>随机</code>失败。</p>
+
+<p>为了解决这个问题，我们可以通过给元素添加<code>wait_until_</code>前缀来等待。比如我们的测试中，在点击了下一步的按钮之后，预期有一个<code>查看收费详情</code>的对话框出现。根据一般的实现方式，这个对话框是预先写在页面上的，然后在合适的实际通过<code>JavaScript</code>将其显示在页面上（这样我们就不能通过查看该元素<em>是否存在</em>在页面上来编写断言了）。</p>
+
+<p><img src="/images/2015/01/lightbox-resized.png" alt="lightbox" /></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">element</span> <span class="ss">:lightbox_view_fees</span><span class="p">,</span> <span class="s2">&quot;#tmsLBViewFees&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">Then</span> <span class="sr">/I can see the lightbox View Fees shows up/</span> <span class="k">do</span>
+</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">wait_until_lightbox_view_fees_visible</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>最后的结论</h3>
+
+<p>通常，我们的UI测试会和<code>特性描述</code>写在一起，以<code>Cucumber</code>为例，在<code>feature</code>文件中，我们会编写诸如这样的描述：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">Feature</span><span class="p">:</span> <span class="no">Platinum</span> <span class="no">Move</span>
+</span><span class='line'>  <span class="no">Scenario</span><span class="p">:</span> <span class="no">Platinum</span> <span class="no">Move</span>
+</span><span class='line'>      <span class="no">Given</span> <span class="n">I</span> <span class="n">am</span> <span class="n">on</span> <span class="n">moving</span> <span class="n">home</span> <span class="n">page</span>
+</span><span class='line'>      <span class="no">When</span> <span class="n">I</span> <span class="nb">select</span> <span class="n">to</span> <span class="n">move</span> <span class="n">my</span> <span class="n">service</span> <span class="s2">&quot;Foxtel from Telstra&quot;</span>
+</span><span class='line'>      <span class="no">And</span> <span class="n">I</span> <span class="nb">select</span> <span class="n">a</span> <span class="s2">&quot;Telstra technician install&quot;</span>
+</span><span class='line'>      <span class="no">Then</span> <span class="n">I</span> <span class="n">can</span> <span class="n">see</span> <span class="n">the</span> <span class="n">lightbox</span> <span class="s2">&quot;View Fees&quot;</span> <span class="n">shows</span> <span class="n">up</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而一个良好的<code>实现</code>，我是说，像<code>feature</code>描述一样清晰的实现，可能是这样的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">Given</span> <span class="sr">/I am on moving home page/</span> <span class="k">do</span>
+</span><span class='line'>  <span class="vi">@moving</span> <span class="o">=</span> <span class="no">MovingHome</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>      <span class="vi">@moving</span><span class="o">.</span><span class="n">load</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">When</span> <span class="sr">/I select to move my telstra service &quot;([^&quot;]*)&quot;/</span> <span class="k">do</span> <span class="o">|</span><span class="n">selected</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">setup_data</span>
+</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">fulfill</span> <span class="n">selected</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Then</span> <span class="sr">/I can see the installation form/</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">expect</span><span class="p">(</span><span class="vi">@moving</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_move_service</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Then</span> <span class="sr">/I cannot see the installation form/</span> <span class="k">do</span>
+</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">move_service</span><span class="o">.</span><span class="n">should_not</span> <span class="n">be_visible</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">And</span> <span class="sr">/I select a &quot;([^&quot;]*)&quot;/</span> <span class="k">do</span> <span class="o">|</span><span class="n">install</span><span class="o">|</span>
+</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">move_service</span><span class="o">.</span><span class="n">select_install</span> <span class="n">install</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Then</span> <span class="sr">/I can see the lightbox &quot;([^&quot;]*)&quot; shows up/</span> <span class="k">do</span> <span class="o">|</span><span class="nb">name</span><span class="o">|</span>
+</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">lightbox</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_visible</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>基本上，每个<code>step</code>仅仅对应1行（或者很少的几行）代码，而这些代码背后有一组组织良好的<code>PageObject</code>。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2057,126 +2450,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/09/setup-ie-series-testing-enviroments/">快速搭建IE测试环境（Virtualbox+ievms）</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-01T18:16:00+10:00" pubdate data-updated="true">Sep 1<span>st</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>IE下的测试</h3>
-
-<p>作为一个有追求的程序员，应该尽可能的远离Windows系统。不论从专业开发者的角度，还是仅仅作为最终用户从使用体验上来说，Windows都可以算是垃圾中的战斗机：<code>没有shell</code>、<code>响应极慢</code>（比如从开机到可用需要多久，再对比一下Mac下的体验）、大部分操作都强依赖于鼠标，没有对应的快捷键、各类<code>病毒</code>等等。</p>
-
-<p>但是，最为一个职业的程序员，又很难绕开Windows这个<code>猥琐</code>而又事实上很现实的存在，毕竟Windows在非专业市场上的占有率还是不容小觑的。一般而言，开发人员可以很轻松的使用现代的操作系统，编辑器，开发工具完成实际的业务需求，这部分工作很可能占整个交付工作的40%，但是又不得不在多个浏览器（IE的各个版本）中花费另外的60%。</p>
-
-<p>既然很难抛开，那么我们就需要想办法简化对其的使用，比如将Windows隔离为一个纯粹的测试环境（不安装任何其他的软件，并且一旦<code>感染病毒</code>之后可以快速恢复）。</p>
-
-<ol>
-<li>将Windows安装到虚拟机中</li>
-<li>使用工具将诸如下载镜像，安装系统，安装特定版本的IE等操作简化为一条命令</li>
-<li>可以很容易的创建一个干净，纯粹，稳定的Windows环境</li>
-</ol>
-
-
-<p><a href="https://github.com/xdissent/ievms">ievms</a>正是这样一个工具，它提供安装了各种版本IE的Windows操作系统的镜像，支持IE6到IE11。默认的，用户可以安装从IE6到IE11的所有镜像，但是很可能你无须所有的环境，ievms也提供对应的参数来确保只下载某一个。</p>
-
-<p>不过对于一个团队来讲，可以安装所有的镜像到团队的某台公共的机器上，供所有人来进行跨IE浏览器的各个版本的测试。</p>
-
-<p>这些虚拟机镜像都是虚拟磁盘<code>vmdk</code>文件，因此你需要先安装<a href="(https://www.virtualbox.org/wiki/Downloads">VirtualBox</a>)。</p>
-
-<h4>安装ievms</h4>
-
-<p>安装ievms非常容易，只需要下载一个脚本即可：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl -s https://raw.githubusercontent.com/xdissent/ievms/master/ievms.sh -L
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>github会将该请求重定向，所以加上<code>-L</code>参数来跳转到实际的地址。下载之后，执行该脚本：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>chmod +x ievms.sh
-</span><span class='line'><span class="nv">$ </span>./ievms.sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>默认的<code>ievms</code>会下载所有的虚拟机镜像，可以通过参数<code>IEVMS_VERSIONS</code>来选择特定版本的虚拟机：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>./ievms.sh <span class="nv">IEVMS_VERSIONS</span><span class="o">=</span><span class="s2">&quot;7 8 9&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当然，也可以将这些命令合并为一行命令：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl -s https://raw.githubusercontent.com/xdissent/ievms/master/ievms.sh -L | <span class="nv">IEVMS_VERSIONS</span><span class="o">=</span><span class="s2">&quot;7 8 9&quot;</span> bash
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>用法</h4>
-
-<p>安装之后，一个新的虚拟机会被添加到VirtualBox中，只需要启动这个虚拟机即可：</p>
-
-<p><img src="/images/2014/09/ie8-prepaid-resized.png" alt="image" /></p>
-
-<p>另外，在这个虚拟机中，可以很方便的连接到宿主机。比如在宿主机上的12306端口运行了某个Web应用，那么通过地址：http://10.0.2.2:12306 来访问这个应用。</p>
-
-<p><code>注意</code>: 由于是整个虚拟磁盘的形式发布，因此这些镜像的体积都非常大，所有的镜像安装之后，会占用37G的空间，对于任何一个开发机来说，这个尺寸过于庞大，但是对于整个团队来说，应该还是可以接受的。</p>
-
-<p>官方给出的尺寸列表如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>du -ch *
-</span><span class='line'> 11G    IE10 - Win7-disk1.vmdk
-</span><span class='line'> 11G    IE11 - Win7-disk1.vmdk
-</span><span class='line'>1.5G    IE6 - WinXP-disk1.vmdk
-</span><span class='line'>1.6G    IE7 - WinXP-disk1.vmdk
-</span><span class='line'>1.6G    IE8 - WinXP-disk1.vmdk
-</span><span class='line'> 11G    IE9 - Win7-disk1.vmdk
-</span><span class='line'> 37G    total
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/5/">&larr; Older</a>
@@ -2194,6 +2467,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2016/02/performance-testing-in-ci/">CI上的Web前端性能测试</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/02/pitfall-of-technology/">技术的执念</a>
       </li>
     
@@ -2207,10 +2484,6 @@
     
       <li class="post">
         <a href="/2016/01/a-poor-mans-cd-part2/">穷人的持续集成与持续交付（下）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/01/a-poor-mans-cd-part1/">穷人的持续集成与持续交付（上）</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ThoughtWorks | I code it]]></title>
   <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-02-14T20:26:04+11:00</updated>
+  <updated>2016-02-20T18:40:28+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,202 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CI上的Web前端性能测试]]></title>
+    <link href="http://abruzzi.github.com/2016/02/performance-testing-in-ci/"/>
+    <updated>2016-02-20T18:18:00+11:00</updated>
+    <id>http://abruzzi.github.com/2016/02/performance-testing-in-ci</id>
+    <content type="html"><![CDATA[<h2>Web站点的响应速度</h2>
+
+<p>雅虎在2006年就发布了一份提升Web站点响应速度的<a href="https://developer.yahoo.com/performance/rules.html">最佳实践指南</a>。该指南包含了35条规则，分为7个类别。这些规则已经被广泛使用，并指导人们在新的站点设计时更有针对性的考虑问题。这份指南已经成了Web前端性能度量的一个事实标准了。</p>
+
+<p><a href="http://yslow.org/">YSlow</a>是一个基于这份指南的测试工具，它可以测试一个站点是否“慢”，以及为什么“慢”？你可以通过很多方式来使用<a href="http://yslow.org/">YSlow</a>，比如Firefox，Chrome的插件，命令行工具，甚至PhantomJS这样的无头（Headless）浏览器。YSlow会检测你的站点中的资源是否没有压缩，是否缺失了超时设置，更进一步，它还会检测你的JS/CSS是否已经压缩/精简化，图片的尺寸，是否使用了CDN等等很多的维度。它还可以生成很多格式的报告，比如打分信息，TAP协议的输出，以及junit测试报告的格式。</p>
+
+<p>我们这里讨论如何在持续集成服务器上设置一个<code>YSlow</code>任务，这个任务会在每次构建之后，测试你应用的性能指标，以帮助你更快的发现和定位问题。当然，我推荐你在<code>staging</code>环境，很多开发者在测试环境，本地开发环境都会启动很多对<code>Debug</code>友好的设置，比如未压缩的JS/CSS，没有超时设置的响应等，这会导致该构建任务的<code>打分</code>不够准确。</p>
+
+<p><img src="/images/2016/02/jenkins-report-resized.png" alt="jenkins failure" /></p>
+
+<h3>搭建CI环境</h3>
+
+<p>按照传统方式，如果要搭建一个这样的CI任务，我们需要至少做这样一些事情：</p>
+
+<ul>
+<li>安装JDK</li>
+<li>安装Jenkins</li>
+<li>安装<a href="http://phantomjs.org/">PhantomJS</a></li>
+<li>安装<a href="http://yslow.org/phantomjs/">YSlow.js脚本</a></li>
+</ul>
+
+
+<p>然后设置环境变量，在Jenkins上创建任务，并运行YSlow.js脚本。这个任务很简单，只需要设置好参数，然后将结果输出为Jenkins上的报告即可。比如：</p>
+
+<p><code>sh
+$ phantomjs /var/share/yslow.js -i grade -threshold "B" -f junit \
+http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/ &gt; yslow.xml
+</code></p>
+
+<ul>
+<li><code>-i grade</code> 展示打分（grade）信息（还可以是basic/stats/all）等</li>
+<li><code>-threshold "B"</code> 指定失败的阈值为B</li>
+<li><code>-f junit</code> 输出为<code>junit</code>识别的XML格式</li>
+</ul>
+
+
+<p>这里的阈值可以是数字（0-100分），字母（A-F级别）或者一个JSON字符串（混合使用）</p>
+
+<p><code>sh
+-threshold '{"overall": "B", "ycdn": "F", "yexpires": 85}'
+</code></p>
+
+<p>上面的命令会测试站点<code>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/</code>的各项指标，并应用雅虎的那35条规则，并最终生成一个<code>junit</code>测试报告格式的文件：<code>yslow.xml</code>。</p>
+
+<p>但是维护CI环境是一个比较麻烦的事情，而且既然每个项目都可能会用到这样的<code>基础设施</code>，一种好的做法就是将其做成一个<code>镜像</code>保存起来，以方便其他项目的复用！这里我们使用<code>docker</code>来安装和配置我们的CI环境，配置完成之后，我们可以将<code>docker</code>的镜像分享给其他团队，也可以供我们在下一个项目中使用。</p>
+
+<h3>基于docker/docker-compose的环境搭建</h3>
+
+<p>在<a href="https://www.docker.com/">docker</a>出现之前，我们要搭建一个<code>测试</code>或者<code>staging</code>环境，往往需要很多个不同角色的机器：有专门的数据库服务器，文件服务器，缓存服务器，Web服务器，反向代理等等。这样在成本上显然是个不小的开销，如果将所有不同的组件部署在同一台机器上，则又可能互相干扰，只需要一个小小的失误，整个系统就需要重新配置。更可怕的是，这个环境和生产系统不一致，那么很可能真实的错误要等到系统上线之后才会被发现。</p>
+
+<p>比如在2012年，我所在的一个项目中，客户的系统采用传统的J2EE架构。本地开发中，我们使用了Jetty作为容器，而<code>测试</code>和<code>Staging</code>环境使用了Tomcat。由于Tomcat对空格的处理和Jetty有所不同，我们在本地测试通过，并且运行良好的代码，在<code>Staging</code>变得完全不能工作。这个问题花费了团队很多时间来排查错误。</p>
+
+<p>在<code>docker</code>出现之后，我们可以在一台物理机器上运行多个互不干涉的容器，每个容器可以是一个组件（比如运行数据库的容器，Web服务器容器等等）。这样不但缩减了成本，而且可以让我们的环境尽可能和生产环境一致（有的项目甚至直接将CI出来的镜像应用到生产中）。不过对多个容器的管理是一个很麻烦的事情，好在<code>docker</code>提供了<a href="https://docs.docker.com/compose/overview/">docker-compose</a>工具来解决这个问题。使用<code>docker-compose</code>可以定义一组互相独立，但是又可以协作在一起的容器，这样我们可以很容易的搭建一个<code>仿生产</code>环境。</p>
+
+<p>比如我们可以定义个<code>docker-compse.yml</code></p>
+
+<p>```yml
+app:
+  build: .
+  links:</p>
+
+<pre><code>- db:postgres
+</code></pre>
+
+<p>  ports:</p>
+
+<pre><code>- 8000:8000
+</code></pre>
+
+<p>  volumes:</p>
+
+<pre><code>- .:/app
+</code></pre>
+
+<p>  working_dir: /app
+  entrypoint: /app/start.sh
+  environment:</p>
+
+<pre><code>JDBC_DATABASE_URL: jdbc:postgresql://postgres:5432/bookmarks
+DATABASE_USER: bookmarks-user
+DATABASE_PASS: bookmarks-password
+</code></pre>
+
+<p>db:
+  image: postgres:9.3
+  ports:</p>
+
+<pre><code>- 5432:5432
+</code></pre>
+
+<p>  environment:</p>
+
+<pre><code>POSTGRES_DB: bookmarks
+POSTGRES_USER: bookmarks-user
+POSTGRES_PASSWORD: bookmarks-password
+</code></pre>
+
+<p>```</p>
+
+<p>这个<code>docker-compose</code>定义了两个组件，<code>app</code>和<code>db</code>。<code>db</code>使用了<code>postgres:9.3</code>镜像，并设置了自己的环境变量。<code>app</code>则从当前目录<code>.</code>构建一个新的镜像，<code>app</code>与<code>db</code>通过<code>links</code>属性连接起来。</p>
+
+<p>如果在当前目录执行<code>docker-compose build</code>命令，<code>docker-compose</code>会找到本地的<code>Dockerfile</code>，然后构建出一个<code>docker</code>的镜像，并启动该容器，同时，它还会启动<code>postgres:9.3</code>容器作为数据库组件。这样我们的环境就被完整的搭建好了。</p>
+
+<h4>搭建CI环境</h4>
+
+<p>```yml
+app:
+  build: .
+  ports:</p>
+
+<pre><code>- 8080:8080
+- 50000:50000
+</code></pre>
+
+<p>  volumes:</p>
+
+<pre><code>- ./data:/var/jenkins_home
+</code></pre>
+
+<p>```</p>
+
+<p>这个配置，表明我们会根据当前目录的<code>Dockerfile</code>来构建一个镜像。</p>
+
+<p>通过命令<code>volumns</code>，我们将本地目录<code>./data</code>映射为<code>jenkins_home</code>，这样我们定义的job信息，以及插件的安装都会放到本地的目录中，方便管理。配置完成之后，构建并启动该容器：</p>
+
+<p>```
+FROM jenkins:latest</p>
+
+<h1>Env</h1>
+
+<p>ENV PHANTOMJS_VERSION 1.9.6
+ENV PHANTOMJS_YSLOW_VERSION 3.1.8
+ENV SHARE_BIN /var/share</p>
+
+<h1>Install stuff by using root</h1>
+
+<p>USER root
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y git wget libfreetype6 libfontconfig bzip2</p>
+
+<p>RUN mkdir -p $SHARE_BIN</p>
+
+<p>RUN wget -q --no-check-certificate -O /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 \
+https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2
+RUN tar -xjf /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 -C /tmp
+RUN rm -f /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2
+RUN mv /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64/ $SHARE_BIN/phantomjs
+RUN ln -s $SHARE_BIN/phantomjs/bin/phantomjs /usr/bin/phantomjs</p>
+
+<p>RUN wget -q --no-check-certificate -O /tmp/yslow-phantomjs-$PHANTOMJS_YSLOW_VERSION.zip \
+http://yslow.org/yslow-phantomjs-$PHANTOMJS_YSLOW_VERSION.zip
+RUN unzip /tmp/yslow-phantomjs-$PHANTOMJS_YSLOW_VERSION.zip -d $SHARE_BIN/
+USER jenkins
+```</p>
+
+<p>执行下面的命令来设置并启动CI服务器：</p>
+
+<p><code>sh
+docker-compose up
+</code></p>
+
+<p><img src="/images/2016/02/jenkins-in-docker-resized.png" alt="jenkins in docker" /></p>
+
+<p>创建新任务，并指定该任务执行的命令为：</p>
+
+<p><code>sh
+$ phantomjs /var/share/yslow.js -i grade -threshold "B" -f junit \
+http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/ &gt; yslow.xml
+</code></p>
+
+<p>由于此时<code>phantomjs</code>已经被安装到了容器中，我们可以直接在jenkins中使用。运行结束之后，这个命令会生成一个报告：</p>
+
+<p><img src="/images/2016/02/jenkins-report-resized.png" alt="jenkins failure" /></p>
+
+<ul>
+<li>没有压缩内容</li>
+<li>没有添加过期的头信息</li>
+</ul>
+
+
+<p>在产品环境，我们需要使用反向代理来添加这些头信息，以保证最终用户在使用Web站点时的体验。</p>
+
+<h3>总结</h3>
+
+<p>我们只需要很少的配置就可以设置好一个工作良好的CI任务，这样在程序员某天引入了未经压缩的JS/CSS或者UX不小心提供了巨大而未经处理的图片时，你可以尽快的得到通知，并在正是上线之前发现这些问题。</p>
+
+<p><a href="https://github.com/abruzzi/phantomjs-yslow">代码配置</a>在这里。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[技术的执念]]></title>
@@ -631,295 +827,6 @@ AWS_SECRET_ACCESS_KEY=xxxxxxxxxx
 <h2>总结</h2>
 
 <p>我们前端的持续交付也介绍完了。现在前后端应用完全独立，发布也互不影响。不论是服务器端新增加了API，还是添加了新数据，客户端的发布都不受影响；同样，修改样式，添加新的<code>JavaScript</code>也完全不会影响后端。更重要的是，所有的发布都是一键式的，开发者只需要一个<code>git push</code>就可以享受这些免费服务提供的自动构建，自动化测试以及自动部署的功能。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[穷人的持续集成与持续交付（上）]]></title>
-    <link href="http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1/"/>
-    <updated>2016-01-09T23:34:00+11:00</updated>
-    <id>http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1</id>
-    <content type="html"><![CDATA[<h1>服务器端应用的持续交付</h1>
-
-<p>本文将使用一些免费的服务来为你的项目搭建<code>持续交付</code>平台，这些服务包括</p>
-
-<ul>
-<li>持续集成环境</li>
-<li>持续部署环境</li>
-<li>服务端应用托管</li>
-</ul>
-
-
-<p>以及一些可以用于本地开发使用的开源工具如：</p>
-
-<ul>
-<li><a href="https://github.com/abruzzi/node-build-monitor">基于Node的构建monitor</a></li>
-<li><a href="https://toolbelt.heroku.com/">Heroku的命令行工具</a></li>
-<li><a href="https://github.com/travis-ci/travis.rb">Travis CI的命令行工具</a></li>
-</ul>
-
-
-<p>除此之外，我们在过程中编写的脚本还可以用以本地构建，如果你的团队中正好已经有CI工具/CD工具，将这些脚本集成进去也是一件非常容易的事情。</p>
-
-<p><img src="/images/2016/01/heroku-log-resized.png" alt="heroku real time log" /></p>
-
-<h2>背景知识</h2>
-
-<h3>软件的度量</h3>
-
-<p>传统的管理方法论，在软件开发这个领域来说基本上是不工作的。软件项目的不确定性使得人们畏惧，管理者希望通过一些数字，指标来让自己感到某种虚幻的“掌控感”。软件行数，测试覆盖率，代码故障率等数字的名声基本上已经很糟了，经常有人拿来讽刺那些追求虚幻掌控感的“领导”。</p>
-
-<p>但是有一个数字，即使最顽固的“自由主义者”也会认为是有意义的，那就是周期时间（cycle time）。简而言之，就是一个需求从产生到最终上线所需要的时间。其中包括了需求分析，设计，编码，测试，部署，运维等活动，可能还会包含后续的监控。</p>
-
-<p>其实不论是瀑布模型，还是迭代开发的方式，或者其他的方法论，周期时间的缩短都是至关重要的。而具体到周期内，单纯的开发时间变长或者测试时间变长都无关紧要。比如项目A的开发时间是测试时间的2倍，项目B则恰恰反过来，这并不能说A做的比B好，真正有意义的是A的周期时间是否比B更短。</p>
-
-<p>单纯改善项目过程中的某一个阶段的时间，可能并不能达到预期的目的。局部优化并不一定会带来全局的优化。换言之，<strong>通过某些策略来提高软件测试的效率未必能减少周期时间！</strong>。</p>
-
-<h3>持续交付</h3>
-
-<p>传统情况下，企业要进行软件开发，从用户研究到产品上线，其中会花费数月，甚至数年（我的一位印度同事给我聊起过，他的上家公司做产品，从版本启动到版本上线需要整整两年时间！）。而且一旦软件需求发生变更，又有需要数月才能将变更发布上线。除了为变更提交代码外，还有很多额外的回归测试，发布计划，运维部门的进度等等。而市场机会千变万化，在特定的时间窗口中，企业的竞争者可能早已发布并占领了相当大的市场份额。</p>
-
-<p>在软件工程领域，人们提出了持续交付（continuous delivery）的概念，它旨在减少周期时间，强调在任何时刻软件都处于可发布状态。采用这种实践，我们可以频繁，快速，安全的将需求的变化发布出来，交由真实世界的用户来使用，在为用户带来价值的同时，我们也可以快速，持续的得到反馈，并激励新的变化产生（新的商业创新，新的模式等）。</p>
-
-<p>持续交付包含了自动化构建，自动化测试以及自动化部署等过程，持续改进开发流程中的问题，并促进开发人员，测试人员，运维人员之间的协作，团队可以在分钟级别将变更发布上线。</p>
-
-<h3>持续交付相关技术及实践</h3>
-
-<ul>
-<li>版本控制（配置管理）</li>
-<li>持续集成CI</li>
-<li>自动化测试</li>
-<li>构建工具及构建脚本</li>
-<li>部署流水线</li>
-</ul>
-
-
-<p>团队通过版本控制来进行协作，所有的代码会在持续集成环境中编译，代码静态检查/分析，自动化测试（还可能产生报告等）。除此之外，CI还还需要有自动化验收测试，自动化回归测试等。</p>
-
-<p>持续交付则更进一步，它将环境准备，持续集成，自动化部署等放在了一起。通过全自动（有些过程可以设置为手动，比如发布到产品环境）的方式，使得软件可以一键发布。如果上线后发现严重defect，还支持一键回滚的机制（其实就是将之前的一个稳定版本做一次发布，由于发布流程已经经过千锤百炼，所以发布本身就变得非常轻松，安全）</p>
-
-<p>这篇文章中，我们会使用<code>git</code>+<code>github</code>作为版本控制工具，<code>travis-ci</code>作为持续集成环境，<code>gradle</code>作为构建工具，<code>Heroku</code>作为应用的部署环境。这些工具都是免费服务，如果你需要更高级的功能（比如更多的并发数，更大的数据库），则可以选择付费套餐。不过对于我们平时的大部分side project来说，免费服务已经足够。</p>
-
-<h2>实例</h2>
-
-<p>我在<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">《前后端分离了，然后呢？》</a>这篇文章中，提到了一个叫做<code>bookmarks</code>的应用，这个应用是一个前后端分离的非常彻底的应用。</p>
-
-<p>我们这里会再次使用这个应用作为实例，并采用不同的两个免费服务（<a href="https://travis-ci.org">travis-ci</a>和<a href="https://snap-ci.com">snap-ci</a>）来完成<code>持续部署</code>环境的搭建。</p>
-
-<h3>bookmarks服务器</h3>
-
-<p><code>bookmarks-server</code>是一个基于<code>spring-boot</code>的纯粹的<code>API</code>，它可以被打包成一个<code>jar</code>包，然后通过命令行启动运行。在本文中，我们我们将会将这个server部署到<a href="https://dashboard.heroku.com/">heroku</a>平台上。</p>
-
-<p>首先需要定义一个<code>Procfile</code>，这个是我们应用的入口，<code>heroku</code>根据这个文件来明确以何种方式来启动我们的应用：</p>
-
-<p><code>
-web: java -Dserver.port=$PORT -jar build/libs/bookmarks-server-0.1.0.jar --spring.profiles.active=staging
-</code></p>
-
-<p>由于我们在本地使用的使用<code>mysql</code>，而<code>heroku</code>默认的是<code>postgres</code>数据库，因此需要在<code>application.yml</code>中额外配置</p>
-
-<p>```yml
-spring:
-  profiles: staging</p>
-
-<p>  datasource:</p>
-
-<pre><code>driverClassName: org.postgresql.Driver
-url: ${JDBC_DATABASE_URL}
-username: ${DATABASE_USER}
-password: ${DATABASE_PASS}
-</code></pre>
-
-<p>  jpa:</p>
-
-<pre><code>database_platform: org.hibernate.dialect.PostgreSQLDialect
-hibernate:
-  ddl-auto: update
-</code></pre>
-
-<p>```</p>
-
-<p>有了这些配置后，我们需要创建一个<code>heroku</code>应用：</p>
-
-<p><code>sh
-$ heroku create
-Created http://quiet-atoll-8237.herokuapp.com/ | git@heroku.com:quiet-atoll-8237.git
-</code></p>
-
-<p>创建之后，我们可以在界面上对这个应用进行一些配置（当然，也可以通过命令行，具体参看<code>heroku help</code>）。为了支持数据库，需要为我们的应用添加一个<code>postgres</code>的AddOn。添加之后，<code>heroku</code>会为我们提供一个<code>postgres</code>的连接地址，格式大概是这样：</p>
-
-<p><code>
-postgres://username:password@host:port/database
-</code></p>
-
-<p>然后我们需要在<code>Heroku</code>的配置界面中配置一些环境变量：</p>
-
-<p><img src="/images/2016/01/heroku-config-resized.png" alt="heroku env config" /></p>
-
-<p>这样，当应用部署到<code>Heroku</code>上之后，我们的应用就可以读到这些配置了（注意<code>application.yml</code>中的环境变量<code>JDBC_DATABASE_URL</code>）。</p>
-
-<h4>搭建持续集成环境</h4>
-
-<p>持续集成环境，这里我们选用最简单的<code>travis-ci</code>，它可以很容易的与<code>github</code>集成。</p>
-
-<ul>
-<li>在项目X中定义一个<code>.travis.yml</code>的文件</li>
-<li>将你的代码push到github上</li>
-<li>绑定github帐号到<code>travis</code></li>
-<li>在<code>travis</code>中启用项目X</li>
-</ul>
-
-
-<p>这个<code>.travis.yml</code>因项目而异，我们这里的项目是<code>spring-boot</code>，所以只需要指定<code>java</code>即可：</p>
-
-<p><code>yml
-language: java
-</code></p>
-
-<p>如果是<code>java</code>项目，并且项目中有<code>build.gradle</code>，<code>travis-ci</code>会自动执行<code>gradle check</code>任务。</p>
-
-<h4>自动化部署</h4>
-
-<p>当CI运行成功之后，我们需要<code>travis-ci</code>帮我们将应用程序发布到<code>heroku</code>上，这时候需要做一些修改。最简单的方式是直接安装<code>travis-ci</code>的命令行工具到本地：</p>
-
-<p><code>sh
-$ gem install travis -v 1.8.0 --no-rdoc --no-ri
-</code></p>
-
-<p>然后通过<code>heroku</code>的<code>auth:token</code>命令获得<code>heroku</code>的token，在加密并写入<code>.travis.yml</code>：</p>
-
-<p>```sh
-$ heroku auth:token
-00xxxxxxxxxxxxx55d11dbd0cxxxxxxxxxxfe067</p>
-
-<p>$ travis encrypt 00xxxxxxxxxxxxx55d11dbd0cxxxxxxxxxxfe067 --add
-```</p>
-
-<p>当然可以合并为一条命令：</p>
-
-<p><code>sh
-$ travis encrypt $(heroku auth:token) --add
-</code></p>
-
-<p>将加密过的token存入<code>.travis.yml</code>文件。最后的结果大致如下：</p>
-
-<p>```yml
-language: java
-deploy:
-  provider: heroku
-  api_key:</p>
-
-<pre><code>secure: ...
-</code></pre>
-
-<p>  app: quiet-atoll-8237
-```</p>
-
-<p>注意此处的<code>app</code>，正是我们的App的名字。另外，还需要给<code>build.gradle</code>添加一个名叫<code>stage</code>的task，<code>travis</code>在deploy时需要这个<code>task</code>：</p>
-
-<p>```groovy
-task stage {</p>
-
-<pre><code>dependsOn build
-</code></pre>
-
-<p>}
-```</p>
-
-<p><img src="/images/2016/01/travis-deploy-resized.png" alt="travis deploy" /></p>
-
-<p>这样，我们只需要在本地的一个提交，一切都会自动化起来：</p>
-
-<ul>
-<li>travis会执行<code>gradle check</code></li>
-<li><code>gradle check</code>会编译并运行自动化测试</li>
-<li><code>travis</code>会部署应用到<code>heroku</code>上</li>
-<li><code>heroku</code>会自动重启服务</li>
-</ul>
-
-
-<p>我们可以在本地进行简单的测试（注意此处我们的<code>staging</code>环境的URL）：</p>
-
-<p>```sh
-$ curl https://quiet-atoll-8237.herokuapp.com/api/feeds -s | jq .
-[
-  {</p>
-
-<pre><code>"id": 1,
-"url": "http://icodeit.org/2016/01/how-to-summarize-privious-project/",
-"title": "如何持久化你的项目经历",
-"author": "icodit.org",
-"summary": "通常来说，下项目总是一件比较高兴的事（大部分团队还会一起吃个饭庆祝一下）。",
-"publishDate": "2016-01-07"
-</code></pre>
-
-<p>  },
-  {</p>
-
-<pre><code>"id": 2,
-"url": "http://icodeit.org/2015/11/get-started-with-reflux/",
-"title": "你为什么应该试一试Reflux？",
-"author": "icodit.org",
-"summary": "React在设计之初就只关注在View本身上，其余部分如数据的获取，事件处理等，全然不在考虑之内。",
-"publishDate": "2016-01-09"
-</code></pre>
-
-<p>  }
-]
-```</p>
-
-<p>完整的<a href="https://github.com/abruzzi/bookmarks-server">代码在这里</a>。</p>
-
-<h2>其他</h2>
-
-<h3>CI monitor</h3>
-
-<p><a href="https://github.com/abruzzi/node-build-monitor">node-build-monitor</a>是一个非常容易配置，使用的CI monitor，我们只需要进行简单地配置，就可以将<code>travis</code>的状态可视化出来</p>
-
-<p>```json
-{
-  "monitor": {</p>
-
-<pre><code>"interval": 2000,
-"numberOfBuilds": 12,
-"debug": true
-</code></pre>
-
-<p>  },
-  "services": [</p>
-
-<pre><code>{
-  "name": "Travis",
-  "configuration": {
-    "slug": "abruzzi/bookmarks-server"
-  }
-}
-</code></pre>
-
-<p>  ]
-}
-```</p>
-
-<p>不过这个工具会在有网络异常时自动终止，我们可以通过一个简单的脚本来在它终止时自动重启：</p>
-
-<p>```sh</p>
-
-<h1>!/bin/bash</h1>
-
-<p>until node app/app.js
-do</p>
-
-<pre><code>echo "restarting..."
-</code></pre>
-
-<p>done
-```</p>
-
-<p><img src="/images/2016/01/ci-monitor-resized.png" alt="CI Monitor" /></p>
-
-<h2>小结</h2>
-
-<p>通过<code>travis</code>和<code>heroku</code>这样的免费服务，我们就可以轻松的将自己的项目做到持续集成+持续交付。我们后端的服务相对来说是比较容易的，但是涉及到一个前后端分离的架构，如何做到静态内容的托管，打包，部署，并和后端API集成起来，我会在下一篇文章中详细解释。</p>
 ]]></content>
   </entry>
   

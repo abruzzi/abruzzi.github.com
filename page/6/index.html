@@ -9,7 +9,12 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="一个场景 元编程在所有的Lisp系语言中应该都是一个必备的feature，coommon lisp, scheme等包含该功能自然不在话下，而比较主流的编程语言如JavaScript，python之流，也或多或少的受到了lisp得影响，在面向对象的同时，也嵌入了一些元编程的特性。 &hellip;">
+  <meta name="description" content="AngularJS中的一个典型的Controller 在AngularJS中，Controller主要用于hold一些跟view的有关的状态，以及数据模型，比如界面上某些元素是否展示，以及展示那些内容等。通常来说，Controller会依赖与一个Service来提供数据： 1
+2
+3
+4
+5
+6 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +87,271 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/12/how-to-test-controller-in-angularjs/">如何测试AngularJS中的Controller</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-28T17:40:00+11:00" pubdate data-updated="true">Dec 28<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>AngularJS中的一个典型的Controller</h3>
+
+<p>在AngularJS中，Controller主要用于hold一些跟view的有关的状态，以及数据模型，比如界面上某些元素是否展示，以及展示那些内容等。通常来说，Controller会依赖与一个Service来提供数据：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;EventController&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;$scope&#39;</span><span class="p">,</span> <span class="s1">&#39;EventService&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">EventService</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">EventService</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">events</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">$scope</span><span class="p">.</span><span class="nx">events</span> <span class="o">=</span> <span class="nx">events</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而service本身则需要通过向后台服务发送请求来获取数据：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;EventService&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;$http&#39;</span><span class="p">,</span> <span class="s1">&#39;$q&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="kd">function</span><span class="p">(</span><span class="nx">$http</span><span class="p">,</span> <span class="nx">$q</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">getEvents</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>              <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">$q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/events.json&#39;</span><span class="p">).</span><span class="nx">success</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                  <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span><span class='line'>              <span class="p">}).</span><span class="nx">error</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                  <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span><span class='line'>              <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>              <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">};</span>
+</span><span class='line'>  <span class="p">}]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通常的做法是返回一个<a href="http://docs.angularjs.org/api/ng.$q">promise</a>对象，然后当数据准备完整之后，controller的then会被执行。</p>
+
+<p>那么对于这种情况（在AngularJS中，算是一个非常典型的场景），我们如何进行单元测试呢？</p>
+
+<h3>测试依赖与Service的Controller</h3>
+
+<p>通常来讲，在单元级别的测试中，我们肯定不希望Service真正的发送请求，这样就变成了集成测试，而且前端的开发完全依赖与后台的开发进度/稳定程度等。</p>
+
+<p>所以我们需要做一个假的Service，这个假的Service仅仅在测试中存在：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;MyApp&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">describe</span><span class="p">(</span><span class="s2">&quot;EventController&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">scope</span><span class="p">,</span> <span class="nx">q</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">controllerFactory</span><span class="p">;</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">mockSerivce</span> <span class="o">=</span> <span class="p">{};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">events</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Event1&quot;</span><span class="p">,</span> <span class="s2">&quot;Event2&quot;</span><span class="p">,</span> <span class="s2">&quot;Event3&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">module</span><span class="p">(</span><span class="s2">&quot;MyApp&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">inject</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">$rootScope</span><span class="p">,</span> <span class="nx">$controller</span><span class="p">,</span> <span class="nx">$q</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">controllerFactory</span> <span class="o">=</span> <span class="nx">$controller</span><span class="p">;</span>
+</span><span class='line'>          <span class="nx">scope</span> <span class="o">=</span> <span class="nx">$rootScope</span><span class="p">.</span><span class="nx">$new</span><span class="p">();</span>
+</span><span class='line'>          <span class="nx">q</span> <span class="o">=</span> <span class="nx">$q</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+</span><span class='line'>      <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">events</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">mockSerivce</span><span class="p">.</span><span class="nx">getEvents</span> <span class="o">=</span> <span class="nx">jasmine</span><span class="p">.</span><span class="nx">createSpy</span><span class="p">(</span><span class="s1">&#39;getEvents&#39;</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">mockSerivce</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">.</span><span class="nx">andReturn</span><span class="p">(</span><span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">function</span> <span class="nx">initController</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">controllerFactory</span><span class="p">(</span><span class="s1">&#39;EventController&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">$scope</span><span class="o">:</span> <span class="nx">scope</span><span class="p">,</span>
+</span><span class='line'>          <span class="nx">EventService</span><span class="o">:</span> <span class="nx">mockSerivce</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should have a events list&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">initController</span><span class="p">();</span>
+</span><span class='line'>      <span class="nx">scope</span><span class="p">.</span><span class="nx">$digest</span><span class="p">();</span>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">scope</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</span><span class='line'>      <span class="nx">expect</span><span class="p">(</span><span class="nx">scope</span><span class="p">.</span><span class="nx">events</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">events</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>此处有很多值得注意的事情：</p>
+
+<h4>在何处实例化Controller</h4>
+
+<p>不要在注入<code>beforeEach</code>中初始化Controller，很多示例中都会在注入了<code>$controller</code>之后紧接着实例化Controller，如果Controller有多个外部的依赖的话，那么在<code>beforeEach</code>中的代码将越来越多，而且读每一个测试用例时会有一些疑惑。</p>
+
+<p>一个好的做法是将依赖注入到<code>describe</code>中的临时变量中，然后将初始化的动作延后到一个函数中：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">initController</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">controllerFactory</span><span class="p">(</span><span class="s1">&#39;EventController&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$scope</span><span class="o">:</span> <span class="nx">scope</span><span class="p">,</span>
+</span><span class='line'>      <span class="nx">EventService</span><span class="o">:</span> <span class="nx">mockSerivce</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>如何mock一个service</h4>
+
+<p>由于在AngularJS中，Service一般会返回一个<a href="http://docs.angularjs.org/api/ng.$q">promise</a>对象。因此在测试时需要有一些技巧来绕过：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">events</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Event1&quot;</span><span class="p">,</span> <span class="s2">&quot;Event2&quot;</span><span class="p">,</span> <span class="s2">&quot;Event3&quot;</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">events</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">mockSerivce</span><span class="p">.</span><span class="nx">getEvents</span> <span class="o">=</span> <span class="nx">jasmine</span><span class="p">.</span><span class="nx">createSpy</span><span class="p">(</span><span class="s1">&#39;getEvents&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">mockSerivce</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">.</span><span class="nx">andReturn</span><span class="p">(</span><span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，当使用注入<code>EventService.getEvents().then(callback)</code>的地方就可以访问到此处的promise对象了。</p>
+
+<p>如果添加了新的用例，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">&#39;EventController&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;$scope&#39;</span><span class="p">,</span> <span class="s1">&#39;EventService&#39;</span><span class="p">,</span>
+</span><span class='line'>  <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">EventService</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">EventService</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">events</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">$scope</span><span class="p">.</span><span class="nx">events</span> <span class="o">=</span> <span class="nx">events</span><span class="p">;</span>
+</span><span class='line'>          <span class="nx">$scope</span><span class="p">.</span><span class="nx">recentEvent</span> <span class="o">=</span> <span class="nx">$scope</span><span class="p">.</span><span class="nx">events</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>则在用例开始完成创建Controller的动作即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should have a recent event&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">initController</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">scope</span><span class="p">.</span><span class="nx">$digest</span><span class="p">();</span>
+</span><span class='line'>  <span class="nx">expect</span><span class="p">(</span><span class="nx">scope</span><span class="p">.</span><span class="nx">recentEvent</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s2">&quot;Event1&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>完整的代码<a href="https://github.com/abruzzi/angularjs-controller-demo">请看此处</a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2041,250 +2311,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/06/macro-in-common-lisp/">Common Lisp中的宏(Macro)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-15T11:12:00+10:00" pubdate data-updated="true">Jun 15<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h4>Lisp与其他语言之区别</h4>
-
-<p>函数式编程，前缀表达式，繁多的括号，奇怪的操作符等等，这些都足以让Lisp和其他编程语言看起来有很大的区别，但是这些区别并非本质上的差异。让Lisp和其他编程语言有本质区别的是它对<code>宏</code>的支持。</p>
-
-<p>C语言中的，被称为<code>宏</code>的预编译系统自有其好处，但是和Lisp中的<code>宏</code>比起来，好比的Notepad和Vim或者Emacs之间的差异。</p>
-
-<h4>数据与代码</h4>
-
-<p>在Lisp中，数据和代码间的差异非常小，<a href="http://icodeit.org/2013/06/common-lisp-basic/">上一篇文章</a>简单讨论了<code>引用</code>的基本概念，其中对数据与代码的差异已经有所涉及。</p>
-
-<h4>宏(Macro)</h4>
-
-<p>简而言之，<code>宏</code>即替换，在Lisp中，可以通过程序生成代码(s-expr)，而这些代码又可以被执行（当然，需要是合法的s-expr）。这一点赋予了<code>宏</code>无限的可能性，比如定义一个新的语法：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro only (condition &rest body)
-</span><span class='line'>  `(if ,condition (progn ,@body)))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Lisp中函数macroexpand-1可以用来查看调用时<code>宏</code>是如何展开的：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (macroexpand-1 '(only (&gt; x 10) (format t "big than 10")))   
-</span><span class='line'>
-</span><span class='line'>(IF (&gt; X 10)
-</span><span class='line'>    (PROGN (FORMAT T "big than 10")))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上例中，<code>(&gt; x 10)</code>被作为<code>condition</code>，而<code>(format t "big than 10")</code>作为<code>body</code>传递给了宏。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (macroexpand-1 '(only (&gt; x 10) 
-</span><span class='line'>  (format t "big than 10")
-</span><span class='line'>  (format t "~%")))
-</span><span class='line'>
-</span><span class='line'>(IF (&gt; X 10)
-</span><span class='line'>    (PROGN (FORMAT T "big than 10") (FORMAT T "~%")))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用<code>progn</code>是为了让剩余的多条语句(如果有的话)，逐条执行，并返回最后一条语句的值（正如在函数中那样）。</p>
-
-<h4>可能的陷阱</h4>
-
-<p><a href="http://icodeit.org/2013/06/common-lisp-basic/">上一篇文章</a>中讨论了迭代的通用方式<code>do</code>，虽然很通用，但是三段式的定义略显繁琐。</p>
-
-<p>我们可以编写一个简单的宏<code>ntimes</code>，它接受一个数字参数N和一个代码块Block，并执行N次这个Block：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(ntimes 10 (format t "Hello, world~%"))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>将打印10次<code>Hello, world</code>，<code>宏</code>的定义如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro ntimes (n &rest prog)
-</span><span class='line'>  `(do ((x 0 (1+ x)))
-</span><span class='line'>       ((&gt;= x ,n))
-</span><span class='line'>     ,@prog))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但是这个宏在某些场景下不能如预期般的工作：比如当在使用<code>ntimes</code>的context中，本身有一个变量x，而在代码块Block中，尝试修改这个x，会发生什么呢？</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(let ((x 10))
-</span><span class='line'>    (ntimes 5
-</span><span class='line'>       (format t "~a~%" x)))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>预期的执行结果为打印5次10，但是事实上：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>0
-</span><span class='line'>1
-</span><span class='line'>2
-</span><span class='line'>3
-</span><span class='line'>4</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这是因为<code>宏</code>的内部使用了同名的变量，而由于作用域的原因，外部的let被屏蔽了，事实上宏的设计者貌似无法避免这类事情的发生，因为使用者如何使用是不能预料的，Lisp提供了另一种解决方案(类似于UUID)，使用<code>gensym</code>，以避免这种情况：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (gensym)
-</span><span class='line'>
-</span><span class='line'>#:G778
-</span><span class='line'>&gt; (gensym)
-</span><span class='line'>
-</span><span class='line'>#:G779</span></code></pre></td></tr></table></div></figure>
-
-
-<p>函数<code>gensym</code>每次都会分配一个新的ID作为标示，因此宏的实现可以修改为：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro ntimes (n &rest prog)
-</span><span class='line'>  (let ((g (gensym)))
-</span><span class='line'>    `(do ((,g 0 (+ ,g 1)))
-</span><span class='line'>         ((&gt;= ,g ,n))
-</span><span class='line'>       ,@prog)))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>事实上，这个版本还是有一个隐藏的bug：这里我们预期的n是一个数字，而实际上使用者是可以传入一个表达式如：<code>(setf x (- x 1))</code>，而由于<code>do</code>的特性，迭代中每次都查看测试条件是否满足<code>(&gt;= ,g ,n)</code>，这会使得<code>(setf x (- x 1))</code>会被执行N次。也就是说，当数字N是一个有副作用的表达式时，我们的宏的行为是错误的，可以通过引入额外的临时变量来解决这个问题。</p>
-
-<p>即在最开始的适合对N求值并赋值给一个临时变量，然后每次的测试都是基于这个临时变量而来：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro ntimes (n &rest prog)
-</span><span class='line'>  (let ((g (gensym))
-</span><span class='line'>        (h (gensym)))
-</span><span class='line'>    `(let ((,h ,n))
-</span><span class='line'>       (do ((,g 0 (+ ,g 1)))
-</span><span class='line'>           ((&gt;= ,g ,h))
-</span><span class='line'>         ,@prog))))</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>定义新的语法</h4>
-
-<p>这一小节的一个例子是for循环的<code>宏</code>定义：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro for (var start stop &body body)
-</span><span class='line'>  (let ((gstop (gensym)))
-</span><span class='line'>    `(do ((,var ,start (1+ ,var))
-</span><span class='line'>          (,gstop ,stop))
-</span><span class='line'>         ((&gt; ,var ,gstop))
-</span><span class='line'>       ,@body)))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，可以很方便的使用我们比较熟悉的for语句了：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (for x 1 5
-</span><span class='line'>     (print x))
-</span><span class='line'>
-</span><span class='line'>1 
-</span><span class='line'>2 
-</span><span class='line'>3 
-</span><span class='line'>4 
-</span><span class='line'>5 </span></code></pre></td></tr></table></div></figure>
-
-
-<p>另一个有意思的例子是求平均值的<code>avg</code>宏：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>(defmacro avg (&rest args)
-</span><span class='line'>  `(/ (+ ,@args) ,(length args)))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>由于Lisp中采取前缀表达式，因此像<code>+</code>这种函数可以很方便的apply到一个列表上，如果是中缀表达式，则这种形式的抽象就变得非常复杂。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; (macroexpand-1 '(avg 1 2 3 4 5 6 7 8 9 10))
-</span><span class='line'>(/ (+ 1 2 3 4 5 6 7 8 9 10) 10)
-</span><span class='line'>
-</span><span class='line'>&gt; (avg 1 2 3 4 5 6 7 8 9 10)
-</span><span class='line'>11/2</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<p>附：文中部分代码示例来源于《ANSI Common Lisp》一书。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/7/">&larr; Older</a>
@@ -2302,6 +2328,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2016/02/performance-testing-in-ci/">CI上的Web前端性能测试</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/02/pitfall-of-technology/">技术的执念</a>
       </li>
     
@@ -2315,10 +2345,6 @@
     
       <li class="post">
         <a href="/2016/01/a-poor-mans-cd-part2/">穷人的持续集成与持续交付（下）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/01/a-poor-mans-cd-part1/">穷人的持续集成与持续交付（上）</a>
       </li>
     
   </ul>
