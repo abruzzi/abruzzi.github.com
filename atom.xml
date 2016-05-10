@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-02-20T18:40:28+11:00</updated>
+  <updated>2016-05-10T19:28:24+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,342 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[保护你的API（上）]]></title>
+    <link href="http://abruzzi.github.com/2016/05/about-session-and-security-api-1/"/>
+    <updated>2016-05-10T19:12:00+10:00</updated>
+    <id>http://abruzzi.github.com/2016/05/about-session-and-security-api-1</id>
+    <content type="html"><![CDATA[<h2>保护你的API</h2>
+
+<p>在大部分时候，我们讨论API的设计时，会从功能的角度出发定义出完善的，易用的API。而很多时候，非功能需求如安全需求则会在很晚才加入考虑。而往往这部分会涉及很多额外的工作量，比如与外部的SSO集成，Token机制等等。</p>
+
+<p>这篇文章会以一个简单的例子，从应用程序和部署架构上分别讨论几种常见的模型。这篇文章是这个系列的第一篇，会讨论两个简单的主题：</p>
+
+<ul>
+<li>基于Session的用户认证</li>
+<li>基于Token的RESTful API（使用Spring Security）</li>
+</ul>
+
+
+<h3>使用Session</h3>
+
+<p>由于HTTP协议本身是无状态的，服务器需要某种机制来区分每个请求。比如在返回给客户的响应中加入一些ID，客户端再次请求时带上这个ID，这样服务器就可以区分出来每个请求，并完成事务性的操作（完成订单的创建，更新，商品派送等等）。</p>
+
+<p>在多数Web容器中，这种机制通过Session来实现。Web容器会为每个首次请求创建一个Session，并将Session的ID以浏览器Cookie的方式返回给客户端。客户端（常常是浏览器）在后续的请求中带上这个Session的ID来表明自己的身份。这种机制同样被用在了鉴权方面，用户登录系统之后，系统分配一个Session ID给他。</p>
+
+<p>除非Session过期，或者用户从客户端的Cookie中主动删了Session ID，否则在服务器端来看，用户的信息会和这个Session绑定起来。后台系统也可以随时知道请求某个资源的真实用户是谁，并以此来判断该用户时候真的有权限这么做。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">HttpSession</span> <span class="n">session</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getSession</span><span class="o">();</span>
+</span><span class='line'><span class="n">String</span> <span class="n">user</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span><span class="n">session</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">&quot;user&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="o">(</span><span class="n">user</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">//</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Session的问题</h4>
+
+<p>这种做法在小规模应用中工作良好，随着用户的增多，企业往往需要部署多台服务器形成集群来对外提供服务。在集群模式下，当某个节点挂掉之后，由于Session默认是保存在部署Web容器中的，用户会被误判为未登录，后续的请求会被重定向到登陆页面，影响用户体验。</p>
+
+<p>这种将应用程序状态内置的方法已经完全无法满足应用的扩展，因此在工程实践中，我们会采用将Session外置的方式来解决这个问题。即集群中的所有节点都将Session保存在一个公用的键值数据库中：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Configuration</span>
+</span><span class='line'><span class="nd">@EnableRedisHttpSession</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HttpSessionConfig</span> <span class="o">{</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面这个例子是在Spring Boot中使用Redis来外置Session。Spring会拦截所有对HTTPSession对象的操作，后续的对Session的操作，Spring都会自动转换为与后台的Redis服务器的交互，从而避免节点挂掉之后Session丢失的问题。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">spring</span><span class="o">.</span><span class="na">redis</span><span class="o">.</span><span class="na">host</span><span class="o">=</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">99.100</span>
+</span><span class='line'><span class="n">spring</span><span class="o">.</span><span class="na">redis</span><span class="o">.</span><span class="na">password</span><span class="o">=</span>
+</span><span class='line'><span class="n">spring</span><span class="o">.</span><span class="na">redis</span><span class="o">.</span><span class="na">port</span><span class="o">=</span><span class="mi">6379</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果你跟我一样懒的话，直接启动一个redis的docker container就可以：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>docker run --name redis-server -d redis
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，多个应用共享这一个实例，任何一个节点的终止、异常都不会产生Session的问题。</p>
+
+<h3>基于Token的安全机制</h3>
+
+<p>上面说到的场景中，使用Session需要额外部署一个组件（或者引入更加复杂的Session同步机制），这会带来另外的问题，比如如何保证这个节点的高可用，除了Production环境之外，Staging和QA环境也需要这个组件的配置、测试和维护。</p>
+
+<p>很多项目现在会采用另外一种更加简单的方式：基于Token的安全机制。即不使用Session，用户在登陆之后，会获得一个Token，这个Token会以HTTP Header的方式发送给客户，同样，客户再后续的资源请求中也需要带着这个Token。通常这个Token还会有过期时间的限制（比如只能使用1周，一周之后需要重新获取）。</p>
+
+<p>基于Token的机制更加简单，和RESTful风格的API一起使用更加自然，相较于传统的Web应用，RESTful的消费者可能是人，也可能是Mobile App，也可能是系统中另外的Service。也就是说，并不是所有的消费者都可以处理一个登陆表单！</p>
+
+<h4>Restful API</h4>
+
+<p>我们通过一个实例来看使用Spring Security保护受限制访问资源的场景。</p>
+
+<p>对于Controller：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@RestController</span>
+</span><span class='line'><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&quot;/protected&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ProtectedResourceController</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&quot;/{id}&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Message</span> <span class="nf">getOne</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">&quot;id&quot;</span><span class="o">)</span> <span class="n">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">new</span> <span class="nf">Message</span><span class="o">(</span><span class="s">&quot;Protected resource &quot;</span><span class="o">+</span><span class="n">id</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们需要所有请求上都带有一个<code>X-Auth-Token</code>的Header，简单起见，如果这个Header有值，我们就认为这个请求已经被授权了。我们在Spring Security中定义这样的一个配置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="n">HttpSecurity</span> <span class="n">http</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">http</span><span class="o">.</span>
+</span><span class='line'>            <span class="nf">csrf</span><span class="o">().</span><span class="na">disable</span><span class="o">().</span>
+</span><span class='line'>            <span class="n">sessionManagement</span><span class="o">().</span><span class="na">sessionCreationPolicy</span><span class="o">(</span><span class="n">SessionCreationPolicy</span><span class="o">.</span><span class="na">STATELESS</span><span class="o">).</span>
+</span><span class='line'>            <span class="n">and</span><span class="o">().</span>
+</span><span class='line'>            <span class="n">authorizeRequests</span><span class="o">().</span>
+</span><span class='line'>            <span class="n">anyRequest</span><span class="o">().</span>
+</span><span class='line'>            <span class="n">authenticated</span><span class="o">().</span>
+</span><span class='line'>            <span class="n">and</span><span class="o">().</span>
+</span><span class='line'>            <span class="n">exceptionHandling</span><span class="o">().</span>
+</span><span class='line'>            <span class="n">authenticationEntryPoint</span><span class="o">(</span><span class="k">new</span> <span class="n">RestAuthenticationEntryPoint</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们使用<code>SessionCreationPolicy.STATELESS</code>无状态的Session机制（即Spring不使用HTTPSession），对于所有的请求都做权限校验，这样Spring Security的拦截器会判断所有请求的Header上有没有&#8221;X-Auth-Token&#8221;。对于异常情况（即当Spring Security发现没有），Spring会启用一个认证入口：<code>new RestAuthenticationEntryPoint</code>。在我们这个场景下，这个入口只是简单的返回一个401即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Component</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestAuthenticationEntryPoint</span> <span class="kd">implements</span> <span class="n">AuthenticationEntryPoint</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">commence</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span>
+</span><span class='line'>                         <span class="n">AuthenticationException</span> <span class="n">authException</span> <span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">response</span><span class="o">.</span><span class="na">sendError</span><span class="o">(</span> <span class="n">HttpServletResponse</span><span class="o">.</span><span class="na">SC_UNAUTHORIZED</span><span class="o">,</span> <span class="s">&quot;Unauthorized&quot;</span> <span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这时候，如果我们请求这个受限制的资源：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl http://api.kanban.com:9000/api/protected/1 -s | jq .
+</span><span class='line'><span class="o">{</span>
+</span><span class='line'>  <span class="s2">&quot;timestamp&quot;</span>: 1462621552738,
+</span><span class='line'>  <span class="s2">&quot;status&quot;</span>: 401,
+</span><span class='line'>  <span class="s2">&quot;error&quot;</span>: <span class="s2">&quot;Unauthorized&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;message&quot;</span>: <span class="s2">&quot;Unauthorized&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;path&quot;</span>: <span class="s2">&quot;/api/protected/1&quot;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>过滤器（Filter）及预认证（PreAuthentication）</h4>
+
+<p>为了让Spring Security可以处理用户登录的case，我们需要提供一个<code>Filter</code>。当然，Spring Security提供了丰富的<code>Filter</code>机制，我们这里使用一个预认证的<code>Filter</code>（即假设用户已经在别的外部系统如SSO中登录了）:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KanBanPreAuthenticationFilter</span> <span class="kd">extends</span> <span class="n">AbstractPreAuthenticatedProcessingFilter</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">SSO_TOKEN</span> <span class="o">=</span> <span class="s">&quot;X-Auth-Token&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">SSO_CREDENTIALS</span> <span class="o">=</span> <span class="s">&quot;N/A&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">KanBanPreAuthenticationFilter</span><span class="o">(</span><span class="n">AuthenticationManager</span> <span class="n">authenticationManager</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">setAuthenticationManager</span><span class="o">(</span><span class="n">authenticationManager</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">protected</span> <span class="n">Object</span> <span class="nf">getPreAuthenticatedPrincipal</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="na">getHeader</span><span class="o">(</span><span class="n">SSO_TOKEN</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">protected</span> <span class="n">Object</span> <span class="nf">getPreAuthenticatedCredentials</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">SSO_CREDENTIALS</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>过滤器在获得Header中的Token后，Spring Security会尝试去认证用户：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="n">AuthenticationManagerBuilder</span> <span class="n">builder</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">builder</span><span class="o">.</span><span class="na">authenticationProvider</span><span class="o">(</span><span class="n">preAuthenticationProvider</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="n">AuthenticationProvider</span> <span class="nf">preAuthenticationProvider</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">PreAuthenticatedAuthenticationProvider</span> <span class="n">provider</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PreAuthenticatedAuthenticationProvider</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">provider</span><span class="o">.</span><span class="na">setPreAuthenticatedUserDetailsService</span><span class="o">(</span><span class="k">new</span> <span class="n">KanBanAuthenticationUserDetailsService</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">provider</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里的<code>KanBanAuthenticationUserDetailsService</code>是一个实现了Spring Security的UserDetailsService的类：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KanBanAuthenticationUserDetailsService</span>
+</span><span class='line'>        <span class="kd">implements</span> <span class="n">AuthenticationUserDetailsService</span><span class="o">&lt;</span><span class="n">PreAuthenticatedAuthenticationToken</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">UserDetails</span> <span class="nf">loadUserDetails</span><span class="o">(</span><span class="n">PreAuthenticatedAuthenticationToken</span> <span class="n">token</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">UsernameNotFoundException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">String</span> <span class="n">principal</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">token</span><span class="o">.</span><span class="na">getPrincipal</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span><span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">principal</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="k">new</span> <span class="nf">KanBanUserDetails</span><span class="o">(</span><span class="k">new</span> <span class="n">KanBanUser</span><span class="o">(</span><span class="n">principal</span><span class="o">));</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个类的职责是，查看从<code>KanBanPreAuthenticationFilter</code>返回的<code>PreAuthenticatedAuthenticationToken</code>，如果不为空，则表示该用户在系统中存在，并正常加载用户。如果返回null，则表示该认证失败，这时根据配置，Spring Security会重定向到认证入口<code>RestAuthenticationEntryPoint</code>。</p>
+
+<p>加上这个过滤器的配置之后：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="n">HttpSecurity</span> <span class="n">http</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">//...</span>
+</span><span class='line'>    <span class="n">http</span><span class="o">.</span><span class="na">addFilter</span><span class="o">(</span><span class="n">headerAuthenticationFilter</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Bean</span>
+</span><span class='line'><span class="kd">public</span> <span class="n">KanBanPreAuthenticationFilter</span> <span class="nf">headerAuthenticationFilter</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">new</span> <span class="nf">KanBanPreAuthenticationFilter</span><span class="o">(</span><span class="n">authenticationManager</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，当我们在Header上加上<code>X-Auth-Token</code>之后，就会访问到受限的资源了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl -H <span class="s2">&quot;X-Auth-Token: juntao&quot;</span> http://api.kanban.com:9000/api/protected/1 -s | jq .
+</span><span class='line'><span class="o">{</span>
+</span><span class='line'>  <span class="s2">&quot;content&quot;</span>: <span class="s2">&quot;Protected resource for 1&quot;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>总结</h3>
+
+<p>下一篇文章会以另外一个方式来完成鉴权机制和系统的集成问题。我们会在反向代理中做一些配置，将多个Endpoint组织起来。要完成这样的功能，使用Spring Security也可以做到，不过可能会为应用程序本身引入额外的复杂性。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CI上的Web前端性能测试]]></title>
@@ -5418,163 +5754,6 @@
 <li><a href="https://github.com/abruzzi/bookmarks-server">bookmarks-server</a></li>
 </ol>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[我们真的缺前端工程师吗？]]></title>
-    <link href="http://abruzzi.github.com/2015/06/do-we-really-short-for-front-end-developer/"/>
-    <updated>2015-06-14T23:33:00+10:00</updated>
-    <id>http://abruzzi.github.com/2015/06/do-we-really-short-for-front-end-developer</id>
-    <content type="html"><![CDATA[<h3>前言</h3>
-
-<p>这两天在好几个地方都看到了一篇关于<a href="http://chuansong.me/n/1369941">为什么整个互联网行业都缺前端工程师？</a>的文章，文章本身是去年的，中心思想是：其实我们并不缺前端工程师，我们缺的是优秀的前端工程师。我还是比较同意作者观点的，不过略有意犹未尽的感觉。于是我结合自己的经验，也来聊一下这个话题：<strong>我们真的缺前端工程师吗？</strong></p>
-
-<p><code>
-These walls are kind of funny like that. First you hate them, then you get used to them.Enough time passed, get so you depend on them. That’s institutionalising.
-</code></p>
-
-<p>传统软件公司划分开发者的方式下，在前端部门的程序员永远不会去读缓存数据部分的代码，设计师也不太可能去和开发坐在一起，开发也不知道软件最终软件会以何种方式部署在服务器上。</p>
-
-<h3>什么是“前端”工程师</h3>
-
-<p>我在招聘广告和办公室的一些对话中，听到了一个新的角色：UI Dev，事实上我在知乎上还回答过一个<a href="http://www.zhihu.com/question/30170650">关于ThoughtWorks的UI Dev的问题</a>。简而言之，UI Dev可以快速的把设计师的作品实现为HTML/CSS/JavaScript代码。</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/06/website-development-resized.png" alt="front-end development" /></p>
-
-<p>如果按照这个标准，我觉得UI Dev对自己的要求太低了。毕竟要学会HTML/CSS实现mockup并不困难，但是成为一名前端工程师则需要掌握更多的知识：</p>
-
-<ul>
-<li>会用PS来进行图片的处理（比如切图，微调等）</li>
-<li>用HTML/CSS实现mockup（可能还有<a href="http://sass-lang.com/">SASS</a>/<a href="http://lesscss.org/">LESS</a>等工具）</li>
-<li>熟悉JavaScript（比如前端的MVVM框架，客户端模板）</li>
-<li>前端开发的工作流程（代码检查，精简化，模块化CSS，LiveReload，调试）</li>
-<li>编写测试（静态检查，单元测试）</li>
-<li>跨浏览器、跨设备的解决方法（不同分辨率，不同厂商）</li>
-<li>会根据项目的特点选择不同的前端技术栈（移动端，Web站点，响应式设计等）</li>
-</ul>
-
-
-<p>在有了基础的HTML/CSS/JS技能之后，你会尝试做的更好：</p>
-
-<ul>
-<li>如何更高效的操作DOM</li>
-<li>如何将CSS写的更加清晰易懂</li>
-<li>如何编写更加易于维护的代码（更有意义的单元测试）</li>
-<li>如何组织大型的项目结构，模块化，组件化等等</li>
-</ul>
-
-
-<p>这些要求事实上已经不那么容易做到了。它可能会花费你2到3年时间来完全掌握。但是2到3年之后，即便你已经成为了一个“合格的”前端工程师，这也还远远不够。在现实世界中，一个软件产品除了前端，还有非常广阔的空间，还有很多有趣的东西值得学习：</p>
-
-<ul>
-<li>HTTP协议本身（缓存，鉴权）</li>
-<li>Web容器/HTTP服务器如何工作</li>
-<li>无状态的Web应用的工作原理（如何让网站正确地运行在集群上）</li>
-<li>动态，静态内容如何分离部署（反向代理配置）</li>
-<li>安全机制如何配置</li>
-<li>监控机制如何配置</li>
-</ul>
-
-
-<p>有了这些，也算是有点端到端的意思了。这时你也已经不是一个“纯前端”工程师了，系统中的大部分问题你都可以搞定，不过日常工作中可能更多的职责还是做前端的开发。但是这些还不够，软件除了交付之外，还有一些非功能性的需求：</p>
-
-<ul>
-<li>端到端测试（UI测试，比如<a href="http://www.seleniumhq.org/">selenium server</a>/web driver）</li>
-<li>devops（比如数据库环境，测试服务器，CI服务器的自动化provision）</li>
-<li>基本的UI设计原则（在某些页面确实的情况下，根据系统的已有UI做设计）</li>
-<li>数据库性能优化</li>
-<li>性能测试</li>
-</ul>
-
-
-<p><del>不过这些还只是我对于Web开发这个领域的总结。其他领域，比如大数据，机器学习，GIS，图像/视频处理等等。</del></p>
-
-<p>这时候，你才能算是一个严格意义上的“前端”工程师。不从系统的角度来思考，不真正做一些后端开发/配置，并不能算是前端工程师，或者可以被称为<em>偏前端</em>工程师（partial frontend developer）。但是即使称为上边这样的“前端工程师”，我想这离一个优秀的工程师还是有<strong>很大差距</strong>的。</p>
-
-<p>我跟一位<a href="http://www.caicaiwan.com/">设计师同事</a>聊过这个问题：</p>
-
-<p><code>
-Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找到一些卡片（story卡或者需求文档说明书），然后撸袖子开干，干的过程中有很多自以为是的理解，同样有一些自以为是的牛逼实践（TDD啊，自动化啊），最后功能做完，大功告成，然后接着做下一个卡片。传统的Dev，或者苦逼屌丝程序员的世界就是这样的：需求从哪儿来，不知道；做完之后谁来负责质量，不知道；最终上线的时候怎么发布，不知道；线上有问题了怎么办，不知道。
-</code></p>
-
-<p>以及</p>
-
-<p><code>
-在ThoughtWorks，Dev的工作有了很大的变化，一个最明显的变化是边界的模糊。比如很多项目都不设QA角色，所有人都对质量负责，都做测试，也有OPs角色，但是大部分非生产环境都是Dev自己发布。也就是说，软件/项目生命周期中的大部分实践我们都能涉足，而且可以带来改进，提升效率。但是这只是往下游（从开发，到测试，到部署，到运维），反过来看上游，比如需求从哪儿来，Dev还是不知道。这毫无疑问是一个令人沮丧的事实，因为这需求的产生才是核心，也就是我昨天跟你聊的：一个idea如何变成一个可视化的原型，然后进一步演进为项目原型？
-</code></p>
-
-<p>开发工作不应该仅仅局限在编码上，作为开发者/工程师，应该尽可能的多了解一些上下文：比如我们的项目最终是给谁用的，需求从何而来，项目是如何部署在线上的等等。</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/06/software-life-cycle-resized.png" alt="software life cycle" /></p>
-
-<p>简而言之，开发者视野应该放开开阔一些。不要将自己局限在某种角色上，不但不要局限在前端/后端开发上，压根就不要局限在开发这种角色本身上，你在系统中，可以是设计师，还可以是业务分析师。虽然不一定最终要你去转行做BA，或者UX，但是更广阔的视野可以使你更加高效的发挥自己的作用，也可以在和别的角色互动式，快速的了解上下文。</p>
-
-<p>我所理解的，前端不一定要熟知所有这些知识和技能，但是<strong>一定不要认为自己做好了前端的一亩三分地就足够了</strong>，不要给自己设限。跨界会给你带来难以估量的好处，一个角色做久了，难免会产生一些盲点。这时候，换个视角，从其他角色的角度来看待你的工作，又会有很多新的发现。而且不仅如此，很可能你会发现之前很麻烦，很难搞定的事情，在新的方法/视角下变得很容易。</p>
-
-<h3>我的故事</h3>
-
-<h4>其实，我是一名后端开发</h4>
-
-<p>工作之后，我在很长一段时间是专注于“非前端”的领域。和很多刚入行的新人一样，我对计算机能触及的几乎一切领域都感兴趣：语言解释器，人工智能（遗传算法，隐式马尔科夫模型，自动纠错，模式识别），嵌入式开发，图形处理，操作系统的进程调度，进程间通信，多线程模型，各种脚本语言（python，ruby，JavaScript等等），另外，日常开发流程中的一些工具的定制化也会花去我很多的时间，比如如何配置vim，写几个小脚本来和编辑器做集成等等。更别说那些令人一听就觉得激动的编程范式：面向对象，基于消息总线，函数式编程等等。如果你感兴趣，可以看看我<a href="http://abruzzi.iteye.com/">几年前的博客</a>。</p>
-
-<p>我的上一家公司的产品是一个省级电网的收费/计费系统（电其实和我们在超市里购买的其他生活用品一样，也是一种商品）。我在那里工作了差不多两年，日常的开发方式就是ssh登陆到RHEL（Redhat Enterprise Linux）服务器上，用vim（当然有一堆的vim插件）开发C代码，调试器是gdb（对，就是那个很牛逼，但是对新手特别不友好的gdb）。</p>
-
-<p>我们用C语言给Apache的httpd写了一个扩展module，大约相当于现在rack里的中间件，这个module要和后端的一个要复杂的多的模块通信，其中不但涉及网络通信，还有*nix管道，缓冲，并发等等考虑。在这两年里，我几乎没有碰过任何的Web界面上的东西（除了用php写了一两百行的页面之外）。</p>
-
-<p>在加入这家公司之前，我在一家用Java做报表的公司工作，技术栈为J2EE。其中有一些前端的工作，但是并不很多，而且说实话，我当时有些看不太上这些技术。HTML/CSS在我心目中的地位比线程池，语言解析等差远了，所以我也没有认真地去系统学习。</p>
-
-<p>在加入ThoughtWorks之前，在“前端”方面，唯一算是比较擅长的也不过是写JavaScript，而且对于前端的MVVM框架，双向绑定，模块化等高级货都没听过。且不能论HTML/CSS的最佳实践，连根据设计稿做出一个静态页面的的能力也不具备。我之前有一点JSP/HTML经验，而CSS经验也并没有超出如何画一个细线表格的范畴。换句话说，我的前端（特别是HTML/CSS）是最近才学会的。</p>
-
-<h4>ThoughtWorks的开发</h4>
-
-<p>在ThoughtWorks，很多团队是按照feature团队来组建的。相对于传统的component团队（按部门划分，比如研发组，测试组，设计组等，每个组还有可能会再细分成如用户调研，流程设计，视觉设计等等），feature团队里配备了软件开发过程中需要的几乎所有角色：业务分析，测试工程师，开发工程师，设计师（设计师一般不会常驻），有的团队还有项目经理的角色。</p>
-
-<p>在feature团队里，你可以很容易看到不同的角色是如何工作的，很多时候，开发会和设计师一起来调整颜色，排版，布局，也可能和测试一起编写自动化测试用例，showcase等。也就是说，角色之间的藩篱在淡化，而就开发这一种角色而言，对于前端/后端的区分也会显得非常模糊，因为需求划分之后的story（敏捷开发中的一个术语，其实就是需求的一种展现方式）是端到端的，比如一个商品列表展示的story，会包括</p>
-
-<ul>
-<li>数据库的表结构</li>
-<li>访问数据库的<a href="https://en.wikipedia.org/wiki/Object-relational_mapping">ORM</a>部分，</li>
-<li>使用ORM的业务逻辑service</li>
-<li>响应客户端的controller（消费JSON或者XML的HTTP接口）</li>
-<li>发送请求，处理响应的JavaScript代码</li>
-<li>和设计稿一致的CSS样式</li>
-</ul>
-
-
-<p>而且在这个过程中还会涉及到一些外围的工具</p>
-
-<ul>
-<li>虚拟机环境准备</li>
-<li>数据库连接</li>
-<li>自动化测试（单元测试，集成测试，可能还有UI测试）</li>
-<li>数据库迁移脚本</li>
-</ul>
-
-
-<p>在这个过程中，开发者需要掌握和开发过程相关的一切实践中的一切工具.</p>
-
-<p>在我的<a href="http://www.thoughtworks.com/">ThoughtWorks</a>的第一个项目中，我是以Java开发工程师角色加入的，下项目的时候，我学会了自动化provision，<a href="https://cucumber.io/">cucumber</a>测试工具，Rails，<a href="https://gradle.org/">gradle</a>（没错，我之前用Java都是用IDE构建的，在Linux世界我用make），<a href="http://jasmine.github.io/2.0/introduction.html">jasmine</a>测试工具，<a href="http://backbonejs.org/">Backbone.js</a>，haml.js。</p>
-
-<p>第二个项目的时候，我是以前端工程师角色加入，下项目的时候，我学会了nginx配置缓存、负载均衡服务器，<a href="http://gatling.io/">gatling</a>测试工具，Hadoop/Spark等的集群配置，还有一些和项目相关的<a href="http://icodeit.org/2014/04/intro-map-gis/">GIS（地理信息系统）</a>的技术栈，前后端分离策略等。</p>
-
-<p>第三个项目我是以Java开发工程师角色加入的，下项目的时候，我学会了如何做性能测试，如何建立<a href="http://dashing.io/#setup">一个漂亮的Dashboard</a>（可以用来展现CI等），而且在业余时间系统的学习了CSS3和HTML5，将之前零敲碎打的那些知识串起来，这些总结做了几次内部培训后，还整理成了<a href="https://selfstore.io/products/348">一本电子书</a>。</p>
-
-<p>第四个项目我又变成了一个前端工程师，但是这个项目有意思的地方是跟mobile相关，于是页面性能，体验又变成了一个重点，下项目的时候，我对无状态的Web应用，session的持久化，<a href="https://www.gitbook.com/book/juntao/3-web-designs-in-3-weeks/details">CSS3的动画</a>，用Backbone.js组织多页面的方式等等又有了新的理解。</p>
-
-<p>如果这些经历造成了你觉得我很牛的错觉，那我应该道歉。我觉得自己勉强可以算是个合格的程序员：对学习保持着热情，对解决问题保持着热情，仅此而已。在项目上，如果我发现了问题，我就想办法解决，如果属于知识欠缺，那我就会去学习。我还远远没有到达精通这些技术的地步，但是在工程实践领域，根据<a href="https://en.wikipedia.org/wiki/Pareto_principle">80/20原则</a>，这些粗浅的知识足以解决80%的问题，而另外的20%，我们才真正需要一个专家来帮忙。也就是说，团队里需要有一个能解决20%的问题的前端工程师，而其他的80%的前端工作，应该可以被其他所有的开发完成，对于后端开发也是一样。</p>
-
-<p><del>尝试从系统级别去解决一个问题，而不是将问题抛给另外一个角色（后端工程师，UX或者QA）</del></p>
-
-<p>我是一个Dev，但是花了一些时间来学习界面设计，这里是我从设计到实现的两个小页面：</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/06/ilearn-resized.png" alt="ilearn" /></p>
-
-<p><img src="http://abruzzi.github.com/images/2015/06/lightweight-resized.png" alt="lightweight" /></p>
-
-<h3>总结</h3>
-
-<p>我们缺的从来都不是前端/后端工程师，而是<strong>工程师</strong>(或者那些会系统思考，并总是想着解决问题的人)。角色划分在大的机构内可能是有意义的，就像历史上工厂里，工人被分为车工，钳工，木工，电工。但是这种模式在软件开发中未必好用，<strong>具体而微</strong>的小团队可能更具竞争力。而在一个个的小团队中，再细分前端后端就显得比较滑稽了。团队中的每个成员都应该具备基本的端到端能力（不仅仅是开发，更应该是具有业务上下文，即每个人都清楚我们要交付的最终产品是什么，以及这个产品是如何帮助最终用户的），每个成员也都需要为最终的交付物负责，而不是为自己的职责负责。</p>
 ]]></content>
   </entry>
   
