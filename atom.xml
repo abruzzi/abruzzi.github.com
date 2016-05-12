@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-05-10T19:28:24+10:00</updated>
+  <updated>2016-05-12T23:08:15+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,309 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[保护你的API（下）]]></title>
+    <link href="http://abruzzi.github.com/2016/05/about-session-and-security-api-2/"/>
+    <updated>2016-05-12T22:50:00+10:00</updated>
+    <id>http://abruzzi.github.com/2016/05/about-session-and-security-api-2</id>
+    <content type="html"><![CDATA[<h2>前后端分离之后</h2>
+
+<p>前后端分离之后，在部署上通过一个反向代理就可以实现动静态分离，跨域问题的解决等。但是一旦引入鉴权，则又会产生新的问题。通常来说，鉴权是对于后台API/API背后的资源的保护，即<strong>未经授权的用户不能访问受保护资源</strong>。</p>
+
+<p>要实现这个功能有很多种方式，在应用程序之外设置完善的安全拦截器是最常见的方式。不过有点不够优雅的是，一些不太纯粹的、非功能性的代码和业务代码混在同一个代码库中。</p>
+
+<p>另一方面，各个业务系统都可能需要某种机制的鉴权，所以很多企业都会搭建SSO机制，即<a href="https://en.wikipedia.org/wiki/Single_sign-on">Single Sign-On</a>。这样可以避免人们在多个系统创建不同账号，设置不同密码，不同的超时时间等等。如果SSO系统已经先于系统存在了很久，那么新开发的系统完全不需要自己再配置一套用户管理机制了（一般SSO只会完成<strong>鉴权</strong>中<strong>鉴别</strong>的部分，<strong>授权</strong>还是需要各个业务系统自行处理）。</p>
+
+<p>本文中，我们使用基础设施（反向代理）的一些配置，来完成<strong>保护未授权资源</strong>的目的。在这个例子中，我们假设系统由这样几个服务器组成：</p>
+
+<h3>系统组成</h3>
+
+<p>这个实例中，我们的系统分为三部分</p>
+
+<ol>
+<li><code>kanban.com:8000</code>（业务系统前端）</li>
+<li><code>api.kanban.com:9000</code>（业务系统后端API）</li>
+<li><code>sso.kanban.com:8100</code> （单点登录系统，登陆界面）</li>
+</ol>
+
+
+<p>前端包含了HTML/JS/CSS等资源，是一个纯静态资源，所以本地磁盘即可。后端API则是一组需要被保护的API（比如查询工资详情，查询工作经历等）。最后，单点登录系统是一个简单的表单，用户填入用户名和密码后，如果登录成功，单点登录会将用户重定向到登录前的位置。</p>
+
+<p>我们举一个具体场景的例子：</p>
+
+<ol>
+<li>未登录用户访问<code>http://kanba.com:8000/index.html</code></li>
+<li>系统会重定向用户到<code>http://sso.kanban.com:8100/sso?return=http://kanba.com:8000/index.html</code></li>
+<li>用户看到登录页面，输入用户名、密码登录</li>
+<li>用户被重定向回<code>http://kanba.com:8000/index.html</code></li>
+<li>此外，<code>index.htm</code>l页面上的<code>app.js</code>对<code>api.kanban.com:9000</code>的访问也得到了授权</li>
+</ol>
+
+
+<h4>环境设置</h4>
+
+<p>简单起见，可以通过修改/etc/hosts文件来设置服务器环境：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>127.0.0.1 sso.kanban.com
+</span><span class='line'>127.0.0.1 api.kanban.com
+</span><span class='line'>127.0.0.1 kanban.com</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>nginx及auth_request</h3>
+
+<p>反向代理nginx有一个auth_request的模块。在一个虚拟host中，每个请求会先发往一个内部<code>location</code>，这个内部的<code>location</code>可以指向一个可以做鉴权的Endpoint。如果这个请求得到的结果是200，那么nginx会返回用户本来请求的内容，如果返回401，则将用户重定向到一个预定义的地址：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>server {
+</span><span class='line'>    listen 8000;
+</span><span class='line'>    server_name kanban.com;
+</span><span class='line'>
+</span><span class='line'>    root /usr/local/var/www/kanban/;
+</span><span class='line'>
+</span><span class='line'>    error_page 401 = @error401;
+</span><span class='line'>
+</span><span class='line'>    location @error401 {
+</span><span class='line'>        return 302 http://sso.kanban.com:8100/sso?return=$scheme://$http_host$request_uri;
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    auth_request /api/auth;
+</span><span class='line'>
+</span><span class='line'>    location = /api/auth {
+</span><span class='line'>        internal;
+</span><span class='line'>
+</span><span class='line'>        proxy_pass http://api.kanban.com:9000;
+</span><span class='line'>
+</span><span class='line'>        proxy_pass_request_body     off;
+</span><span class='line'>
+</span><span class='line'>        proxy_set_header Content-Length "";
+</span><span class='line'>        proxy_set_header X-Original-URI $request_uri;
+</span><span class='line'>        proxy_set_header Host $http_host;
+</span><span class='line'>        proxy_set_header X-Real-IP $remote_addr;
+</span><span class='line'>        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span><span class='line'>        proxy_set_header X-Forwarded-Proto $scheme;
+</span><span class='line'>
+</span><span class='line'>        if ($http_cookie ~* "w3=(\w+)") {
+</span><span class='line'>            set $token "$1";
+</span><span class='line'>        }
+</span><span class='line'>
+</span><span class='line'>        proxy_set_header X-KANBAN-TOKEN $token;
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>比如上面这个例子中，<code>auth_request</code>的URL为<code>/api/auth</code>，它是一个内部的location，外部无法访问。在这个<code>locaiton</code>中，请求会被转发到<code>http://api.kanban.com:9000</code>，根据nginx的正则语法，请求将会被转发到<code>http://api.kanban.com:9000/api/auth</code>（我们随后可以看到这个Endpoint的定义）。</p>
+
+<p>我们设置了请求的原始头信息，并禁用了request_body，如果cookie中包含了<code>w3=(\w+)</code>字样，则将这个w3的值抽取出来，并赋值给一个<code>X-KANBAN-TOKEN</code>的HTTP头。</p>
+
+<h4>权限Endpoint</h4>
+
+<p>对应的<code>/api/auth</code>的定义如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@RestController</span>
+</span><span class='line'><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&quot;/auth&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AuthController</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@RequestMapping</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">simpleAuth</span><span class="o">(</span><span class="nd">@RequestHeader</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&quot;X-KANBAN-TOKEN&quot;</span><span class="o">,</span> <span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">)</span> <span class="n">String</span> <span class="n">token</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">token</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="k">new</span> <span class="n">ResponseEntity</span><span class="o">&lt;&gt;(</span><span class="s">&quot;Unauthorized&quot;</span><span class="o">,</span> <span class="n">HttpStatus</span><span class="o">.</span><span class="na">UNAUTHORIZED</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="k">new</span> <span class="n">ResponseEntity</span><span class="o">&lt;&gt;(</span><span class="s">&quot;Authorized&quot;</span><span class="o">,</span> <span class="n">HttpStatus</span><span class="o">.</span><span class="na">OK</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果HTTP头上有<code>X-KANBAN-TOKEN</code>且值不为空，则返回200，否则返回401。</p>
+
+<p>当这个请求得到401之后，用户被重定向到<code>http://sso.kanban.com:8100/sso</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">error_page</span> <span class="mi">401</span> <span class="o">=</span> <span class="nd">@error401</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">location</span> <span class="nd">@error401</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">302</span> <span class="nl">http:</span><span class="c1">//sso.kanban.com:8100/sso?return=$scheme://$http_host$request_uri;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>SSO组件（简化版）</h3>
+
+<p>这里用<code>sinatra</code>定义了一个简单的SSO服务器（去除了实际的校验部分）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;sinatra&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;uri&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">set</span> <span class="ss">:return_url</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'><span class="n">set</span> <span class="ss">:bind</span><span class="p">,</span> <span class="s1">&#39;0.0.0.0&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/sso&#39;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="n">settings</span><span class="o">.</span><span class="n">return_url</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:return</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">send_file</span> <span class="s1">&#39;public/index.html&#39;</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">post</span> <span class="s1">&#39;/login&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">credential</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:credential</span><span class="o">]</span>
+</span><span class='line'>  <span class="c1"># check credential against database</span>
+</span><span class='line'>  <span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">return_url</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s2">&quot;w3&quot;</span><span class="p">,</span> <span class="p">{</span>
+</span><span class='line'>      <span class="ss">:domain</span> <span class="o">=&gt;</span> <span class="s2">&quot;.</span><span class="si">#{</span><span class="n">uri</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">:expires</span> <span class="o">=&gt;</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span> <span class="o">+</span> <span class="mi">2400</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">:value</span> <span class="o">=&gt;</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">credential</span><span class="o">[</span><span class="s1">&#39;name&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">:path</span> <span class="o">=&gt;</span> <span class="s1">&#39;/&#39;</span>
+</span><span class='line'>      <span class="p">})</span>
+</span><span class='line'>  <span class="n">redirect</span> <span class="n">settings</span><span class="o">.</span><span class="n">return_url</span><span class="p">,</span> <span class="mi">302</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>/sso</code>对应的Login Form是：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;/login&quot;</span> <span class="na">method=</span><span class="s">&quot;post&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;credential[name]&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;password&quot;</span> <span class="na">name=</span><span class="s">&quot;credential[password]&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;/form&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当用户提交表单之后，我们只是简单的设置了<code>cookie</code>，并重定向用户到跳转前的URL。</p>
+
+<h3>前端页面</h3>
+
+<p>这个应用的前端应用非常简单，我们只需要将这些静态文件放到<code>/usr/local/var/www/kanban</code>目录下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>$ tree /usr/local/var/www/kanban
+</span><span class='line'>
+</span><span class='line'>├── index.html
+</span><span class='line'>└── scripts
+</span><span class='line'>    ├── app.js
+</span><span class='line'>    └── jquery.min.js
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中<code>index.html</code>中引用的<code>app.js</code>会请求一个受保护的资源：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/api/protected/1&#39;</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#message&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="nx">message</span><span class="p">.</span><span class="nx">content</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从下图中的网络请求可以看到重定向的流程：</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/05/redirection-resized.png" alt="redirection" /></p>
+
+<h3>总结</h3>
+
+<p>本文我们通过配置反向代理，将多个Endpoint组织起来。这个过程可以在应用程序中通过代码实现，也可以在基础设施中通过配置实现，通常来讲，如果可以通过配置来实现的，就尽量将其与负责业务逻辑的代码隔离出来。这样可以保证各个组件的独立性，也可以使得优化和定位问题更加容易。</p>
+
+<p>完整的代码可以在这里下载：</p>
+
+<ul>
+<li><a href="https://github.com/abruzzi/fake-sso">Fake SSO</a></li>
+<li><a href="https://github.com/abruzzi/spring-security-demo">Spring Security Demo</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[保护你的API（上）]]></title>
@@ -5250,510 +5553,6 @@
 <p>按照经验，项目从来就不会按照计划进行，在做好一个粗略的计划之后，PM的职责更多的是进行动态调整。所以团队内部至少需要保持信息的流通，虽然可能短期来看可能会影响开发速度，但是从整体上来看，可以减少很多不必要的浪费。</p>
 
 <p>简而言之，要站在别人的角度考虑问题：<strong>如果换做是你，你会怎么做？</strong></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[前后端分离了，然后呢？]]></title>
-    <link href="http://abruzzi.github.com/2015/06/whats-next-after-separate-frontend-and-backend/"/>
-    <updated>2015-06-22T21:29:00+10:00</updated>
-    <id>http://abruzzi.github.com/2015/06/whats-next-after-separate-frontend-and-backend</id>
-    <content type="html"><![CDATA[<h3>前言</h3>
-
-<p>前后端分离已经是业界所共识的一种开发/部署模式了。所谓的前后端分离，并<strong>不是</strong>传统行业中的按部门划分，一部分人纯做前端（HTML/CSS/JavaScript/Flex），另一部分人纯做后端，因为这种方式是<strong>不工作</strong>的：比如很多团队采取了后端的模板技术（JSP, FreeMarker, ERB等等），前端的开发和调试需要一个后台Web容器的支持，从而无法做到真正的分离（更不用提在部署的时候，由于动态内容和静态内容混在一起，当设计动态静态分流的时候，处理起来非常麻烦）。关于前后端开发的另一个讨论可以<a href="http://icodeit.org/2015/06/do-we-really-short-for-front-end-developer/">参考这里</a>。</p>
-
-<p>即使通过API来解耦前端和后端开发过程，前后端通过<code>RESTFul</code>的接口来通信，前端的静态内容和后端的动态计算分别开发，分别部署，<strong>集成</strong>仍然是一个绕不开的问题 &#8212; 前端/后端的应用都可以独立的运行，但是集成起来却不工作。我们需要花费大量的精力来调试，直到上线前仍然没有人有信心所有的接口都是工作的。</p>
-
-<h3>一点背景</h3>
-
-<p>一个典型的Web应用的布局看起来是这样的：</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/06/single-backend-resized.png" alt="typical web application" /></p>
-
-<p>前后端都各自有自己的开发流程，构建工具，测试集合等等。前后端仅仅通过接口来编程，这个接口可能是JSON格式的RESTFul的接口，也可能是XML的，重点是后台只负责数据的提供和计算，而完全不处理展现。而前端则负责拿到数据，组织数据并展现的工作。这样结构清晰，关注点分离，前后端会变得相对独立并松耦合。</p>
-
-<p>上述的场景还是比较理想，我们事实上在实际环境中会有非常复杂的场景，比如异构的网络，异构的操作系统等等:</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/06/multiple-backend-resized.png" alt="real word application" /></p>
-
-<p>在实际的场景中，后端可能还会更复杂，比如用C语言做数据采集，然后通过Java整合到一个数据仓库，然后该数据仓库又有一层Web Service，最后若干个这样的Web Service又被一个Ruby的聚合Service整合在一起返回给前端。在这样一个复杂的系统中，后台任意端点的失败都可能阻塞前端的开发流程，因此我们会采用mock的方式来解决这个问题：</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/06/mock-server-resized.png" alt="mock application" /></p>
-
-<p>这个<code>mock</code>服务器可以启动一个简单的HTTP服务器，然后将一些静态的内容serve出来，以供前端代码使用。这样的好处很多:</p>
-
-<ol>
-<li>前后端开发相对独立</li>
-<li>后端的进度不会影响前端开发</li>
-<li>启动速度更快</li>
-<li>前后端都可以使用自己熟悉的技术栈（让前端的学maven，让后端的用gulp都会很不顺手）</li>
-</ol>
-
-
-<p>但是当<strong>集成</strong>依然是一个令人头疼的难题。我们往往在集成的时候才发现，本来协商的数据结构变了：<code>deliveryAddress</code>字段本来是一个字符串，现在变成数组了（业务发生了变更，系统现在可以支持多个快递地址）；<code>price</code>字段变成字符串，协商的时候是<code>number</code>；用户邮箱地址多了一个层级等等。这些变动在所难免，而且时有发生，这会花费大量的调试时间和集成时间，更别提修改之后的回归测试了。</p>
-
-<p>所以仅仅使用一个静态服务器，然后提供<code>mock</code>数据是远远不够的。我们需要的<code>mock</code>应该还能做到：</p>
-
-<ol>
-<li>前端依赖指定格式的mock数据来进行UI开发</li>
-<li>前端的开发和<strong>测试</strong>都基于这些mock数据</li>
-<li>后端产生指定格式的mock数据</li>
-<li>后端需要测试来确保生成的mock数据正是前端需要的</li>
-</ol>
-
-
-<p>简而言之，我们需要商定一些契约，并将这些契约作为<strong>可以被测试</strong>的中间格式。然后前后端都需要有测试来使用这些契约。一旦契约发生变化，则另一方的测试会失败，这样就会驱动双方协商，并降低集成时的浪费。</p>
-
-<p>一个实际的场景是：前端发现已有的某个契约中，缺少了一个<code>address</code>的字段，于是就在契约中添加了该字段。然后在UI上将这个字段正确的展现了（当然还设置了字体，字号，颜色等等）。但是后台生成该契约的服务并没有感知到这一变化，当运行生成契约部分测试（后台）时，测试会失败了 &#8212; 因为它并没有生成这个字段。于是后端工程师就找前端来商量，了解业务逻辑之后，他会修改代码，并保证测试通过。这样，当集成的时候，就不会出现UI上少了一个字段，但是谁也不知道是前端问题，后端问题，还是数据库问题等。</p>
-
-<p>而且实际的项目中，往往都是多个页面，多个API，多个版本，多个团队同时进行开发，这样的契约会降低非常多的调试时间，使得集成相对平滑。</p>
-
-<p>在实践中，契约可以定义为一个JSON文件，或者一个XML的payload。只需要保证前后端<strong>共享同一个契约集合</strong>来做测试，那么集成工作就会从中受益。一个最简单的形式是：提供一些静态的<code>mock</code>文件，而前端所有发往后台的请求都被某种机制拦截，并转换成对该静态资源的请求。</p>
-
-<ol>
-<li><a href="https://github.com/dreamhead/moco">moco</a>，基于Java</li>
-<li><a href="http://wiremock.org/index.html">wiremock</a>，基于Java</li>
-<li><a href="http://www.sinatrarb.com/">sinatra</a>，基于Ruby</li>
-</ol>
-
-
-<p>看到<code>sinatra</code>被列在这里，可能熟悉<code>Ruby</code>的人会反对：它可是一个<code>后端</code>全功能的的程序库啊。之所以列它在这里，是因为<code>sinatra</code>提供了一套简洁优美的<code>DSL</code>，这个<code>DSL</code>非常契合<code>Web</code>语言，我找不到更漂亮的方式来使得这个<code>mock server</code>更加易读，所以就采用了它。</p>
-
-<h3>一个例子</h3>
-
-<p>我们以这个应用为示例，来说明如何在前后端分离之后，保证代码的质量，并降低集成的成本。这个应用场景很简单：所有人都可以看到一个条目列表，每个登陆用户都可以选择自己喜欢的条目，并为之加星。加星之后的条目会保存到用户自己的<code>个人中心</code>中。用户界面看起来是这样的：</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/06/bookmarks-resized.png" alt="bookmarks" /></p>
-
-<p>不过为了专注在我们的中心上，我去掉了诸如登陆，个人中心之类的页面，假设你是一个已登录用户，然后我们来看看如何编写测试。</p>
-
-<h4>前端开发</h4>
-
-<p>根据通常的做法，前后端分离之后，我们很容易<code>mock</code>一些数据来自己测试：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://abruzzi.github.com/2015/03/list-comprehension-in-python/&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Python中的 list comprehension 以及 generator&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;publicDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2015年3月20日&quot;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://abruzzi.github.com/2015/03/build-monitor-script-based-on-inotify/&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;使用inotify/fswatch构建自动监控脚本&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;publicDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2015年2月1日&quot;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery/&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;使用underscore.js构建前端应用&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;publicDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2015年1月20日&quot;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后，一个可能的方式是通过请求这个json来测试前台：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/mocks/feeds.json&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">feeds</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="kd">var</span> <span class="nx">feedList</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Collection</span><span class="p">(</span><span class="nx">extended</span><span class="p">);</span>
-</span><span class='line'>      <span class="kd">var</span> <span class="nx">feedListView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FeedListView</span><span class="p">(</span><span class="nx">feedList</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.container&#39;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">feedListView</span><span class="p">.</span><span class="nx">render</span><span class="p">());</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样当然是可以工作的，但是这里发送请求的<code>url</code>并不是最终的，当集成的时候我们又需要修改为真实的<code>url</code>。一个简单的做法是使用<code>Sinatra</code>来做一次url的转换：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">get</span> <span class="s1">&#39;/api/feeds&#39;</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">content_type</span> <span class="s1">&#39;application/json&#39;</span>
-</span><span class='line'>  <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;mocks/feeds.json&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，当我们和实际的服务进行集成时，只需要连接到那个服务器就可以了。</p>
-
-<p>注意，我们现在的核心是<code>mocks/feeds.json</code>这个文件。这个文件现在的角色就是一个契约，至少对于前端来说是这样的。紧接着，我们的应用需要渲染<code>加星</code>的功能，这就需要另外一个契约：找出当前用户加星过的所有条目，因此我们加入了一个新的契约：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery/&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;使用underscore.js构建前端应用&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nt">&quot;publicDate&quot;</span><span class="p">:</span> <span class="s2">&quot;2015年1月20日&quot;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后在<code>sinatra</code>中加入一个新的映射：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">get</span> <span class="s1">&#39;/api/fav-feeds/:id&#39;</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">content_type</span> <span class="s1">&#39;application/json&#39;</span>
-</span><span class='line'>  <span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;mocks/fav-feeds.json&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>通过这两个请求，我们会得到两个列表，然后根据这两个列表的交集来绘制出所有的星号的状态（有的是空心，有的是实心）：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">favorite</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">favorite</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">ids</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">favorite</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;id&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">extended</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">feeds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">feed</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">feed</span><span class="p">,</span> <span class="p">{</span><span class="nx">status</span><span class="o">:</span> <span class="nx">_</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">ids</span><span class="p">,</span> <span class="nx">feed</span><span class="p">.</span><span class="nx">id</span><span class="p">)});</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">feedList</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Collection</span><span class="p">(</span><span class="nx">extended</span><span class="p">);</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">feedListView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FeedListView</span><span class="p">(</span><span class="nx">feedList</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.container&#39;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">feedListView</span><span class="p">.</span><span class="nx">render</span><span class="p">());</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>剩下的一个问题是当点击红心时，我们需要发请求给后端，然后更新红心的状态：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">toggleFavorite</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">$</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;/api/feeds/&#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>        <span class="kd">var</span> <span class="nx">status</span> <span class="o">=</span> <span class="nx">that</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">);</span>
-</span><span class='line'>        <span class="nx">that</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="o">!</span><span class="nx">status</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里又多出来一个请求，不过使用Sinatra我们还是可以很容易的支持它：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">post</span> <span class="s1">&#39;/api/feeds/:id&#39;</span> <span class="k">do</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>可以看到，在没有后端的情况下，我们一切都进展顺利 &#8212; 后端甚至还没有开始做，或者正在由一个进度比我们慢的团队在开发，不过无所谓，他们不会影响我们的。</p>
-
-<p>不仅如此，当我们写完前端的代码之后，可以做一个<code>End2End</code>的测试。由于使用了mock数据，免去了数据库和网络的耗时，这个<code>End2End</code>的测试会运行的非常快，并且它确实起到了端到端的作用。这些测试在最后的集成时，还可以用来当UI测试来运行。所谓一举多得。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="c1">#encoding: utf-8</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">describe</span> <span class="s1">&#39;Feeds List Page&#39;</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">let</span><span class="p">(</span><span class="ss">:list_page</span><span class="p">)</span> <span class="p">{</span><span class="no">FeedListPage</span><span class="o">.</span><span class="n">new</span><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">before</span> <span class="k">do</span>
-</span><span class='line'>      <span class="n">list_page</span><span class="o">.</span><span class="n">load</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s1">&#39;user can see a banner and some feeds&#39;</span> <span class="k">do</span>
-</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">list_page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_banner</span>
-</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">list_page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_feeds</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s1">&#39;user can see 3 feeds in the list&#39;</span> <span class="k">do</span>
-</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">list_page</span><span class="o">.</span><span class="n">all_feeds</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_feed_items</span> <span class="n">count</span><span class="p">:</span> <span class="mi">3</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s1">&#39;feed has some detail information&#39;</span> <span class="k">do</span>
-</span><span class='line'>      <span class="n">first</span> <span class="o">=</span> <span class="n">list_page</span><span class="o">.</span><span class="n">all_feeds</span><span class="o">.</span><span class="n">feed_items</span><span class="o">.</span><span class="n">first</span>
-</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">first</span><span class="o">.</span><span class="n">title</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eql</span><span class="p">(</span><span class="s2">&quot;Python中的 list comprehension 以及 generator&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2015/06/e2e-resized.png" alt="end 2 end" /></p>
-
-<p>关于如何编写这样的测试，可以参考之前写的<a href="http://icodeit.org/2015/01/page-object-with-site-prism/">这篇文章</a>。</p>
-
-<h4>后端开发</h4>
-
-<p>我在这个示例中，后端采用了<code>spring-boot</code>作为示例，你应该可以很容易将类似的思路应用到Ruby或者其他语言上。</p>
-
-<p>首先是请求的入口，<code>FeedsController</code>会负责解析请求路径，查数据库，最后返回JSON格式的数据。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Controller</span>
-</span><span class='line'><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&quot;/api&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FeedsController</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Autowired</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">FeedsService</span> <span class="n">feedsService</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@Autowired</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">UserService</span> <span class="n">userService</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFeedsService</span><span class="o">(</span><span class="n">FeedsService</span> <span class="n">feedsService</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">feedsService</span> <span class="o">=</span> <span class="n">feedsService</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserService</span><span class="o">(</span><span class="n">UserService</span> <span class="n">userService</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">userService</span> <span class="o">=</span> <span class="n">userService</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&quot;/feeds&quot;</span><span class="o">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
-</span><span class='line'>    <span class="nd">@ResponseBody</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Feed</span><span class="o">&gt;</span> <span class="n">allFeeds</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">feedsService</span><span class="o">.</span><span class="na">allFeeds</span><span class="o">();</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&quot;/fav-feeds/{userId}&quot;</span><span class="o">,</span> <span class="n">method</span> <span class="o">=</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">)</span>
-</span><span class='line'>    <span class="nd">@ResponseBody</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Feed</span><span class="o">&gt;</span> <span class="n">favFeeds</span><span class="o">(</span><span class="nd">@PathVariable</span><span class="o">(</span><span class="s">&quot;userId&quot;</span><span class="o">)</span> <span class="n">Long</span> <span class="n">userId</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">userService</span><span class="o">.</span><span class="na">favoriteFeeds</span><span class="o">(</span><span class="n">userId</span><span class="o">);</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>具体查询的细节我们就不做讨论了，感兴趣的可以在文章结尾处找到代码库的链接。那么有了这个Controller之后，我们如何测试它呢？或者说，如何让契约变得实际可用呢？</p>
-
-<p><code>spring-test</code>提供了非常优美的DSL来编写测试，我们仅需要一点代码就可以将契约用起来，并实际的<strong>监督</strong>接口的修改：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">MockMvc</span> <span class="n">mockMvc</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">FeedsService</span> <span class="n">feedsService</span><span class="o">;</span>
-</span><span class='line'><span class="kd">private</span> <span class="n">UserService</span> <span class="n">userService</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nd">@Before</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">feedsService</span> <span class="o">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">FeedsService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">userService</span> <span class="o">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">UserService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">FeedsController</span> <span class="n">feedsController</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FeedsController</span><span class="o">();</span>
-</span><span class='line'>    <span class="n">feedsController</span><span class="o">.</span><span class="na">setFeedsService</span><span class="o">(</span><span class="n">feedsService</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">feedsController</span><span class="o">.</span><span class="na">setUserService</span><span class="o">(</span><span class="n">userService</span><span class="o">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">mockMvc</span> <span class="o">=</span> <span class="n">standaloneSetup</span><span class="o">(</span><span class="n">feedsController</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>建立了mockmvc之后，我们就可以编写Controller的单元测试了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldResponseWithAllFeeds</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">when</span><span class="o">(</span><span class="n">feedsService</span><span class="o">.</span><span class="na">allFeeds</span><span class="o">()).</span><span class="na">thenReturn</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">prepareFeeds</span><span class="o">()));</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">mockMvc</span><span class="o">.</span><span class="na">perform</span><span class="o">(</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;/api/feeds&quot;</span><span class="o">))</span>
-</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">status</span><span class="o">().</span><span class="na">isOk</span><span class="o">())</span>
-</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">content</span><span class="o">().</span><span class="na">contentType</span><span class="o">(</span><span class="s">&quot;application/json;charset=UTF-8&quot;</span><span class="o">))</span>
-</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">jsonPath</span><span class="o">(</span><span class="s">&quot;$&quot;</span><span class="o">,</span> <span class="n">hasSize</span><span class="o">(</span><span class="mi">3</span><span class="o">)))</span>
-</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">jsonPath</span><span class="o">(</span><span class="s">&quot;$[0].publishDate&quot;</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="n">notNullValue</span><span class="o">())));</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当发送<code>GET</code>请求到<code>/api/feeds</code>上之后，我们期望返回状态是200，然后内容是<code>application/json</code>。然后我们预期返回的结果是一个长度为3的数组，然后数组中的第一个元素的<code>publishDate</code>字段不为空。</p>
-
-<p>注意此处的<code>prepareFeeds</code>方法，事实上它会去加载<code>mocks/feeds.json</code>文件 &#8212; 也就是前端用来测试的mock文件：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">Feed</span><span class="o">[]</span> <span class="nf">prepareFeeds</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">URL</span> <span class="n">resource</span> <span class="o">=</span> <span class="n">getClass</span><span class="o">().</span><span class="na">getResource</span><span class="o">(</span><span class="s">&quot;/mocks/feeds.json&quot;</span><span class="o">);</span>
-</span><span class='line'>    <span class="n">ObjectMapper</span> <span class="n">mapper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectMapper</span><span class="o">();</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">mapper</span><span class="o">.</span><span class="na">readValue</span><span class="o">(</span><span class="n">resource</span><span class="o">,</span> <span class="n">Feed</span><span class="o">[].</span><span class="na">class</span><span class="o">);</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，当后端修改<code>Feed</code>定义（添加/删除/修改字段），或者修改了mock数据等，都会导致测试失败；而前端修改mock之后，也会导致测试失败 &#8212; 不要惧怕失败 &#8212; 这样的失败会促进一次协商，并驱动出最终的service的契约。</p>
-
-<p>对应的，测试<code>/api/fav-feeds/{userId}</code>的方式类似：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
-</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldResponseWithUsersFavoriteFeeds</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">when</span><span class="o">(</span><span class="n">userService</span><span class="o">.</span><span class="na">favoriteFeeds</span><span class="o">(</span><span class="n">any</span><span class="o">(</span><span class="n">Long</span><span class="o">.</span><span class="na">class</span><span class="o">)))</span>
-</span><span class='line'>        <span class="o">.</span><span class="na">thenReturn</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">prepareFavoriteFeeds</span><span class="o">()));</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">mockMvc</span><span class="o">.</span><span class="na">perform</span><span class="o">(</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;/api/fav-feeds/1&quot;</span><span class="o">))</span>
-</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">status</span><span class="o">().</span><span class="na">isOk</span><span class="o">())</span>
-</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">content</span><span class="o">().</span><span class="na">contentType</span><span class="o">(</span><span class="s">&quot;application/json;charset=UTF-8&quot;</span><span class="o">))</span>
-</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">jsonPath</span><span class="o">(</span><span class="s">&quot;$&quot;</span><span class="o">,</span> <span class="n">hasSize</span><span class="o">(</span><span class="mi">1</span><span class="o">)))</span>
-</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">jsonPath</span><span class="o">(</span><span class="s">&quot;$[0].title&quot;</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;使用underscore.js构建前端应用&quot;</span><span class="o">)))</span>
-</span><span class='line'>            <span class="o">.</span><span class="na">andExpect</span><span class="o">(</span><span class="n">jsonPath</span><span class="o">(</span><span class="s">&quot;$[0].publishDate&quot;</span><span class="o">,</span> <span class="n">is</span><span class="o">(</span><span class="n">notNullValue</span><span class="o">())));</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>总结</h3>
-
-<p>前后端分离是一件容易的事情，而且团队可能在短期可以看到很多好处，但是如果不认真处理集成的问题，分离反而可能会带来更长的集成时间。通过面向契约的方式来组织各自的测试，可以带来很多的好处：更快速的<code>End2End</code>测试，更平滑的集成，更安全的分离开发等等。</p>
-
-<h3>代码</h3>
-
-<p>前后端的代码我都放到了Gitbub上，感兴趣的可以clone下来自行研究：</p>
-
-<ol>
-<li><a href="https://github.com/abruzzi/bookmarks-frontend">bookmarks-frontend</a></li>
-<li><a href="https://github.com/abruzzi/bookmarks-server">bookmarks-server</a></li>
-</ol>
-
 ]]></content>
   </entry>
   

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Spring | I code it]]></title>
   <link href="http://abruzzi.github.com/category/spring/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-05-10T19:28:24+10:00</updated>
+  <updated>2016-05-12T23:08:15+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,239 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[保护你的API（下）]]></title>
+    <link href="http://abruzzi.github.com/2016/05/about-session-and-security-api-2/"/>
+    <updated>2016-05-12T22:50:00+10:00</updated>
+    <id>http://abruzzi.github.com/2016/05/about-session-and-security-api-2</id>
+    <content type="html"><![CDATA[<h2>前后端分离之后</h2>
+
+<p>前后端分离之后，在部署上通过一个反向代理就可以实现动静态分离，跨域问题的解决等。但是一旦引入鉴权，则又会产生新的问题。通常来说，鉴权是对于后台API/API背后的资源的保护，即<strong>未经授权的用户不能访问受保护资源</strong>。</p>
+
+<p>要实现这个功能有很多种方式，在应用程序之外设置完善的安全拦截器是最常见的方式。不过有点不够优雅的是，一些不太纯粹的、非功能性的代码和业务代码混在同一个代码库中。</p>
+
+<p>另一方面，各个业务系统都可能需要某种机制的鉴权，所以很多企业都会搭建SSO机制，即<a href="https://en.wikipedia.org/wiki/Single_sign-on">Single Sign-On</a>。这样可以避免人们在多个系统创建不同账号，设置不同密码，不同的超时时间等等。如果SSO系统已经先于系统存在了很久，那么新开发的系统完全不需要自己再配置一套用户管理机制了（一般SSO只会完成<strong>鉴权</strong>中<strong>鉴别</strong>的部分，<strong>授权</strong>还是需要各个业务系统自行处理）。</p>
+
+<p>本文中，我们使用基础设施（反向代理）的一些配置，来完成<strong>保护未授权资源</strong>的目的。在这个例子中，我们假设系统由这样几个服务器组成：</p>
+
+<h3>系统组成</h3>
+
+<p>这个实例中，我们的系统分为三部分</p>
+
+<ol>
+<li><code>kanban.com:8000</code>（业务系统前端）</li>
+<li><code>api.kanban.com:9000</code>（业务系统后端API）</li>
+<li><code>sso.kanban.com:8100</code> （单点登录系统，登陆界面）</li>
+</ol>
+
+
+<p>前端包含了HTML/JS/CSS等资源，是一个纯静态资源，所以本地磁盘即可。后端API则是一组需要被保护的API（比如查询工资详情，查询工作经历等）。最后，单点登录系统是一个简单的表单，用户填入用户名和密码后，如果登录成功，单点登录会将用户重定向到登录前的位置。</p>
+
+<p>我们举一个具体场景的例子：</p>
+
+<ol>
+<li>未登录用户访问<code>http://kanba.com:8000/index.html</code></li>
+<li>系统会重定向用户到<code>http://sso.kanban.com:8100/sso?return=http://kanba.com:8000/index.html</code></li>
+<li>用户看到登录页面，输入用户名、密码登录</li>
+<li>用户被重定向回<code>http://kanba.com:8000/index.html</code></li>
+<li>此外，<code>index.htm</code>l页面上的<code>app.js</code>对<code>api.kanban.com:9000</code>的访问也得到了授权</li>
+</ol>
+
+
+<h4>环境设置</h4>
+
+<p>简单起见，可以通过修改/etc/hosts文件来设置服务器环境：</p>
+
+<p><code>
+127.0.0.1 sso.kanban.com
+127.0.0.1 api.kanban.com
+127.0.0.1 kanban.com
+</code></p>
+
+<h3>nginx及auth_request</h3>
+
+<p>反向代理nginx有一个auth_request的模块。在一个虚拟host中，每个请求会先发往一个内部<code>location</code>，这个内部的<code>location</code>可以指向一个可以做鉴权的Endpoint。如果这个请求得到的结果是200，那么nginx会返回用户本来请求的内容，如果返回401，则将用户重定向到一个预定义的地址：</p>
+
+<p>```
+server {</p>
+
+<pre><code>listen 8000;
+server_name kanban.com;
+
+root /usr/local/var/www/kanban/;
+
+error_page 401 = @error401;
+
+location @error401 {
+    return 302 http://sso.kanban.com:8100/sso?return=$scheme://$http_host$request_uri;
+}
+
+auth_request /api/auth;
+
+location = /api/auth {
+    internal;
+
+    proxy_pass http://api.kanban.com:9000;
+
+    proxy_pass_request_body     off;
+
+    proxy_set_header Content-Length "";
+    proxy_set_header X-Original-URI $request_uri;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    if ($http_cookie ~* "w3=(\w+)") {
+        set $token "$1";
+    }
+
+    proxy_set_header X-KANBAN-TOKEN $token;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>比如上面这个例子中，<code>auth_request</code>的URL为<code>/api/auth</code>，它是一个内部的location，外部无法访问。在这个<code>locaiton</code>中，请求会被转发到<code>http://api.kanban.com:9000</code>，根据nginx的正则语法，请求将会被转发到<code>http://api.kanban.com:9000/api/auth</code>（我们随后可以看到这个Endpoint的定义）。</p>
+
+<p>我们设置了请求的原始头信息，并禁用了request_body，如果cookie中包含了<code>w3=(\w+)</code>字样，则将这个w3的值抽取出来，并赋值给一个<code>X-KANBAN-TOKEN</code>的HTTP头。</p>
+
+<h4>权限Endpoint</h4>
+
+<p>对应的<code>/api/auth</code>的定义如下：</p>
+
+<p>```java
+@RestController
+@RequestMapping("/auth")
+public class AuthController {</p>
+
+<pre><code>@RequestMapping
+public ResponseEntity&lt;String&gt; simpleAuth(@RequestHeader(value="X-KANBAN-TOKEN", defaultValue = "") String token) {
+    if(StringUtils.isEmpty(token)) {
+        return new ResponseEntity&lt;&gt;("Unauthorized", HttpStatus.UNAUTHORIZED);
+    } else {
+        return new ResponseEntity&lt;&gt;("Authorized", HttpStatus.OK);
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>如果HTTP头上有<code>X-KANBAN-TOKEN</code>且值不为空，则返回200，否则返回401。</p>
+
+<p>当这个请求得到401之后，用户被重定向到<code>http://sso.kanban.com:8100/sso</code></p>
+
+<p>```
+error_page 401 = @error401;</p>
+
+<p>location @error401 {</p>
+
+<pre><code>return 302 http://sso.kanban.com:8100/sso?return=$scheme://$http_host$request_uri;
+</code></pre>
+
+<p>}
+```</p>
+
+<h3>SSO组件（简化版）</h3>
+
+<p>这里用<code>sinatra</code>定义了一个简单的SSO服务器（去除了实际的校验部分）</p>
+
+<p>```ruby
+require 'sinatra'
+require 'uri'</p>
+
+<p>set :return_url, ''
+set :bind, '0.0.0.0'</p>
+
+<p>get '/sso' do</p>
+
+<pre><code>settings.return_url = params[:return]
+send_file 'public/index.html'
+</code></pre>
+
+<p>end</p>
+
+<p>post '/login' do</p>
+
+<pre><code>credential = params[:credential]
+# check credential against database
+uri = URI.parse(settings.return_url)
+response.set_cookie("w3", {
+    :domain =&gt; ".#{uri.host}",
+    :expires =&gt; Time.now + 2400,
+    :value =&gt; "#{credential['name']}",
+    :path =&gt; '/'
+})
+redirect settings.return_url, 302
+</code></pre>
+
+<p>end
+```</p>
+
+<p><code>/sso</code>对应的Login Form是：</p>
+
+<p>```html
+<form action="/login" method="post"></p>
+
+<pre><code>&lt;input type="text" name="credential[name]" /&gt;
+&lt;input type="password" name="credential[password]" /&gt;
+&lt;input type="submit"&gt;
+</code></pre>
+
+<p></form>
+```</p>
+
+<p>当用户提交表单之后，我们只是简单的设置了<code>cookie</code>，并重定向用户到跳转前的URL。</p>
+
+<h3>前端页面</h3>
+
+<p>这个应用的前端应用非常简单，我们只需要将这些静态文件放到<code>/usr/local/var/www/kanban</code>目录下：</p>
+
+<p>```
+$ tree /usr/local/var/www/kanban</p>
+
+<p>├── index.html
+└── scripts</p>
+
+<pre><code>├── app.js
+└── jquery.min.js
+</code></pre>
+
+<p>```</p>
+
+<p>其中<code>index.html</code>中引用的<code>app.js</code>会请求一个受保护的资源：</p>
+
+<p>```js
+$(function() {</p>
+
+<pre><code>$.get('/api/protected/1').done(function(message) {
+    $('#message').text(message.content);
+});
+</code></pre>
+
+<p>});
+```</p>
+
+<p>从下图中的网络请求可以看到重定向的流程：</p>
+
+<p><img src="/images/2016/05/redirection-resized.png" alt="redirection" /></p>
+
+<h3>总结</h3>
+
+<p>本文我们通过配置反向代理，将多个Endpoint组织起来。这个过程可以在应用程序中通过代码实现，也可以在基础设施中通过配置实现，通常来讲，如果可以通过配置来实现的，就尽量将其与负责业务逻辑的代码隔离出来。这样可以保证各个组件的独立性，也可以使得优化和定位问题更加容易。</p>
+
+<p>完整的代码可以在这里下载：</p>
+
+<ul>
+<li><a href="https://github.com/abruzzi/fake-sso">Fake SSO</a></li>
+<li><a href="https://github.com/abruzzi/spring-security-demo">Spring Security Demo</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[保护你的API（上）]]></title>

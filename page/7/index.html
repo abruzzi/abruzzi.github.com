@@ -9,7 +9,11 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="最终结果 这篇文章将讨论如何编写一个简单的jQuery插件的基本步骤和实践，最后完成的时候，我们会得到一个管理todo的插件（而且还是一个比较灵活，易于定制的todo插件）。事实上，这个插件可以工作在所有与管理todo类似的应用场景中，比如gmail的搜索框中的token等， &hellip;">
+  <meta name="description" content="Rack it up (proc) 一个最简单的rack应用程序可以是：一个简单的ruby对象，包含了一个call方法。这个call方法接受一个参数，并返回一个有三个元素的数组即可： 1
+2
+3
+def call(env) [200, {}, ["content"]]
+end &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +86,54 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/08/rack-it-up/">Rack It Up</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-02T07:38:00+10:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Rack it up (proc)</h3>
+
+<p>一个最简单的rack应用程序可以是：一个简单的ruby对象，包含了一个call方法。这个call方法接受一个参数，并返回一个有三个元素的数组即可：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>def call(env)
+</span><span class='line'>  [200, {}, ["content"]]
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中参数env将被rack用作HTTP请求对象来传递进来，而函数的返回值与HTTP响应对应：分别为状态码，HTTP头信息以及响应内容。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1832,68 +1884,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/04/chongyang-palase/">重阳宫奇遇记</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-28T10:32:00+10:00" pubdate data-updated="true">Apr 28<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>重阳宫简介</h3>
-
-<p>重阳宫为道教三大祖庭之一，位于陕西户县祖庵镇，是全真祖师王重阳修道之地。重阳宫本由王重阳的弟子（全真七子，详见《射雕英雄传》）修建，始于金代，名为“灵虚观”，元初改名“重阳宫”。后山碑林存有众多用以记录全真教祖师及全真七子生平事迹的石碑，如《全真教祖碑》，《重阳祖师仙迹碑》，也有全真教其他掌教如孙德彧等的撰文碑。除了金元的碑以外，宫中还有明清时代的刻字，如《重阳子王真人全真教祖碑》碑阴的“天下祖庭”四字，为明朝正统二年所刻。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/04/chongyang-01.resized.jpg" alt="全真祖庭" /></p>
-
-<p>历史上由于年久失修，众多石碑层长散弃于露天，六、七十年代之后重修重阳宫，这些石碑被存入展厅，展厅有题名“重阳圣地”，其中大约有三十多通巨型金元石碑。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/04/outside.resized.jpg" alt="年久失修" /></p>
-
-<h3>甘河镇遇仙</h3>
-
-<p>四月末的长安，已经很热。由于我去的这天是周末，而且是给五一调休的周末，因此宫中游人很少。除了我之外还有几个附近学校的学生，虽然殿外天气非常好，水绿山青，鸟语花香，但是在殿内，古朴的石碑传出的若隐若无的古老的气息，众多的由赑屃驮着的近一丈的大石碑使得展厅的气氛稍显压抑，所以很快整个展厅就剩下我一个人了。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/04/bixis.resized.jpg" alt="碑林展厅" /></p>
-
-<p>虽然殿外阳光明媚，但是触摸着这些实实在在的文物，让人彷佛有些穿越千年，回到宋末元初的感觉，这种感觉让人有种莫名的阴森。而碑文中不时闪现的诸如王重阳，丘处机，尹志平等人的名字更是和金庸笔下的众多人物相交错，穿越的感觉愈发强烈。</p>
-
-<p>我信步走到一通石碑前，顺口默诵，看着王重阳在<strong>甘河镇遇仙</strong>一段，还在心中暗笑其故意装神弄鬼，但是当我转身到碑阴面，读到“天之道，损有余而补不足，是故虚胜实，不足胜有余”之时，不由得心头大震，接着向下看到“心死则神活，阳盛而阴消”之时，更是惊骇莫名。这通碑上分明记着宋末元初的武学秘籍《九阴真经》（详见《射雕英雄传》）。</p>
-
-<p>我正待取出纸笔将这些内容抄录，忽觉殿内似乎多出一人来，我心头一震，以我的功力，竟然有人走到我身周三丈之内而不自知。我转过头去，只见一个道士站在重阳祖师画像碑旁，呆呆的出神。只听那老道口中喃喃有声：此碑为四绝碑之首，无梦令碑有不及也。</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/04/wumengling.resized.jpg" alt="无梦令碑" /></p>
-
-<p>我连忙走上前去，问道：“上仙，这厢有礼，刚才听到上仙谈及四绝碑，敢问何为四绝碑？”，道士略微沉吟，说道：“所谓四绝，乃重阳祖师画像碑，祖师亲笔《无梦令》碑，以及赵孟頫大小照碑，是也”。说罢，袖手而去，我略一迟疑，道士已仙踪不见。</p>
-
-<p>我又走回遇仙碑后，将《九阴真经》默默铭记，出殿时已经是一个时辰之后了，刚到殿门口，忽见之前遇见的那位道士正在门口徘徊，似乎在找什么东西。我恭敬的询问，道士一脸疑惑，操着一口地道的关中腔说道：“我的手机咋莫见啦？我记得我拿出来了么，可放到办公室里了？”</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/8/">&larr; Older</a>
@@ -1911,6 +1901,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2016/05/about-session-and-security-api-2/">保护你的API（下）</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/05/about-session-and-security-api-1/">保护你的API（上）</a>
       </li>
     
@@ -1924,10 +1918,6 @@
     
       <li class="post">
         <a href="/2016/01/for-those-dev-who-doesnt-want-to-be-a-ux-cannot-be-a-good-consulant/">不想当UX的开发不是好咨询师</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/01/how-to-facilitate/">当我们谈论引导时，我们谈些什么？</a>
       </li>
     
   </ul>
