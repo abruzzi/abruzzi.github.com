@@ -9,9 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="What do you need? A valid douban account of course
-octopress site Step by step Let&#8217;s do it step by step:
-Login your douban account at first, &hellip;">
+  <meta name="description" content="Generate typical project layout If you are as lazy as I am, you may want to generate typecial project layout automatically, let&#8217;s do it by &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -84,6 +82,85 @@ Login your douban account at first, &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/10/using-gradle-to-setup-standard-java-project/">Using Gradle to Setup Standard Java Project</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-12T23:24:00+11:00" pubdate data-updated="true">Oct 12<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Generate typical project layout</h2>
+
+<p>If you are as lazy as I am, you may want to generate typecial project layout automatically, let&#8217;s do it by using <a href="http://www.gradle.org/">gradle</a>.</p>
+
+<p>Simply add the following lines into your build.gradle:</p>
+
+<pre><code>apply plugin: 'java'
+
+task "create-dirs" &lt;&lt; {
+    sourceSets*.java.srcDirs*.each {it.mkdirs()}
+    sourceSets*.resources.srcDirs*.each {it.mkdirs()}
+}
+</code></pre>
+
+<p>then using gradle to run the task defined &#8220;create-dirs&#8221;:</p>
+
+<pre><code>$ gradle create-dirs
+</code></pre>
+
+<p>you will get the directories structure like this:</p>
+
+<pre><code>.
+├── build.gradle
+└── src
+    ├── main
+    │   ├── java
+    │   └── resources
+    └── test
+        ├── java
+        └── resources
+</code></pre>
+
+<p>If you are using intellij as your default IDE, then you can apply the &#8216;idea&#8217; plugin for the project:</p>
+
+<pre><code>apply plugin: 'java'
+apply plugin: 'idea'
+</code></pre>
+
+<p>and then:</p>
+
+<pre><code>$ gradle idea
+</code></pre>
+
+<p>it should generate 3 files out: file.iml, file.ipr, file.iws. You can then open intellij and have fun with code inside, I would like to make a new post to talking about how to setup a java project by using intellij, and using <a href="http://en.wikipedia.org/wiki/Test-driven_development">TDD</a> for coding.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -670,64 +747,6 @@ cool to write blog in my favorest editor.</p></p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/05/git%E4%B8%AD%E7%9A%84merge%E5%92%8Crebase/">Git中的merge和rebase</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-05-17T00:00:00+10:00" pubdate data-updated="true">May 17<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><p>使用git时，如果遇到分支的情况，比如两个开发人员都从commit2开始各自开发，然后分贝在本地完成了两个commit：</p></p>
-
-<p><p><a href="http://abruzzi.github.com/images/2012/05/branch.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="branch" border="0" alt="branch" src="http://abruzzi.github.com/images/2012/05/branch_thumb.png" width="196" height="361" /></a></p></p>
-
-<p><p>此时，如果要将两个分支的代码合并起来，通常会有两种方式，一种对两个分支的代码进行merge，通常会执行的命令为:</p></p>
-
-<p><div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> git pull</pre><!--CRLF--></div></div></p>
-
-<p><p>这时的版本库历史看起来会是这样：</p></p>
-
-<p><p><a href="http://abruzzi.github.com/images/2012/05/merge.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="merge" border="0" alt="merge" src="http://abruzzi.github.com/images/2012/05/merge_thumb.png" width="197" height="460" /></a></p></p>
-
-<p><p>不过通常我们想要的是，保持一个较为简单的历史轨迹，分支太多的话会显得比较凌乱，当引入bug或者其他问题时，可能会影响到追踪。另一种做法是先将某一个分支A上的提交保存下来，然后将分支B上的，对于commit2的修改作用到commit2上，然后将保存起来的修改作用到新的结果上：</p></p>
-
-<p><p><a href="http://abruzzi.github.com/images/2012/05/rebase.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="rebase" border="0" alt="rebase" src="http://abruzzi.github.com/images/2012/05/rebase_thumb.png" width="200" height="559" /></a></p></p>
-
-<p><p>对应的命令为：</p></p>
-
-<p><div id="codeSnippetWrapper">
-<div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: #f4f4f4; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; background-color: white; margin: 0em; border-left-style: none; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; border-right-style: none; font-size: 8pt; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> git pull --rebase</pre><!--CRLF--></div></div></p>
-
-<p><p>这个过程并非必要，但是是一种良好的实践，当本地有commit，而需要和别人的commit合并时，建议使用rebase来保证修改历史的轨迹的简洁。</p>
-</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/11/">&larr; Older</a>
@@ -745,6 +764,10 @@ cool to write blog in my favorest editor.</p></p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2016/05/design-for-failure/">为故障和失败做设计</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/05/about-session-and-security-api-2/">保护你的API（下）</a>
       </li>
     
@@ -758,10 +781,6 @@ cool to write blog in my favorest editor.</p></p>
     
       <li class="post">
         <a href="/2016/02/pitfall-of-technology/">技术的执念</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/01/for-those-dev-who-doesnt-want-to-be-a-ux-cannot-be-a-good-consulant/">不想当UX的开发不是好咨询师</a>
       </li>
     
   </ul>

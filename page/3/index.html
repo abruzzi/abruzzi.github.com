@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="前言 前后端分离已经是业界所共识的一种开发/部署模式了。所谓的前后端分离，并不是传统行业中的按部门划分，一部分人纯做前端（HTML/CSS/JavaScript/Flex），另一部分人纯做后端，因为这种方式是不工作的：比如很多团队采取了后端的模板技术（JSP, FreeMarker, ERB等等 &hellip;">
+  <meta name="description" content="一些背景故事 坊间流传着很多关于PM（Project Manager，项目经理）的笑话，在这些不无刻薄的笑话中，PM往往被描述成一个盲目的承诺客户需求变更，不了解实际情况而又喜欢指手画脚的专门坑开发的家伙。毋庸置疑，这些笑话当然是那些聪明的开发发明的（不过你得承认，在很多团队， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,119 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/07/is-project-manager-a-fool/">项目经理是大傻B吗？</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-07T23:18:00+10:00" pubdate data-updated="true">Jul 7<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>一些背景故事</h3>
+
+<p>坊间流传着很多关于PM（Project Manager，项目经理）的笑话，在这些不无刻薄的笑话中，PM往往被描述成一个盲目的承诺客户需求变更，不了解实际情况而又喜欢指手画脚的专门坑开发的家伙。毋庸置疑，这些笑话当然是那些聪明的<strong>开发</strong>发明的（不过你得承认，在很多团队，这些笑话其实是实实在在每天都在发生着的）。</p>
+
+<p>在智力工作中，对于开发的实际进度，开发速率等问题，具体着手做的人永远比在背后指手画脚的人更有发言权。软件开发正是一项智力活动，优秀的软件无法通过人力的堆积而产生。一个关于PM的经典的讽刺是：PM就是那些指望着9个女人在1个月内生出1个小孩的二货。从传统的意义上来说，这个笑话还真是一针见血。</p>
+
+<p><img src="/images/2015/07/keep-calm-i-m-the-project-manager-resized.png" alt="project manager, 来源:http://sd.keepcalm-o-matic.co.uk/i/keep-calm-i-m-the-project-manager.png" /></p>
+
+<p>我记得在加入ThoughtWorks不久的时候，私底下经常听到这种论调：PM基本就是项目上被人鄙视（当然大家不会表现的那么明显就是了）的角色，基本上负责<strong>团队建设</strong>去哪儿这种杂事儿就行了，团队的其他人员可以高度自治，并不需要被管理，项目就会如预期般按时交付。</p>
+
+<p>这些论调在某些情况下可能是对的。但是如果在国内项目的这个上下文里，没有一个专业的PM来协助项目，控制需求，划定项目范围，与客户谈判等等，没有任何一个项目是可以真正成功交付的，指望<em>高度自治</em>的开发们来完成项目？咱们还是现实一些吧。</p>
+
+<p>一个悲剧的事实是，开发人员往往都恃才傲物，有时还会带着一幅要来拯救世界的心态来做项目，这事实上和客户的期望，以及PM的期望是有很大出入的。在项目启动之初，PM会面临重重困难：首先，团队里的每个人都不好管，而且每个人都认为自己不需要被管理（当然这种想法在大部分时候都是错误的）；其次，PM需要和客户快速建立信任，并推动项目进入正轨；最后，往往留给PM自己的时间也非常有限，他们也需要学习大量的项目相关的上下文（业务上下文，人员关系，资源协调等）。</p>
+
+<h3>除了催进度，PM平时还干点啥？</h3>
+
+<p>本质上开说，PM其实就是一个轮询器：识别所有的项目风险，然后不断跟进。项目风险可能是技术风险，比如某个技术上压根搞不定的问题。也可能资源风险，比如人手不够，或者开发者很多，但是没有足够的设计师协助，这些风险都会导致项目无法按照时间交付。一个客观事实是，所有项目都会变化，做完售前到需求分析结束之后，需求可能会发生巨大变化，如果还按照报价来做项目很可能会<strong>亏本</strong>。</p>
+
+<p>PM的一个重要职责就是在项目之初将项目范围定下来，这个范围的划分非常依赖经验：划得少了团队得天天加班，累得跟狗一样，然后才能保证交付（据我的经验，虽然项目一般不会天天加班，但是总会有一些攻关，打补丁的事儿，最后还是会累成狗），划得多了客户不买单，意思是就这个小功能你要做两个月，绝对不行。PM需要协调这些不一致，还需要和销售，客户等方面不断谈判，写方案，排计划，简而言之，也是累跟狗一样（而且潜在的，还可能被那些天真幼稚的开发坑 — 开发经常会高估自己的开发速度，反正我还没遇到过低估的，你见过吗？）。</p>
+
+<p>我们每天看到的PM干的最多的事情就是：元芳，那个接口怎么样了？什么时候能做完，有什么blocker？李柯，昨天说的代理的事情怎么样了？小波，高保真什么时候出？何方，我们周三下午要showcase，麻烦你订一下会议室吧……</p>
+
+<p><img src="/images/2015/07/pm-resized.png" alt="pm" /></p>
+
+<h3>除了写代码，Dev平时还干点啥？</h3>
+
+<p>如果脱离开PM的角度，做为一个孤傲的开发，时常会觉得PM为什么老是问我进度，是不是怀疑我的能力？为什么监视我的工作？相信我，其实他才不想监视你。但是你设想一下：如果你不参与代码编写，每天只是看旁边的哥们写，你如何知道他实际的进度呢？而且众所周知，开发很难准确的更新自己的工作进度，而且遇到问题也很少积极主动的报告，通常都会自己埋头尝试解决。那么，轮询显然是一种成本最低，反馈最快的方法。</p>
+
+<p>不主动更新进度是另外一个大问题，不过这个得单独说。关于更新进度，典型的的场景是：早上站会的时候，开发目光呆滞的盯着某个卡片，努力回忆其中的验收条件以及自己的当前进度，如果恰好脑海中的技术细节和卡片的描述在某个点上匹配了，他会迅速的告诉你，目前进展良好，今天上午应该就可以做完。开发在更新进度时，不是盲目乐观，就是跳进太细节的地方进行讨论，最后讨论的结果就是：跟没更新一样，除了浪费了10分钟时间。但是别忘了，PM会在15分钟之后再来轮询一次。</p>
+
+<p>PM每周都需要汇总很多数字，比如本迭代完成的点数，剩余的点数，总体进度如何，有没有人有请假计划，遇到什么blocker，每个blocker的具体原因，每个风险点的最终日期是何时，等等等等。他肯定不能记住这些数字，所以可能一天之内向你询问数次。</p>
+
+<h3>PM的其他职责/技能</h3>
+
+<p>上边说到的其实只是描述PM的辛苦，而最微妙，最考验PM的是其“察言观色”的技能。这绝对是一个工作经验在10年之内完全无法获得的技能（而且是在中国的项目上工作10年）。比如，在showcase的时候，有个客户说，嗯，挺好，整个流程就是这样的，后续你们的UI是不是还会美化？如果你遇到这个情况，请问，这个客户是什么意思？</p>
+
+<p>如果你能回答上这个问题（而不是提出问题），那说明你还离PM差十万八千里。成熟的PM会先判断，问这个问题的人是什么角色，以及他在系统中的话语权如何，还有其他人就此问题的反应如何等等因素，然后找到一个合适的答案。</p>
+
+<p>PM另一个绝技是扯皮（不是贬义），开发会花一个下午（我是说10分钟）去跟客户讨论需求的范围吗？或者会为5个人天来讨价还价吗？我想开发大概会说，尼玛，找其他供应商吧，老子不伺候了。</p>
+
+<p>一个项目的成功，需要多方合作，这里说的合作并不局限在甲方和乙方之间，即使乙方的团队之中，也需要很紧密的合作。比如项目经理和开发，设计师之间的合作。如果仅仅从开发的角度来看，PM有时候看起来就是和客户站在一起来整开发的一样，比如催进度，过分保守的估算人天（导致团队加班赶工）。PM需要释放团队中的负面情绪，保证团队士气，还需要他做一些开发不屑于做的琐碎的事情。</p>
+
+<h3>设身处地，替他人着想</h3>
+
+<p>本质来来说，每个项目都是一次生意。在去掉那些繁杂的流程和形式之后，做一个项目和你去菜市场买菜其实并无二致。举个例子，根据传统，软件开发界特别喜欢找建筑行业做类比，我也找个建筑方面例子。装修房子的时候，我们会要求施工方提供图纸（水电改造，基本设计等），按期交付（确定工期），同时会界定项目范围（比如刷墙，贴地砖，吊顶，封阳台等等），会要求工人按时来上班，正常出勤，认真工作，直到项目结束。过程中我们还会讨价还价，比如捎带着把栏杆拆除，捎带着敲掉一面隔离墙等等。在过程中，我们还会敲敲地砖，检查过门石，检查吊顶，测试水电等等。作为甲方，这些活动相信没有人会觉得过分。</p>
+
+<p>但是一旦我们做乙方，也就是施工方的时候，情况就全变了。比如客户要求打卡，有人会觉得不爽，客户要求代码review，有人会觉得不爽，要求代码有设计文档，有人会觉得不爽，要求设计有多个备选方案，有人会觉得不爽。大多数情况下，这都是虚无缥缈的虚荣在作祟，这种情况所在多有，不过还不致命。一旦涉及到讨价还价（不是商务上的讨价还价，而是和客户就工作量达不成一致，或者就某个技术方案达不成一致之后），开发全部歇菜，一言不合，转身就走，压根不具备讨价换件的能力，这样还怎么做生意啊？设身处地想一下，如果你是甲方，当提出了一些合理的要求（比如需要一方提供验收标准，通过验收测试等），结果施工方还一脸的“我不跟你说了，你就是以大傻B”，你能乐意吗？</p>
+
+<h3>如何合作？</h3>
+
+<p>说了这么多，这两种角色在同一个项目上要如何合作呢？我想，作为开发来说，有这样几点可能：</p>
+
+<p>首先，理解PM的工作。在很多时候，开发会有莫名其妙的优越感（其实每个角色都会有了，比如销售看不上技术人员，技术Lead看不上PM等等），主要原因其实是<strong>坐井观天</strong>，对其他角色的辛苦和工作不清楚。然后错误的认为别人的工作都很low。</p>
+
+<p>之前听一个同事讲过一个小session，里面有一点我印象非常深刻：不要因为一个人<strong>不会某个技术</strong>而鄙视他。就好比你不应该因为不会弹钢琴，而被一个会弹钢琴的人鄙视一样。道理很简单，但是开发在长期的“宅”生涯或者坐井观天中，进化出了这种非理性的观点：如果一个人连vim（此处的vim可以换成任何其他技术）都不会，就压根不足以谈人生。</p>
+
+<p>其次，学习如何报告进度。PM催你的根本原因是进度不明确，如果每一个潜在的风险都清楚的显示着进度，而且有明确的负责人，PM就会降低轮询的频率。这需要开发经过刻苦的练习才能达到：</p>
+
+<ul>
+<li>站会前自己花3分钟整理一下昨天做的工作</li>
+<li>根据story的验收条件（最好有和BA/QA一起的讨论需求），进行合理的任务划分（tasking技能）</li>
+<li>可以借助便签纸等工具，帮助自己明确进度（划分了5个子任务，昨天完成了3个，那么可以粗略的估计为60%）</li>
+</ul>
+
+
+<p><img src="/images/2015/07/tasking-resized.png" alt="tasking" /></p>
+
+<p>再次，合理估算。有些时候，新人（来自于传统管理环境的新人）可能会误以为PM是一个管理的角色，或者处于某些考虑会在PM询问进度时做出一些错误的回答。比如PM在迭代启动会议上是问这个迭代我们有没有可能做完所有计划内的任务，作为一个负责任的开发，你需要在第一时间指出那些“非理性”的期望，以便PM进行更加准确的计划。</p>
+
+<ul>
+<li>明确告诉PM，有哪些需求是不可能按时交付的，PM会根据实际情况来重新定计划，并和客户确认</li>
+<li>明确告诉PM一些可能的风险，<strong>团队整体</strong>对交付负责，而不是PM，或者开发</li>
+</ul>
+
+
+<p>按照经验，项目从来就不会按照计划进行，在做好一个粗略的计划之后，PM的职责更多的是进行动态调整。所以团队内部至少需要保持信息的流通，虽然可能短期来看可能会影响开发速度，但是从整体上来看，可以减少很多不必要的浪费。</p>
+
+<p>简而言之，要站在别人的角度考虑问题：<strong>如果换做是你，你会怎么做？</strong></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3580,241 +3693,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2015/02/linux-tips/">Linux命令行中的7个小技巧</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-02-14T17:48:00+11:00" pubdate data-updated="true">Feb 14<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Linux命令行中的7个小技巧</h3>
-
-<p>命令行是开发者的好朋友，<code>*nix</code>系统（包括Mac OS X和各种Linux）都自带了强大的Shell环境，作为一个专业的程序员，Shell是离不开的。这里总结了几个常用的小技巧，都是我自己平时经常用，而又不想每次都去Google的。</p>
-
-<h4>如何知道哪个进程在监听4000端口？</h4>
-
-<p>当启动服务时，经常会遇到想要<code>Address already in use</code>这样的异常，那么如何知道是哪个进程占用了该端口呢？</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsof -i :4000
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>lsof</code>会列出系统目前打开的文件（List open files，Linux世界中，一切都是文件），<code>-i</code>表示网络地址（Internet address），注意此处的冒号。如果不带参数，lsof会列出所有打开的网络地址：</p>
-
-<p><img src="/images/2015/02/lsof-resized.png" alt="lsof" /></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsof -i :4000
-</span><span class='line'>COMMAND   PID  USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
-</span><span class='line'>ruby    32303 jtqiu    7u  IPv4 0x947b402a4bb8370b      0t0  TCP *:terabase <span class="o">(</span>LISTEN<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Shell中如何设置代理？</h4>
-
-<p>很多公司都会有一个代理服务器供员工上外网使用，命令行中设置代理非常容易：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">export </span><span class="nv">http_proxy</span><span class="o">=</span><span class="s2">&quot;http://username:password@hosename:port&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果密码中有特设字符，比如<code>$</code>的话，需要转义一下。使用URLEncoding即可，比如<code>$</code>就是<code>%24</code>。最简单的就是在Chrome的<code>Console</code>中输入<code>encodeURIComponent("$")</code>来获得转义字符。</p>
-
-<p>如果不想对某些地址使用代理，可以设置<code>no_proxy</code>环境变量：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">export </span><span class="nv">no_proxy</span><span class="o">=</span><span class="s2">&quot;127.0.0.1, localhost, *.cnn.com, 192.168.1.10, domain.com:8080&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>如何为svn中的脚本设置可执行属性</h4>
-
-<p>你在Linux下创建了一个可执行脚本<code>e2e_test.sh</code>，但是团队里的其他人工作在Windows系统上，当你提交可执行脚本之后，他们checkout的是一个不能执行的文件！（其实也在情理之中，Windows这种垃圾货什么时候正常过呢？）</p>
-
-<p>这时候可以通过给这个脚本设置一个<code>svn</code>的属性:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>svn propset svn:executable <span class="s2">&quot;*&quot;</span> e2e_test.sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样在Windows上才heckout之后就正常了。</p>
-
-<h4>在Bash脚本中如何判断一个文件是否可执行？</h4>
-
-<p>有时候我们在<code>Bash</code>中需要判断某个文件是否可以执行，这行脚本可以解救你：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="k">if</span> <span class="o">[</span> -x <span class="nv">$FILENAME</span> <span class="o">]</span>; <span class="k">then</span>
-</span><span class='line'>  <span class="c"># the file is executable</span>
-</span><span class='line'><span class="k">fi</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>判断某个文件是否存在的脚本为：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="k">if</span> <span class="o">[</span> -f <span class="nv">$FILENAME</span> <span class="o">]</span>; <span class="k">then</span>
-</span><span class='line'>  <span class="c"># the file is existing</span>
-</span><span class='line'><span class="k">fi</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>我正在用的Linux是哪个发行版？</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsb_release -a
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在<code>SUSE</code>系统中运行这条命令可以得到这样的输出:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsb_release -a
-</span><span class='line'>LSB Version:    core-2.0-noarch:core-3.0-noarch:core-2.0-x86_64:core-3.0-x86_64:desktop-3.1-amd64:desktop-3.1-noarch:graphics-2.0-amd64:graphics-2.0-noarch:graphics-3.1-amd64:graphics-3.1-noarch
-</span><span class='line'>Distributor ID: SUSE LINUX
-</span><span class='line'>Description:    SUSE Linux Enterprise Server 10 <span class="o">(</span>x86_64<span class="o">)</span>
-</span><span class='line'>Release:        10
-</span><span class='line'>Codename:       n/a
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而在<code>ubuntu</code>上则为:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>lsb_release  -a
-</span><span class='line'>No LSB modules are available.
-</span><span class='line'>Distributor ID: Ubuntu
-</span><span class='line'>Description:    Ubuntu 12.04.3 LTS
-</span><span class='line'>Release:        12.04
-</span><span class='line'>Codename:       precise
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>与之相关的还有个问题是我当前的操作系统是<code>32位还是64为呢</code>?</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>uname -m
-</span><span class='line'>x86_64
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者使用<code>file</code>命令来查看系统自带的执行文件的元数据信息:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>file /usr/bin/file
-</span><span class='line'>/usr/bin/file: ELF 64-bit LSB executable, x86-64, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, dynamically linked <span class="o">(</span>uses shared libs<span class="o">)</span>, <span class="k">for </span>GNU/Linux 2.6.15, BuildID<span class="o">[</span>sha1<span class="o">]=</span>0xe04b36145abc21d863652b93e6a0d069f7dfd3f4, stripped
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>查找文件(跳过某些指定目录)</h4>
-
-<p>你想要统计系统中所有的<code>JavaScript</code>文件的数量，但是又不想把外部的库文件（位于<code>libs</code>目录中）统计在内：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>find . -path ./libs -prune -o -name <span class="s2">&quot;*.js&quot;</span> | wc -l
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里大概解释一下，上面的命令其实等于这条命令的缩写：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>find . -path ./libs -a -prune -o -name <span class="s2">&quot;*.js&quot;</span> | wc -l
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>也即</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>find . -path ./libs -and -prune -or -name <span class="s2">&quot;*.js&quot;</span> | wc -l
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>翻译成伪代码相当于：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;./libs&quot;</span>
-</span><span class='line'>    <span class="n">prune</span>
-</span><span class='line'><span class="k">else</span>
-</span><span class='line'>    <span class="n">find_by_name</span> <span class="s2">&quot;*.js&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>断点续传</h4>
-
-<p>下载了一半，网络断了。小文件的话大不了重来一次，但是如果是一个7G的镜像呢？好在我们有<code>wget -c</code>。<code>wget</code>基本上是Linux中下载软件的标配了，它有很多的参数，甚至可以将整个静态网站克隆到本地，断点续传当然是支持的了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>wget -c https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-4.6.0-0-virtualbox.7z --no-check-certificate
-</span><span class='line'>--2014-05-08 12:32:25--  https://downloads.cloudera.com/demo_vm/virtualbox/cloudera-quickstart-vm-4.6.0-0-virtualbox.7z
-</span><span class='line'>Connecting to 172.19.6.47:8080... connected.
-</span><span class='line'>Proxy request sent, awaiting response... 206 Partial Content
-</span><span class='line'>Length: 3393638045 <span class="o">(</span>3.2G<span class="o">)</span>, 2951427152 <span class="o">(</span>2.7G<span class="o">)</span> remaining <span class="o">[</span>text/plain<span class="o">]</span>
-</span><span class='line'>Saving to: <span class="sb">`</span>cloudera-quickstart-vm-4.6.0-0-virtualbox.7z<span class="err">&#39;</span>
-</span><span class='line'>
-</span><span class='line'>13% <span class="o">[</span>++++++++++                                                                      <span class="o">]</span> 450,866,893 57.8K/s  eta 3h 57m
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/4/">&larr; Older</a>
@@ -3832,6 +3710,10 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2016/05/design-for-failure/">为故障和失败做设计</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/05/about-session-and-security-api-2/">保护你的API（下）</a>
       </li>
     
@@ -3845,10 +3727,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
     
       <li class="post">
         <a href="/2016/02/pitfall-of-technology/">技术的执念</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/01/for-those-dev-who-doesnt-want-to-be-a-ux-cannot-be-a-good-consulant/">不想当UX的开发不是好咨询师</a>
       </li>
     
   </ul>

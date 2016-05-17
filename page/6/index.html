@@ -9,7 +9,25 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="ThoughtWorks好声音 ThoughtWorks好声音是一个聚合网站，内容来自众ThoughtWorker的博客，我们每周会汇聚一次，从众多的博客中挑选出一些P2(软件卓越)相关的主题，然后编为一辑，再分享出去。 但是从近100个博客中找P2相关的内容，这件事本身非常繁琐， &hellip;">
+  <meta name="description" content="Service的典型示例 在AngularJS中，Service都是单例的实体，通常会将Service作为向后台交互的数据提供者，所有的需要数据的组件只需要依赖于这个Service即可。 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+var app = &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +100,318 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2014/01/how-to-test-service-in-angularjs/">如何测试AngularJS中的Service</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-04T14:22:00+11:00" pubdate data-updated="true">Jan 4<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Service的典型示例</h3>
+
+<p>在AngularJS中，Service都是单例的实体，通常会将Service作为向后台交互的数据提供者，所有的需要数据的组件只需要依赖于这个Service即可。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;MyApp&#39;</span><span class="p">,</span> <span class="p">[]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;SearchSettingService&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">[</span><span class="s1">&#39;$http&#39;</span><span class="p">,</span> <span class="s1">&#39;$q&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$http</span><span class="p">,</span> <span class="nx">$q</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">setting</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>            <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">$q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">success</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}).</span><span class="nx">error</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="s2">&quot;network error&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'><span class="p">}]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>$httpBackend</h4>
+
+<p>测试的时候，我们不需要真实的发送HTTP请求来获取数据。如果可以只测试Service的逻辑，当发送请求时，我们将这个请求拦截下来，然后返回一个预定义好的数据即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have settings from http request&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;period&quot;</span><span class="o">:</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;date&quot;</span><span class="o">:</span> <span class="s2">&quot;Sat Dec 21 12:56:53 EST 2013&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">settingService</span><span class="p">.</span><span class="nx">setting</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">result</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>$httpBackend是AngularJS提供的一个测试用的服务，可以在spec中注入进来：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">module</span><span class="p">(</span><span class="s1">&#39;services&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">inject</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">SearchSettingService</span><span class="p">,</span> <span class="nx">$httpBackend</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">settingService</span> <span class="o">=</span> <span class="nx">SearchSettingService</span><span class="p">;</span>
+</span><span class='line'>        <span class="nx">httpBackend</span> <span class="o">=</span> <span class="nx">$httpBackend</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>httpBackend</code>服务有一些很方便测试的方法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="nx">url</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span><span class='line'><span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectPOST</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">param</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>设置之后，当调用<code>httpBackend.flush</code>时，AngularJS会调用这个setup，发送的请求会被之前的setup拦截并返回，这样service中的数据就被填充好了。</p>
+
+<h4>Service测试的模板</h4>
+
+<p>或者说，当测试一个Service时，我们应该测那些方面呢？</p>
+
+<ol>
+<li>正常流程，一个完整的处理过程</li>
+<li>异常处理，如果服务器出错了，程序需要如何反馈？</li>
+<li>其他异常情况</li>
+</ol>
+
+
+<p>正常流程很容易，在调用service提供的方法之后，在获得的promise对象上调用then方法来填充一个数据即可，然后调用<code>httpBackend.flush()</code>来<strong>发送</strong>请求，最后验证数据的格式/内容是否正确。</p>
+
+<p>这个测试的主要目的是验证当调用service的方法时，service真实的发送了一个http请求：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have settings from http request&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span><span class="p">;</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;period&quot;</span><span class="o">:</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;date&quot;</span><span class="o">:</span> <span class="s2">&quot;Sat Dec 21 12:56:53 EST 2013&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">settingService</span><span class="p">.</span><span class="nx">setting</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">result</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对于异常的情况，比如服务器返回了错误，如<code>500</code>，那么最低程度，程序应该可以处理这个异常：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should throw error when network expection&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">error</span><span class="p">;</span>
+</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">settingService</span><span class="p">.</span><span class="nx">setting</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">result</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">error</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toBeUndefined</span><span class="p">();</span>
+</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">error</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s2">&quot;network error&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4><em>服务器</em> moco</h4>
+
+<p><a href="https://github.com/dreamhead/moco">moco</a>是同事<a href="http://dreamhead.blogbus.com/">郑晔</a>开发的一个测试框架/工具，基本上来说，moco是一个用来集成测试的用的HTTP服务器。</p>
+
+<p>你可以通过API方式或者启动moco服务器的方式来使用它，我比较喜欢将moco作为一个独立的服务器来使用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>java -jar moco-runner-0.9-standalone.jar start -p 12306 -c moco.conf.json
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>比如<code>moco.conf.json</code>中定义了一下规则：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;request&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="s2">&quot;post&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;uri&quot;</span><span class="o">:</span> <span class="s2">&quot;/resource&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="s2">&quot;response&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;status&quot;</span><span class="o">:</span> <span class="mi">201</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;resource has been created&quot;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;request&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;uri&quot;</span><span class="o">:</span> <span class="s2">&quot;/resource&quot;</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="s2">&quot;response&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="s2">&quot;status&quot;</span><span class="o">:</span> <span class="mi">200</span><span class="p">,</span>
+</span><span class='line'>            <span class="s2">&quot;file&quot;</span><span class="o">:</span> <span class="s2">&quot;resources.json&quot;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>则启动moco的服务器之后，所有发往<code>/resource</code>的<code>post</code>请求都会得到</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="mi">201</span>
+</span><span class='line'><span class="nx">resource</span> <span class="nx">has</span> <span class="nx">been</span> <span class="nx">created</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>的HTTP响应，这个功能在前端开发越来越独立的情况下变得非常好用。我最近在有很多小项目中都在尝试moco，非常的好用，后边会有相关的博客专门介绍。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1974,214 +2304,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/08/quick-api-development-by-grape/">使用Grape快速开发API</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-04T10:29:00+10:00" pubdate data-updated="true">Aug 4<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Grape简介</h3>
-
-<p><a href="http://intridea.github.io/grape">Grape</a>是一个基于Rack的非常轻量级的框架，用于快速的开发API。一般来说，Rails对于单独的API来说，太过于重量级；而Sinatra虽然足够小巧，但是又没有为开发API提供足够的默认支持（如果从可控制性，灵活性上来说，Sinatra可能更好一些，但是如果有专门的更好用的工具，为什么不用呢？）。</p>
-
-<p>安装非常简便：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ gem install grape</span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者使用在自己的Gemfile中，与其他的gem一起搭建API:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>gem 'grape'</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>为既有系统添加API</h3>
-
-<h4>简单一试</h4>
-
-<p>之前的一篇介绍<a href="http://icodeit.org/2013/05/using-active-record-as-a-standalone-orm/">ActiveRecord在既有系统中使用</a>的文章中，我使用ActiveRecord为既有的数据库visitor中的三个表(visitor, listGroup, listGroupItem)建立了ruby对应的模型。现在我们可以为这些模型包装一组API，以方便客户端（消费者）可以通过web来访问。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>module MySys
-</span><span class='line'>    class API &lt; Grape::API
-</span><span class='line'>        format :json
-</span><span class='line'>
-</span><span class='line'>        resource :visitors do
-</span><span class='line'>
-</span><span class='line'>            desc "get all visitor information"
-</span><span class='line'>            get do
-</span><span class='line'>                Visitor.limit(20)
-</span><span class='line'>            end
-</span><span class='line'>
-</span><span class='line'>        end
-</span><span class='line'>    end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>首先，MySys::API扩展了Grape::API。<code>format</code>定义我们的API会产生JSON格式的输出，resource定义了这一组API是为资源visitors提供的，因此访问API的url为：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:9292/visitors/</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当然，grape提供一个很方便的设置prefix，可以使得API的路径更有意义:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>format :json
-</span><span class='line'>prefix "mysys"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>url则相应地变为:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:9292/mysys/visitors/</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>处理参数</h4>
-
-<p>在对参数的处理上，grape也非常灵活，比如接上例，我们想要获取某一个具体的用户的信息：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:9292/visitors/8a9d82b13b9786e1013b978766150001</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们可以添加一个新的endpoint：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>desc "return a visitor"
-</span><span class='line'>params do
-</span><span class='line'>    requires :visitor_uid, :type =&gt; String, :desc =&gt; "visitor id"
-</span><span class='line'>end
-</span><span class='line'>route_param :visitor_uid do
-</span><span class='line'>    get do
-</span><span class='line'>        Visitor.find(params[:visitor_uid])
-</span><span class='line'>    end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>params中要求，需要一个类型为String的参数visitor_uid。然后在handler中，通过params来引用这个参数的值。</p>
-
-<h4>助手函数(Helper)</h4>
-
-<p>Grape允许开发者将编解码，权限校验等等的通用的操作分离出来，放入助手函数，这些Helper可以被所有的API使用:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>helpers do
-</span><span class='line'>    def generate_default_visitor(email, site) 
-</span><span class='line'>        {
-</span><span class='line'>            :visitor_uid =&gt; SecureRandom.hex,
-</span><span class='line'>            :password_expiration =&gt; (Time.now + 60 * 60 * 24),
-</span><span class='line'>            :last_used_timestamp =&gt; (Time.now - 60 * 60 * 24),
-</span><span class='line'>            :visitor_login_id =&gt; email,
-</span><span class='line'>            :site_name =&gt; site
-</span><span class='line'>        }
-</span><span class='line'>    end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用上边定义的助手函数<code>generate_default_visitor</code>：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>desc "create a visitor"
-</span><span class='line'>params do
-</span><span class='line'>    requires :email, :type =&gt; String, :desc =&gt; "Email address"
-</span><span class='line'>    requires :site, :type =&gt; String, :desc =&gt; "Site"
-</span><span class='line'>end
-</span><span class='line'>post do
-</span><span class='line'>    attr = generate_default_visitor(params[:email], params[:site])
-</span><span class='line'>    visitor = Visitor.new attr
-</span><span class='line'>    visitor.visitor_uid = attr[:visitor_uid]
-</span><span class='line'>    visitor.save
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>对API进行测试</h3>
-
-<p>通过Web测试API有非常多的方式，比如通过浏览器的插件(POSTMan)，RSpec，但是我最喜欢，也是最轻便的方式是通过命令行工具curl：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl http://localhost:9292/visitors/8a9d82b13b9786e1013b978766150001</span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>curl -H "Content-Type: application/json" -X POST -d "{\"email\":\"jtqiu@tw.com\", \"site\":\"mysys\"}" http://localhost:9292/visitors/</span></code></pre></td></tr></table></div></figure>
-
-
-<p>命令行的程序curl是一个非常灵活，强大的工具，可以定制HTTP头信息，User Agent，支持所有的HTTP动词，最重要的是，在命令行很容易将工具们组合在一起，并完成自动化。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/7/">&larr; Older</a>
@@ -2199,6 +2321,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2016/05/design-for-failure/">为故障和失败做设计</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/05/about-session-and-security-api-2/">保护你的API（下）</a>
       </li>
     
@@ -2212,10 +2338,6 @@
     
       <li class="post">
         <a href="/2016/02/pitfall-of-technology/">技术的执念</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/01/for-those-dev-who-doesnt-want-to-be-a-ux-cannot-be-a-good-consulant/">不想当UX的开发不是好咨询师</a>
       </li>
     
   </ul>
