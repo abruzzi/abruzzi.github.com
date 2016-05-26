@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="一些背景故事 坊间流传着很多关于PM（Project Manager，项目经理）的笑话，在这些不无刻薄的笑话中，PM往往被描述成一个盲目的承诺客户需求变更，不了解实际情况而又喜欢指手画脚的专门坑开发的家伙。毋庸置疑，这些笑话当然是那些聪明的开发发明的（不过你得承认，在很多团队， &hellip;">
+  <meta name="description" content="说实话，这是一篇软文，为我的新书《轻量级Web应用开发》写的软文。如果你不想接着往下读，可以直接去这里买一本来看，:) 之过去的几年中，我参加过好多次Hackday活动。每次看到在为期两天的时间里，2-3个人将一个想法变成现实，都会有一种强烈的成就感。而且这个Hack的过程中，会重拾编程的乐趣， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,131 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/08/how-to-make-you-idea-come-true/">如何快速发布你的点子？</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-08-02T19:04:00+10:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>说实话，这是一篇软文，为我的新书<a href="http://icodeit.org/lightweight-web">《轻量级Web应用开发》</a>写的软文。如果你不想接着往下读，可以<a href="http://www.amazon.cn/gp/product/B012R5A1NQ?refRID=1GXJ241HTDC784AXJ0SX&amp;ref_=pd_rhf_pe_p_img_2">直接去这里买一本</a>来看，:)</em></p>
+
+<p>之过去的几年中，我参加过好多次<a href="http://icodeit.org/2013/03/guan-yu-hack-day/">Hackday活动</a>。每次看到在为期两天的时间里，2-3个人将一个想法变成现实，都会有一种强烈的成就感。而且这个Hack的过程中，会重拾编程的乐趣，大家的积极性都非常高，用着各种有趣的技术（大数据，开源硬件，Node.js，GIS系统），逐步的将模糊的想法，变成现实，并最终为客户带来价值。<a href="http://icodeit.org/telstra-hackday-i/"><em>最新的一次在这里</em></a></p>
+
+<p>通过这些Hackday的经历，以及在众多项目中的经验，我总结了一些<strong>轻量级</strong>的方法/实践。这些方法/实践非常容易落地，并且久经验证。在很多项目中已经在不断的使用。它们可以帮你更好的将一个想法变成现实，并且在随后的开发中还可以继续发挥作用而不至失效（测试，构建脚本，自动化部署等等）。我希望你可以在自己的项目中尝试这些方法/实践，也希望这些方法/实践可以真正的帮助你和你的项目取得成功。</p>
+
+<h3>细化你的“点子”</h3>
+
+<p>根据一个已有的产品来参考，演绎，并形成自己的产品并非难事，而创新则是一件非常困难的事情，因为你需要“无中生有”。在ThoughtWorks，我们有这样一些步骤可以帮助客户来梳理信息，并最终交付产品，简而言之，可以归结为这样几个步骤：</p>
+
+<ol>
+<li>Discovery（用户研究，探索）</li>
+<li>Define（归纳洞见，发现）</li>
+<li>Design（原型设计，验证）</li>
+<li>Delivery（制定计划，实施）</li>
+</ol>
+
+
+<p><img src="/images/2015/08/i-learn-resized.png" alt="prototype" /></p>
+
+<p>上图是一个“点子”的原型（一个交换技能的应用，用户可以教别人自己擅长的技能，作为交换，也可以从别人那里学习心得技能），原型事实上是<strong>第三步</strong>的产物。我们通过一些调查（口头采访，或者问卷调查）得到一些基本的信息，然后归纳这些信息，并和真实用户再次确认，得到一个概念。有了概念，再来设计一个基本的原型，这个原型还可以迭代数次，然后进入下一个阶段。</p>
+
+<p>前三个阶段更多的是用户体验设计师，以及客户的业务人员参与的。在前三步完成之后，进入实施的时候，软件工程师开始投入。这篇文章更关注<strong>第四步(Delivery)</strong>中的各种实践，通过这些实践，我们可以很好的完成交付计划，使得我们的好想法最终可以变成为用户提供服务的产品。</p>
+
+<h3>实现“点子”的方法</h3>
+
+<p>在软件领域，将一个想法变成实际的产品需要经历若干个阶段。按照传统的软件开发方式，会有前期的调研，需求分析，概要设计，详细设计，编码实现，测试，发布等一系列的流程。这种方式对每个阶段的定义都非常明确，而且每个阶段需要依赖前一个阶段的输出，因此往往被称为“瀑布模型”。后来慢慢发现，这个模型的反馈周期太长，一个软件从调研到发布往往需要数年，当发布之后，可能市场早已经沧海桑田。人们后来发明了更加符合现代市场需求的“敏捷开发”，在敏捷中，更加强调短平快的将需求变为产品。</p>
+
+<p>简而言之，敏捷开发更强调：</p>
+
+<ol>
+<li>快速发布</li>
+<li>渐进增强</li>
+<li>小步迭代</li>
+</ol>
+
+
+<p>而在敏捷开发的继承者精益中，这几点理念也被更进一步的深化。由于没有办法预见未来，我们只能用一种边做边看的方式来验证想法。简而言之，就是先根据经验和调查，做出一个合理的推断，然后定义好范围，构想出一个最小可行产品（MVP），这个MVP的功能非常内聚，非常紧凑，我们需要尽可能快的让其上线，并被真是的用户使用，测试。根据这些用户的反馈，我们会做一些调整，比如去掉那些很少人使用的功能，聚焦在用户喜欢的功能上；从用户的实际使用中，调整界面元素的位置，子功能的入口等等。这个过程会持续多轮，最后的结果会是一个有真是用户使用，并且比较贴近真实需求的产品。当然这还不够，我们需要不断的打磨，渐进式的增强产品的功能，逐步完善功能等。</p>
+
+<p>有一个非常形象的图，可以看出瀑布模型和敏捷开发两种方法的对比：</p>
+
+<p><img src="/images/2015/08/waterfall-v-agile-about.gif" alt="waterfall vs agile" /></p>
+
+<p>敏捷开发通过逐步细化，迭代前进的方式，分阶段的将需求实现，在整个过程中，更容易做到快速调整。</p>
+
+<p>所有的这些过程，都非常依赖“快速”这个关键点。如果MVP花了3周就产生了，但是为了让其上线，你花费了1个月，那么很可能这个MVP已经过时了；如果你确实快速的将MVP发布了，在得到了用户的很多反馈之后，花费1个月来实现这些反馈，又会让你落在竞争对手之后；如果快速的发布了多次，并且幸运的是，你的用户量变多了，如果花费很长时间来调整架构，则可能失去当前的市场窗口。也就是说，你需要非常<strong>快速地</strong>对变化做出反应！</p>
+
+<h3>轻量级的开发方式</h3>
+
+<h4>开发中的三个重点</h4>
+
+<p>在工程实践中，我认为有三个特别需要注意重要的点，这三点可以极大程度的改善项目现状，提高效率，并使得产品的高质量交付成为可能，它们分别是：</p>
+
+<ol>
+<li>自动化（自动化一切）</li>
+<li>质量内嵌（defect的数量，是否真正满足了需求）</li>
+<li>代码本身的质量（可读性，可维护性，可扩展性）</li>
+</ol>
+
+
+<p>自动化包括，自动provision，自动部署，自动化测试，自动打包等等。这是提高团队开发效率的必要工具。比如书中提到的grunt/gulp脚本，jasmine/rspec/capybara测试，部署脚本，vagrant/Chef等，都是关于如何将日常开发中的任务尽可能的自动化。</p>
+
+<p>软件没有Bug当然是所有人都追求的，我们有很多中方式来保证代码质量。而在编写产品代码的同时，写大量的自动化测试，是投入产出比最高的一种了。通过单元测试，集成测试，以及一些有限但是关键的UI测试，我们可以覆盖很多的需求，而将这些测试自动化起来之后，可以节省大量的开发/测试成本，并减少回归测试的代价。</p>
+
+<p>要支撑快速的发布，我们需要一系列的技术实践。这些技术包括环境的搭建，框架的使用，代码的编写，产品的发布；而且包括后台的数据库设计，业务代码，同样还有前端的展现等。</p>
+
+<p><img src="/images/2015/06/software-life-cycle-resized.png" alt="software life cycle" /></p>
+
+<h4>何为轻量级？</h4>
+
+<p>在<a href="http://www.amazon.cn/gp/product/B012R5A1NQ?refRID=1GXJ241HTDC784AXJ0SX&amp;ref_=pd_rhf_pe_p_img_2">《轻量级Web应用开发》</a>中，我介绍了一系列的实践/工具，这些实践/工具贯穿整个软件开发的生命周期，使得敏捷开发/精益的开发方式变得可以“落地”。比如如何使用轻量级的开发框架来搭建API原型，如何将应用发布在免费的云平台上，如何通过虚拟化技术快速搭建开发环境，从而节省环境配置的投入，如何快速平滑的发布，如何使用测试先行的方式来保证代码质量，如何做高效的自动化UI测试等等。</p>
+
+<ul>
+<li>轻量级Web框架</li>
+<li>前端开发流程</li>
+<li>构建工具</li>
+<li>环境自动化（开发环境的搭建，CI服务器的搭建）</li>
+<li>自动化部署</li>
+<li>UI测试</li>
+<li>实例驱动（书中有很多的实例，也有很多从项目中总结出来的实践）</li>
+</ul>
+
+
+<p>这是一本主要关注开发实践的书，书中通过很多实际的例子来帮助读者建立一套完整，高效，轻量级的开发方式，这些方式可以直接在你的下一个项目中使用。甚至如果项目的技术栈变成了另外一种语言，你也可以迅速找到同类的替代品。比如rake之于<a href="https://gradle.org/">gradle</a>，<a href="http://www.sinatrarb.com/">sinatra</a>至于spring-mvc等等。</p>
+
+<p>每个组件都是可以替换掉的，比如ORM，如果你觉得DataMapper无法满足实际需要，那么可以换成ActiveRecord。如果Rails太重，使用Sinatra或者Grape或许是一个更好的选择。AngularJS包含了太多东西，Backbone.js或许适合你的场景，而也未尝不可以用Riot.js来替换掉Backbone中的view层。</p>
+
+<p>在本地，可以将应用部署到一个vagrant+chef来provision的环境中，而通过部署自动化，这个动作可以很容易的在AWS的云上实现。轻量级的开发方式，帮助你用最小的代价来替换系统中的任意一个组件，因为每个组件在一开始都是按照可替换原则选用的。</p>
+
+<p>另一方面，<strong>轻量级</strong>的另一个意思是：现发布静态的版本，然后再将内容替换为动态版本。发布一个静态的页面非常容易，具体细节可以<a href="http://icodeit.org/2014/11/publish-your-web-design/">参考这篇文章</a>。当需要动态内容是，免费版的Heroku是一个触手可得的选择，AWS则是一个更加专业的选择（各种服务都配置完善，你只需要关注自己的应用部署即可）。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3562,137 +3687,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2015/02/make-a-colorful-svn-diff/">制作一个更漂亮的svn Diff命令</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-02-18T14:14:00+11:00" pubdate data-updated="true">Feb 18<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Code Review</h3>
-
-<p>在<code>ThoughtWorks</code>，我们几乎每天都会进行一个叫<code>code review</code>或者<code>code diff</code>的活动：每天下午5:00，团队成员围坐在一起，将今天的修改大概过一下，这样做的好处非常明显：</p>
-
-<ol>
-<li>分享业务知识，了解彼此的工作</li>
-<li>分享技术细节，比如有人使用了某种设计模式</li>
-<li>帮助别人发现问题，比如逻辑错误等，群策群力</li>
-</ol>
-
-
-<p>经过实践，<code>code reivew</code>可以快速发现问题，而且可以尽可能多的分享知识，是一种<code>ThoughtWorker</code>们喜闻乐见的学习/娱乐形式。</p>
-
-<p>但是随着项目的不同，各个团队使用的版本管理工具都不一样。用惯了<code>git</code>的非常漂亮的<code>diff</code>子命令之后，<code>svn</code>的<code>diff</code>简直就是战五渣。没有高亮，没有进度条，就是黑底白字的一些文本，实在无法让人提起兴趣。</p>
-
-<p>这篇文章分享一个简单的方法，可以让你很容易的把<code>svn</code>的<code>diff</code>打造成一个漂亮的工具：</p>
-
-<p><img src="/images/2015/02/svn-color-diff-resized.png" alt="svn diff" /></p>
-
-<h4>diff格式</h4>
-
-<p>Diff是一种通用的表示文本差异的格式，细节可以看我之前写过一篇<a href="http://icodeit.org/2012/02/diff%E5%92%8Cpatch%E7%9A%84%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/">关于diff和patch的文章</a>。需要说明的是，它作为一种标准格式，很多编辑器都提供对这种格式的高亮显示，比如现在非常流行的<code>Sublime Text</code>编辑器：</p>
-
-<p><img src="/images/2015/02/sublime-diff-resized.png" alt="sublime diff" /></p>
-
-<p>默认的，<code>svn</code>的diff命令会生成这样<strong>朴素</strong>的输出：</p>
-
-<p><img src="/images/2015/02/svn-diff-resized.png" alt="svn diff" /></p>
-
-<h4>命令行的diff高亮显示</h4>
-
-<p>在Mac下，可以通过<code>brew</code>来安装一个命令行工具，这个工具可以将<code>Diff</code>格式高亮显示：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>brew install colordiff
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有了这个工具，就可以将<code>svn</code>生成的<code>Diff</code>格式高亮显示出来：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn diff | colordiff
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2015/02/color-diff-resized.png" alt="color diff" /></p>
-
-<p>但是你可能已经发现这些神奇的<code>^M</code>，这是<code>Windows</code>系统中的换行符在<code>Unix</code>类系统中的展示，我们需要将<code>Diff</code>先转换一次：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn diff | dos2unix | colordiff
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2015/02/color-diff-converted-resized.png" alt="color diff converted" /></p>
-
-<p>如果你的系统中没有<code>dos2unix</code>，可以用<code>brew</code>来安装：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>brew install dos2unix unix2dos
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>分页器</h4>
-
-<p>*nix系统下有两种分页器：<code>more</code>和<code>less</code>，<code>less</code>比<code>more</code>的功能更丰富。<code>less</code>有很多的参数，我们这里选用了3个常见的：</p>
-
-<ol>
-<li><code>-s</code>: 压缩连续的空白行为一行</li>
-<li><code>-M</code>: 给出更多的提示信息，包含行号，百分比等</li>
-<li><code>+Gg</code>: 先跳至要查看文件的末尾，再跳至文件开头，这样从less就可以得到整个流的长度，从而计算出正确的百分比。当然如果是单独文件时，less是明确知道文件长度的，但是如果是从流中重定向过来的文本，less无法在开始时就得知长度。</li>
-</ol>
-
-
-<p>下面这条命令可以将当前目录下的所有<code>html</code>文件分屏显示，并且在每一屏的最后一行显示百分比等信息：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>cat *.html | less -s -M +Gg
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>放在一起</h4>
-
-<p>好了，我们将每个部分都已经讲解了一遍了，现在让我们将这些零件串起来，在svn的<code>working copy</code>中执行这条命令就可以得到非常漂亮的，分页显示的Diff：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn diff | dos2unix | colordiff | less -s -M +Gg
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当然，还可以用一个<code>alias</code>(别名)来节省敲入的字符数：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">alias </span><span class="nv">sd</span><span class="o">=</span><span class="s1">&#39;svn diff | dos2unix | colordiff | less -s -M +Gg&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/4/">&larr; Older</a>
@@ -3710,6 +3704,10 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2016/05/practise-in-programming/">无他，但手熟尔</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/05/design-for-failure/">为故障和失败做设计</a>
       </li>
     
@@ -3723,10 +3721,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
     
       <li class="post">
         <a href="/2016/02/performance-testing-in-ci/">CI上的Web前端性能测试</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/02/pitfall-of-technology/">技术的执念</a>
       </li>
     
   </ul>

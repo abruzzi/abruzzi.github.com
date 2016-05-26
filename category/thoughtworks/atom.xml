@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ThoughtWorks | I code it]]></title>
   <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-05-17T22:47:09+10:00</updated>
+  <updated>2016-05-26T23:24:06+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,179 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[无他，但手熟尔]]></title>
+    <link href="http://abruzzi.github.com/2016/05/practise-in-programming/"/>
+    <updated>2016-05-26T22:56:00+10:00</updated>
+    <id>http://abruzzi.github.com/2016/05/practise-in-programming</id>
+    <content type="html"><![CDATA[<h2>高效幻象</h2>
+
+<p>通过对自己的行为观察，我发现在很多时候，我以为我掌握了的知识和技能其实并不牢靠。我引以为豪的<code>高效</code>其实犹如一个彩色的肥皂泡，轻轻一碰就会破碎，散落一地。</p>
+
+<h3>你可能只是精通搜索</h3>
+
+<p>我们现在所处的时代，信息爆炸，每个人每天都会接触，阅读很多的信息，快速消费，快速遗忘。那种每天早上起来如同皇帝批阅奏折的、虚假的误以为掌握知识的错觉，驱动我们进入一个恶性循环。</p>
+
+<p>即使在我们真的打算解决问题，进行主动学习时，更多的也只是在熟练使用搜索引擎而已（在一个领域待久了，你所使用的关键字准确度自然要比新人高一些，仅此而已）。精通了高效率搜索之后，你会产生一种你<code>精通搜索到的知识本身</code>的<strong>错觉</strong>。</p>
+
+<p><img src="/images/2016/05/stackoverflow-oreilly.png" alt="stack overflow" /></p>
+
+<h4>如何写一个Shell脚本</h4>
+
+<p>在写博客的时候，我通常会在文章中配图。图片一般会放在一个有固定格式的目录中，比如现在是2016年5月，我本地就会有一个名为<code>$BLOG_HOME/images/2016/05</code>的目录。由于使用的是<code>markdown</code>，在插入图片时我就不得不输入完整的图片路径，如：<code>/images/2016/05/stack-overflow.png</code>。但是我又不太记得路径中的<code>images</code>是单数(<code>image</code>)还是复数(<code>images</code>)，而且图片格式又可能是<code>jpg</code>,<code>jpeg</code>,<code>gif</code>或者<code>png</code>，我也经常会搞错，这会导致图片无法正确显示。另外，放入该目录的原始文件尺寸有可能比较大，我通常需要将其缩放成800像素宽（长度无所谓，因为文章总是要从上往下阅读）。</p>
+
+<p>为了自动化这个步骤，我写了一个小的Shell脚本。当你输入一个文件名如：<code>stack-overflow.png</code>后，它会缩放这个文件到800像素宽，结果是一个新的图片文件，命名为<code>stack-overflow-resized.png</code>，另外它将符合<code>markdown</code>语法的文件路径拷贝到剪贴板里：<code>/images/2016/05/stack-overflow-resized.png</code>，这样我在文章正文中只需要用<code>Command+V</code>粘贴就可以了。</p>
+
+<p>有了思路，写起来就很容易了。缩放图片的命令我是知道的：</p>
+
+<p><code>sh
+$ convert -resize 800 stack-overflow.png stack-overflow-resized.png
+</code></p>
+
+<p>但是要在文件明上加入<code>-resized</code>，需要分割文件名和文件扩展名，在<code>Bash</code>里如何做到这一点呢？Google一下：</p>
+
+<p>```sh
+FULLFILE=$1</p>
+
+<p>FILENAME=$(basename "$FULLFILE")
+EXTENSION="${FILENAME##<em>.}"
+FILENAME="${FILENAME%.</em>}"</p>
+
+<p>convert -resize 800 $FULLFILE $FILENAME-resized.EXTENSION
+```</p>
+
+<p>难看是有点难看，不过还是可以工作的。接下来是按照当前日期生成完整路径，<code>date</code>命令我是知道的，而且我知道它的<code>format</code>格式很复杂，而且跟<code>JavaScript</code>里Date对象的<code>format</code>又不太一样（事实上，世界上有多少种日期工具，基本上就有多少种格式）。再Google一下：</p>
+
+<p><code>sh
+$ date +"/images/%Y/%m/"
+</code></p>
+
+<p>最后一步将路径拷贝到剪贴板也容易，Mac下的<code>pbcopy</code>我也会用：<code>echo</code>一下字符串变量，再管道到<code>pbcopy</code>即可：</p>
+
+<p><code>sh
+PREFIX=`date +"/images/%Y/%m/"`
+echo "$PREFIX$FILENAME-resized.EXTENSION" | pbcopy
+</code></p>
+
+<p>但是将内容粘贴到<code>markdown</code>里之后，我发现这个脚本多了一个换行。我想这个应该是<code>echo</code>自己的行为吧，会给字符串自动加上一个换行符。Google一下，发现加上<code>-n</code>参数就可以解决这个问题。</p>
+
+<p>好了，完整的脚本写好了：</p>
+
+<p>```sh</p>
+
+<h1>!/bin/bash</h1>
+
+<p>FULLFILE=$1</p>
+
+<p>FILENAME=$(basename "$FULLFILE")
+EXTENSION="${FILENAME##<em>.}"
+FILENAME="${FILENAME%.</em>}"</p>
+
+<p>convert -resize 800 $FULLFILE $FILENAME-resized.EXTENSION</p>
+
+<p>PREFIX=<code>date +"/images/%Y/%m/"</code>
+echo -n "$PREFIX$FILENAME-resized.EXTENSION" | pbcopy
+```</p>
+
+<p>嗯，还不错，整个过程中就用了我十几分钟时间而已，以后我在写博客时插入图片就方便多了！</p>
+
+<p>不过等等，好像有点不对劲儿，我回过头来看了看这段脚本：7行代码只有1行是我独立写的！没有<code>Google</code>的话，查看<code>man date</code>和<code>man echo</code>也可以解决其中一部分问题，不过文件扩展名部分估计又得花较长时间。</p>
+
+<p>仔细分析一下，之前的成就感荡然无存。</p>
+
+<h4>更多的例子</h4>
+
+<p>我相信，过几周我再来写这样一个简单的脚本时，上面那一幕还是会出现。开发者的IDE的外延已经将<code>Google</code>和<code>Stack Overflow</code>集成了。很难想象没有这两个IDE的<code>插件</code>我要怎样工作。</p>
+
+<p>其实除此之外，日常工作中这样的事情每时每刻都在发生：</p>
+
+<ol>
+<li>Ansible里如何创建一个给用户<code>robot</code>读写权限的目录？</li>
+<li>Python 3中启动简单HTTPServer的命令是？</li>
+<li>Spring Boot的Gradle String是？</li>
+<li>Mongodb中如何为用户<code>robot</code>授权？</li>
+<li>Gulp里一个Task依赖另一个Task怎么写？</li>
+</ol>
+
+
+<p>等等等等，这个列表可以根据你的技术栈，偏向前端/后端的不同而不同，但是相同的是在<code>Google</code>和<code>Stack Overflow</code>上搜索，阅读会浪费很多时间，而这些本来都是可以避免的。</p>
+
+<h3>肌肉记忆</h3>
+
+<p>大脑在对信息存储上有很高级的设计，如果某件事情不值得记忆，大脑会自动过滤掉（比如我们很容易获得的搜索结果）。而对于那些频繁发生，计算结果又不会变化的信息，大脑会将其下放到“更低级别”的神经去记忆。比如各种运动中的肌肉记忆，习武之人梦寐以求的“拳拳服膺”，“不期然而然，莫知之而至”。</p>
+
+<p>这里也有两个小例子：</p>
+
+<h4>一个C语言的小程序</h4>
+
+<p>上周末我买了一个茶轴的机械键盘，打开包装之后我很兴奋，赶紧插在我的笔记本上，打开一个编辑器，心说敲一些代码体验一下。几秒钟后，我发现敲出来的是：</p>
+
+<p>```c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<h1>include &lt;stdlib.h></h1>
+
+<p>int main(int argc, char *argv[]) {</p>
+
+<pre><code>if(argc != 3) {
+    fprintf(stderr, "Usage: %s ip port\n", argv[0]);
+    return -1;
+}
+
+fprintf(stdout, "Connecting to %s %d\n", argv[1], atoi(argv[2]));
+
+return 0;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>然后在命令行里</p>
+
+<p>```sh
+$ gcc -o hello hello.c
+$ ./hello
+Usage: ./hello ip port</p>
+
+<p>$ ./hello 10.180.1.1 9999
+Connecting to 10.180.1.1 9999
+```</p>
+
+<p>整个过程极为流畅，上一次开发C代码已经是4年多前了。也就是说，我的手指已经记下了所有的这些命令：</p>
+
+<ol>
+<li>Linux下<code>main</code>函数的convention</li>
+<li><code>fprintf</code>的签名</li>
+<li><code>stderr/stdout</code>用法的区分</li>
+<li><code>main</code>函数不同场景的返回值</li>
+<li><code>gcc</code>命令的用法</li>
+</ol>
+
+
+<p>另外一个小例子是<code>vim</code>编辑器。我使用<code>vim</code>已经有很多年了，现在在任何一个Linux服务器上，编辑那些<code>/etc/nginx/nginx.conf</code>之类的配置文件时，手指就会<code>自动</code>的找到快捷键，<code>自动</code>的完成搜索，替换，跳转等等操作。</p>
+
+<h3>刻意练习</h3>
+
+<p>对比这两个例子，一方面我惊讶于自己目前对搜索引擎、<code>Stack Overflow</code>的依赖；一方面惊讶于<code>肌肉记忆力</code>的深远和神奇。结合一下两者，我发现自己的开发效率有望得到很大的提升。</p>
+
+<p>比如上面列出的那些略显尴尬的问题，如果我的手指可以<code>自动</code>的敲出这些答案，那么节省下的搜索、等待、阅读的时间就可以用来干别的事情，比如跑步啊，骑车啊，去驾校学车被教练骂啊等等，总之，去过自己的生活。</p>
+
+<p>这方面的书籍，博客都已经有很多，比如我们在ThoughtWorks University里实践的<code>Code Kata</code>，<code>JavaScript Dojo</code>，<code>TDD Dojo</code>之类，都已经证明其有效性。</p>
+
+<p>如果你打算做一些相关的练习，从<code>Kata</code>开始是一个不错的选择。每个<code>Kata</code>都包含一个简单的编程问题，你需要不断的去练习它（同一个题目做20遍，50遍等）。前几次你是在解决问题本身，慢慢就会变成在审视自己的编程习惯，发现并改进（比如快捷键的使用，语法的熟悉程度等等），这样在实际工作中你会以外的发现自己的速度变快了，而且对于重构的信心会变大很多。其实道理也很简单：如果你总是赶着deadline来完成任务，怎么会有时间来做优化呢？</p>
+
+<p>这里有一些参考资料和<code>Kata</code>的题目，可供参考：</p>
+
+<ul>
+<li><a href="https://sites.google.com/site/steveyegge2/practicing-programming">Practicing Programming</a></li>
+<li><a href="https://blog.codinghorror.com/the-ultimate-code-kata/">The Ultimate Code Kata</a></li>
+<li><a href="http://codekata.com/">一些Kata的题目</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CI上的Web前端性能测试]]></title>
@@ -566,267 +739,6 @@ http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/ &gt; yslow.xml
 <li>不定时的总结，以确保参与者都在同一频道，并且有助于大家对进度的了解（是不是快结束了）</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[穷人的持续集成与持续交付（下）]]></title>
-    <link href="http://abruzzi.github.com/2016/01/a-poor-mans-cd-part2/"/>
-    <updated>2016-01-10T14:05:00+11:00</updated>
-    <id>http://abruzzi.github.com/2016/01/a-poor-mans-cd-part2</id>
-    <content type="html"><![CDATA[<h1>客户端程序的的持续交付</h1>
-
-<p><a href="http://icodeit.org/2016/01/a-poor-mans-cd-part1/">上篇文章</a>介绍了如何使用一些免费的服务来实现服务器端API的持续集成、持续交付环境的搭建。有了服务端，自然需要有消费者，在本文中我们将使用另外一个工具来实现纯前端的站点的部署。</p>
-
-<p>其中包括：</p>
-
-<ul>
-<li>持续集成（单元测试，集成测试等）</li>
-<li>持续部署/持续交付</li>
-<li>静态站点托管</li>
-</ul>
-
-
-<p>除此之外，我们还会涉及到：</p>
-
-<ul>
-<li><a href="https://github.com/natritmeyer/site_prism">自动化UI测试site_prism</a></li>
-<li>静态站点的发布脚本</li>
-<li>aws的<a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">命令行工具</a></li>
-</ul>
-
-
-<p>我们的应用最后看起来是这样子的。</p>
-
-<p><img src="/images/2016/01/bookmarks-app-resized.png" alt="bookmarks app" /></p>
-
-<h2>技术选型</h2>
-
-<p>我们在本文中，将采取另外一套免费服务来完成环境的搭建</p>
-
-<ul>
-<li><a href="http://www.thoughtworks.com/">ThoughtWorks</a>出品的<a href="https://snap-ci.com/">Snap CI</a>作为持续集成/持续交付环境</li>
-<li><a href="https://console.aws.amazon.com/s3/home?region=us-west-2">AWS的S3</a>作为应用发布的地方</li>
-</ul>
-
-
-<p><code>Snap CI</code>是一个非常易于使用的持续交付环境，由于很多关于持续集成，持续交付的概念和实践都跟<code>ThoughtWorks</code>有关，所以这个产品对于构建，流水线，部署等等的支持也都做的非常好。</p>
-
-<p><code>S3</code>是亚马逊的云存储平台，我们可以将静态资源完全托管在其上。<code>S3</code>的另一个好处是它可以将你的文件变成一个Web Site，比如你的目录中有<code>index.html</code>，这个文件就可以作为你的站点首页被其他人访问。这个对于我们这个前后端分离项目来说非常有用，我们的<code>css</code>，<code>js</code>，<code>font</code>文件，还有入口文件<code>index.html</code>都可以托管于其上。</p>
-
-<h2>实例</h2>
-
-<p>在本文的例子中，我们将定义3个<code>stage</code>。<code>Snap CI</code>将一次发布分为若干个<code>stage</code>，每个<code>stage</code>只做一件事情，如果一个<code>stage</code>失败了，后边的就不会接着执行。</p>
-
-<p>我们的3个<code>stage</code>分别为：</p>
-
-<ol>
-<li>单元测试</li>
-<li>集成测试</li>
-<li>部署</li>
-</ol>
-
-
-<h3>准备工作</h3>
-
-<p><code>bookmarks-frontend</code>是一个纯前端的应用，它会消费后端提供的API，但是其实它并不知道（也不应该知道）后端的API部署在什么地方：</p>
-
-<p>```js</p>
-
-<p>$(function() {</p>
-
-<pre><code>var feeds = $.get(config.backend+'/api/feeds');
-var favorite = $.get(config.backend+'/api/fav-feeds/1');
-
-$.when(feeds, favorite).then(function(feeds, favorite) {
-    //...
-});
-</code></pre>
-
-<p>});
-```</p>
-
-<p>由于我们在本地开发时，需要<code>backend</code>指向本地的服务器，而发布之后，则希望它指向<a href="http://icodeit.org/2016/01/a-poor-mans-cd-part1/">上一篇文章</a>中提到的服务器，因此我们需要编写一点构建脚本来完成这件事儿：</p>
-
-<p>```js
-var backend = 'http://quiet-atoll-8237.herokuapp.com';</p>
-
-<p>gulp.task('prepareConfig', function() {</p>
-
-<pre><code>gulp.src(['assets/templates/config.js'])
-.pipe(replace(/#backend#/g, 'http://localhost:8100'))
-.pipe(gulp.dest('assets/script/'));
-</code></pre>
-
-<p>});</p>
-
-<p>gulp.task('prepareRelease', function() {</p>
-
-<pre><code>gulp.src(['assets/templates/config.js'])
-.pipe(replace(/#backend#/g, backend))
-.pipe(gulp.dest('assets/script/'));
-</code></pre>
-
-<p>});
-```</p>
-
-<p>我们定义了两个<code>gulp</code>的task，本地开发时，使用<code>prepareConfig</code>，要发布时，使用<code>prepareRelease</code>，然后定义一个简单的模板文件<code>config.js</code>：</p>
-
-<p>```js
-module.exports = {</p>
-
-<pre><code>backend: '#backend#'
-</code></pre>
-
-<p>}
-```</p>
-
-<p>然后可以很简单的包装一下，方便本地开发和发布：</p>
-
-<p><code>js
-gulp.task('dev', ['prepareConfig', 'browserify', 'concatcss']);
-gulp.task('build', ['prepareConfig', 'script', 'css']);
-gulp.task('release', ['prepareRelease', 'script', 'css']);
-</code></p>
-
-<p>这样，我们在本地开发时，只需要简单的执行：</p>
-
-<p><code>sh
-$ gulp
-</code></p>
-
-<p>即可。而在发布阶段，只需要执行：</p>
-
-<p><code>sh
-$ gulp release
-</code></p>
-
-<h3>单元测试</h3>
-
-<p>我们在<code>Snap CI</code>上将<code>github</code>上的代码库关联起来，然后添加一个名叫<code>unit-test</code>的<code>stage</code>，指定这个<code>stage</code>对应的命令为：</p>
-
-<p><code>sh
-npm install
-gulp
-</code></p>
-
-<p><img src="/images/2016/01/snap-ci-unit-resized.png" alt="Snap CI unit" /></p>
-
-<p>这样，每当我们有新的提交之后，<code>Snap CI</code>都会拿到新代码，并执行上述命令，如果执行成功，则本地构建成功。</p>
-
-<h3>集成测试</h3>
-
-<p>由于采取的是<strong>前后端分离</strong>的策略，我们的应用可以完全独立与后端进行开发，因此我们设置了一个<code>fake server</code>，具体细节可以参考<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">我之前的博客</a>，也可以看源码。不过这里我们要为集成测试编写一个脚本，并在<code>Snap CI</code>上执行。</p>
-
-<p>```sh</p>
-
-<h1>!/bin/bash</h1>
-
-<p>export PORT=8100
-bundle install</p>
-
-<h1>launch the application</h1>
-
-<p>echo "launch the application"
-ruby app.rb 2>&amp;1 &amp;
-PID=$!</p>
-
-<h1>wait for it to start up</h1>
-
-<p>sleep 3</p>
-
-<h1>run the rspec tests and record the status</h1>
-
-<p>rspec
-RES=$?</p>
-
-<h1>terminate after rspec</h1>
-
-<p>echo "terminate the application"
-kill -9 $PID</p>
-
-<h1>now we know whether the rspec success or not</h1>
-
-<p>exit $RES
-```</p>
-
-<p>这个脚本中，首先安装所有的<code>gems</code>，然后启动<code>fake server</code>并将这个server放置在后台运行，然后执行<code>rspec</code>。当<code>rspec</code>测试执行完成之后，我们终止服务进行，然后返回结果状态码。</p>
-
-<p>这里使用了<code>capybara</code>和<code>poltergeist</code>来做UI测试，<code>capybara</code>会驱动<code>phantomjs</code>来在内存中运行浏览器，并执行定义好的<code>UI</code>测试，比如此处，我们的UI测试：</p>
-
-<p>```rb
-require 'spec_helper'</p>
-
-<p>describe 'Feeds List Page' do</p>
-
-<pre><code>let(:list_page) {FeedListPage.new}
-
-before do
-    list_page.load
-end
-
-it 'user can see a banner and some feeds' do
-    expect(list_page).to have_banner
-    expect(list_page).to have_feeds
-end
-
-##...
-</code></pre>
-
-<p>end
-```</p>
-
-<p><img src="/images/2016/01/snap-ci-it-resized.png" alt="Snap CI logs" /></p>
-
-<h3>部署</h3>
-
-<p>首先需要在<code>S3</code>上创建一个<code>bucket</code>，命名为<code>bookmarks-frontend</code>。然后为其设置<code>static website hosting</code>，这时候<code>AWS</code>会assign一个新的域名给你，比如<code>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/</code>。</p>
-
-<p>然后你需要将这个<code>bucket</code>设置成<code>public</code>，这样其他人才可以访问你的<code>bucket</code>。</p>
-
-<p><img src="/images/2016/01/aws-s3-public-resized.png" alt="AWS S3" /></p>
-
-<p>有了这个之后，我们来编写一个小脚本，这个脚本可以将本地的文件上传至S3。</p>
-
-<p>```sh</p>
-
-<h1>!/bin/bash</h1>
-
-<h1>install gulp and its dependencies</h1>
-
-<p>npm install</p>
-
-<h1>package stuff, and point the server to the right place</h1>
-
-<p>gulp release</p>
-
-<h1>upload the whold folder</h1>
-
-<p>aws s3 cp public/ s3://bookmarks-frontend \</p>
-
-<pre><code>--recursive \
---region us-west-2 \
---acl public-read
-</code></pre>
-
-<p>```</p>
-
-<p><code>aws</code>命令是<code>aws command line</code>提供的，另外我们需要在环境变量中设置AWS提供给你的token：</p>
-
-<p><code>sh
-AWS_ACCESS_KEY_ID=xxxxxxxxxx
-AWS_SECRET_ACCESS_KEY=xxxxxxxxxx
-</code></p>
-
-<p>然后我们就可以将本地的<code>public</code>目录递归的上传到S3的对应目录了！</p>
-
-<p><img src="/images/2016/01/snap-ci-pipeline-resized.png" alt="snap ci pipeline" /></p>
-
-<p>完整的代码可以在<a href="https://github.com/abruzzi/bookmarks-frontend">此处下载</a>。</p>
-
-<h2>总结</h2>
-
-<p>我们前端的持续交付也介绍完了。现在前后端应用完全独立，发布也互不影响。不论是服务器端新增加了API，还是添加了新数据，客户端的发布都不受影响；同样，修改样式，添加新的<code>JavaScript</code>也完全不会影响后端。更重要的是，所有的发布都是一键式的，开发者只需要一个<code>git push</code>就可以享受这些免费服务提供的自动构建，自动化测试以及自动部署的功能。</p>
 ]]></content>
   </entry>
   

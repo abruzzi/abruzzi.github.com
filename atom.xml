@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-05-17T22:47:09+10:00</updated>
+  <updated>2016-05-26T23:24:06+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,213 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[无他，但手熟尔]]></title>
+    <link href="http://abruzzi.github.com/2016/05/practise-in-programming/"/>
+    <updated>2016-05-26T22:56:00+10:00</updated>
+    <id>http://abruzzi.github.com/2016/05/practise-in-programming</id>
+    <content type="html"><![CDATA[<h2>高效幻象</h2>
+
+<p>通过对自己的行为观察，我发现在很多时候，我以为我掌握了的知识和技能其实并不牢靠。我引以为豪的<code>高效</code>其实犹如一个彩色的肥皂泡，轻轻一碰就会破碎，散落一地。</p>
+
+<h3>你可能只是精通搜索</h3>
+
+<p>我们现在所处的时代，信息爆炸，每个人每天都会接触，阅读很多的信息，快速消费，快速遗忘。那种每天早上起来如同皇帝批阅奏折的、虚假的误以为掌握知识的错觉，驱动我们进入一个恶性循环。</p>
+
+<p>即使在我们真的打算解决问题，进行主动学习时，更多的也只是在熟练使用搜索引擎而已（在一个领域待久了，你所使用的关键字准确度自然要比新人高一些，仅此而已）。精通了高效率搜索之后，你会产生一种你<code>精通搜索到的知识本身</code>的<strong>错觉</strong>。</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/05/stackoverflow-oreilly.png" alt="stack overflow" /></p>
+
+<h4>如何写一个Shell脚本</h4>
+
+<p>在写博客的时候，我通常会在文章中配图。图片一般会放在一个有固定格式的目录中，比如现在是2016年5月，我本地就会有一个名为<code>$BLOG_HOME/images/2016/05</code>的目录。由于使用的是<code>markdown</code>，在插入图片时我就不得不输入完整的图片路径，如：<code>/images/2016/05/stack-overflow.png</code>。但是我又不太记得路径中的<code>images</code>是单数(<code>image</code>)还是复数(<code>images</code>)，而且图片格式又可能是<code>jpg</code>,<code>jpeg</code>,<code>gif</code>或者<code>png</code>，我也经常会搞错，这会导致图片无法正确显示。另外，放入该目录的原始文件尺寸有可能比较大，我通常需要将其缩放成800像素宽（长度无所谓，因为文章总是要从上往下阅读）。</p>
+
+<p>为了自动化这个步骤，我写了一个小的Shell脚本。当你输入一个文件名如：<code>stack-overflow.png</code>后，它会缩放这个文件到800像素宽，结果是一个新的图片文件，命名为<code>stack-overflow-resized.png</code>，另外它将符合<code>markdown</code>语法的文件路径拷贝到剪贴板里：<code>/images/2016/05/stack-overflow-resized.png</code>，这样我在文章正文中只需要用<code>Command+V</code>粘贴就可以了。</p>
+
+<p>有了思路，写起来就很容易了。缩放图片的命令我是知道的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>convert -resize 800 stack-overflow.png stack-overflow-resized.png
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是要在文件明上加入<code>-resized</code>，需要分割文件名和文件扩展名，在<code>Bash</code>里如何做到这一点呢？Google一下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">FULLFILE</span><span class="o">=</span><span class="nv">$1</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">FILENAME</span><span class="o">=</span><span class="k">$(</span>basename <span class="s2">&quot;$FULLFILE&quot;</span><span class="k">)</span>
+</span><span class='line'><span class="nv">EXTENSION</span><span class="o">=</span><span class="s2">&quot;${FILENAME##*.}&quot;</span>
+</span><span class='line'><span class="nv">FILENAME</span><span class="o">=</span><span class="s2">&quot;${FILENAME%.*}&quot;</span>
+</span><span class='line'>
+</span><span class='line'>convert -resize 800 <span class="nv">$FULLFILE</span> <span class="nv">$FILENAME</span>-resized.EXTENSION
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>难看是有点难看，不过还是可以工作的。接下来是按照当前日期生成完整路径，<code>date</code>命令我是知道的，而且我知道它的<code>format</code>格式很复杂，而且跟<code>JavaScript</code>里Date对象的<code>format</code>又不太一样（事实上，世界上有多少种日期工具，基本上就有多少种格式）。再Google一下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>date +<span class="s2">&quot;/images/%Y/%m/&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后一步将路径拷贝到剪贴板也容易，Mac下的<code>pbcopy</code>我也会用：<code>echo</code>一下字符串变量，再管道到<code>pbcopy</code>即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">PREFIX</span><span class="o">=</span><span class="sb">`</span>date +<span class="s2">&quot;/images/%Y/%m/&quot;</span><span class="sb">`</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;$PREFIX$FILENAME-resized.EXTENSION&quot;</span> | pbcopy
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是将内容粘贴到<code>markdown</code>里之后，我发现这个脚本多了一个换行。我想这个应该是<code>echo</code>自己的行为吧，会给字符串自动加上一个换行符。Google一下，发现加上<code>-n</code>参数就可以解决这个问题。</p>
+
+<p>好了，完整的脚本写好了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nv">FULLFILE</span><span class="o">=</span><span class="nv">$1</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">FILENAME</span><span class="o">=</span><span class="k">$(</span>basename <span class="s2">&quot;$FULLFILE&quot;</span><span class="k">)</span>
+</span><span class='line'><span class="nv">EXTENSION</span><span class="o">=</span><span class="s2">&quot;${FILENAME##*.}&quot;</span>
+</span><span class='line'><span class="nv">FILENAME</span><span class="o">=</span><span class="s2">&quot;${FILENAME%.*}&quot;</span>
+</span><span class='line'>
+</span><span class='line'>convert -resize 800 <span class="nv">$FULLFILE</span> <span class="nv">$FILENAME</span>-resized.EXTENSION
+</span><span class='line'>
+</span><span class='line'><span class="nv">PREFIX</span><span class="o">=</span><span class="sb">`</span>date +<span class="s2">&quot;/images/%Y/%m/&quot;</span><span class="sb">`</span>
+</span><span class='line'><span class="nb">echo</span> -n <span class="s2">&quot;$PREFIX$FILENAME-resized.EXTENSION&quot;</span> | pbcopy
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>嗯，还不错，整个过程中就用了我十几分钟时间而已，以后我在写博客时插入图片就方便多了！</p>
+
+<p>不过等等，好像有点不对劲儿，我回过头来看了看这段脚本：7行代码只有1行是我独立写的！没有<code>Google</code>的话，查看<code>man date</code>和<code>man echo</code>也可以解决其中一部分问题，不过文件扩展名部分估计又得花较长时间。</p>
+
+<p>仔细分析一下，之前的成就感荡然无存。</p>
+
+<h4>更多的例子</h4>
+
+<p>我相信，过几周我再来写这样一个简单的脚本时，上面那一幕还是会出现。开发者的IDE的外延已经将<code>Google</code>和<code>Stack Overflow</code>集成了。很难想象没有这两个IDE的<code>插件</code>我要怎样工作。</p>
+
+<p>其实除此之外，日常工作中这样的事情每时每刻都在发生：</p>
+
+<ol>
+<li>Ansible里如何创建一个给用户<code>robot</code>读写权限的目录？</li>
+<li>Python 3中启动简单HTTPServer的命令是？</li>
+<li>Spring Boot的Gradle String是？</li>
+<li>Mongodb中如何为用户<code>robot</code>授权？</li>
+<li>Gulp里一个Task依赖另一个Task怎么写？</li>
+</ol>
+
+
+<p>等等等等，这个列表可以根据你的技术栈，偏向前端/后端的不同而不同，但是相同的是在<code>Google</code>和<code>Stack Overflow</code>上搜索，阅读会浪费很多时间，而这些本来都是可以避免的。</p>
+
+<h3>肌肉记忆</h3>
+
+<p>大脑在对信息存储上有很高级的设计，如果某件事情不值得记忆，大脑会自动过滤掉（比如我们很容易获得的搜索结果）。而对于那些频繁发生，计算结果又不会变化的信息，大脑会将其下放到“更低级别”的神经去记忆。比如各种运动中的肌肉记忆，习武之人梦寐以求的“拳拳服膺”，“不期然而然，莫知之而至”。</p>
+
+<p>这里也有两个小例子：</p>
+
+<h4>一个C语言的小程序</h4>
+
+<p>上周末我买了一个茶轴的机械键盘，打开包装之后我很兴奋，赶紧插在我的笔记本上，打开一个编辑器，心说敲一些代码体验一下。几秒钟后，我发现敲出来的是：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp"># include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="cp"># include &lt;stdlib.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="n">argc</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Usage: %s ip port</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span><span class='line'>      <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s">&quot;Connecting to %s %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">atoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]));</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在命令行里</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>gcc -o hello hello.c
+</span><span class='line'><span class="nv">$ </span>./hello
+</span><span class='line'>Usage: ./hello ip port
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>./hello 10.180.1.1 9999
+</span><span class='line'>Connecting to 10.180.1.1 9999
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>整个过程极为流畅，上一次开发C代码已经是4年多前了。也就是说，我的手指已经记下了所有的这些命令：</p>
+
+<ol>
+<li>Linux下<code>main</code>函数的convention</li>
+<li><code>fprintf</code>的签名</li>
+<li><code>stderr/stdout</code>用法的区分</li>
+<li><code>main</code>函数不同场景的返回值</li>
+<li><code>gcc</code>命令的用法</li>
+</ol>
+
+
+<p>另外一个小例子是<code>vim</code>编辑器。我使用<code>vim</code>已经有很多年了，现在在任何一个Linux服务器上，编辑那些<code>/etc/nginx/nginx.conf</code>之类的配置文件时，手指就会<code>自动</code>的找到快捷键，<code>自动</code>的完成搜索，替换，跳转等等操作。</p>
+
+<h3>刻意练习</h3>
+
+<p>对比这两个例子，一方面我惊讶于自己目前对搜索引擎、<code>Stack Overflow</code>的依赖；一方面惊讶于<code>肌肉记忆力</code>的深远和神奇。结合一下两者，我发现自己的开发效率有望得到很大的提升。</p>
+
+<p>比如上面列出的那些略显尴尬的问题，如果我的手指可以<code>自动</code>的敲出这些答案，那么节省下的搜索、等待、阅读的时间就可以用来干别的事情，比如跑步啊，骑车啊，去驾校学车被教练骂啊等等，总之，去过自己的生活。</p>
+
+<p>这方面的书籍，博客都已经有很多，比如我们在ThoughtWorks University里实践的<code>Code Kata</code>，<code>JavaScript Dojo</code>，<code>TDD Dojo</code>之类，都已经证明其有效性。</p>
+
+<p>如果你打算做一些相关的练习，从<code>Kata</code>开始是一个不错的选择。每个<code>Kata</code>都包含一个简单的编程问题，你需要不断的去练习它（同一个题目做20遍，50遍等）。前几次你是在解决问题本身，慢慢就会变成在审视自己的编程习惯，发现并改进（比如快捷键的使用，语法的熟悉程度等等），这样在实际工作中你会以外的发现自己的速度变快了，而且对于重构的信心会变大很多。其实道理也很简单：如果你总是赶着deadline来完成任务，怎么会有时间来做优化呢？</p>
+
+<p>这里有一些参考资料和<code>Kata</code>的题目，可供参考：</p>
+
+<ul>
+<li><a href="https://sites.google.com/site/steveyegge2/practicing-programming">Practicing Programming</a></li>
+<li><a href="https://blog.codinghorror.com/the-ultimate-code-kata/">The Ultimate Code Kata</a></li>
+<li><a href="http://codekata.com/">一些Kata的题目</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[为故障和失败做设计]]></title>
@@ -5693,104 +5900,6 @@
 <p>我在<a href="https://selfstore.io/">selfstore.io</a>上有两本电子书：<a href="https://selfstore.io/products/348">《3周3页面》</a>和<a href="https://selfstore.io/products/351">《函数式编程乐趣》</a>，<a href="https://selfstore.io/products/348">《3周3页面》</a>定价为16元，每卖出一本，扣除掉交易费之后，我可以得到14.7元。</p>
 
 <p>对我来说，这样可以得到更多的回报，对于读者则可以更加快速的得到更新，而且由于有<a href="https://www.gitbook.com/book/juntao/3-web-designs-in-3-weeks/details">预览版</a>和一系列的<a href="http://icodeit.org/3p3w/">其他信息</a>，还可以在很大程度上降低读者的风险（更不用说快递费，等待时间等问题）。我在gitbook上的统计显示，《3周3页面》已经被累计下载了28,861次，实际的读者也将近5,000。而且没有任何的审核流程，也没有排版的时间浪费，我只需要关注内容即可。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[如何快速发布你的点子？]]></title>
-    <link href="http://abruzzi.github.com/2015/08/how-to-make-you-idea-come-true/"/>
-    <updated>2015-08-02T19:04:00+10:00</updated>
-    <id>http://abruzzi.github.com/2015/08/how-to-make-you-idea-come-true</id>
-    <content type="html"><![CDATA[<p><em>说实话，这是一篇软文，为我的新书<a href="http://icodeit.org/lightweight-web">《轻量级Web应用开发》</a>写的软文。如果你不想接着往下读，可以<a href="http://www.amazon.cn/gp/product/B012R5A1NQ?refRID=1GXJ241HTDC784AXJ0SX&amp;ref_=pd_rhf_pe_p_img_2">直接去这里买一本</a>来看，:)</em></p>
-
-<p>之过去的几年中，我参加过好多次<a href="http://icodeit.org/2013/03/guan-yu-hack-day/">Hackday活动</a>。每次看到在为期两天的时间里，2-3个人将一个想法变成现实，都会有一种强烈的成就感。而且这个Hack的过程中，会重拾编程的乐趣，大家的积极性都非常高，用着各种有趣的技术（大数据，开源硬件，Node.js，GIS系统），逐步的将模糊的想法，变成现实，并最终为客户带来价值。<a href="http://icodeit.org/telstra-hackday-i/"><em>最新的一次在这里</em></a></p>
-
-<p>通过这些Hackday的经历，以及在众多项目中的经验，我总结了一些<strong>轻量级</strong>的方法/实践。这些方法/实践非常容易落地，并且久经验证。在很多项目中已经在不断的使用。它们可以帮你更好的将一个想法变成现实，并且在随后的开发中还可以继续发挥作用而不至失效（测试，构建脚本，自动化部署等等）。我希望你可以在自己的项目中尝试这些方法/实践，也希望这些方法/实践可以真正的帮助你和你的项目取得成功。</p>
-
-<h3>细化你的“点子”</h3>
-
-<p>根据一个已有的产品来参考，演绎，并形成自己的产品并非难事，而创新则是一件非常困难的事情，因为你需要“无中生有”。在ThoughtWorks，我们有这样一些步骤可以帮助客户来梳理信息，并最终交付产品，简而言之，可以归结为这样几个步骤：</p>
-
-<ol>
-<li>Discovery（用户研究，探索）</li>
-<li>Define（归纳洞见，发现）</li>
-<li>Design（原型设计，验证）</li>
-<li>Delivery（制定计划，实施）</li>
-</ol>
-
-
-<p><img src="http://abruzzi.github.com/images/2015/08/i-learn-resized.png" alt="prototype" /></p>
-
-<p>上图是一个“点子”的原型（一个交换技能的应用，用户可以教别人自己擅长的技能，作为交换，也可以从别人那里学习心得技能），原型事实上是<strong>第三步</strong>的产物。我们通过一些调查（口头采访，或者问卷调查）得到一些基本的信息，然后归纳这些信息，并和真实用户再次确认，得到一个概念。有了概念，再来设计一个基本的原型，这个原型还可以迭代数次，然后进入下一个阶段。</p>
-
-<p>前三个阶段更多的是用户体验设计师，以及客户的业务人员参与的。在前三步完成之后，进入实施的时候，软件工程师开始投入。这篇文章更关注<strong>第四步(Delivery)</strong>中的各种实践，通过这些实践，我们可以很好的完成交付计划，使得我们的好想法最终可以变成为用户提供服务的产品。</p>
-
-<h3>实现“点子”的方法</h3>
-
-<p>在软件领域，将一个想法变成实际的产品需要经历若干个阶段。按照传统的软件开发方式，会有前期的调研，需求分析，概要设计，详细设计，编码实现，测试，发布等一系列的流程。这种方式对每个阶段的定义都非常明确，而且每个阶段需要依赖前一个阶段的输出，因此往往被称为“瀑布模型”。后来慢慢发现，这个模型的反馈周期太长，一个软件从调研到发布往往需要数年，当发布之后，可能市场早已经沧海桑田。人们后来发明了更加符合现代市场需求的“敏捷开发”，在敏捷中，更加强调短平快的将需求变为产品。</p>
-
-<p>简而言之，敏捷开发更强调：</p>
-
-<ol>
-<li>快速发布</li>
-<li>渐进增强</li>
-<li>小步迭代</li>
-</ol>
-
-
-<p>而在敏捷开发的继承者精益中，这几点理念也被更进一步的深化。由于没有办法预见未来，我们只能用一种边做边看的方式来验证想法。简而言之，就是先根据经验和调查，做出一个合理的推断，然后定义好范围，构想出一个最小可行产品（MVP），这个MVP的功能非常内聚，非常紧凑，我们需要尽可能快的让其上线，并被真是的用户使用，测试。根据这些用户的反馈，我们会做一些调整，比如去掉那些很少人使用的功能，聚焦在用户喜欢的功能上；从用户的实际使用中，调整界面元素的位置，子功能的入口等等。这个过程会持续多轮，最后的结果会是一个有真是用户使用，并且比较贴近真实需求的产品。当然这还不够，我们需要不断的打磨，渐进式的增强产品的功能，逐步完善功能等。</p>
-
-<p>有一个非常形象的图，可以看出瀑布模型和敏捷开发两种方法的对比：</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/08/waterfall-v-agile-about.gif" alt="waterfall vs agile" /></p>
-
-<p>敏捷开发通过逐步细化，迭代前进的方式，分阶段的将需求实现，在整个过程中，更容易做到快速调整。</p>
-
-<p>所有的这些过程，都非常依赖“快速”这个关键点。如果MVP花了3周就产生了，但是为了让其上线，你花费了1个月，那么很可能这个MVP已经过时了；如果你确实快速的将MVP发布了，在得到了用户的很多反馈之后，花费1个月来实现这些反馈，又会让你落在竞争对手之后；如果快速的发布了多次，并且幸运的是，你的用户量变多了，如果花费很长时间来调整架构，则可能失去当前的市场窗口。也就是说，你需要非常<strong>快速地</strong>对变化做出反应！</p>
-
-<h3>轻量级的开发方式</h3>
-
-<h4>开发中的三个重点</h4>
-
-<p>在工程实践中，我认为有三个特别需要注意重要的点，这三点可以极大程度的改善项目现状，提高效率，并使得产品的高质量交付成为可能，它们分别是：</p>
-
-<ol>
-<li>自动化（自动化一切）</li>
-<li>质量内嵌（defect的数量，是否真正满足了需求）</li>
-<li>代码本身的质量（可读性，可维护性，可扩展性）</li>
-</ol>
-
-
-<p>自动化包括，自动provision，自动部署，自动化测试，自动打包等等。这是提高团队开发效率的必要工具。比如书中提到的grunt/gulp脚本，jasmine/rspec/capybara测试，部署脚本，vagrant/Chef等，都是关于如何将日常开发中的任务尽可能的自动化。</p>
-
-<p>软件没有Bug当然是所有人都追求的，我们有很多中方式来保证代码质量。而在编写产品代码的同时，写大量的自动化测试，是投入产出比最高的一种了。通过单元测试，集成测试，以及一些有限但是关键的UI测试，我们可以覆盖很多的需求，而将这些测试自动化起来之后，可以节省大量的开发/测试成本，并减少回归测试的代价。</p>
-
-<p>要支撑快速的发布，我们需要一系列的技术实践。这些技术包括环境的搭建，框架的使用，代码的编写，产品的发布；而且包括后台的数据库设计，业务代码，同样还有前端的展现等。</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/06/software-life-cycle-resized.png" alt="software life cycle" /></p>
-
-<h4>何为轻量级？</h4>
-
-<p>在<a href="http://www.amazon.cn/gp/product/B012R5A1NQ?refRID=1GXJ241HTDC784AXJ0SX&amp;ref_=pd_rhf_pe_p_img_2">《轻量级Web应用开发》</a>中，我介绍了一系列的实践/工具，这些实践/工具贯穿整个软件开发的生命周期，使得敏捷开发/精益的开发方式变得可以“落地”。比如如何使用轻量级的开发框架来搭建API原型，如何将应用发布在免费的云平台上，如何通过虚拟化技术快速搭建开发环境，从而节省环境配置的投入，如何快速平滑的发布，如何使用测试先行的方式来保证代码质量，如何做高效的自动化UI测试等等。</p>
-
-<ul>
-<li>轻量级Web框架</li>
-<li>前端开发流程</li>
-<li>构建工具</li>
-<li>环境自动化（开发环境的搭建，CI服务器的搭建）</li>
-<li>自动化部署</li>
-<li>UI测试</li>
-<li>实例驱动（书中有很多的实例，也有很多从项目中总结出来的实践）</li>
-</ul>
-
-
-<p>这是一本主要关注开发实践的书，书中通过很多实际的例子来帮助读者建立一套完整，高效，轻量级的开发方式，这些方式可以直接在你的下一个项目中使用。甚至如果项目的技术栈变成了另外一种语言，你也可以迅速找到同类的替代品。比如rake之于<a href="https://gradle.org/">gradle</a>，<a href="http://www.sinatrarb.com/">sinatra</a>至于spring-mvc等等。</p>
-
-<p>每个组件都是可以替换掉的，比如ORM，如果你觉得DataMapper无法满足实际需要，那么可以换成ActiveRecord。如果Rails太重，使用Sinatra或者Grape或许是一个更好的选择。AngularJS包含了太多东西，Backbone.js或许适合你的场景，而也未尝不可以用Riot.js来替换掉Backbone中的view层。</p>
-
-<p>在本地，可以将应用部署到一个vagrant+chef来provision的环境中，而通过部署自动化，这个动作可以很容易的在AWS的云上实现。轻量级的开发方式，帮助你用最小的代价来替换系统中的任意一个组件，因为每个组件在一开始都是按照可替换原则选用的。</p>
-
-<p>另一方面，<strong>轻量级</strong>的另一个意思是：现发布静态的版本，然后再将内容替换为动态版本。发布一个静态的页面非常容易，具体细节可以<a href="http://icodeit.org/2014/11/publish-your-web-design/">参考这篇文章</a>。当需要动态内容是，免费版的Heroku是一个触手可得的选择，AWS则是一个更加专业的选择（各种服务都配置完善，你只需要关注自己的应用部署即可）。</p>
 ]]></content>
   </entry>
   
