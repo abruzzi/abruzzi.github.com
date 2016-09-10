@@ -9,7 +9,11 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="下项目之后 通常来说，下项目总是一件比较高兴的事（大部分团队还会一起吃个饭庆祝一下）。这里面既有终于摆脱了厌烦了的技术栈的解脱感，也有对新项目/新技术的向往，可能还有些在旧项目中做的不太满意的事情，可以在新项目重头再来的期望。 可能有点老生常谈了，不过这里我想说说下项目后如何做总结的事儿。 &hellip;">
+  <meta name="description" content="服务器端应用的持续交付 本文将使用一些免费的服务来为你的项目搭建持续交付平台，这些服务包括 持续集成环境
+持续部署环境
+服务端应用托管 以及一些可以用于本地开发使用的开源工具如： 基于Node的构建monitor
+Heroku的命令行工具
+Travis CI的命令行工具 除此之外， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +86,367 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2016/01/a-poor-mans-cd-part1/">穷人的持续集成与持续交付（上）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-09T23:34:00+11:00" pubdate data-updated="true">Jan 9<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>服务器端应用的持续交付</h1>
+
+<p>本文将使用一些免费的服务来为你的项目搭建<code>持续交付</code>平台，这些服务包括</p>
+
+<ul>
+<li>持续集成环境</li>
+<li>持续部署环境</li>
+<li>服务端应用托管</li>
+</ul>
+
+
+<p>以及一些可以用于本地开发使用的开源工具如：</p>
+
+<ul>
+<li><a href="https://github.com/abruzzi/node-build-monitor">基于Node的构建monitor</a></li>
+<li><a href="https://toolbelt.heroku.com/">Heroku的命令行工具</a></li>
+<li><a href="https://github.com/travis-ci/travis.rb">Travis CI的命令行工具</a></li>
+</ul>
+
+
+<p>除此之外，我们在过程中编写的脚本还可以用以本地构建，如果你的团队中正好已经有CI工具/CD工具，将这些脚本集成进去也是一件非常容易的事情。</p>
+
+<p><img src="/images/2016/01/heroku-log-resized.png" alt="heroku real time log" /></p>
+
+<h2>背景知识</h2>
+
+<h3>软件的度量</h3>
+
+<p>传统的管理方法论，在软件开发这个领域来说基本上是不工作的。软件项目的不确定性使得人们畏惧，管理者希望通过一些数字，指标来让自己感到某种虚幻的“掌控感”。软件行数，测试覆盖率，代码故障率等数字的名声基本上已经很糟了，经常有人拿来讽刺那些追求虚幻掌控感的“领导”。</p>
+
+<p>但是有一个数字，即使最顽固的“自由主义者”也会认为是有意义的，那就是周期时间（cycle time）。简而言之，就是一个需求从产生到最终上线所需要的时间。其中包括了需求分析，设计，编码，测试，部署，运维等活动，可能还会包含后续的监控。</p>
+
+<p>其实不论是瀑布模型，还是迭代开发的方式，或者其他的方法论，周期时间的缩短都是至关重要的。而具体到周期内，单纯的开发时间变长或者测试时间变长都无关紧要。比如项目A的开发时间是测试时间的2倍，项目B则恰恰反过来，这并不能说A做的比B好，真正有意义的是A的周期时间是否比B更短。</p>
+
+<p>单纯改善项目过程中的某一个阶段的时间，可能并不能达到预期的目的。局部优化并不一定会带来全局的优化。换言之，<strong>通过某些策略来提高软件测试的效率未必能减少周期时间！</strong>。</p>
+
+<h3>持续交付</h3>
+
+<p>传统情况下，企业要进行软件开发，从用户研究到产品上线，其中会花费数月，甚至数年（我的一位印度同事给我聊起过，他的上家公司做产品，从版本启动到版本上线需要整整两年时间！）。而且一旦软件需求发生变更，又有需要数月才能将变更发布上线。除了为变更提交代码外，还有很多额外的回归测试，发布计划，运维部门的进度等等。而市场机会千变万化，在特定的时间窗口中，企业的竞争者可能早已发布并占领了相当大的市场份额。</p>
+
+<p>在软件工程领域，人们提出了持续交付（continuous delivery）的概念，它旨在减少周期时间，强调在任何时刻软件都处于可发布状态。采用这种实践，我们可以频繁，快速，安全的将需求的变化发布出来，交由真实世界的用户来使用，在为用户带来价值的同时，我们也可以快速，持续的得到反馈，并激励新的变化产生（新的商业创新，新的模式等）。</p>
+
+<p>持续交付包含了自动化构建，自动化测试以及自动化部署等过程，持续改进开发流程中的问题，并促进开发人员，测试人员，运维人员之间的协作，团队可以在分钟级别将变更发布上线。</p>
+
+<h3>持续交付相关技术及实践</h3>
+
+<ul>
+<li>版本控制（配置管理）</li>
+<li>持续集成CI</li>
+<li>自动化测试</li>
+<li>构建工具及构建脚本</li>
+<li>部署流水线</li>
+</ul>
+
+
+<p>团队通过版本控制来进行协作，所有的代码会在持续集成环境中编译，代码静态检查/分析，自动化测试（还可能产生报告等）。除此之外，CI还还需要有自动化验收测试，自动化回归测试等。</p>
+
+<p>持续交付则更进一步，它将环境准备，持续集成，自动化部署等放在了一起。通过全自动（有些过程可以设置为手动，比如发布到产品环境）的方式，使得软件可以一键发布。如果上线后发现严重defect，还支持一键回滚的机制（其实就是将之前的一个稳定版本做一次发布，由于发布流程已经经过千锤百炼，所以发布本身就变得非常轻松，安全）</p>
+
+<p>这篇文章中，我们会使用<code>git</code>+<code>github</code>作为版本控制工具，<code>travis-ci</code>作为持续集成环境，<code>gradle</code>作为构建工具，<code>Heroku</code>作为应用的部署环境。这些工具都是免费服务，如果你需要更高级的功能（比如更多的并发数，更大的数据库），则可以选择付费套餐。不过对于我们平时的大部分side project来说，免费服务已经足够。</p>
+
+<h2>实例</h2>
+
+<p>我在<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">《前后端分离了，然后呢？》</a>这篇文章中，提到了一个叫做<code>bookmarks</code>的应用，这个应用是一个前后端分离的非常彻底的应用。</p>
+
+<p>我们这里会再次使用这个应用作为实例，并采用不同的两个免费服务（<a href="https://travis-ci.org">travis-ci</a>和<a href="https://snap-ci.com">snap-ci</a>）来完成<code>持续部署</code>环境的搭建。</p>
+
+<h3>bookmarks服务器</h3>
+
+<p><code>bookmarks-server</code>是一个基于<code>spring-boot</code>的纯粹的<code>API</code>，它可以被打包成一个<code>jar</code>包，然后通过命令行启动运行。在本文中，我们我们将会将这个server部署到<a href="https://dashboard.heroku.com/">heroku</a>平台上。</p>
+
+<p>首先需要定义一个<code>Procfile</code>，这个是我们应用的入口，<code>heroku</code>根据这个文件来明确以何种方式来启动我们的应用：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>web: java -Dserver.port=$PORT -jar build/libs/bookmarks-server-0.1.0.jar --spring.profiles.active=staging</span></code></pre></td></tr></table></div></figure>
+
+
+<p>由于我们在本地使用的使用<code>mysql</code>，而<code>heroku</code>默认的是<code>postgres</code>数据库，因此需要在<code>application.yml</code>中额外配置</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">spring</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">profiles</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">staging</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="l-Scalar-Plain">datasource</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">driverClassName</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">org.postgresql.Driver</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">url</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">${JDBC_DATABASE_URL}</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">${DATABASE_USER}</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">${DATABASE_PASS}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="l-Scalar-Plain">jpa</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">database_platform</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">org.hibernate.dialect.PostgreSQLDialect</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">hibernate</span><span class="p-Indicator">:</span>
+</span><span class='line'>      <span class="l-Scalar-Plain">ddl-auto</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">update</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有了这些配置后，我们需要创建一个<code>heroku</code>应用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>heroku create
+</span><span class='line'>Created http://quiet-atoll-8237.herokuapp.com/ | git@heroku.com:quiet-atoll-8237.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>创建之后，我们可以在界面上对这个应用进行一些配置（当然，也可以通过命令行，具体参看<code>heroku help</code>）。为了支持数据库，需要为我们的应用添加一个<code>postgres</code>的AddOn。添加之后，<code>heroku</code>会为我们提供一个<code>postgres</code>的连接地址，格式大概是这样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>postgres://username:password@host:port/database
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后我们需要在<code>Heroku</code>的配置界面中配置一些环境变量：</p>
+
+<p><img src="/images/2016/01/heroku-config-resized.png" alt="heroku env config" /></p>
+
+<p>这样，当应用部署到<code>Heroku</code>上之后，我们的应用就可以读到这些配置了（注意<code>application.yml</code>中的环境变量<code>JDBC_DATABASE_URL</code>）。</p>
+
+<h4>搭建持续集成环境</h4>
+
+<p>持续集成环境，这里我们选用最简单的<code>travis-ci</code>，它可以很容易的与<code>github</code>集成。</p>
+
+<ul>
+<li>在项目X中定义一个<code>.travis.yml</code>的文件</li>
+<li>将你的代码push到github上</li>
+<li>绑定github帐号到<code>travis</code></li>
+<li>在<code>travis</code>中启用项目X</li>
+</ul>
+
+
+<p>这个<code>.travis.yml</code>因项目而异，我们这里的项目是<code>spring-boot</code>，所以只需要指定<code>java</code>即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">language</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">java</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果是<code>java</code>项目，并且项目中有<code>build.gradle</code>，<code>travis-ci</code>会自动执行<code>gradle check</code>任务。</p>
+
+<h4>自动化部署</h4>
+
+<p>当CI运行成功之后，我们需要<code>travis-ci</code>帮我们将应用程序发布到<code>heroku</code>上，这时候需要做一些修改。最简单的方式是直接安装<code>travis-ci</code>的命令行工具到本地：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>gem install travis -v 1.8.0 --no-rdoc --no-ri
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后通过<code>heroku</code>的<code>auth:token</code>命令获得<code>heroku</code>的token，在加密并写入<code>.travis.yml</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>heroku auth:token
+</span><span class='line'>00xxxxxxxxxxxxx55d11dbd0cxxxxxxxxxxfe067
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>travis encrypt 00xxxxxxxxxxxxx55d11dbd0cxxxxxxxxxxfe067 --add
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然可以合并为一条命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>travis encrypt <span class="k">$(</span>heroku auth:token<span class="k">)</span> --add
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将加密过的token存入<code>.travis.yml</code>文件。最后的结果大致如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">language</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">java</span>
+</span><span class='line'><span class="l-Scalar-Plain">deploy</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">heroku</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">api_key</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">secure</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">...</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">app</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">quiet-atoll-8237</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意此处的<code>app</code>，正是我们的App的名字。另外，还需要给<code>build.gradle</code>添加一个名叫<code>stage</code>的task，<code>travis</code>在deploy时需要这个<code>task</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">task</span> <span class="n">stage</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">dependsOn</span> <span class="n">build</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2016/01/travis-deploy-resized.png" alt="travis deploy" /></p>
+
+<p>这样，我们只需要在本地的一个提交，一切都会自动化起来：</p>
+
+<ul>
+<li>travis会执行<code>gradle check</code></li>
+<li><code>gradle check</code>会编译并运行自动化测试</li>
+<li><code>travis</code>会部署应用到<code>heroku</code>上</li>
+<li><code>heroku</code>会自动重启服务</li>
+</ul>
+
+
+<p>我们可以在本地进行简单的测试（注意此处我们的<code>staging</code>环境的URL）：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl https://quiet-atoll-8237.herokuapp.com/api/feeds -s | jq .
+</span><span class='line'><span class="o">[</span>
+</span><span class='line'>  <span class="o">{</span>
+</span><span class='line'>    <span class="s2">&quot;id&quot;</span>: 1,
+</span><span class='line'>    <span class="s2">&quot;url&quot;</span>: <span class="s2">&quot;http://icodeit.org/2016/01/how-to-summarize-privious-project/&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;title&quot;</span>: <span class="s2">&quot;如何持久化你的项目经历&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;author&quot;</span>: <span class="s2">&quot;icodit.org&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;summary&quot;</span>: <span class="s2">&quot;通常来说，下项目总是一件比较高兴的事（大部分团队还会一起吃个饭庆祝一下）。&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;publishDate&quot;</span>: <span class="s2">&quot;2016-01-07&quot;</span>
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'>  <span class="o">{</span>
+</span><span class='line'>    <span class="s2">&quot;id&quot;</span>: 2,
+</span><span class='line'>    <span class="s2">&quot;url&quot;</span>: <span class="s2">&quot;http://icodeit.org/2015/11/get-started-with-reflux/&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;title&quot;</span>: <span class="s2">&quot;你为什么应该试一试Reflux？&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;author&quot;</span>: <span class="s2">&quot;icodit.org&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;summary&quot;</span>: <span class="s2">&quot;React在设计之初就只关注在View本身上，其余部分如数据的获取，事件处理等，全然不在考虑之内。&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;publishDate&quot;</span>: <span class="s2">&quot;2016-01-09&quot;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>完整的<a href="https://github.com/abruzzi/bookmarks-server">代码在这里</a>。</p>
+
+<h2>其他</h2>
+
+<h3>CI monitor</h3>
+
+<p><a href="https://github.com/abruzzi/node-build-monitor">node-build-monitor</a>是一个非常容易配置，使用的CI monitor，我们只需要进行简单地配置，就可以将<code>travis</code>的状态可视化出来</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">&quot;monitor&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;interval&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;numberOfBuilds&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;debug&quot;</span><span class="p">:</span> <span class="kc">true</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nt">&quot;services&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Travis&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="nt">&quot;configuration&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nt">&quot;slug&quot;</span><span class="p">:</span> <span class="s2">&quot;abruzzi/bookmarks-server&quot;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">]</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>不过这个工具会在有网络异常时自动终止，我们可以通过一个简单的脚本来在它终止时自动重启：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">until </span>node app/app.js
+</span><span class='line'><span class="k">do</span>
+</span><span class='line'><span class="k">    </span><span class="nb">echo</span> <span class="s2">&quot;restarting...&quot;</span>
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2016/01/ci-monitor-resized.png" alt="CI Monitor" /></p>
+
+<h2>小结</h2>
+
+<p>通过<code>travis</code>和<code>heroku</code>这样的免费服务，我们就可以轻松的将自己的项目做到持续集成+持续交付。我们后端的服务相对来说是比较容易的，但是涉及到一个前后端分离的架构，如何做到静态内容的托管，打包，部署，并和后端API集成起来，我会在下一篇文章中详细解释。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3646,189 +4011,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2015/08/how-to-write-a-book/">如何写一本书？</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-08-04T13:24:00+10:00" pubdate data-updated="true">Aug 4<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>我在过去的几年中，写了4本书。有传统意义上的两本实体书：<a href="http://www.amazon.cn/JavaScript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B00COG3YVU/ref=sr_1_1?s=books&amp;ie=UTF8&amp;qid=1438658024&amp;sr=1-1">《JavaScript核心概念及实践》</a>和<a href="http://www.amazon.cn/%E8%BD%BB%E9%87%8F%E7%BA%A7Web%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B012R5A1NQ/ref=sr_1_2?s=books&amp;ie=UTF8&amp;qid=1438658024&amp;sr=1-2">《轻量级Web应用开发》</a>，还有两本电子书<a href="https://selfstore.io/products/348">《3周3页面》</a>和<a href="https://selfstore.io/products/351">《函数式编程乐趣》</a>。当然对我而言，主职工作是软件开发，写作是个副业。</p>
-
-<p>在写作的过程中，有一些<code>有趣的</code>心得。</p>
-
-<ul>
-<li>写作本身是一个很好的<code>学习过程</code>（至少是一个驱动你学习的动力）</li>
-<li>写书非常枯燥，特别是校对的时候</li>
-<li>写作<strong>不会</strong>让你变得富有，但是<strong>有时候</strong>会让你开心（不总是）</li>
-</ul>
-
-
-<h3>写文章 vs 写书</h3>
-
-<p>写博客/文章和写书还是有很大差别的，一个明显的差异是写文章会比较随意，而且应该尽量保持精简。一篇文章提供一些信息即可，应该尽量远离细节（如果写一篇教程，则另当别论）。而写书则应该尽可能的深入细节，尽可能可以让读者依书自修。</p>
-
-<h4>投入与回报</h4>
-
-<p>首先要明白的一点是，<strong>不要指望用写书来赚钱</strong>，至少前4本是这样的。粗略的算一下：我的第一本书卖了3000册，每卖一本我可以得到4元RMB，一共就是12,000元RMB。而这本书我断断续续写了三年。那是很多个周末，很多个假期，很多个夜晚的付出换来的，如果真正要计算投入产出比的话（纯粹金钱上），这显然是一个毫不合算的事情。</p>
-
-<p>作为一个参考，<a href="http://www.ibm.com/developerworks/cn/author/">IBM developerWorks</a>的投稿，千字200元，一般写5,000字以内，也就是800元RMB左右。而要写<a href="http://icodeit.org/about-me/">一篇这样的文章</a>，我只需要一天（当然需要数周/数月的积累）。12,000元RMB需要写15篇文章，如果每周写一篇，不到4个月就可以写完，而且写文章比写书容易多了，毕竟篇幅比较短小，易于校对。而且对于大部分开发者来说，固定在一个主题上的难度要比15个独立的主题简单的多，因为无需特别深入。</p>
-
-<p>所以根据经验，要抱着<code>公益</code>的情怀来写书。也就是说为了让知识更好的分享，让你学习到的先进科学技术来帮助更多的开发者，提高他们的开发效率，让他们可以在周末多休息一天。而至于翻译技术书籍，那基本上就是免费的了，完全是一个公益活动（耗时数月，斟酌字句，推敲表达方式，但是价格极为低廉：千字60元RMB），所以下次见了技术书籍的译者，就多少给他捐点吧，他们才是在<strong>为人民服务</strong>。</p>
-
-<h4>知识的诅咒</h4>
-
-<p>“知识的诅咒”是指人们在获得了某种知识<strong>之后</strong>，就无法想象<strong>没有这种知识</strong>的情况了。这种现象随处可见，比如一个你到了一个从未去过的陌生城市，遇到以为当地人，然后向他问路。当地人觉得已经说的很清楚了，但是你还是不知道该怎么走。另一个例子是：假设你不认识泰文，然后你打开任何一本<code>泰文</code>写的小说，你只能依稀感觉到这是一种文字，除此之外你并不能从中获取任何的信息。但是当你学习了一段时间<code>泰文</code>之后，再来看这本小说，之前的那种感受就再也没有了。</p>
-
-<p><img src="/images/2015/08/curse-resized.jpg" alt="curse" /></p>
-
-<p>写书的时候，你首先需要具备某种知识。但是写书的目的是将这些知识传递给那些不具备此知识的人，而根据“知识的诅咒”，你又无法确知那些初学者会遇到哪些问题！解决这个问题的方法就是找初学者来试读。而且为了保险起见，还应该找尽可能多的人来试读。</p>
-
-<h3>写作方式</h3>
-
-<p>一种方式是自下而上的，写一些独立的文章，最后发现可以串起来，然后形成一本书，另一种方式是自上而下，但是又会逐步调整。根据经验，不论是写一篇简单的博客，还是写一本书，都需要按照自上而下的方式。随心所欲的写下去，基本上都收不住，而且整个文章支离破碎，貌似有很多内容，但是不成章法，读者也无法轻松的获取知识。</p>
-
-<p>先列出大的章节，然后逐步细化，但是未必是按照顺序来写。先编写自己最熟悉的部分，然后逐步完善。例子的选取需要精妙而恰当，最好有图例来说明。</p>
-
-<h4>配图制作</h4>
-
-<p>一般而言，我在书中会使用两种图：流程图和一些截屏。截屏通常使用Mac OSX自身的功能就已经足够，而流程图我会采用一些额外的工具如：</p>
-
-<ul>
-<li>graphviz</li>
-<li>keynote/sketch</li>
-</ul>
-
-
-<p><img src="/images/2015/08/cgi.png" alt="cgi flow" /></p>
-
-<p><a href="http://icodeit.org/2012/01/%E4%BD%BF%E7%94%A8graphviz%E7%BB%98%E5%88%B6%E6%B5%81%E7%A8%8B%E5%9B%BE/">用Graphviz画图</a>的好处就是可以将图像代码一样放入版本库来管理。</p>
-
-<p>除此之外，我还学习了一些设计软件的基本用法，事实上只需要用一些简单的元素就可以做出非常专业的配图：</p>
-
-<ul>
-<li>字形/字体（大小，粗细的变化）</li>
-<li>颜色（基本的配色理论就可以做出很舒服的配色）</li>
-<li>层次（尺寸，位置，颜色的深浅）</li>
-<li>阴影</li>
-</ul>
-
-
-<p><img src="/images/2015/06/mock-server-resized.png" alt="front-end deployment" /></p>
-
-<h4>代码格式</h4>
-
-<p>书中实例需要很多代码来说明，如果是制作电子书的话，可以使用Markdown预处理器自带的功能来高亮。另外如果需要RTF格式，可以使用这些工具：</p>
-
-<ul>
-<li><a href="">highlight</a>工具</li>
-<li>intelij中的插件<code>copy on steriod</code></li>
-</ul>
-
-
-<p>这里有一篇博客来说明如何将你的代码<a href="http://icodeit.org/2015/01/copy-code-with-style/">带着格式拷贝到剪贴板中</a>，拷贝之后，就可以将这些内容粘贴到Word或者Keynote中了。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">jest</span><span class="p">.</span><span class="nx">dontMock</span><span class="p">(</span><span class="s1">&#39;../components/headline.jsx&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;Headline&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">React</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;react/addons&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">Headline</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../components/headline.jsx&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">TestUtils</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">addons</span><span class="p">.</span><span class="nx">TestUtils</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;#render&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="s2">&quot;this is a title&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">headline</span> <span class="o">=</span> <span class="nx">TestUtils</span><span class="p">.</span><span class="nx">renderIntoDocument</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">Headline</span> <span class="nx">title</span><span class="o">=</span><span class="p">{</span><span class="nx">text</span><span class="p">}</span> <span class="o">/&gt;</span><span class="p">);</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">title</span> <span class="o">=</span> <span class="nx">TestUtils</span><span class="p">.</span><span class="nx">findRenderedDOMComponentWithTag</span><span class="p">(</span><span class="nx">headline</span><span class="p">,</span> <span class="s1">&#39;h4&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">headline</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">()).</span><span class="nx">toBeDefined</span><span class="p">();</span>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">headline</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">textContent</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>一些潜在的<code>坑</code></h4>
-
-<p>在写作的过程中，会有一些潜在的坑。这些所谓的坑是新人可能无法想到的。相对于言之无物，不知如何下笔，最痛苦的其实在于<code>平淡</code>。大部分时候，你可能很容易就能写出开头，但是很难坚持到最后。即使好不容易写完了第一版，后续的重读和修改，会让你苦不堪言。</p>
-
-<p>内容写好之后，样式是下一个重要的问题，好的内容需要有与之匹配的排版。在中国，作者不但要负责内容，还要负责一些排版的事情。这一点非常奇葩，但是又是实情。这也是我更推荐电子版的原因（排版更加美观，选择更加多样，而且一旦有问题可以更容易的修改）。</p>
-
-<p>另外一个问题是错别字检查！检查错别字对于作者来说，是一件<a href="http://www.guokr.com/article/439010/">非常困难</a>的实情。而对于读者来说，则是一件很容易的事情。这跟<code>知识的诅咒</code>的道理一样。</p>
-
-<p><img src="/images/2015/08/typo.jpg" alt="typo" /></p>
-
-<h3>发布方式</h3>
-
-<h4>实体书</h4>
-
-<p>传统的出版方式有一些明显的问题，这些问题已经和现代的知识传递方式产生了冲突：</p>
-
-<ol>
-<li>时滞性（新技术的更新速度远远超过审批，印刷等流程的时间）</li>
-<li>排版（如何低成本做到语法高亮，或者彩图）</li>
-<li>更新频率（当技术更新之后，如何更新，是传统纸质书无法解决的问题）</li>
-</ol>
-
-
-<p>传统的出版方式有点像传统的软件开发，一本书从开始写作到最终出版，要经过很多环节。忽略掉写作过程，从交稿到出版会经历很多次审核和校对，可能会历时4-8个月，着这个过程中，很多东西都可能发生了变化，一个典型的例子是《用AngularJS开发下一代Web应用》，原版为英文版，翻译成中文版再到出版之后，书中的很大一部分内容已经过时。读者拿到书之后，会发现书中的内容已经和当前的版本/文档不匹配了。这种现状随着技术的更新速度和频率还会再加剧。</p>
-
-<p>第二点是排版。我听说国内有些出版社已经开始接受<a href="http://wowubuntu.com/markdown/">Markdown</a>作为稿件的格式，但是大部分还采用Word或者WPS等格式，这样排版就变成了一个大问题。以我自己为例，我的原稿用Markdown写，但是写了几章之后不得不切换到Microsoft word上，而我自己的Mac OSX下的排版到编辑的Windows下就会变样，而且还会涉及字符集，字体，Word版本等等问题的影响，最后导致印刷出来和原始稿件出入很大。</p>
-
-<p>最后一点是更新频率，如果发现了错别字或者错误的地方（即使之前检查过多次，仍然会有漏网之鱼），由于实体书的特殊性，一般需要等到再次印刷才能解决。这意味着先购买的读者会承担一些风险，更新后的版本又如何让读者看到呢？总不能又买一本吧。</p>
-
-<p>但是这些问题都可以通过电子书来很好的解决。首先，电子书可以随时更新，最低限度的降低时滞性。排版上来说，作者可以使用Markdown来编写，而展现则可以应用一些预定义的模板来完成。最后，更新频率完全可以控制，对读者来说风险更低，因为电子版书籍的可以很容易的追踪交易记录，从而得到免费的更新过的版本。</p>
-
-<h4>电子书</h4>
-
-<p>目前已经有很多的渠道可以发布电子书，比如<a href="https://www.gitbook.com/">gitbhook</a>，<a href="http://zhibimo.com/">知笔墨</a>。这些应用的出现，大大降低了发布<code>书籍</code>的成本，我的<a href="https://selfstore.io/products/348">《函数式编程乐趣》</a>，用了3天就完成了草稿，而发布只需要数秒。</p>
-
-<p>另外一个问题是书籍的价格和作者的收入。一本书定价50元RMB，出版社给作者的版税是8%，也就是说，每卖出一本，作者可以得到4元，如果你的书非常畅销，这还是一个不错的价格。但是可能90%的书籍都不会是畅销书（就好比每个班级都会有优等生，但是他们仅占全班人数的10%一样）。这对作者是一种浪费：你需要耗时数月甚至数年来写一本书，然后市场的反馈又非常慢（毕竟你无法出版一本未完成的书）。</p>
-
-<p>我在<a href="https://selfstore.io/">selfstore.io</a>上有两本电子书：<a href="https://selfstore.io/products/348">《3周3页面》</a>和<a href="https://selfstore.io/products/351">《函数式编程乐趣》</a>，<a href="https://selfstore.io/products/348">《3周3页面》</a>定价为16元，每卖出一本，扣除掉交易费之后，我可以得到14.7元。</p>
-
-<p>对我来说，这样可以得到更多的回报，对于读者则可以更加快速的得到更新，而且由于有<a href="https://www.gitbook.com/book/juntao/3-web-designs-in-3-weeks/details">预览版</a>和一系列的<a href="http://icodeit.org/3p3w/">其他信息</a>，还可以在很大程度上降低读者的风险（更不用说快递费，等待时间等问题）。我在gitbook上的统计显示，《3周3页面》已经被累计下载了28,861次，实际的读者也将近5,000。而且没有任何的审核流程，也没有排版的时间浪费，我只需要关注内容即可。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/3/">&larr; Older</a>
@@ -3846,6 +4028,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2016/09/how-to-design-a-training/">如何设计一次培训</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/05/practise-in-programming/">无他，但手熟尔</a>
       </li>
     
@@ -3859,10 +4045,6 @@
     
       <li class="post">
         <a href="/2016/05/about-session-and-security-api-1/">保护你的API（上）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/02/performance-testing-in-ci/">CI上的Web前端性能测试</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-05-26T23:24:06+10:00</updated>
+  <updated>2016-09-10T14:34:18+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,222 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[如何设计一次培训]]></title>
+    <link href="http://abruzzi.github.com/2016/09/how-to-design-a-training/"/>
+    <updated>2016-09-10T13:35:00+10:00</updated>
+    <id>http://abruzzi.github.com/2016/09/how-to-design-a-training</id>
+    <content type="html"><![CDATA[<h2>培训元模式</h2>
+
+<p>最近在帮客户设计一个<code>微服务进阶版培训</code>的材料，整理的过程中我意识到这类事情我已经做过好多次了。比如在ThoughtWorks的<code>P2能力建设</code>项目，<a href="http://icodeit.org/3p3w/">3周3页面</a>工作坊等等，我觉得应该将<code>设计课程/设计培训</code>中的模式、原则和实践都提取一下，形成一个元模式（即关于培训的培训）。</p>
+
+<p>一个培训中的活动，按照时间顺序可以分为三个步骤：</p>
+
+<ol>
+<li>设计培训内容</li>
+<li>培训前期准备</li>
+<li>培训中的一些实践</li>
+</ol>
+
+
+<h3>设计培训内容</h3>
+
+<p>根据经验，只有那些正好处于瓶颈阶段，需要别人给予一些具体指导的人，培训是最有效的。比如我最近在学习iOS开发，那么<code>用Swift开发一个Todo List应用</code>就特别合适，而另一个<code>基于Objective-C的自动化测试</code>则对我来说一点用也没有（即使这个可能更高级，讲师更牛）。</p>
+
+<p>在任何一个培训可能的设计之前，首先需要回答几个问题：</p>
+
+<ol>
+<li>培训目的是什么？</li>
+<li>参与者对主题的了解程度如何？</li>
+<li>参与者的组成比例（比如junior占比，senior占比等）</li>
+<li>结果如何检验？</li>
+</ol>
+
+
+<h4>一个例子</h4>
+
+<p>例子是人类的好朋友，这里我们来看一个例子：</p>
+
+<blockquote><p>客户要为负责开发的同事做一次培训，培训的目的是要帮助他们建立<code>微服务架构</code>下的常见实践的知识框架。从结果的长期效果来看，这次培训要能指导实际的开发工作。参与者对<code>微服务</code>的一些概念有初步了解，也做过小的练习，但是诸如如何划分服务边界，如何拆分微服务等，都不了解，也比较迫切的想要了解。</p></blockquote>
+
+<p>根据这个上下文，客户希望在培训中可以传递这样一些内容：</p>
+
+<ul>
+<li>如何拆分微服务</li>
+<li>常见的微服务设计原则</li>
+<li>拆分微服务的时机</li>
+<li>如何做微服务的测试</li>
+</ul>
+
+
+<p>为了确保信息传递的准确性，我问了一遍上边都提到的列表，并且得到了答案：</p>
+
+<ul>
+<li>听众是开发经验相对丰富的开发（3-5年）</li>
+<li>学习拆分为了将大的应用拆分，以方便维护</li>
+<li>自动化测试能力和意识都较为薄弱</li>
+<li>听众自己的期望是可以有一些切实可以指导实际开发的收获</li>
+</ul>
+
+
+<p>在有了这些输入的情况下，我做出了这样一些调整：</p>
+
+<ul>
+<li>不专门讲拆分微服务</li>
+<li>主要精力讲<a href="https://github.com/abruzzi/jigsaw-ddd">DDD</a>（Domain Driven Design）</li>
+<li>设计迭代式的，逐步变得复杂的场景来练习DDD</li>
+<li>讲解和练习<a href="https://github.com/abruzzi/cdc-demo">自动化测试</a>（Consumer Driven Contract）</li>
+<li>Session+Workshop+讨论的形式</li>
+</ul>
+
+
+<p>看了这个计划之后，客户开始觉得挺困惑，说这个怎么跟我们梳理的课程诉求不一致？对于这个疑惑，我的建议是这样的：</p>
+
+<ul>
+<li>之前的例子不能落地（找不到足够复杂的，又适合在培训中拆分的场景）</li>
+<li>微服务的核心不是基础设施，而是设计原则，或者说如何在开发中找出边界</li>
+<li>有了DDD的指导，划分本身并非难事儿</li>
+<li>自动化测试（集成测试和契约测试）的能力和认识必须建立</li>
+</ul>
+
+
+<p>然后我把整理好的课件，实例分解，课程安排给客户讲了一遍之后，他觉得很满意。客户自己也是懂技术的，在分析了现状之后，后来又专门要求给部门内做一些<code>DDD</code>培训（而不是微服务本身）。</p>
+
+<h3>培训方式</h3>
+
+<p>同样，方式上也需要一些问题的解答才能有效进行：</p>
+
+<ol>
+<li>培训总时长</li>
+<li>更偏重练习还是偏重讲解（工作坊还是Session，以及各自的占比）</li>
+<li>参与者如何投入（比如是工作时间，还是晚上等）</li>
+</ol>
+
+
+<p>根据经验来看，不论是TWU还是对<code>客户</code>的培训，工作坊和Session结合的方式效果最好。
+Workshop至少需要包含这样几部分：</p>
+
+<ul>
+<li>明确要做的练习（多长时间，达到什么目的等）</li>
+<li>Showcase（参与感，如果有多轮的话，要保证每个人都有Show的机会，而不是每次同一个人）</li>
+<li>讨论环节（点评，这个时机可以做一些小结，将要传递的信息润物细无声的传递出去）</li>
+</ul>
+
+
+<p><img src="http://abruzzi.github.com/images/2016/09/workshop-resized.png" alt="workshop" /></p>
+
+<p>应该避免的做法是:</p>
+
+<ul>
+<li>一个无法完成的任务</li>
+<li>过长的时间</li>
+<li>没有讨论，没有点评（特别是在中国文化中，Trainer有指出对错的<code>义务</code>）</li>
+</ul>
+
+
+<p>而<code>Session</code>则简单一些，交互比较少，需要讲师之前做足功课</p>
+
+<ul>
+<li>有清晰的Agenda（时长，要传递的大致内容）</li>
+<li>如果是讲方法论（DDD，BDD等等），最好结合实践</li>
+<li>不要讲代码（没有人能看清你的编辑器，也没有人有耐心看超过1行的代码）</li>
+<li>一次不要传递太多信息（只讲三点）</li>
+</ul>
+
+
+<p>两者穿插起来，可以收到很好的效果，既不至于让人觉得没有内容，也不会感觉只说不练。</p>
+
+<h4>预演（Dry Run）</h4>
+
+<p>在进行实际的实施之前，可以从参与者中找出一些典型的人进行交流，<code>dry run</code>一两次。不过交流也需要平衡一些事实：</p>
+
+<ol>
+<li>侧重点（做对的事情），比如从设计的层面来讲，DDD，重构等方法的掌握比服务的可用性要重要很多</li>
+<li>参与者想要听的和主题的相关性（比如培训目的是Story拆分，那么测试驱动开发的需求就要果断放弃）</li>
+</ol>
+
+
+<p>持续建立关注点，引导发散，归纳问题，归类并给出见解和可能的方案。</p>
+
+<h4>如何回答问题</h4>
+
+<p>有两种教学方式：苏格拉底式和填鸭式。苏格拉底式讲究只问不答，通过讲师不断提问的方式让学员自己思考，琢磨，并期望领悟；填鸭式则恰恰相反，假设学员没有任何能动性，讲师纯粹将自己知道的全部告诉学员。</p>
+
+<p>这其实两者在时间中都不合适。有一个度可以把握的是：</p>
+
+<blockquote><p>善待问者如撞钟，叩之以小者则小鸣，叩之以大者则大鸣，待其从容，然后尽其声。</p></blockquote>
+
+<p>即根据提问的深度来反馈，比如<code>JavaScript</code>培训，学生问如何声明一个数组，讲师讲词法作用域，则费劲而没有效果。经过一段时间的练习和积累之后，学生会问出更深入的问题，这时候再逐步提高答案的深度。</p>
+
+<h3>实践</h3>
+
+<h4>Energize</h4>
+
+<p>如果培训在白天的话，在午饭后，人们自然会感到困倦，这时候需要一些<code>提神</code>的小游戏帮助人们清醒。适度的紧张（比如简单的7Up游戏）或者肢体动作（做几个广播体操的动作）都会帮助人们振奋精神。</p>
+
+<ul>
+<li>围成一个圈的丢球自我介绍</li>
+<li>A和B向对方互相介绍自己，然后A反过来向整个Group介绍B，B向整个Group介绍A</li>
+<li>7Up</li>
+<li>丢空气球</li>
+</ul>
+
+
+<h4>工作坊基本准则</h4>
+
+<ol>
+<li>按时参加</li>
+<li>保持One convensition</li>
+<li>手机静音</li>
+</ol>
+
+
+<h4>分组进行</h4>
+
+<p>分组讨论是一个很好的实践，既可以避免<code>只说不练</code>的现象，又可以让参与者有充分的参与感，还可以让培训的时间长度更灵活，更容易控制。</p>
+
+<p>分组可以用报数的方法，通常人们习惯和自己熟悉的人坐在一起。这会促进他们交头接耳的几率，分组时可以通过报数的方式，比如目标是分为3组，就依次报数1、2、3，然后所有报1的人为1组，报2的人为2组，以此类推。</p>
+
+<p>一个我自己常用的伎俩是自由调整时间。比如在一个练习开始前，你告诉参与者他们有10分钟来完成一个Task，然后在5分钟后，你发现大家都基本已经做完了，这时候可以直接说：时间到！（相信我，没有人真正看表的，他们通常会被手头的任务搞得焦头烂额）。反过来，你可以说：再延长5分钟！以督促那些比较慢的小组动作更快一些，而事实上他们还没有用完限定的10分钟。</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/09/grouping-resized.png" alt="grouping" /></p>
+
+<h4>Parking lot</h4>
+
+<p>培训当然需要参与者和trainer的积极互动，但是有时候参与者提出的问题不太适合在课堂上展开：</p>
+
+<ul>
+<li>与培训主题关联并不太大</li>
+<li>比较个例的问题</li>
+<li>争议较大，难以在短时间内讨论清楚的</li>
+</ul>
+
+
+<p>这些问题可以记录下来，在正式课程时间结束后单点讨论，或者作为下一次备课的关键点，加入到课件中。</p>
+
+<h4>Retro</h4>
+
+<p>和我们倡导的一切活动一样，培训也需要有始有终。我们需要收集参与者的反馈，包括positive的和constructive的，这样经过几轮迭代之后，培训会成熟而具有一定的可复制性。</p>
+
+<p>可以分成三类：<code>做得好的/有待提高的/一些疑问/建议</code></p>
+
+<p>将问题分组讨论之后，分为三组，然后讨论出一些解决方法。</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/09/retro-resized.png" alt="retro" /></p>
+
+<h4>其他</h4>
+
+<ul>
+<li>二维码+金数据表单</li>
+<li>白板+白板笔</li>
+<li>Flipchart</li>
+</ul>
+
+
+<h3>总结</h3>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[无他，但手熟尔]]></title>
@@ -5744,162 +5960,6 @@
 <h3>总结</h3>
 
 <p>我们通过使用一些开源工具（MapServer，QGis，PostGIS，GDAL等），构建出一个基于GIS的数据可视化框架。在这个stack上，我们可以很容易的将一些其他数据也通过可视化的方式展现出来（公用自行车站点分布，出租车分布等等）。MapServer可以发布标准的<a href="https://en.wikipedia.org/wiki/Web_Map_Service">WMS</a>服务，因此可以很好的和客户端框架集成，从而带来更加友好的用户体验。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[如何写一本书？]]></title>
-    <link href="http://abruzzi.github.com/2015/08/how-to-write-a-book/"/>
-    <updated>2015-08-04T13:24:00+10:00</updated>
-    <id>http://abruzzi.github.com/2015/08/how-to-write-a-book</id>
-    <content type="html"><![CDATA[<p>我在过去的几年中，写了4本书。有传统意义上的两本实体书：<a href="http://www.amazon.cn/JavaScript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B00COG3YVU/ref=sr_1_1?s=books&amp;ie=UTF8&amp;qid=1438658024&amp;sr=1-1">《JavaScript核心概念及实践》</a>和<a href="http://www.amazon.cn/%E8%BD%BB%E9%87%8F%E7%BA%A7Web%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B012R5A1NQ/ref=sr_1_2?s=books&amp;ie=UTF8&amp;qid=1438658024&amp;sr=1-2">《轻量级Web应用开发》</a>，还有两本电子书<a href="https://selfstore.io/products/348">《3周3页面》</a>和<a href="https://selfstore.io/products/351">《函数式编程乐趣》</a>。当然对我而言，主职工作是软件开发，写作是个副业。</p>
-
-<p>在写作的过程中，有一些<code>有趣的</code>心得。</p>
-
-<ul>
-<li>写作本身是一个很好的<code>学习过程</code>（至少是一个驱动你学习的动力）</li>
-<li>写书非常枯燥，特别是校对的时候</li>
-<li>写作<strong>不会</strong>让你变得富有，但是<strong>有时候</strong>会让你开心（不总是）</li>
-</ul>
-
-
-<h3>写文章 vs 写书</h3>
-
-<p>写博客/文章和写书还是有很大差别的，一个明显的差异是写文章会比较随意，而且应该尽量保持精简。一篇文章提供一些信息即可，应该尽量远离细节（如果写一篇教程，则另当别论）。而写书则应该尽可能的深入细节，尽可能可以让读者依书自修。</p>
-
-<h4>投入与回报</h4>
-
-<p>首先要明白的一点是，<strong>不要指望用写书来赚钱</strong>，至少前4本是这样的。粗略的算一下：我的第一本书卖了3000册，每卖一本我可以得到4元RMB，一共就是12,000元RMB。而这本书我断断续续写了三年。那是很多个周末，很多个假期，很多个夜晚的付出换来的，如果真正要计算投入产出比的话（纯粹金钱上），这显然是一个毫不合算的事情。</p>
-
-<p>作为一个参考，<a href="http://www.ibm.com/developerworks/cn/author/">IBM developerWorks</a>的投稿，千字200元，一般写5,000字以内，也就是800元RMB左右。而要写<a href="http://icodeit.org/about-me/">一篇这样的文章</a>，我只需要一天（当然需要数周/数月的积累）。12,000元RMB需要写15篇文章，如果每周写一篇，不到4个月就可以写完，而且写文章比写书容易多了，毕竟篇幅比较短小，易于校对。而且对于大部分开发者来说，固定在一个主题上的难度要比15个独立的主题简单的多，因为无需特别深入。</p>
-
-<p>所以根据经验，要抱着<code>公益</code>的情怀来写书。也就是说为了让知识更好的分享，让你学习到的先进科学技术来帮助更多的开发者，提高他们的开发效率，让他们可以在周末多休息一天。而至于翻译技术书籍，那基本上就是免费的了，完全是一个公益活动（耗时数月，斟酌字句，推敲表达方式，但是价格极为低廉：千字60元RMB），所以下次见了技术书籍的译者，就多少给他捐点吧，他们才是在<strong>为人民服务</strong>。</p>
-
-<h4>知识的诅咒</h4>
-
-<p>“知识的诅咒”是指人们在获得了某种知识<strong>之后</strong>，就无法想象<strong>没有这种知识</strong>的情况了。这种现象随处可见，比如一个你到了一个从未去过的陌生城市，遇到以为当地人，然后向他问路。当地人觉得已经说的很清楚了，但是你还是不知道该怎么走。另一个例子是：假设你不认识泰文，然后你打开任何一本<code>泰文</code>写的小说，你只能依稀感觉到这是一种文字，除此之外你并不能从中获取任何的信息。但是当你学习了一段时间<code>泰文</code>之后，再来看这本小说，之前的那种感受就再也没有了。</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/08/curse-resized.jpg" alt="curse" /></p>
-
-<p>写书的时候，你首先需要具备某种知识。但是写书的目的是将这些知识传递给那些不具备此知识的人，而根据“知识的诅咒”，你又无法确知那些初学者会遇到哪些问题！解决这个问题的方法就是找初学者来试读。而且为了保险起见，还应该找尽可能多的人来试读。</p>
-
-<h3>写作方式</h3>
-
-<p>一种方式是自下而上的，写一些独立的文章，最后发现可以串起来，然后形成一本书，另一种方式是自上而下，但是又会逐步调整。根据经验，不论是写一篇简单的博客，还是写一本书，都需要按照自上而下的方式。随心所欲的写下去，基本上都收不住，而且整个文章支离破碎，貌似有很多内容，但是不成章法，读者也无法轻松的获取知识。</p>
-
-<p>先列出大的章节，然后逐步细化，但是未必是按照顺序来写。先编写自己最熟悉的部分，然后逐步完善。例子的选取需要精妙而恰当，最好有图例来说明。</p>
-
-<h4>配图制作</h4>
-
-<p>一般而言，我在书中会使用两种图：流程图和一些截屏。截屏通常使用Mac OSX自身的功能就已经足够，而流程图我会采用一些额外的工具如：</p>
-
-<ul>
-<li>graphviz</li>
-<li>keynote/sketch</li>
-</ul>
-
-
-<p><img src="http://abruzzi.github.com/images/2015/08/cgi.png" alt="cgi flow" /></p>
-
-<p><a href="http://icodeit.org/2012/01/%E4%BD%BF%E7%94%A8graphviz%E7%BB%98%E5%88%B6%E6%B5%81%E7%A8%8B%E5%9B%BE/">用Graphviz画图</a>的好处就是可以将图像代码一样放入版本库来管理。</p>
-
-<p>除此之外，我还学习了一些设计软件的基本用法，事实上只需要用一些简单的元素就可以做出非常专业的配图：</p>
-
-<ul>
-<li>字形/字体（大小，粗细的变化）</li>
-<li>颜色（基本的配色理论就可以做出很舒服的配色）</li>
-<li>层次（尺寸，位置，颜色的深浅）</li>
-<li>阴影</li>
-</ul>
-
-
-<p><img src="http://abruzzi.github.com/images/2015/06/mock-server-resized.png" alt="front-end deployment" /></p>
-
-<h4>代码格式</h4>
-
-<p>书中实例需要很多代码来说明，如果是制作电子书的话，可以使用Markdown预处理器自带的功能来高亮。另外如果需要RTF格式，可以使用这些工具：</p>
-
-<ul>
-<li><a href="">highlight</a>工具</li>
-<li>intelij中的插件<code>copy on steriod</code></li>
-</ul>
-
-
-<p>这里有一篇博客来说明如何将你的代码<a href="http://icodeit.org/2015/01/copy-code-with-style/">带着格式拷贝到剪贴板中</a>，拷贝之后，就可以将这些内容粘贴到Word或者Keynote中了。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">jest</span><span class="p">.</span><span class="nx">dontMock</span><span class="p">(</span><span class="s1">&#39;../components/headline.jsx&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;Headline&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">React</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;react/addons&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">Headline</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../components/headline.jsx&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">TestUtils</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">addons</span><span class="p">.</span><span class="nx">TestUtils</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;#render&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="s2">&quot;this is a title&quot;</span><span class="p">;</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">headline</span> <span class="o">=</span> <span class="nx">TestUtils</span><span class="p">.</span><span class="nx">renderIntoDocument</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">Headline</span> <span class="nx">title</span><span class="o">=</span><span class="p">{</span><span class="nx">text</span><span class="p">}</span> <span class="o">/&gt;</span><span class="p">);</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">title</span> <span class="o">=</span> <span class="nx">TestUtils</span><span class="p">.</span><span class="nx">findRenderedDOMComponentWithTag</span><span class="p">(</span><span class="nx">headline</span><span class="p">,</span> <span class="s1">&#39;h4&#39;</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">headline</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">()).</span><span class="nx">toBeDefined</span><span class="p">();</span>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">headline</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">textContent</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>一些潜在的<code>坑</code></h4>
-
-<p>在写作的过程中，会有一些潜在的坑。这些所谓的坑是新人可能无法想到的。相对于言之无物，不知如何下笔，最痛苦的其实在于<code>平淡</code>。大部分时候，你可能很容易就能写出开头，但是很难坚持到最后。即使好不容易写完了第一版，后续的重读和修改，会让你苦不堪言。</p>
-
-<p>内容写好之后，样式是下一个重要的问题，好的内容需要有与之匹配的排版。在中国，作者不但要负责内容，还要负责一些排版的事情。这一点非常奇葩，但是又是实情。这也是我更推荐电子版的原因（排版更加美观，选择更加多样，而且一旦有问题可以更容易的修改）。</p>
-
-<p>另外一个问题是错别字检查！检查错别字对于作者来说，是一件<a href="http://www.guokr.com/article/439010/">非常困难</a>的实情。而对于读者来说，则是一件很容易的事情。这跟<code>知识的诅咒</code>的道理一样。</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/08/typo.jpg" alt="typo" /></p>
-
-<h3>发布方式</h3>
-
-<h4>实体书</h4>
-
-<p>传统的出版方式有一些明显的问题，这些问题已经和现代的知识传递方式产生了冲突：</p>
-
-<ol>
-<li>时滞性（新技术的更新速度远远超过审批，印刷等流程的时间）</li>
-<li>排版（如何低成本做到语法高亮，或者彩图）</li>
-<li>更新频率（当技术更新之后，如何更新，是传统纸质书无法解决的问题）</li>
-</ol>
-
-
-<p>传统的出版方式有点像传统的软件开发，一本书从开始写作到最终出版，要经过很多环节。忽略掉写作过程，从交稿到出版会经历很多次审核和校对，可能会历时4-8个月，着这个过程中，很多东西都可能发生了变化，一个典型的例子是《用AngularJS开发下一代Web应用》，原版为英文版，翻译成中文版再到出版之后，书中的很大一部分内容已经过时。读者拿到书之后，会发现书中的内容已经和当前的版本/文档不匹配了。这种现状随着技术的更新速度和频率还会再加剧。</p>
-
-<p>第二点是排版。我听说国内有些出版社已经开始接受<a href="http://wowubuntu.com/markdown/">Markdown</a>作为稿件的格式，但是大部分还采用Word或者WPS等格式，这样排版就变成了一个大问题。以我自己为例，我的原稿用Markdown写，但是写了几章之后不得不切换到Microsoft word上，而我自己的Mac OSX下的排版到编辑的Windows下就会变样，而且还会涉及字符集，字体，Word版本等等问题的影响，最后导致印刷出来和原始稿件出入很大。</p>
-
-<p>最后一点是更新频率，如果发现了错别字或者错误的地方（即使之前检查过多次，仍然会有漏网之鱼），由于实体书的特殊性，一般需要等到再次印刷才能解决。这意味着先购买的读者会承担一些风险，更新后的版本又如何让读者看到呢？总不能又买一本吧。</p>
-
-<p>但是这些问题都可以通过电子书来很好的解决。首先，电子书可以随时更新，最低限度的降低时滞性。排版上来说，作者可以使用Markdown来编写，而展现则可以应用一些预定义的模板来完成。最后，更新频率完全可以控制，对读者来说风险更低，因为电子版书籍的可以很容易的追踪交易记录，从而得到免费的更新过的版本。</p>
-
-<h4>电子书</h4>
-
-<p>目前已经有很多的渠道可以发布电子书，比如<a href="https://www.gitbook.com/">gitbhook</a>，<a href="http://zhibimo.com/">知笔墨</a>。这些应用的出现，大大降低了发布<code>书籍</code>的成本，我的<a href="https://selfstore.io/products/348">《函数式编程乐趣》</a>，用了3天就完成了草稿，而发布只需要数秒。</p>
-
-<p>另外一个问题是书籍的价格和作者的收入。一本书定价50元RMB，出版社给作者的版税是8%，也就是说，每卖出一本，作者可以得到4元，如果你的书非常畅销，这还是一个不错的价格。但是可能90%的书籍都不会是畅销书（就好比每个班级都会有优等生，但是他们仅占全班人数的10%一样）。这对作者是一种浪费：你需要耗时数月甚至数年来写一本书，然后市场的反馈又非常慢（毕竟你无法出版一本未完成的书）。</p>
-
-<p>我在<a href="https://selfstore.io/">selfstore.io</a>上有两本电子书：<a href="https://selfstore.io/products/348">《3周3页面》</a>和<a href="https://selfstore.io/products/351">《函数式编程乐趣》</a>，<a href="https://selfstore.io/products/348">《3周3页面》</a>定价为16元，每卖出一本，扣除掉交易费之后，我可以得到14.7元。</p>
-
-<p>对我来说，这样可以得到更多的回报，对于读者则可以更加快速的得到更新，而且由于有<a href="https://www.gitbook.com/book/juntao/3-web-designs-in-3-weeks/details">预览版</a>和一系列的<a href="http://icodeit.org/3p3w/">其他信息</a>，还可以在很大程度上降低读者的风险（更不用说快递费，等待时间等问题）。我在gitbook上的统计显示，《3周3页面》已经被累计下载了28,861次，实际的读者也将近5,000。而且没有任何的审核流程，也没有排版的时间浪费，我只需要关注内容即可。</p>
 ]]></content>
   </entry>
   

@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="高效幻象 通过对自己的行为观察，我发现在很多时候，我以为我掌握了的知识和技能其实并不牢靠。我引以为豪的高效其实犹如一个彩色的肥皂泡，轻轻一碰就会破碎，散落一地。 你可能只是精通搜索 我们现在所处的时代，信息爆炸，每个人每天都会接触，阅读很多的信息，快速消费，快速遗忘。 &hellip;">
+  <meta name="description" content="培训元模式 最近在帮客户设计一个微服务进阶版培训的材料，整理的过程中我意识到这类事情我已经做过好多次了。比如在ThoughtWorks的P2能力建设项目，3周3页面工作坊等等，我觉得应该将设计课程/设计培训中的模式、原则和实践都提取一下，形成一个元模式（即关于培训的培训）。 一个培训中的活动， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,249 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2016/09/how-to-design-a-training/">如何设计一次培训</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-09-10T13:35:00+10:00" pubdate data-updated="true">Sep 10<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>培训元模式</h2>
+
+<p>最近在帮客户设计一个<code>微服务进阶版培训</code>的材料，整理的过程中我意识到这类事情我已经做过好多次了。比如在ThoughtWorks的<code>P2能力建设</code>项目，<a href="http://icodeit.org/3p3w/">3周3页面</a>工作坊等等，我觉得应该将<code>设计课程/设计培训</code>中的模式、原则和实践都提取一下，形成一个元模式（即关于培训的培训）。</p>
+
+<p>一个培训中的活动，按照时间顺序可以分为三个步骤：</p>
+
+<ol>
+<li>设计培训内容</li>
+<li>培训前期准备</li>
+<li>培训中的一些实践</li>
+</ol>
+
+
+<h3>设计培训内容</h3>
+
+<p>根据经验，只有那些正好处于瓶颈阶段，需要别人给予一些具体指导的人，培训是最有效的。比如我最近在学习iOS开发，那么<code>用Swift开发一个Todo List应用</code>就特别合适，而另一个<code>基于Objective-C的自动化测试</code>则对我来说一点用也没有（即使这个可能更高级，讲师更牛）。</p>
+
+<p>在任何一个培训可能的设计之前，首先需要回答几个问题：</p>
+
+<ol>
+<li>培训目的是什么？</li>
+<li>参与者对主题的了解程度如何？</li>
+<li>参与者的组成比例（比如junior占比，senior占比等）</li>
+<li>结果如何检验？</li>
+</ol>
+
+
+<h4>一个例子</h4>
+
+<p>例子是人类的好朋友，这里我们来看一个例子：</p>
+
+<blockquote><p>客户要为负责开发的同事做一次培训，培训的目的是要帮助他们建立<code>微服务架构</code>下的常见实践的知识框架。从结果的长期效果来看，这次培训要能指导实际的开发工作。参与者对<code>微服务</code>的一些概念有初步了解，也做过小的练习，但是诸如如何划分服务边界，如何拆分微服务等，都不了解，也比较迫切的想要了解。</p></blockquote>
+
+<p>根据这个上下文，客户希望在培训中可以传递这样一些内容：</p>
+
+<ul>
+<li>如何拆分微服务</li>
+<li>常见的微服务设计原则</li>
+<li>拆分微服务的时机</li>
+<li>如何做微服务的测试</li>
+</ul>
+
+
+<p>为了确保信息传递的准确性，我问了一遍上边都提到的列表，并且得到了答案：</p>
+
+<ul>
+<li>听众是开发经验相对丰富的开发（3-5年）</li>
+<li>学习拆分为了将大的应用拆分，以方便维护</li>
+<li>自动化测试能力和意识都较为薄弱</li>
+<li>听众自己的期望是可以有一些切实可以指导实际开发的收获</li>
+</ul>
+
+
+<p>在有了这些输入的情况下，我做出了这样一些调整：</p>
+
+<ul>
+<li>不专门讲拆分微服务</li>
+<li>主要精力讲<a href="https://github.com/abruzzi/jigsaw-ddd">DDD</a>（Domain Driven Design）</li>
+<li>设计迭代式的，逐步变得复杂的场景来练习DDD</li>
+<li>讲解和练习<a href="https://github.com/abruzzi/cdc-demo">自动化测试</a>（Consumer Driven Contract）</li>
+<li>Session+Workshop+讨论的形式</li>
+</ul>
+
+
+<p>看了这个计划之后，客户开始觉得挺困惑，说这个怎么跟我们梳理的课程诉求不一致？对于这个疑惑，我的建议是这样的：</p>
+
+<ul>
+<li>之前的例子不能落地（找不到足够复杂的，又适合在培训中拆分的场景）</li>
+<li>微服务的核心不是基础设施，而是设计原则，或者说如何在开发中找出边界</li>
+<li>有了DDD的指导，划分本身并非难事儿</li>
+<li>自动化测试（集成测试和契约测试）的能力和认识必须建立</li>
+</ul>
+
+
+<p>然后我把整理好的课件，实例分解，课程安排给客户讲了一遍之后，他觉得很满意。客户自己也是懂技术的，在分析了现状之后，后来又专门要求给部门内做一些<code>DDD</code>培训（而不是微服务本身）。</p>
+
+<h3>培训方式</h3>
+
+<p>同样，方式上也需要一些问题的解答才能有效进行：</p>
+
+<ol>
+<li>培训总时长</li>
+<li>更偏重练习还是偏重讲解（工作坊还是Session，以及各自的占比）</li>
+<li>参与者如何投入（比如是工作时间，还是晚上等）</li>
+</ol>
+
+
+<p>根据经验来看，不论是TWU还是对<code>客户</code>的培训，工作坊和Session结合的方式效果最好。
+Workshop至少需要包含这样几部分：</p>
+
+<ul>
+<li>明确要做的练习（多长时间，达到什么目的等）</li>
+<li>Showcase（参与感，如果有多轮的话，要保证每个人都有Show的机会，而不是每次同一个人）</li>
+<li>讨论环节（点评，这个时机可以做一些小结，将要传递的信息润物细无声的传递出去）</li>
+</ul>
+
+
+<p><img src="/images/2016/09/workshop-resized.png" alt="workshop" /></p>
+
+<p>应该避免的做法是:</p>
+
+<ul>
+<li>一个无法完成的任务</li>
+<li>过长的时间</li>
+<li>没有讨论，没有点评（特别是在中国文化中，Trainer有指出对错的<code>义务</code>）</li>
+</ul>
+
+
+<p>而<code>Session</code>则简单一些，交互比较少，需要讲师之前做足功课</p>
+
+<ul>
+<li>有清晰的Agenda（时长，要传递的大致内容）</li>
+<li>如果是讲方法论（DDD，BDD等等），最好结合实践</li>
+<li>不要讲代码（没有人能看清你的编辑器，也没有人有耐心看超过1行的代码）</li>
+<li>一次不要传递太多信息（只讲三点）</li>
+</ul>
+
+
+<p>两者穿插起来，可以收到很好的效果，既不至于让人觉得没有内容，也不会感觉只说不练。</p>
+
+<h4>预演（Dry Run）</h4>
+
+<p>在进行实际的实施之前，可以从参与者中找出一些典型的人进行交流，<code>dry run</code>一两次。不过交流也需要平衡一些事实：</p>
+
+<ol>
+<li>侧重点（做对的事情），比如从设计的层面来讲，DDD，重构等方法的掌握比服务的可用性要重要很多</li>
+<li>参与者想要听的和主题的相关性（比如培训目的是Story拆分，那么测试驱动开发的需求就要果断放弃）</li>
+</ol>
+
+
+<p>持续建立关注点，引导发散，归纳问题，归类并给出见解和可能的方案。</p>
+
+<h4>如何回答问题</h4>
+
+<p>有两种教学方式：苏格拉底式和填鸭式。苏格拉底式讲究只问不答，通过讲师不断提问的方式让学员自己思考，琢磨，并期望领悟；填鸭式则恰恰相反，假设学员没有任何能动性，讲师纯粹将自己知道的全部告诉学员。</p>
+
+<p>这其实两者在时间中都不合适。有一个度可以把握的是：</p>
+
+<blockquote><p>善待问者如撞钟，叩之以小者则小鸣，叩之以大者则大鸣，待其从容，然后尽其声。</p></blockquote>
+
+<p>即根据提问的深度来反馈，比如<code>JavaScript</code>培训，学生问如何声明一个数组，讲师讲词法作用域，则费劲而没有效果。经过一段时间的练习和积累之后，学生会问出更深入的问题，这时候再逐步提高答案的深度。</p>
+
+<h3>实践</h3>
+
+<h4>Energize</h4>
+
+<p>如果培训在白天的话，在午饭后，人们自然会感到困倦，这时候需要一些<code>提神</code>的小游戏帮助人们清醒。适度的紧张（比如简单的7Up游戏）或者肢体动作（做几个广播体操的动作）都会帮助人们振奋精神。</p>
+
+<ul>
+<li>围成一个圈的丢球自我介绍</li>
+<li>A和B向对方互相介绍自己，然后A反过来向整个Group介绍B，B向整个Group介绍A</li>
+<li>7Up</li>
+<li>丢空气球</li>
+</ul>
+
+
+<h4>工作坊基本准则</h4>
+
+<ol>
+<li>按时参加</li>
+<li>保持One convensition</li>
+<li>手机静音</li>
+</ol>
+
+
+<h4>分组进行</h4>
+
+<p>分组讨论是一个很好的实践，既可以避免<code>只说不练</code>的现象，又可以让参与者有充分的参与感，还可以让培训的时间长度更灵活，更容易控制。</p>
+
+<p>分组可以用报数的方法，通常人们习惯和自己熟悉的人坐在一起。这会促进他们交头接耳的几率，分组时可以通过报数的方式，比如目标是分为3组，就依次报数1、2、3，然后所有报1的人为1组，报2的人为2组，以此类推。</p>
+
+<p>一个我自己常用的伎俩是自由调整时间。比如在一个练习开始前，你告诉参与者他们有10分钟来完成一个Task，然后在5分钟后，你发现大家都基本已经做完了，这时候可以直接说：时间到！（相信我，没有人真正看表的，他们通常会被手头的任务搞得焦头烂额）。反过来，你可以说：再延长5分钟！以督促那些比较慢的小组动作更快一些，而事实上他们还没有用完限定的10分钟。</p>
+
+<p><img src="/images/2016/09/grouping-resized.png" alt="grouping" /></p>
+
+<h4>Parking lot</h4>
+
+<p>培训当然需要参与者和trainer的积极互动，但是有时候参与者提出的问题不太适合在课堂上展开：</p>
+
+<ul>
+<li>与培训主题关联并不太大</li>
+<li>比较个例的问题</li>
+<li>争议较大，难以在短时间内讨论清楚的</li>
+</ul>
+
+
+<p>这些问题可以记录下来，在正式课程时间结束后单点讨论，或者作为下一次备课的关键点，加入到课件中。</p>
+
+<h4>Retro</h4>
+
+<p>和我们倡导的一切活动一样，培训也需要有始有终。我们需要收集参与者的反馈，包括positive的和constructive的，这样经过几轮迭代之后，培训会成熟而具有一定的可复制性。</p>
+
+<p>可以分成三类：<code>做得好的/有待提高的/一些疑问/建议</code></p>
+
+<p>将问题分组讨论之后，分为三组，然后讨论出一些解决方法。</p>
+
+<p><img src="/images/2016/09/retro-resized.png" alt="retro" /></p>
+
+<h4>其他</h4>
+
+<ul>
+<li>二维码+金数据表单</li>
+<li>白板+白板笔</li>
+<li>Flipchart</li>
+</ul>
+
+
+<h3>总结</h3>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2406,367 +2649,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2016/01/a-poor-mans-cd-part1/">穷人的持续集成与持续交付（上）</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-01-09T23:34:00+11:00" pubdate data-updated="true">Jan 9<span>th</span>, 2016</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>服务器端应用的持续交付</h1>
-
-<p>本文将使用一些免费的服务来为你的项目搭建<code>持续交付</code>平台，这些服务包括</p>
-
-<ul>
-<li>持续集成环境</li>
-<li>持续部署环境</li>
-<li>服务端应用托管</li>
-</ul>
-
-
-<p>以及一些可以用于本地开发使用的开源工具如：</p>
-
-<ul>
-<li><a href="https://github.com/abruzzi/node-build-monitor">基于Node的构建monitor</a></li>
-<li><a href="https://toolbelt.heroku.com/">Heroku的命令行工具</a></li>
-<li><a href="https://github.com/travis-ci/travis.rb">Travis CI的命令行工具</a></li>
-</ul>
-
-
-<p>除此之外，我们在过程中编写的脚本还可以用以本地构建，如果你的团队中正好已经有CI工具/CD工具，将这些脚本集成进去也是一件非常容易的事情。</p>
-
-<p><img src="/images/2016/01/heroku-log-resized.png" alt="heroku real time log" /></p>
-
-<h2>背景知识</h2>
-
-<h3>软件的度量</h3>
-
-<p>传统的管理方法论，在软件开发这个领域来说基本上是不工作的。软件项目的不确定性使得人们畏惧，管理者希望通过一些数字，指标来让自己感到某种虚幻的“掌控感”。软件行数，测试覆盖率，代码故障率等数字的名声基本上已经很糟了，经常有人拿来讽刺那些追求虚幻掌控感的“领导”。</p>
-
-<p>但是有一个数字，即使最顽固的“自由主义者”也会认为是有意义的，那就是周期时间（cycle time）。简而言之，就是一个需求从产生到最终上线所需要的时间。其中包括了需求分析，设计，编码，测试，部署，运维等活动，可能还会包含后续的监控。</p>
-
-<p>其实不论是瀑布模型，还是迭代开发的方式，或者其他的方法论，周期时间的缩短都是至关重要的。而具体到周期内，单纯的开发时间变长或者测试时间变长都无关紧要。比如项目A的开发时间是测试时间的2倍，项目B则恰恰反过来，这并不能说A做的比B好，真正有意义的是A的周期时间是否比B更短。</p>
-
-<p>单纯改善项目过程中的某一个阶段的时间，可能并不能达到预期的目的。局部优化并不一定会带来全局的优化。换言之，<strong>通过某些策略来提高软件测试的效率未必能减少周期时间！</strong>。</p>
-
-<h3>持续交付</h3>
-
-<p>传统情况下，企业要进行软件开发，从用户研究到产品上线，其中会花费数月，甚至数年（我的一位印度同事给我聊起过，他的上家公司做产品，从版本启动到版本上线需要整整两年时间！）。而且一旦软件需求发生变更，又有需要数月才能将变更发布上线。除了为变更提交代码外，还有很多额外的回归测试，发布计划，运维部门的进度等等。而市场机会千变万化，在特定的时间窗口中，企业的竞争者可能早已发布并占领了相当大的市场份额。</p>
-
-<p>在软件工程领域，人们提出了持续交付（continuous delivery）的概念，它旨在减少周期时间，强调在任何时刻软件都处于可发布状态。采用这种实践，我们可以频繁，快速，安全的将需求的变化发布出来，交由真实世界的用户来使用，在为用户带来价值的同时，我们也可以快速，持续的得到反馈，并激励新的变化产生（新的商业创新，新的模式等）。</p>
-
-<p>持续交付包含了自动化构建，自动化测试以及自动化部署等过程，持续改进开发流程中的问题，并促进开发人员，测试人员，运维人员之间的协作，团队可以在分钟级别将变更发布上线。</p>
-
-<h3>持续交付相关技术及实践</h3>
-
-<ul>
-<li>版本控制（配置管理）</li>
-<li>持续集成CI</li>
-<li>自动化测试</li>
-<li>构建工具及构建脚本</li>
-<li>部署流水线</li>
-</ul>
-
-
-<p>团队通过版本控制来进行协作，所有的代码会在持续集成环境中编译，代码静态检查/分析，自动化测试（还可能产生报告等）。除此之外，CI还还需要有自动化验收测试，自动化回归测试等。</p>
-
-<p>持续交付则更进一步，它将环境准备，持续集成，自动化部署等放在了一起。通过全自动（有些过程可以设置为手动，比如发布到产品环境）的方式，使得软件可以一键发布。如果上线后发现严重defect，还支持一键回滚的机制（其实就是将之前的一个稳定版本做一次发布，由于发布流程已经经过千锤百炼，所以发布本身就变得非常轻松，安全）</p>
-
-<p>这篇文章中，我们会使用<code>git</code>+<code>github</code>作为版本控制工具，<code>travis-ci</code>作为持续集成环境，<code>gradle</code>作为构建工具，<code>Heroku</code>作为应用的部署环境。这些工具都是免费服务，如果你需要更高级的功能（比如更多的并发数，更大的数据库），则可以选择付费套餐。不过对于我们平时的大部分side project来说，免费服务已经足够。</p>
-
-<h2>实例</h2>
-
-<p>我在<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">《前后端分离了，然后呢？》</a>这篇文章中，提到了一个叫做<code>bookmarks</code>的应用，这个应用是一个前后端分离的非常彻底的应用。</p>
-
-<p>我们这里会再次使用这个应用作为实例，并采用不同的两个免费服务（<a href="https://travis-ci.org">travis-ci</a>和<a href="https://snap-ci.com">snap-ci</a>）来完成<code>持续部署</code>环境的搭建。</p>
-
-<h3>bookmarks服务器</h3>
-
-<p><code>bookmarks-server</code>是一个基于<code>spring-boot</code>的纯粹的<code>API</code>，它可以被打包成一个<code>jar</code>包，然后通过命令行启动运行。在本文中，我们我们将会将这个server部署到<a href="https://dashboard.heroku.com/">heroku</a>平台上。</p>
-
-<p>首先需要定义一个<code>Procfile</code>，这个是我们应用的入口，<code>heroku</code>根据这个文件来明确以何种方式来启动我们的应用：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>web: java -Dserver.port=$PORT -jar build/libs/bookmarks-server-0.1.0.jar --spring.profiles.active=staging</span></code></pre></td></tr></table></div></figure>
-
-
-<p>由于我们在本地使用的使用<code>mysql</code>，而<code>heroku</code>默认的是<code>postgres</code>数据库，因此需要在<code>application.yml</code>中额外配置</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">spring</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">profiles</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">staging</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="l-Scalar-Plain">datasource</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">driverClassName</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">org.postgresql.Driver</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">url</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">${JDBC_DATABASE_URL}</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">${DATABASE_USER}</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">${DATABASE_PASS}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="l-Scalar-Plain">jpa</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">database_platform</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">org.hibernate.dialect.PostgreSQLDialect</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">hibernate</span><span class="p-Indicator">:</span>
-</span><span class='line'>      <span class="l-Scalar-Plain">ddl-auto</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">update</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有了这些配置后，我们需要创建一个<code>heroku</code>应用：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>heroku create
-</span><span class='line'>Created http://quiet-atoll-8237.herokuapp.com/ | git@heroku.com:quiet-atoll-8237.git
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>创建之后，我们可以在界面上对这个应用进行一些配置（当然，也可以通过命令行，具体参看<code>heroku help</code>）。为了支持数据库，需要为我们的应用添加一个<code>postgres</code>的AddOn。添加之后，<code>heroku</code>会为我们提供一个<code>postgres</code>的连接地址，格式大概是这样：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>postgres://username:password@host:port/database
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后我们需要在<code>Heroku</code>的配置界面中配置一些环境变量：</p>
-
-<p><img src="/images/2016/01/heroku-config-resized.png" alt="heroku env config" /></p>
-
-<p>这样，当应用部署到<code>Heroku</code>上之后，我们的应用就可以读到这些配置了（注意<code>application.yml</code>中的环境变量<code>JDBC_DATABASE_URL</code>）。</p>
-
-<h4>搭建持续集成环境</h4>
-
-<p>持续集成环境，这里我们选用最简单的<code>travis-ci</code>，它可以很容易的与<code>github</code>集成。</p>
-
-<ul>
-<li>在项目X中定义一个<code>.travis.yml</code>的文件</li>
-<li>将你的代码push到github上</li>
-<li>绑定github帐号到<code>travis</code></li>
-<li>在<code>travis</code>中启用项目X</li>
-</ul>
-
-
-<p>这个<code>.travis.yml</code>因项目而异，我们这里的项目是<code>spring-boot</code>，所以只需要指定<code>java</code>即可：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">language</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">java</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果是<code>java</code>项目，并且项目中有<code>build.gradle</code>，<code>travis-ci</code>会自动执行<code>gradle check</code>任务。</p>
-
-<h4>自动化部署</h4>
-
-<p>当CI运行成功之后，我们需要<code>travis-ci</code>帮我们将应用程序发布到<code>heroku</code>上，这时候需要做一些修改。最简单的方式是直接安装<code>travis-ci</code>的命令行工具到本地：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>gem install travis -v 1.8.0 --no-rdoc --no-ri
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后通过<code>heroku</code>的<code>auth:token</code>命令获得<code>heroku</code>的token，在加密并写入<code>.travis.yml</code>：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>heroku auth:token
-</span><span class='line'>00xxxxxxxxxxxxx55d11dbd0cxxxxxxxxxxfe067
-</span><span class='line'>
-</span><span class='line'><span class="nv">$ </span>travis encrypt 00xxxxxxxxxxxxx55d11dbd0cxxxxxxxxxxfe067 --add
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当然可以合并为一条命令：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>travis encrypt <span class="k">$(</span>heroku auth:token<span class="k">)</span> --add
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>将加密过的token存入<code>.travis.yml</code>文件。最后的结果大致如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">language</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">java</span>
-</span><span class='line'><span class="l-Scalar-Plain">deploy</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">provider</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">heroku</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">api_key</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">secure</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">...</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">app</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">quiet-atoll-8237</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意此处的<code>app</code>，正是我们的App的名字。另外，还需要给<code>build.gradle</code>添加一个名叫<code>stage</code>的task，<code>travis</code>在deploy时需要这个<code>task</code>：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">task</span> <span class="n">stage</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">dependsOn</span> <span class="n">build</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2016/01/travis-deploy-resized.png" alt="travis deploy" /></p>
-
-<p>这样，我们只需要在本地的一个提交，一切都会自动化起来：</p>
-
-<ul>
-<li>travis会执行<code>gradle check</code></li>
-<li><code>gradle check</code>会编译并运行自动化测试</li>
-<li><code>travis</code>会部署应用到<code>heroku</code>上</li>
-<li><code>heroku</code>会自动重启服务</li>
-</ul>
-
-
-<p>我们可以在本地进行简单的测试（注意此处我们的<code>staging</code>环境的URL）：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl https://quiet-atoll-8237.herokuapp.com/api/feeds -s | jq .
-</span><span class='line'><span class="o">[</span>
-</span><span class='line'>  <span class="o">{</span>
-</span><span class='line'>    <span class="s2">&quot;id&quot;</span>: 1,
-</span><span class='line'>    <span class="s2">&quot;url&quot;</span>: <span class="s2">&quot;http://icodeit.org/2016/01/how-to-summarize-privious-project/&quot;</span>,
-</span><span class='line'>    <span class="s2">&quot;title&quot;</span>: <span class="s2">&quot;如何持久化你的项目经历&quot;</span>,
-</span><span class='line'>    <span class="s2">&quot;author&quot;</span>: <span class="s2">&quot;icodit.org&quot;</span>,
-</span><span class='line'>    <span class="s2">&quot;summary&quot;</span>: <span class="s2">&quot;通常来说，下项目总是一件比较高兴的事（大部分团队还会一起吃个饭庆祝一下）。&quot;</span>,
-</span><span class='line'>    <span class="s2">&quot;publishDate&quot;</span>: <span class="s2">&quot;2016-01-07&quot;</span>
-</span><span class='line'>  <span class="o">}</span>,
-</span><span class='line'>  <span class="o">{</span>
-</span><span class='line'>    <span class="s2">&quot;id&quot;</span>: 2,
-</span><span class='line'>    <span class="s2">&quot;url&quot;</span>: <span class="s2">&quot;http://icodeit.org/2015/11/get-started-with-reflux/&quot;</span>,
-</span><span class='line'>    <span class="s2">&quot;title&quot;</span>: <span class="s2">&quot;你为什么应该试一试Reflux？&quot;</span>,
-</span><span class='line'>    <span class="s2">&quot;author&quot;</span>: <span class="s2">&quot;icodit.org&quot;</span>,
-</span><span class='line'>    <span class="s2">&quot;summary&quot;</span>: <span class="s2">&quot;React在设计之初就只关注在View本身上，其余部分如数据的获取，事件处理等，全然不在考虑之内。&quot;</span>,
-</span><span class='line'>    <span class="s2">&quot;publishDate&quot;</span>: <span class="s2">&quot;2016-01-09&quot;</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>完整的<a href="https://github.com/abruzzi/bookmarks-server">代码在这里</a>。</p>
-
-<h2>其他</h2>
-
-<h3>CI monitor</h3>
-
-<p><a href="https://github.com/abruzzi/node-build-monitor">node-build-monitor</a>是一个非常容易配置，使用的CI monitor，我们只需要进行简单地配置，就可以将<code>travis</code>的状态可视化出来</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="nt">&quot;monitor&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nt">&quot;interval&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;numberOfBuilds&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-</span><span class='line'>    <span class="nt">&quot;debug&quot;</span><span class="p">:</span> <span class="kc">true</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="nt">&quot;services&quot;</span><span class="p">:</span> <span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>      <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Travis&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nt">&quot;configuration&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nt">&quot;slug&quot;</span><span class="p">:</span> <span class="s2">&quot;abruzzi/bookmarks-server&quot;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">]</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>不过这个工具会在有网络异常时自动终止，我们可以通过一个简单的脚本来在它终止时自动重启：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">until </span>node app/app.js
-</span><span class='line'><span class="k">do</span>
-</span><span class='line'><span class="k">    </span><span class="nb">echo</span> <span class="s2">&quot;restarting...&quot;</span>
-</span><span class='line'><span class="k">done</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2016/01/ci-monitor-resized.png" alt="CI Monitor" /></p>
-
-<h2>小结</h2>
-
-<p>通过<code>travis</code>和<code>heroku</code>这样的免费服务，我们就可以轻松的将自己的项目做到持续集成+持续交付。我们后端的服务相对来说是比较容易的，但是涉及到一个前后端分离的架构，如何做到静态内容的托管，打包，部署，并和后端API集成起来，我会在下一篇文章中详细解释。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -2782,6 +2664,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2016/09/how-to-design-a-training/">如何设计一次培训</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/05/practise-in-programming/">无他，但手熟尔</a>
       </li>
     
@@ -2795,10 +2681,6 @@
     
       <li class="post">
         <a href="/2016/05/about-session-and-security-api-1/">保护你的API（上）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/02/performance-testing-in-ci/">CI上的Web前端性能测试</a>
       </li>
     
   </ul>
