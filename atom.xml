@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-09-10T14:34:18+10:00</updated>
+  <updated>2016-09-25T00:40:05+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,93 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[敏捷团队里的QA]]></title>
+    <link href="http://abruzzi.github.com/2016/09/what-should-qa-do-in-a-agile-team/"/>
+    <updated>2016-09-24T23:43:00+10:00</updated>
+    <id>http://abruzzi.github.com/2016/09/what-should-qa-do-in-a-agile-team</id>
+    <content type="html"><![CDATA[<h2>QA的职责</h2>
+
+<p>我们先讨论一下传统的瀑布模型下QA是如何工作的，其中最主要的问题是什么；然后作为对比，我们来看看在敏捷团队里QA又是如何工作的，工作重点又是什么；最后，我们详细看一看在新的职责下，QA应该如何做。</p>
+
+<h3>瀑布开发模型</h3>
+
+<p>即使在今天，在很多企业中，瀑布模型仍然是主流。每一个需求都需要经过分析，设计，开发，测试，上线部署，运维等阶段。虽然一些企业已经在实施<code>敏捷开发</code>，比如项目/产品以迭代的方式运作，也有诸如每日站会，代码检视等敏捷实践，但是如果仔细审视，你会发现其实<em>开发模式</em>骨子里还是瀑布：按照软件组件划分的部门结构（详见<a href="https://en.wikipedia.org/wiki/Conway%27s_law">康威定律</a>），按照职能划分的团队（开发和测试分属不同部门），过长的反馈周期，永远无法摆脱的集成难题等等。</p>
+
+<p>随着软件变得越来越复杂，团队里没有任何一个人可以说出系统是如何运作的，也不知道最终用户是谁，以及最终用户会以何种方式来使用最终的软件。</p>
+
+<p>更糟糕的是，按照职能划分的团队在物理上都是隔离的，比如独立的测试部门，独立的运维部门，整日忙碌而难以预约到档期的业务人员，当然还有经常疲于交付，无处吐槽的<em>苦逼</em>开发。由于这些隔离，信息的反馈周期会非常长，一个本来很容易修复的缺陷可能在4周之后才可能被另一个部门的测试发现，然后通过复杂的工作流（比如某种形式的缺陷追踪系统）流到开发那里，而开发可能还在拼命的完成早就应该交付的功能，从而形成恶性循环。</p>
+
+<h3>瀑布模式中的QA</h3>
+
+<p>在这样的环境中，QA们能做的事情非常有限。在需求开始时会他们参加需求澄清的会议，制定一些<code>测试计划</code>，然后进行测试用例的设计。有的企业会用诸如Excel之类的工具来记录这些用例。这些写在Excel里的，<code>死</code>的用例用处非常有限。而最大的问题在于：它们无法<code>自动化执行</code>。另外，在实际软件开发中，需求总是会经常发生变化，需求的优先级也会有调整，然后这些记录在Excel中的<code>死</code>的用例会很快过期，变得无人问津。</p>
+
+<p>除此之外，QA中的有些成员会使用工具来录制一些UI测试的场景，然后在每个新版本出来之后进行回放即可。然而，当UI发生一点变化之后，这些自动化的用例就会失效：比如<code>HTML</code>片段中元素位置的调整，<code>JavaScript</code>的异步调用超时等等。</p>
+
+<p>显然，这种单纯以黑盒的形式来<strong>检查功能点</strong>的测试方式是不工作的，要真正有效的提升软件质量，仅仅通过<strong>事后检查</strong>是远远不够的，软件的质量也应该内建于软件之中。QA的工作也应该是一个贯穿软件生命周期的活动，从商业想法，到真实上线，这其中的所有环节，都应该有QA的参与。</p>
+
+<h3>系统思考</h3>
+
+<p>如果不从一个系统的角度来思考软件质量，就无法真正构建出健壮的、让业务和团队都有信心的软件系统。<em>质量从来都不只是QA的职责，而是整个团队的职责。</em></p>
+
+<p>关于软件质量，一个根深蒂固的误解是：缺陷在开发过程中被引入，然后在测试阶段被发现，最后在QA和开发的来来回回的撕扯中被解决（或者数量被大规模降低），最后在生产环境中，就只会有很少的，优先级很低的缺陷。</p>
+
+<p>然而事实上，很多需求就没有仔细分析，业务价值不很确定，验收条件模糊，流入开发后又会引入一些代码级别的错误，以及业务规则上的缺陷，测试阶段会漏掉一些功能点，上线之后更是问题百出（网络故障，缓存失效，黑客攻击，操作系统补丁，甚至内存溢出，log文件将磁盘写满等等）。</p>
+
+<p>在一个敏捷团队中，每个个人都应该对质量负责，而QA则以自己的丰富经验和独特视角来发掘系统中可能的质量隐患，并帮助团队将这些隐患消除。</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/09/circle-resized.png" alt="测试职责" /></p>
+
+<h3>QA到底应该干什么？</h3>
+
+<p>本质上来说，任何软件项目的目标都应该是：<strong>更快地将<code>高质量</code>的软件从想法变成产品</strong>。</p>
+
+<p>将这个大目标细分一下，会得到这样几个子项，即企业需要：</p>
+
+<ul>
+<li>更多的商业回报（发掘业务价值）</li>
+<li>更快的上线时间（做最简单，直接的版本）</li>
+<li>更好的软件质量（质量内嵌）</li>
+<li>更少的资源投入（减少浪费）</li>
+</ul>
+
+
+<p>其实就是传说中的<strong>多、快、好、省</strong>。如果说这个是任何软件项目的目标的话，团队里的任何个人都应该向着这个目标而努力，任何其他形式的工作都可以归类为<code>浪费</code>。用Excel记录那些经常会失效，而且无法自动执行的测试用例是浪费，会因为页面布局变化而大面积失效的UI测试也是浪费，一个容易修复的缺陷要等到数周之后才被发现也是浪费。</p>
+
+<p>在这个大前提下，我们再来思考QA在团队里应该做什么以及怎么做。</p>
+
+<h3>QA的职责</h3>
+
+<p>Lisa Crispin在<a href="https://book.douban.com/subject/5338399/">《敏捷软件测试》</a>中提到过一个很著名的模型：敏捷测试四象限。这个模型将QA的职责做了一个很好的分类：</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/09/agile-testing-quadrants.png" alt="敏捷软件测试" /></p>
+
+<p>如果按照纵向划分的话，图中的活动，越向上越面向业务；越向下越面向技术。横向划分的话，往左是支撑团队；往右是评价产品。</p>
+
+<p>其实简化一下，QA在团队里的工作，可以分为两大类：</p>
+
+<ul>
+<li>确保我们在<code>正确的</code>交付产品</li>
+<li>确保我们交付了<code>正确的</code>产品</li>
+</ul>
+
+
+<p>根据这个四象限的划分，大部分团队可能都会从Q2起步：QA会和BA，甚至UX一起，从需求分析入手，进行需求分析，业务场景梳理，这时候没有具体的可以被测试的软件代码。不过这并不妨碍<strong>测试</strong>活动，比如一些纸上原型的设计（感谢刘海生供图）：</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/09/prototype-resized.png" alt="" /></p>
+
+<p>通过这一阶段之后，我们已经有了用户故事，这时候QA需要和开发一起编写用户故事的自动化验收测试。当开发交付一部分功能之后，QA就可以做常规的用户故事测试，几个迭代之后，QA开始进行跨功能需求测试和探索性测试等。根据探索性测试的结果，QA可能会调整测试策略，调整测试优先级，完善测试用例等等。</p>
+
+<h3>万能的QA？</h3>
+
+<p>虽然在这些活动中，QA都会参与，但是并不是说团队里只要有一个QA就可以了。QA在参与这些活动时，侧重点还是有很大不同的。</p>
+
+<p>比如需求分析阶段，如果有QA的加入，一些从QA角度可以发现的有明显缺陷的场景，则可以在分析阶段就得到很好的处理。另一方面，尽早介入可以设计出更合理的测试计划（比如哪些功能的优先级比较高，用户更会频繁使用，那么对应的测试比重也会更高）。在Story分析与书写阶段，QA可以帮助写出更加合理的验收条件，既满足业务需求，又可以很好的指导开发。</p>
+
+<p>在和开发一起编写澄清需求时，主要是编写自动化验收测试，而不是实际编写业务逻辑的实现（虽然QA应该参与Code Reivew环节，学习并分享自己的观点）；甚至在上线运维阶段，QA还需要和OPs一起来设计用户数据的采集指标（比如用户访问的关键路径，浏览器版本，地区的区分等），从而制定出新的测试策略。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[如何设计一次培训]]></title>
@@ -5550,416 +5637,6 @@ Workshop至少需要包含这样几部分：</p>
 <h4>其他</h4>
 
 <p>如果你对代码感兴趣，可以参看<a href="https://github.com/abruzzi/places-ive-been">这个repo</a>。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[可视化你的足迹 - 服务器端]]></title>
-    <link href="http://abruzzi.github.com/2015/09/visualize-your-steps/"/>
-    <updated>2015-09-18T13:36:00+10:00</updated>
-    <id>http://abruzzi.github.com/2015/09/visualize-your-steps</id>
-    <content type="html"><![CDATA[<h3>可视化你的足迹</h3>
-
-<p>数据可视化可以让读者以一种轻松的方式来消费数据，人类大脑在处理图形的速度是处理文本的<code>66,000</code>倍，这也是人们常常说的<code>一图胜千言</code>。在本文中，我们通过将日常中很容易收集到的数据，通过一系列的处理，并最终展现在地图上。这仅仅是GIS的一个很简单场景，但是我们可以看到，当空间数据和地图结合在一起时，可以在可视化上得到很好的效果，读者可以很容易从中获取信息。</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/09/viz-steps-resized.png" alt="steps" /></p>
-
-<p>我们在本文中会制作一个这样的地图，图中灰色的线是城市中的道路，小六边形表示照片拍摄地。颜色表示当时当地拍摄照片的密度，红色表示密集，黄色为稀疏。可以看到，我的活动区域主要集中在左下角，那是公司所在地和我的住处，:)</p>
-
-<p>要展现数据，首先需要采集数据，不过这些已经在日常生活中被不自觉的被记录下来了：</p>
-
-<h4>数据来源</h4>
-
-<p>如果你开启了iPhone相机中的定位功能，拍照的时候，iPhone会自动把当前的地理信息写入到图片的元数据中，这样我们就可以使用这些数据来做进一步的分析了。</p>
-
-<p>我在去年学习OpenLayers的时候已经玩过一些简单的<a href="http://icodeit.org/placesihavebeen">足迹可视化</a>，另外还有一篇<a href="http://www.infoq.com/cn/articles/visualization-of-the-global-seismic-system">全球地震信息的可视化</a>，但是仅仅是展示矢量信息，并没有深入，而且都是一些前端的JavaScript的代码。最近又在重新整理之前的GIS知识，重新把这个作为例子来练手。当然，这次会涉及一些<strong>地图编辑</strong>，<strong>空间计算</strong>的内容。</p>
-
-<p>我的照片一般都通过Mac自带的Photos管理（前身iPhoto），手机里照片会定期同步上去。老版本的iPhoto用的是XML文件来存储照片的<a href="https://en.wikipedia.org/wiki/Exchangeable_image_file_format">EXIF数据</a>，新的Photos的实现里，数据被存储在了好几个SQLite数据库文件中，不过问题不大，我们只需要写一点Ruby代码就可以将数据转化为标准格式，这里使用GeoJSON，GeoJSON既可以方便人类阅读，也可以很方便的导入到PostGIS或者直接在客户端展现。</p>
-
-<h3>实现步骤</h3>
-
-<p>我们现在要绘制照片拍摄的密度图，大概需要这样一些步骤：</p>
-
-<ol>
-<li>抽取照片的EXIF信息（经度，纬度，创建时间等）</li>
-<li>编写脚本将抽取出来的信息转换成通用格式（GeoJSON）</li>
-<li>使用QGIS将这些点的集合导入为图层</li>
-<li>插入一些由六边形组成的图层（设置合适的大小）</li>
-<li>计算落在各个多边形中的点的个数，并生成新的图层heatmap</li>
-<li>使用MapServer来渲染基本地图</li>
-</ol>
-
-
-<h4>数据抽取</h4>
-
-<p>Mac上的Photos会将照片的元数据存储在一个SQLite3格式的数据库中，文件名为<code>Library.apdb</code>，通常位于这个位置<code>~/Pictures/Photos\ Library.photoslibrary/Database/apdb/Library.apdb</code>。这个文件可以通过<code>SQLite3</code>的客户端直接打开，不过由于可能有其他进程（Mac自己的）打开了该文件，所以会有锁文件，你可能需要先将这个文件拷贝到另外一个位置。</p>
-
-<p>然后将表<code>RKVersion</code>中的部分信息导出即可，SQLite内置了很方便的导出功能，通过它提供的shell客户端<code>sqlite3</code>，将信息导出到csv文件中：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>sqlite&gt; .mode csv
-</span><span class='line'>sqlite&gt; .headers on
-</span><span class='line'>sqlite&gt; .output places-ive-been.csv
-</span><span class='line'>sqlite&gt; <span class="k">select </span>datetime<span class="o">(</span>imageDate+978307200, <span class="s1">&#39;unixepoch&#39;</span>, <span class="s1">&#39;localtime&#39;</span><span class="o">)</span> as imageDate, exifLatitude, exifLongitude from RKVersion where exifLatitude and exiflongitude;
-</span><span class='line'>sqlite&gt; .output stdout
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意这里的日期，苹果的日期偏移和其他公司不同，始于2001年1月1日，所以要在<code>imageDate</code>之后加上这个<code>base</code>值，然后将文件以<code>.csv</code>的格式导出到<code>places-ive-been.csv</code>中，该文件包含3列：时间，纬度，精度。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>imageDate,exifLatitude,exifLongitude
-</span><span class='line'><span class="s2">&quot;2012-10-25 16:34:01&quot;</span>,34.19216667,108.87316667
-</span><span class='line'><span class="s2">&quot;2012-10-28 14:45:53&quot;</span>,35.1795,109.9275
-</span><span class='line'><span class="s2">&quot;2012-10-28 14:45:45&quot;</span>,35.1795,109.9275
-</span><span class='line'><span class="s2">&quot;2012-10-25 16:34:04&quot;</span>,34.19216667,108.87316667
-</span><span class='line'><span class="s2">&quot;2012-10-19 23:01:05&quot;</span>,34.19833333,108.86733333
-</span><span class='line'>...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>转换为GeoJSON</h4>
-
-<p>方便以后的转换起见，我们将这个文件转换成<code>GeoJSON</code>（其实很多客户端工具可以支持CSV的导入，不过<code>GeoJSON</code>更为标准一些）。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;csv&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">lines</span> <span class="o">=</span> <span class="no">CSV</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;places-ive-been.csv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span>
-</span><span class='line'><span class="n">keys</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">delete</span> <span class="n">lines</span><span class="o">.</span><span class="n">first</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;places-ive-been.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">data</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">row</span><span class="o">|</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="ss">:type</span> <span class="o">=&gt;</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="ss">:geometry</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>              <span class="ss">:type</span> <span class="o">=&gt;</span> <span class="s2">&quot;Point&quot;</span><span class="p">,</span>
-</span><span class='line'>              <span class="ss">:coordinates</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="n">row</span><span class="o">[</span><span class="mi">2</span><span class="o">].</span><span class="n">to_f</span><span class="p">,</span> <span class="n">row</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">to_f</span><span class="o">]</span>
-</span><span class='line'>            <span class="p">},</span>
-</span><span class='line'>            <span class="ss">:properties</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>              <span class="ss">:created_at</span> <span class="o">=&gt;</span> <span class="n">row</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="no">JSON</span><span class="o">.</span><span class="n">pretty_generate</span><span class="p">({</span>
-</span><span class='line'>        <span class="ss">:type</span> <span class="o">=&gt;</span> <span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="ss">:crs</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>          <span class="ss">:type</span> <span class="o">=&gt;</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="ss">:properties</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>            <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;EPSG:4326&quot;</span>
-</span><span class='line'>          <span class="p">}</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>        <span class="ss">:features</span> <span class="o">=&gt;</span> <span class="n">data</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这段脚本可以将我们的<code>.csv</code>转换成标准的<code>geojson</code>格式，注意此处的空间投影使用的是<code>EPSG:4326</code>。</p>
-
-<h4>导入为QGIS图层</h4>
-
-<p><a href="http://www.qgis.org/en/site/">QGIS</a>是一个开源的GIS套件，包括桌面端的编辑器和服务器端，这里我们只是用器桌面端来进行图层的编辑。</p>
-
-<p>将我们的<code>GeoJSON</code>导入之后，会看到这样的一个可视化的效果！</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/09/points-resized.png" alt="points" /></p>
-
-<p>我们还可以导入其他的地图图层，这样可以清楚的看到点所在的区域（国家地图图层可以在<a href="http://www.naturalearthdata.com/">此处下载</a>）：</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/09/points-countries-resized.png" alt="points with countries" /></p>
-
-<p>好了，有了基础数据之后，我们来作进一步的数据分析 &#8211; 即生成密度图。首先使用QGIS的插件<code>MMQGIS</code>的<strong>生成多边形图层</strong>功能(Create -> Create Grid Layer)，为了处理速度，我们可以将地图放大到一定范围（我选择西安市，我在这里活动比较密集）。</p>
-
-<p>选择六边形<code>hexagon</code>，并设置合适的大小（如果是<code>3857</code>参考系，即按照公里数来设置，会比较容易一些，如果是4326，则需要自己计算）。简而言之，需要保证每个格子都包含一些点，不至于太密，也不至于太稀疏。</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/09/hexagon-resized.png" alt="hexagon" /></p>
-
-<h4>计算密度</h4>
-
-<p>QGIS提供了很多的数据分析功能，我们在这个例子中使用（Vector -> Analysis Tools -> Points in Polygon）工具，这个工具需要两个图层，一个是点集图层，一个是多边形图层。然后会将结果生成到一个新的图层中，我们可以将其命名为<code>places-ive-been-density.shp</code>，同时需要指定一个字段来存储统计出来的值（density）。</p>
-
-<p>这个过程可能会花费一点时间，根据需要计算的点集合多边形的格式（也就是地图上的区域）。</p>
-
-<p>完成之后会得到一个<code>Shapefile</code>（其实是一组，具体可以<a href="https://en.wikipedia.org/wiki/Shapefile">参看这里</a>）。其实在这个过程中，绝大多数多边形是不包含任何数据的，我们需要过滤掉这些多余的多边形，这样可以缩减绘制地图的时间。</p>
-
-<p>我们可以将这个文件导入到PostGIS中进行简化：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>shp2pgsql -I -s 4326 data/places-ive-been/places-ive-been-3857-density.shp places_density |<span class="se">\</span>
-</span><span class='line'><span class="nv">PGUSER</span><span class="o">=</span>gis <span class="nv">PGPASSWORD</span><span class="o">=</span>gis  psql -h localhost -d playground
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里的<code>shp2pgsql</code>命令是<a href="http://">GDAL工具包</a>提供的命令，用以将<code>Shapefile</code>导入到<code>PostGIS</code>中，你可以通过</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>brew install gdal --with-postgresql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>来安装。</p>
-
-<p>GDAL会提供很多的工具，比如用来转换各种数据格式，投影，查看信息等等。</p>
-
-<p>导入之后，我们可以在PostGIS的客户端查看，编辑这些数据等。比如在过滤之前，</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">select</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">from</span> <span class="n">places_density</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们导入的数据中有<code>103166</code>条记录：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">select</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">from</span> <span class="n">places_density</span> <span class="k">where</span> <span class="n">density</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而过滤之后，我们仅剩下<code>749</code>条数据。</p>
-
-<p>通过GDAL提供的另一个工具<code>ogr2ogr</code>可以方便的执行过滤，并生成新的<code>Shapefile</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>ogr2ogr -f <span class="s2">&quot;ESRI Shapefile&quot;</span> data/places-ive-been/places_heatmap.shp <span class="se">\</span>
-</span><span class='line'>PG:<span class="s2">&quot;host=localhost user=gis dbname=playground pass</span>
-</span><span class='line'><span class="s2">word=gis&quot;</span> <span class="se">\</span>
-</span><span class='line'>-sql <span class="s2">&quot;SELECT density, geom FROM places_density WHERE density IS NOT NULL;&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这条命令可以得到一个新的文件，这个就是最终的用来绘制地图的文件了。</p>
-
-<h4>绘制地图</h4>
-
-<p>开源世界中有很多的工具可以完成地图的绘制，比如<a href="http://mapserver.org/">MapServer</a>，<a href="http://geoserver.org/">GeoServer</a>，<a href="http://mapnik.org/">Mapnik</a>等等。我们在这篇文章中使用MapServer来完成地图的绘制，MapServer的安装和配置虽然比较容易，但是也需要花费一些时间，所以我将其放到了<a href="https://github.com/abruzzi/mapserver-box">这个repo中</a>，你可以直接clone下来使用。（需要你在虚拟机中安装ansible来完成provision）。</p>
-
-<p>MapServer的配置很简单，类似于一个XML，不过是自定义的格式：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>MAP
-</span><span class='line'>  IMAGETYPE      PNG
-</span><span class='line'>  EXTENT         11859978.732852 3994742.227345 12753503.595559 4580388.268737
-</span><span class='line'>  SIZE           8000 6000
-</span><span class='line'>  SHAPEPATH      <span class="s2">&quot;/data/heatmap&quot;</span>
-</span><span class='line'>  IMAGECOLOR     255 255 255
-</span><span class='line'>
-</span><span class='line'>  PROJECTION
-</span><span class='line'>    <span class="s2">&quot;init=epsg:3857&quot;</span>   <span class="c">##required</span>
-</span><span class='line'>  END
-</span><span class='line'>
-</span><span class='line'>  LAYER <span class="c"># States polygon layer begins here</span>
-</span><span class='line'>    NAME         heatmap
-</span><span class='line'>    DATA         heatmap_3857
-</span><span class='line'>    STATUS       default
-</span><span class='line'>    TYPE         POLYGON
-</span><span class='line'>
-</span><span class='line'>    CLASS
-</span><span class='line'>      NAME <span class="s2">&quot;basic&quot;</span>
-</span><span class='line'>      STYLE
-</span><span class='line'>        COLOR        255 255 178
-</span><span class='line'>        OUTLINECOLOR 255 255 178
-</span><span class='line'>      END
-</span><span class='line'>    END
-</span><span class='line'>  END
-</span><span class='line'>
-</span><span class='line'>END
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这些配置基本上都比较自解释，比如设置图片格式，图片大小，Shapefile的路径，图层的名称等，<strong>MapServer的文档在开源软件中来说，都算比较烂的</strong>，但是对于这些基本概念的解释还比较详尽，大家可以<a href="http://mapserver.org/documentation.html#documentation">去这里参考</a>。</p>
-
-<p>这里我们定义了一个图层，每个Map中可以定义多个图层（我们完成的最终效果图就是西安市的道路图和照片拍摄密度图两个图层的叠加）。</p>
-
-<p>这个配置绘制出来的地图是没有颜色差异的，全部都是<code>255 255 178</code>。不过MapServer的配置提供了很好的样式定义，比如我们可以定义这样的一些规则：</p>
-
-<ol>
-<li>如果密度为1，则设置颜色为淡黄</li>
-<li>如果密度在1-2,则设置为比淡黄红一点的颜色</li>
-<li>以此类推</li>
-</ol>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>  LAYER
-</span><span class='line'>    NAME         heatmap
-</span><span class='line'>    DATA         heatmap_3857
-</span><span class='line'>    STATUS       default
-</span><span class='line'>    TYPE         POLYGON
-</span><span class='line'>    <span class="c">#CLASSITEM density</span>
-</span><span class='line'>
-</span><span class='line'>    CLASS
-</span><span class='line'>      EXPRESSION <span class="o">([</span>density<span class="o">]</span> <span class="o">=</span> 1<span class="o">)</span>
-</span><span class='line'>      STYLE
-</span><span class='line'>        COLOR        255 255 178
-</span><span class='line'>        OUTLINECOLOR 255 255 178
-</span><span class='line'>      END
-</span><span class='line'>    END
-</span><span class='line'>
-</span><span class='line'>    CLASS
-</span><span class='line'>      EXPRESSION <span class="o">([</span>density<span class="o">]</span> &gt; 1 AND <span class="o">[</span>density<span class="o">]</span> &lt;<span class="o">=</span> 2<span class="o">)</span>
-</span><span class='line'>      STYLE
-</span><span class='line'>        COLOR        254 204 92
-</span><span class='line'>        OUTLINECOLOR 254 204 92
-</span><span class='line'>      END
-</span><span class='line'>    END
-</span><span class='line'>
-</span><span class='line'>    CLASS
-</span><span class='line'>      EXPRESSION <span class="o">([</span>density<span class="o">]</span> &gt; 2 AND <span class="o">[</span>density<span class="o">]</span> &lt;<span class="o">=</span> 3<span class="o">)</span>
-</span><span class='line'>      STYLE
-</span><span class='line'>        COLOR        253 141 60
-</span><span class='line'>        OUTLINECOLOR 253 141 60
-</span><span class='line'>      END
-</span><span class='line'>    END
-</span><span class='line'>
-</span><span class='line'>    CLASS
-</span><span class='line'>      EXPRESSION <span class="o">([</span>density<span class="o">]</span> &gt; 3 AND <span class="o">[</span>density<span class="o">]</span> &lt;<span class="o">=</span> 10<span class="o">)</span>
-</span><span class='line'>      STYLE
-</span><span class='line'>        COLOR        240 59 32
-</span><span class='line'>        OUTLINECOLOR 240 59 32
-</span><span class='line'>      END
-</span><span class='line'>    END
-</span><span class='line'>
-</span><span class='line'>    CLASS
-</span><span class='line'>      EXPRESSION <span class="o">([</span>density<span class="o">]</span> &gt; 10 AND <span class="o">[</span>density<span class="o">]</span> &lt; 3438<span class="o">)</span>
-</span><span class='line'>      STYLE
-</span><span class='line'>        COLOR        189 0 38
-</span><span class='line'>        OUTLINECOLOR 189 0 38
-</span><span class='line'>      END
-</span><span class='line'>    END
-</span><span class='line'>
-</span><span class='line'>  END
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样我们的地图展现出来就会比较有层次感，而且通过颜色的加深，也能体现<code>热图</code>本身的含义。</p>
-
-<p>同样的原理，如果将那些自己创建的多边形替换为行政区域划分的多边形，则可以得到另外一种形式的<code>热图</code>：</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/09/heatmap-in-shaanxi-resized.png" alt="shaanxi-heatmap" /></p>
-
-<h3>总结</h3>
-
-<p>我们通过使用一些开源工具（MapServer，QGis，PostGIS，GDAL等），构建出一个基于GIS的数据可视化框架。在这个stack上，我们可以很容易的将一些其他数据也通过可视化的方式展现出来（公用自行车站点分布，出租车分布等等）。MapServer可以发布标准的<a href="https://en.wikipedia.org/wiki/Web_Map_Service">WMS</a>服务，因此可以很好的和客户端框架集成，从而带来更加友好的用户体验。</p>
 ]]></content>
   </entry>
   

@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="培训元模式 最近在帮客户设计一个微服务进阶版培训的材料，整理的过程中我意识到这类事情我已经做过好多次了。比如在ThoughtWorks的P2能力建设项目，3周3页面工作坊等等，我觉得应该将设计课程/设计培训中的模式、原则和实践都提取一下，形成一个元模式（即关于培训的培训）。 一个培训中的活动， &hellip;">
+  <meta name="description" content="QA的职责 我们先讨论一下传统的瀑布模型下QA是如何工作的，其中最主要的问题是什么；然后作为对比，我们来看看在敏捷团队里QA又是如何工作的，工作重点又是什么；最后，我们详细看一看在新的职责下，QA应该如何做。 瀑布开发模型 即使在今天，在很多企业中，瀑布模型仍然是主流。每一个需求都需要经过分析， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +82,120 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2016/09/what-should-qa-do-in-a-agile-team/">敏捷团队里的QA</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-09-24T23:43:00+10:00" pubdate data-updated="true">Sep 24<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>QA的职责</h2>
+
+<p>我们先讨论一下传统的瀑布模型下QA是如何工作的，其中最主要的问题是什么；然后作为对比，我们来看看在敏捷团队里QA又是如何工作的，工作重点又是什么；最后，我们详细看一看在新的职责下，QA应该如何做。</p>
+
+<h3>瀑布开发模型</h3>
+
+<p>即使在今天，在很多企业中，瀑布模型仍然是主流。每一个需求都需要经过分析，设计，开发，测试，上线部署，运维等阶段。虽然一些企业已经在实施<code>敏捷开发</code>，比如项目/产品以迭代的方式运作，也有诸如每日站会，代码检视等敏捷实践，但是如果仔细审视，你会发现其实<em>开发模式</em>骨子里还是瀑布：按照软件组件划分的部门结构（详见<a href="https://en.wikipedia.org/wiki/Conway%27s_law">康威定律</a>），按照职能划分的团队（开发和测试分属不同部门），过长的反馈周期，永远无法摆脱的集成难题等等。</p>
+
+<p>随着软件变得越来越复杂，团队里没有任何一个人可以说出系统是如何运作的，也不知道最终用户是谁，以及最终用户会以何种方式来使用最终的软件。</p>
+
+<p>更糟糕的是，按照职能划分的团队在物理上都是隔离的，比如独立的测试部门，独立的运维部门，整日忙碌而难以预约到档期的业务人员，当然还有经常疲于交付，无处吐槽的<em>苦逼</em>开发。由于这些隔离，信息的反馈周期会非常长，一个本来很容易修复的缺陷可能在4周之后才可能被另一个部门的测试发现，然后通过复杂的工作流（比如某种形式的缺陷追踪系统）流到开发那里，而开发可能还在拼命的完成早就应该交付的功能，从而形成恶性循环。</p>
+
+<h3>瀑布模式中的QA</h3>
+
+<p>在这样的环境中，QA们能做的事情非常有限。在需求开始时会他们参加需求澄清的会议，制定一些<code>测试计划</code>，然后进行测试用例的设计。有的企业会用诸如Excel之类的工具来记录这些用例。这些写在Excel里的，<code>死</code>的用例用处非常有限。而最大的问题在于：它们无法<code>自动化执行</code>。另外，在实际软件开发中，需求总是会经常发生变化，需求的优先级也会有调整，然后这些记录在Excel中的<code>死</code>的用例会很快过期，变得无人问津。</p>
+
+<p>除此之外，QA中的有些成员会使用工具来录制一些UI测试的场景，然后在每个新版本出来之后进行回放即可。然而，当UI发生一点变化之后，这些自动化的用例就会失效：比如<code>HTML</code>片段中元素位置的调整，<code>JavaScript</code>的异步调用超时等等。</p>
+
+<p>显然，这种单纯以黑盒的形式来<strong>检查功能点</strong>的测试方式是不工作的，要真正有效的提升软件质量，仅仅通过<strong>事后检查</strong>是远远不够的，软件的质量也应该内建于软件之中。QA的工作也应该是一个贯穿软件生命周期的活动，从商业想法，到真实上线，这其中的所有环节，都应该有QA的参与。</p>
+
+<h3>系统思考</h3>
+
+<p>如果不从一个系统的角度来思考软件质量，就无法真正构建出健壮的、让业务和团队都有信心的软件系统。<em>质量从来都不只是QA的职责，而是整个团队的职责。</em></p>
+
+<p>关于软件质量，一个根深蒂固的误解是：缺陷在开发过程中被引入，然后在测试阶段被发现，最后在QA和开发的来来回回的撕扯中被解决（或者数量被大规模降低），最后在生产环境中，就只会有很少的，优先级很低的缺陷。</p>
+
+<p>然而事实上，很多需求就没有仔细分析，业务价值不很确定，验收条件模糊，流入开发后又会引入一些代码级别的错误，以及业务规则上的缺陷，测试阶段会漏掉一些功能点，上线之后更是问题百出（网络故障，缓存失效，黑客攻击，操作系统补丁，甚至内存溢出，log文件将磁盘写满等等）。</p>
+
+<p>在一个敏捷团队中，每个个人都应该对质量负责，而QA则以自己的丰富经验和独特视角来发掘系统中可能的质量隐患，并帮助团队将这些隐患消除。</p>
+
+<p><img src="/images/2016/09/circle-resized.png" alt="测试职责" /></p>
+
+<h3>QA到底应该干什么？</h3>
+
+<p>本质上来说，任何软件项目的目标都应该是：<strong>更快地将<code>高质量</code>的软件从想法变成产品</strong>。</p>
+
+<p>将这个大目标细分一下，会得到这样几个子项，即企业需要：</p>
+
+<ul>
+<li>更多的商业回报（发掘业务价值）</li>
+<li>更快的上线时间（做最简单，直接的版本）</li>
+<li>更好的软件质量（质量内嵌）</li>
+<li>更少的资源投入（减少浪费）</li>
+</ul>
+
+
+<p>其实就是传说中的<strong>多、快、好、省</strong>。如果说这个是任何软件项目的目标的话，团队里的任何个人都应该向着这个目标而努力，任何其他形式的工作都可以归类为<code>浪费</code>。用Excel记录那些经常会失效，而且无法自动执行的测试用例是浪费，会因为页面布局变化而大面积失效的UI测试也是浪费，一个容易修复的缺陷要等到数周之后才被发现也是浪费。</p>
+
+<p>在这个大前提下，我们再来思考QA在团队里应该做什么以及怎么做。</p>
+
+<h3>QA的职责</h3>
+
+<p>Lisa Crispin在<a href="https://book.douban.com/subject/5338399/">《敏捷软件测试》</a>中提到过一个很著名的模型：敏捷测试四象限。这个模型将QA的职责做了一个很好的分类：</p>
+
+<p><img src="/images/2016/09/agile-testing-quadrants.png" alt="敏捷软件测试" /></p>
+
+<p>如果按照纵向划分的话，图中的活动，越向上越面向业务；越向下越面向技术。横向划分的话，往左是支撑团队；往右是评价产品。</p>
+
+<p>其实简化一下，QA在团队里的工作，可以分为两大类：</p>
+
+<ul>
+<li>确保我们在<code>正确的</code>交付产品</li>
+<li>确保我们交付了<code>正确的</code>产品</li>
+</ul>
+
+
+<p>根据这个四象限的划分，大部分团队可能都会从Q2起步：QA会和BA，甚至UX一起，从需求分析入手，进行需求分析，业务场景梳理，这时候没有具体的可以被测试的软件代码。不过这并不妨碍<strong>测试</strong>活动，比如一些纸上原型的设计（感谢刘海生供图）：</p>
+
+<p><img src="/images/2016/09/prototype-resized.png" alt="" /></p>
+
+<p>通过这一阶段之后，我们已经有了用户故事，这时候QA需要和开发一起编写用户故事的自动化验收测试。当开发交付一部分功能之后，QA就可以做常规的用户故事测试，几个迭代之后，QA开始进行跨功能需求测试和探索性测试等。根据探索性测试的结果，QA可能会调整测试策略，调整测试优先级，完善测试用例等等。</p>
+
+<h3>万能的QA？</h3>
+
+<p>虽然在这些活动中，QA都会参与，但是并不是说团队里只要有一个QA就可以了。QA在参与这些活动时，侧重点还是有很大不同的。</p>
+
+<p>比如需求分析阶段，如果有QA的加入，一些从QA角度可以发现的有明显缺陷的场景，则可以在分析阶段就得到很好的处理。另一方面，尽早介入可以设计出更合理的测试计划（比如哪些功能的优先级比较高，用户更会频繁使用，那么对应的测试比重也会更高）。在Story分析与书写阶段，QA可以帮助写出更加合理的验收条件，既满足业务需求，又可以很好的指导开发。</p>
+
+<p>在和开发一起编写澄清需求时，主要是编写自动化验收测试，而不是实际编写业务逻辑的实现（虽然QA应该参与Code Reivew环节，学习并分享自己的观点）；甚至在上线运维阶段，QA还需要和OPs一起来设计用户数据的采集指标（比如用户访问的关键路径，浏览器版本，地区的区分等），从而制定出新的测试策略。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2305,350 +2419,6 @@ Workshop至少需要包含这样几部分：</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2016/01/a-poor-mans-cd-part2/">穷人的持续集成与持续交付（下）</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-01-10T14:05:00+11:00" pubdate data-updated="true">Jan 10<span>th</span>, 2016</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>客户端程序的的持续交付</h1>
-
-<p><a href="http://icodeit.org/2016/01/a-poor-mans-cd-part1/">上篇文章</a>介绍了如何使用一些免费的服务来实现服务器端API的持续集成、持续交付环境的搭建。有了服务端，自然需要有消费者，在本文中我们将使用另外一个工具来实现纯前端的站点的部署。</p>
-
-<p>其中包括：</p>
-
-<ul>
-<li>持续集成（单元测试，集成测试等）</li>
-<li>持续部署/持续交付</li>
-<li>静态站点托管</li>
-</ul>
-
-
-<p>除此之外，我们还会涉及到：</p>
-
-<ul>
-<li><a href="https://github.com/natritmeyer/site_prism">自动化UI测试site_prism</a></li>
-<li>静态站点的发布脚本</li>
-<li>aws的<a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">命令行工具</a></li>
-</ul>
-
-
-<p>我们的应用最后看起来是这样子的。</p>
-
-<p><img src="/images/2016/01/bookmarks-app-resized.png" alt="bookmarks app" /></p>
-
-<h2>技术选型</h2>
-
-<p>我们在本文中，将采取另外一套免费服务来完成环境的搭建</p>
-
-<ul>
-<li><a href="http://www.thoughtworks.com/">ThoughtWorks</a>出品的<a href="https://snap-ci.com/">Snap CI</a>作为持续集成/持续交付环境</li>
-<li><a href="https://console.aws.amazon.com/s3/home?region=us-west-2">AWS的S3</a>作为应用发布的地方</li>
-</ul>
-
-
-<p><code>Snap CI</code>是一个非常易于使用的持续交付环境，由于很多关于持续集成，持续交付的概念和实践都跟<code>ThoughtWorks</code>有关，所以这个产品对于构建，流水线，部署等等的支持也都做的非常好。</p>
-
-<p><code>S3</code>是亚马逊的云存储平台，我们可以将静态资源完全托管在其上。<code>S3</code>的另一个好处是它可以将你的文件变成一个Web Site，比如你的目录中有<code>index.html</code>，这个文件就可以作为你的站点首页被其他人访问。这个对于我们这个前后端分离项目来说非常有用，我们的<code>css</code>，<code>js</code>，<code>font</code>文件，还有入口文件<code>index.html</code>都可以托管于其上。</p>
-
-<h2>实例</h2>
-
-<p>在本文的例子中，我们将定义3个<code>stage</code>。<code>Snap CI</code>将一次发布分为若干个<code>stage</code>，每个<code>stage</code>只做一件事情，如果一个<code>stage</code>失败了，后边的就不会接着执行。</p>
-
-<p>我们的3个<code>stage</code>分别为：</p>
-
-<ol>
-<li>单元测试</li>
-<li>集成测试</li>
-<li>部署</li>
-</ol>
-
-
-<h3>准备工作</h3>
-
-<p><code>bookmarks-frontend</code>是一个纯前端的应用，它会消费后端提供的API，但是其实它并不知道（也不应该知道）后端的API部署在什么地方：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">feeds</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">backend</span><span class="o">+</span><span class="s1">&#39;/api/feeds&#39;</span><span class="p">);</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">favorite</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">backend</span><span class="o">+</span><span class="s1">&#39;/api/fav-feeds/1&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">favorite</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">favorite</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="c1">//...</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>由于我们在本地开发时，需要<code>backend</code>指向本地的服务器，而发布之后，则希望它指向<a href="http://icodeit.org/2016/01/a-poor-mans-cd-part1/">上一篇文章</a>中提到的服务器，因此我们需要编写一点构建脚本来完成这件事儿：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">backend</span> <span class="o">=</span> <span class="s1">&#39;http://quiet-atoll-8237.herokuapp.com&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;prepareConfig&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">([</span><span class="s1">&#39;assets/templates/config.js&#39;</span><span class="p">])</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/#backend#/g</span><span class="p">,</span> <span class="s1">&#39;http://localhost:8100&#39;</span><span class="p">))</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">gulp</span><span class="p">.</span><span class="nx">dest</span><span class="p">(</span><span class="s1">&#39;assets/script/&#39;</span><span class="p">));</span>
-</span><span class='line'><span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;prepareRelease&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">([</span><span class="s1">&#39;assets/templates/config.js&#39;</span><span class="p">])</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/#backend#/g</span><span class="p">,</span> <span class="nx">backend</span><span class="p">))</span>
-</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">gulp</span><span class="p">.</span><span class="nx">dest</span><span class="p">(</span><span class="s1">&#39;assets/script/&#39;</span><span class="p">));</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们定义了两个<code>gulp</code>的task，本地开发时，使用<code>prepareConfig</code>，要发布时，使用<code>prepareRelease</code>，然后定义一个简单的模板文件<code>config.js</code>：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">backend</span><span class="o">:</span> <span class="s1">&#39;#backend#&#39;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后可以很简单的包装一下，方便本地开发和发布：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;dev&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;prepareConfig&#39;</span><span class="p">,</span> <span class="s1">&#39;browserify&#39;</span><span class="p">,</span> <span class="s1">&#39;concatcss&#39;</span><span class="p">]);</span>
-</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;build&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;prepareConfig&#39;</span><span class="p">,</span> <span class="s1">&#39;script&#39;</span><span class="p">,</span> <span class="s1">&#39;css&#39;</span><span class="p">]);</span>
-</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;release&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;prepareRelease&#39;</span><span class="p">,</span> <span class="s1">&#39;script&#39;</span><span class="p">,</span> <span class="s1">&#39;css&#39;</span><span class="p">]);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，我们在本地开发时，只需要简单的执行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>gulp
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>即可。而在发布阶段，只需要执行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>gulp release
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>单元测试</h3>
-
-<p>我们在<code>Snap CI</code>上将<code>github</code>上的代码库关联起来，然后添加一个名叫<code>unit-test</code>的<code>stage</code>，指定这个<code>stage</code>对应的命令为：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>npm install
-</span><span class='line'>gulp
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2016/01/snap-ci-unit-resized.png" alt="Snap CI unit" /></p>
-
-<p>这样，每当我们有新的提交之后，<code>Snap CI</code>都会拿到新代码，并执行上述命令，如果执行成功，则本地构建成功。</p>
-
-<h3>集成测试</h3>
-
-<p>由于采取的是<strong>前后端分离</strong>的策略，我们的应用可以完全独立与后端进行开发，因此我们设置了一个<code>fake server</code>，具体细节可以参考<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">我之前的博客</a>，也可以看源码。不过这里我们要为集成测试编写一个脚本，并在<code>Snap CI</code>上执行。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">export </span><span class="nv">PORT</span><span class="o">=</span>8100
-</span><span class='line'>bundle install
-</span><span class='line'>
-</span><span class='line'><span class="c"># launch the application</span>
-</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;launch the application&quot;</span>
-</span><span class='line'>ruby app.rb 2&gt;&amp;1 &amp;
-</span><span class='line'><span class="nv">PID</span><span class="o">=</span><span class="nv">$!</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># wait for it to start up</span>
-</span><span class='line'>sleep 3
-</span><span class='line'>
-</span><span class='line'><span class="c"># run the rspec tests and record the status</span>
-</span><span class='line'>rspec
-</span><span class='line'><span class="nv">RES</span><span class="o">=</span><span class="nv">$?</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># terminate after rspec</span>
-</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;terminate the application&quot;</span>
-</span><span class='line'><span class="nb">kill</span> -9 <span class="nv">$PID</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># now we know whether the rspec success or not</span>
-</span><span class='line'><span class="nb">exit</span> <span class="nv">$RES</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个脚本中，首先安装所有的<code>gems</code>，然后启动<code>fake server</code>并将这个server放置在后台运行，然后执行<code>rspec</code>。当<code>rspec</code>测试执行完成之后，我们终止服务进行，然后返回结果状态码。</p>
-
-<p>这里使用了<code>capybara</code>和<code>poltergeist</code>来做UI测试，<code>capybara</code>会驱动<code>phantomjs</code>来在内存中运行浏览器，并执行定义好的<code>UI</code>测试，比如此处，我们的UI测试：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">describe</span> <span class="s1">&#39;Feeds List Page&#39;</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">let</span><span class="p">(</span><span class="ss">:list_page</span><span class="p">)</span> <span class="p">{</span><span class="no">FeedListPage</span><span class="o">.</span><span class="n">new</span><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">before</span> <span class="k">do</span>
-</span><span class='line'>      <span class="n">list_page</span><span class="o">.</span><span class="n">load</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">it</span> <span class="s1">&#39;user can see a banner and some feeds&#39;</span> <span class="k">do</span>
-</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">list_page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_banner</span>
-</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">list_page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_feeds</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="c1">##...</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2016/01/snap-ci-it-resized.png" alt="Snap CI logs" /></p>
-
-<h3>部署</h3>
-
-<p>首先需要在<code>S3</code>上创建一个<code>bucket</code>，命名为<code>bookmarks-frontend</code>。然后为其设置<code>static website hosting</code>，这时候<code>AWS</code>会assign一个新的域名给你，比如<code>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/</code>。</p>
-
-<p>然后你需要将这个<code>bucket</code>设置成<code>public</code>，这样其他人才可以访问你的<code>bucket</code>。</p>
-
-<p><img src="/images/2016/01/aws-s3-public-resized.png" alt="AWS S3" /></p>
-
-<p>有了这个之后，我们来编写一个小脚本，这个脚本可以将本地的文件上传至S3。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># install gulp and its dependencies</span>
-</span><span class='line'>npm install
-</span><span class='line'>
-</span><span class='line'><span class="c"># package stuff, and point the server to the right place</span>
-</span><span class='line'>gulp release
-</span><span class='line'>
-</span><span class='line'><span class="c"># upload the whold folder</span>
-</span><span class='line'>aws s3 cp public/ s3://bookmarks-frontend <span class="se">\</span>
-</span><span class='line'>  --recursive <span class="se">\</span>
-</span><span class='line'>  --region us-west-2 <span class="se">\</span>
-</span><span class='line'>  --acl public-read
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>aws</code>命令是<code>aws command line</code>提供的，另外我们需要在环境变量中设置AWS提供给你的token：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span>xxxxxxxxxx
-</span><span class='line'><span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span>xxxxxxxxxx
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后我们就可以将本地的<code>public</code>目录递归的上传到S3的对应目录了！</p>
-
-<p><img src="/images/2016/01/snap-ci-pipeline-resized.png" alt="snap ci pipeline" /></p>
-
-<p>完整的代码可以在<a href="https://github.com/abruzzi/bookmarks-frontend">此处下载</a>。</p>
-
-<h2>总结</h2>
-
-<p>我们前端的持续交付也介绍完了。现在前后端应用完全独立，发布也互不影响。不论是服务器端新增加了API，还是添加了新数据，客户端的发布都不受影响；同样，修改样式，添加新的<code>JavaScript</code>也完全不会影响后端。更重要的是，所有的发布都是一键式的，开发者只需要一个<code>git push</code>就可以享受这些免费服务提供的自动构建，自动化测试以及自动部署的功能。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -2664,6 +2434,10 @@ Workshop至少需要包含这样几部分：</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2016/09/what-should-qa-do-in-a-agile-team/">敏捷团队里的QA</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/09/how-to-design-a-training/">如何设计一次培训</a>
       </li>
     
@@ -2677,10 +2451,6 @@ Workshop至少需要包含这样几部分：</p>
     
       <li class="post">
         <a href="/2016/05/about-session-and-security-api-2/">保护你的API（下）</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/05/about-session-and-security-api-1/">保护你的API（上）</a>
       </li>
     
   </ul>
