@@ -39,9 +39,11 @@ categories:
 
 然而事实上，很多需求就没有仔细分析，业务价值不很确定，验收条件模糊，流入开发后又会引入一些代码级别的错误，以及业务规则上的缺陷，测试阶段会漏掉一些功能点，上线之后更是问题百出（网络故障，缓存失效，黑客攻击，操作系统补丁，甚至内存溢出，log文件将磁盘写满等等）。
 
-在一个敏捷团队中，每个个人都应该对质量负责，而QA则以自己的丰富经验和独特视角来发掘系统中可能的质量隐患，并帮助团队将这些隐患消除。
+在一个敏捷团队中，**每个个人都应该对质量负责**，而QA则以自己的丰富经验和独特视角来发掘系统中可能的质量隐患，并帮助团队将这些隐患消除。
 
 ![测试职责](/images/2016/09/circle-resized.png)
+
+我在ThoughtWorks的同事`Anand Bagmar`在他的演讲[What is Agile testing- How does automation help?](http://www.slideshare.net/abagmar/what-is-agile-testing-how-does-automation-help)中详细讨论过这部分内容。
 
 ### QA到底应该干什么？
 
@@ -85,4 +87,11 @@ Lisa Crispin在[《敏捷软件测试》](https://book.douban.com/subject/533839
 
 比如需求分析阶段，如果有QA的加入，一些从QA角度可以发现的有明显缺陷的场景，则可以在分析阶段就得到很好的处理。另一方面，尽早介入可以设计出更合理的测试计划（比如哪些功能的优先级比较高，用户更会频繁使用，那么对应的测试比重也会更高）。在Story分析与书写阶段，QA可以帮助写出更加合理的验收条件，既满足业务需求，又可以很好的指导开发。
 
-在和开发一起编写澄清需求时，主要是编写自动化验收测试，而不是实际编写业务逻辑的实现（虽然QA应该参与Code Reivew环节，学习并分享自己的观点）；甚至在上线运维阶段，QA还需要和OPs一起来设计用户数据的采集指标（比如用户访问的关键路径，浏览器版本，地区的区分等），从而制定出新的测试策略。
+在和开发一起编写澄清需求时，主要是编写自动化验收测试，而不是实际编写业务逻辑的实现（虽然QA应该参与`Code Reivew`环节，学习并分享自己的观点）；甚至在上线运维阶段，QA还需要和OPs一起来设计用户数据的采集指标（比如用户访问的关键路径，浏览器版本，地区的区分等），从而制定出新的测试策略。
+
+### 扩展阅读
+
+-  [What is Agile testing- How does automation help?](http://www.slideshare.net/abagmar/what-is-agile-testing-how-does-automation-help)
+-  [敏捷实践Showcase的七宗罪](http://www.jianshu.com/p/905a878898bf)
+-  [产品环境下的QA](http://www.jianshu.com/p/20b454a88bdb)
+-  [《敏捷软件测试》](https://book.douban.com/subject/5338399/)
