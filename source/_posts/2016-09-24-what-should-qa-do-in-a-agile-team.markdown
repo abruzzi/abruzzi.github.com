@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "敏捷团队里的QA"
+title: "测试自动化后，我们还需要QA吗？"
 date: 2016-09-24 23:43
 comments: true
 categories: 
@@ -62,7 +62,7 @@ categories:
 
 ### QA的职责
 
-Lisa Crispin在[《敏捷软件测试》](https://book.douban.com/subject/5338399/)中提到过一个很著名的模型：敏捷测试四象限。这个模型将QA的职责做了一个很好的分类：
+Lisa Crispin在[《敏捷软件测试》](https://book.douban.com/subject/5338399/)中提到过一个很著名的模型：敏捷测试四象限。这个模型是QA制定测试策略时的一个重要参考：
 
 ![敏捷软件测试](/images/2016/09/agile-testing-quadrants.png)
 
@@ -79,7 +79,21 @@ Lisa Crispin在[《敏捷软件测试》](https://book.douban.com/subject/533839
 
 通过这一阶段之后，我们已经有了用户故事，这时候QA需要和开发一起编写用户故事的自动化验收测试。当开发交付一部分功能之后，QA就可以做常规的用户故事测试，几个迭代之后，QA开始进行跨功能需求测试和探索性测试等。根据探索性测试的结果，QA可能会调整测试策略，调整测试优先级，完善测试用例等等。
 
-关于QA如何在软件分析的上游就介入，然后通过BDD的方式与业务分析师一起产出软件的各种规格描述，并通过实例的方式来帮助整个团队对需求的理解，ThoughtWorks的林冰玉有一篇文章很好的介绍了[BDD的正确做法](http://www.jianshu.com/p/20a3af030b51)。如果将QA的外延扩展到在线的生产环境，制定合理的测量指标，调整测试策略，强烈推荐林冰玉写的另一篇文章[产品环境中的QA](http://www.jianshu.com/p/20b454a88bdb)。
+根据项目的不同，团队可以从不同的象限开始测试策略的制定。事实上，Q1-Q4仅仅是一个编号，与时间、阶段并无关系，Lisa Crispin还专门[撰文解释](http://lisacrispin.com/2011/11/08/using-the-agile-testing-quadrants/)过。
+
+关于QA如何在软件分析的上游就介入，然后通过BDD的方式与业务分析师一起产出软件的各种规格描述，并通过实例的方式来帮助整个团队对需求的理解，ThoughtWorks的林冰玉有一篇文章很好的介绍了[BDD的正确做法](http://insights.thoughtworkers.org/when-we-talk-about-bdd/)。如果将QA的外延扩展到在线的生产环境，制定合理的测量指标，调整测试策略，强烈推荐林冰玉写的另一篇文章[产品环境中的QA](http://www.jianshu.com/p/20b454a88bdb)。
+
+#### 其他职责
+
+事实上，软件生命周期中有很多的活动，有很多处于`灰色`地段。既可以说是应该开发做，又可以说应该QA做，甚至可以推给其他角色（比如OPs）。不过我们知道，一旦涉及角色，人们就再也不会按照`全局优化`的思路来应对问题了。这种`灰色`的活动包括：
+
+-  持续集成的搭建
+-  测试环境的创建于维护
+-  UAT上的数据准备
+-  代码中的测试代码的维护
+-  测试代码的重构
+
+在团队实践中，这些活动我们通常会让QA和开发或者OPs同事一起结对来完成。一方面避免知识孤岛的形成，另一方面在跨角色的工作中，也可以激发出更多不同的思路。
 
 ### 万能的QA？
 
@@ -91,7 +105,9 @@ Lisa Crispin在[《敏捷软件测试》](https://book.douban.com/subject/533839
 
 ### 扩展阅读
 
--  [What is Agile testing- How does automation help?](http://www.slideshare.net/abagmar/what-is-agile-testing-how-does-automation-help)
--  [敏捷实践Showcase的七宗罪](http://www.jianshu.com/p/905a878898bf)
+-  [What is Agile testing - How does automation help?](http://www.slideshare.net/abagmar/what-is-agile-testing-how-does-automation-help)
+-  [敏捷实践Showcase的七宗罪](http://insights.thoughtworkers.org/agile-showcase-se7en/)
 -  [产品环境下的QA](http://www.jianshu.com/p/20b454a88bdb)
 -  [《敏捷软件测试》](https://book.douban.com/subject/5338399/)
+
+P.S. 感谢林冰玉对本文的`Review`和指导。
