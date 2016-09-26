@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-09-25T23:14:44+10:00</updated>
+  <updated>2016-09-26T21:40:10+10:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[敏捷团队里的QA]]></title>
+    <title type="html"><![CDATA[测试自动化后，我们还需要QA吗？]]></title>
     <link href="http://abruzzi.github.com/2016/09/what-should-qa-do-in-a-agile-team/"/>
     <updated>2016-09-24T23:43:00+10:00</updated>
     <id>http://abruzzi.github.com/2016/09/what-should-qa-do-in-a-agile-team</id>
@@ -72,7 +72,7 @@
 
 <h3>QA的职责</h3>
 
-<p>Lisa Crispin在<a href="https://book.douban.com/subject/5338399/">《敏捷软件测试》</a>中提到过一个很著名的模型：敏捷测试四象限。这个模型将QA的职责做了一个很好的分类：</p>
+<p>Lisa Crispin在<a href="https://book.douban.com/subject/5338399/">《敏捷软件测试》</a>中提到过一个很著名的模型：敏捷测试四象限。这个模型是QA制定测试策略时的一个重要参考：</p>
 
 <p><img src="http://abruzzi.github.com/images/2016/09/agile-testing-quadrants.png" alt="敏捷软件测试" /></p>
 
@@ -92,7 +92,24 @@
 
 <p>通过这一阶段之后，我们已经有了用户故事，这时候QA需要和开发一起编写用户故事的自动化验收测试。当开发交付一部分功能之后，QA就可以做常规的用户故事测试，几个迭代之后，QA开始进行跨功能需求测试和探索性测试等。根据探索性测试的结果，QA可能会调整测试策略，调整测试优先级，完善测试用例等等。</p>
 
-<p>关于QA如何在软件分析的上游就介入，然后通过BDD的方式与业务分析师一起产出软件的各种规格描述，并通过实例的方式来帮助整个团队对需求的理解，ThoughtWorks的林冰玉有一篇文章很好的介绍了<a href="http://www.jianshu.com/p/20a3af030b51">BDD的正确做法</a>。如果将QA的外延扩展到在线的生产环境，制定合理的测量指标，调整测试策略，强烈推荐林冰玉写的另一篇文章<a href="http://www.jianshu.com/p/20b454a88bdb">产品环境中的QA</a>。</p>
+<p>根据项目的不同，团队可以从不同的象限开始测试策略的制定。事实上，Q1-Q4仅仅是一个编号，与时间、阶段并无关系，Lisa Crispin还专门<a href="http://lisacrispin.com/2011/11/08/using-the-agile-testing-quadrants/">撰文解释</a>过。</p>
+
+<p>关于QA如何在软件分析的上游就介入，然后通过BDD的方式与业务分析师一起产出软件的各种规格描述，并通过实例的方式来帮助整个团队对需求的理解，ThoughtWorks的林冰玉有一篇文章很好的介绍了<a href="http://insights.thoughtworkers.org/when-we-talk-about-bdd/">BDD的正确做法</a>。如果将QA的外延扩展到在线的生产环境，制定合理的测量指标，调整测试策略，强烈推荐林冰玉写的另一篇文章<a href="http://www.jianshu.com/p/20b454a88bdb">产品环境中的QA</a>。</p>
+
+<h4>其他职责</h4>
+
+<p>事实上，软件生命周期中有很多的活动，有很多处于<code>灰色</code>地段。既可以说是应该开发做，又可以说应该QA做，甚至可以推给其他角色（比如OPs）。不过我们知道，一旦涉及角色，人们就再也不会按照<code>全局优化</code>的思路来应对问题了。这种<code>灰色</code>的活动包括：</p>
+
+<ul>
+<li>持续集成的搭建</li>
+<li>测试环境的创建于维护</li>
+<li>UAT上的数据准备</li>
+<li>代码中的测试代码的维护</li>
+<li>测试代码的重构</li>
+</ul>
+
+
+<p>在团队实践中，这些活动我们通常会让QA和开发或者OPs同事一起结对来完成。一方面避免知识孤岛的形成，另一方面在跨角色的工作中，也可以激发出更多不同的思路。</p>
 
 <h3>万能的QA？</h3>
 
@@ -105,12 +122,14 @@
 <h3>扩展阅读</h3>
 
 <ul>
-<li><a href="http://www.slideshare.net/abagmar/what-is-agile-testing-how-does-automation-help">What is Agile testing- How does automation help?</a></li>
-<li><a href="http://www.jianshu.com/p/905a878898bf">敏捷实践Showcase的七宗罪</a></li>
+<li><a href="http://www.slideshare.net/abagmar/what-is-agile-testing-how-does-automation-help">What is Agile testing - How does automation help?</a></li>
+<li><a href="http://insights.thoughtworkers.org/agile-showcase-se7en/">敏捷实践Showcase的七宗罪</a></li>
 <li><a href="http://www.jianshu.com/p/20b454a88bdb">产品环境下的QA</a></li>
 <li><a href="https://book.douban.com/subject/5338399/">《敏捷软件测试》</a></li>
 </ul>
 
+
+<p>P.S. 感谢林冰玉对本文的<code>Review</code>和指导。</p>
 ]]></content>
   </entry>
   
