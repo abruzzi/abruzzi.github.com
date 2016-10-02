@@ -674,7 +674,7 @@
     </url>
     <url>
         <loc>http://abruzzi.github.com/3p3w/</loc>
-        <lastmod>2015-09-21T11:52:25+10:00</lastmod>
+        <lastmod>2016-10-02T14:54:49+11:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/about-me/</loc>
@@ -690,11 +690,15 @@
     </url>
     <url>
         <loc>http://abruzzi.github.com/jsccp/</loc>
-        <lastmod>2014-12-05T17:25:03+11:00</lastmod>
+        <lastmod>2016-10-02T14:51:21+11:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/lwweb/</loc>
         <lastmod>2015-09-21T11:56:58+10:00</lastmod>
+    </url>
+    <url>
+        <loc>http://abruzzi.github.com/publish/</loc>
+        <lastmod>2016-10-02T15:01:33+11:00</lastmod>
     </url>
     <url>
         <loc>http://abruzzi.github.com/robots.txt</loc>
