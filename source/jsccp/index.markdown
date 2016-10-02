@@ -7,7 +7,7 @@ sharing: true
 footer: true
 
 ---
-目前，JavaScript核心概念及实践已经由人民邮电出版社正式出版，并在各个网上书店出售：
+目前，《JavaScript核心概念及实践》已经由人民邮电出版社正式出版，并在各个网上书店出售：
 
 -	[亚马逊](http://www.amazon.cn/JavaScript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B00COG3YVU/ref=sr_1_1?ie=UTF8&qid=1368345948&sr=8-1&keywords=javascript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5)
 -	[当当网](http://product.dangdang.com/product.aspx?product_id=23246702)

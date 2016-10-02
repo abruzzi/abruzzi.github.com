@@ -1,0 +1,65 @@
+---
+layout: page
+title: "出版物"
+date: 2016-10-02 11:49
+comments: true
+sharing: true
+footer: true
+---
+
+### 《轻量级Web应用开发》
+
+本书已经于2015年7月末由人民邮电出版社出版，欢迎在这里选购：
+
+#### 购书链接
+
+1.  [亚马逊链接](http://www.amazon.cn/%E8%BD%BB%E9%87%8F%E7%BA%A7Web%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B012R5A1NQ/ref=sr_1_1?ie=UTF8&qid=1440730930&sr=8-1&keywords=%E8%BD%BB%E9%87%8F%E7%BA%A7web)
+2.  [京东链接](http://item.jd.com/11741605.html)
+3.  [豆瓣链接](http://book.douban.com/subject/26585461/)
+
+### 简介
+
+我个人非常推崇轻量级的开发方式：轻量的编辑器，轻量的前后端框架，轻量的构架工具，轻量的发布工具和流程等等。敏捷开发的初衷，也是使用轻量级的工作方式：这样才能在犯错的时候及时调整方向。
+
+《轻量级Web应用开发》关注于轻量级的工具，实践，策略，框架，语言等进行Web应用程序的开发。这本书将教会你如何将一个想法变成实际的Web应用。从高效的编程工具，开发流程，到敏捷开发中的各种轻量级实践，再到从零开始开发一个具体而微的实例。
+
+#### 本书的特点
+
+-  本书中涉及了现代的，高效的工作方式，学会这些工具和技巧，可以使你的开发效率大大提升
+-  软件开发不只是写程序，构建，自动化测试，部署等都是开发的一部分。本书会告诉你如何快速而高效的完成这些任务。
+-  书中不但在每个章节中有一些小型的例子，还专门开辟出三章来将这些零散的知识点连接起来，使你更容易学以致用。
+
+这里有一个为本书设计的一个[静态站点](http://icodeit.org/lightweight-web/)。
+
+#### 资源下载
+
+书中的示例代码均可于[此处下载](https://github.com/abruzzi/lwweb-demo)。
+
+### 《JavaScript核心概念及实践》
+
+《JavaScript核心概念及实践》已经由人民邮电出版社正式出版，并在各个网上书店出售：
+
+#### 购书链接
+
+-	[亚马逊](http://www.amazon.cn/JavaScript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B00COG3YVU/ref=sr_1_1?ie=UTF8&qid=1368345948&sr=8-1&keywords=javascript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5)
+-	[当当网](http://product.dangdang.com/product.aspx?product_id=23246702)
+-	[China-pub](http://product.china-pub.com/3767398)
+-	[豆瓣](http://book.douban.com/subject/24165880/)
+
+如果你在阅读的过程中发现有任何的错误或者不清楚的地方，可以在[此页](http://icodeit.org/jsccp/)后边进行回复。
+
+#### 记录
+
+[这个页面](http://icodeit.org/jsccp/)记录**JavaScript核心概念及实践**(原*JavaScript内核系列*)的一些日志，这个系列最早在[我的iteye博客](http://abruzzi.iteye.com/)(javaeye)上以连载的形式发表。
+
+下载地址：下载[JavaScript核心概念及实践V0.9.9Beta版本](http://abruzzi.github.com/jsccp/JavaScript-Core-and-Practice-V0.9.9b.pdf)
+
+### 《三周三页面》
+
+#### 活动简介
+
+2014年11月，我在ThoughtWorks的西安Office举办了一次名为[《3周3页面》](http://icodeit.org/3-pages-in-3-weeks/)的工作坊。主要内容就是让参与者在3周之中学习如何进行前端开发，涉及内容包括HTML/CSS基础，Web设计基础，前端开发工作流等。活动反响很好，参加的同事们的热情都非常高，这个活动甚至推广到了别的办公室（成都举行了，北京正在举行）。
+
+#### 电子书
+
+元旦期间，我整理了一下这个活动的课件，最后竟然整理成了[一本电子书](http://juntao.gitbooks.io/3-web-designs-in-3-weeks/)。这本书被发布到了Gitbook上，而且很快就达到了20,000多次下载，而且已经有了900多名读者。我还把这本书放在了[selfstore](https://selfstore.io/products/348)上，该网站提供更清晰的电子版下载(并且有多个版本可选)。
