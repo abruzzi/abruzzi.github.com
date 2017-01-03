@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2016-10-02T15:24:35+11:00</updated>
+  <updated>2017-01-04T01:26:12+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,117 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[我的2016]]></title>
+    <link href="http://abruzzi.github.com/2016/12/my-2016/"/>
+    <updated>2016-12-28T14:21:00+11:00</updated>
+    <id>http://abruzzi.github.com/2016/12/my-2016</id>
+    <content type="html"><![CDATA[<h2>大事记</h2>
+
+<p>把女儿心心哄睡着之后，我躺在她旁边，听着她平稳的呼吸声，心里充满了幸福和感激。女儿降生的那种感动，是无以伦比的，之前的很多事情变得无所谓起来，这当然是我今年最大的收获。</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/12/xx-2-resized.png" alt="心心" /></p>
+
+<p>当然，初为人父，有<code>好多好多</code>东西需要学习，她还在月子里的时候，我整理过一次思维导图：</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/12/new-born-resized.png" alt="新生儿" /></p>
+
+<p>今年也有一些其他的里程碑：</p>
+
+<ul>
+<li>骑行了第一个100公里</li>
+<li>学会了驾驶（已经行驶了近6000公里）</li>
+<li>学会了抱娃，换尿布，给娃洗澡，试水温等等</li>
+<li><a href="https://book.douban.com/subject/26585461/">《轻量级Web应用开发》</a>被翻译成繁体中文版在台湾发售</li>
+<li>Hiking到了秦岭最高点（大爷海，海拔3500m）</li>
+</ul>
+
+
+<p><img src="http://abruzzi.github.com/images/2016/12/mybook-resized.png" alt="" /></p>
+
+<h3>学习</h3>
+
+<p>今年的大部分时间都不在办公室，在客户现场出差有8-9个月。最大的感受是归属感的缺乏，另外就是大部分时候再输出，会导致积累的存货快要被掏空的感觉。很多知识需要花时间来补充上，咨询工作本身有很大一部分是需要咨询师在非咨询项目上做积累，然后再去输出的。</p>
+
+<p>这一点希望在2017年可以做的更好一些：减少一些出差，多在办公室的项目上工作，然后能有更多的时间来积累自己的知识库。</p>
+
+<p>上半年花了一些时间和设计师唐婉莹合写的<a href="https://www.gitbook.com/book/juntao/pre-iteration-zero/details">《在迭代1之前》</a>，后来出差网络比较封闭的时候，就只有唐婉莹在做更新（频率和质量都很高），我自己的开发部分很久没有改动了，算是一个比较遗憾的地方。2017年希望可以完成其中的烂尾部分。</p>
+
+<p>总体来说，2016年很多时间是做咨询工作，内容比较杂乱。我梳理了一下，大致如下：</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/12/learning-resized.png" alt="" /></p>
+
+<h4>一些微小的练习</h4>
+
+<p>我的第一个React Natvie应用，感谢傅若愚：</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/12/react-native-resized.png" alt="" /></p>
+
+<p>闪电计划的页面局部，感谢张小虫：</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/12/bookish-detail-resized.png" alt="" /></p>
+
+<p><del>
+Graphviz一个例子：</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/12/graphgiz-demo-resized.png" alt="" />
+</del></p>
+
+<h4>闪电计划</h4>
+
+<p>7月，和另外两个同事组织了一个系列的活动，这个活动旨在通过一系列的刻意练习，包括但不限于：</p>
+
+<ul>
+<li>TDD，Tasking，构建，环境自动化</li>
+<li>自动化测试（集成测试，UI测试）</li>
+<li>项目中的常见场景（多表关联，异常处理，RESTful API设计）</li>
+<li>常见静态页面</li>
+<li>一些具体而微的端到端Web项目</li>
+</ul>
+
+
+<p><img src="http://abruzzi.github.com/images/2016/12/lighting-resized.png" alt="" /></p>
+
+<p>闪电计划的另一个副作用是找出了一些前端的Kata，可以供后续的前端们做练习用。我已经找张小虫，李彤欣做过了第一次的实验，证明是一个比较合理的方向。在2017年，可以作为新的Workshop进行。</p>
+
+<h3>项目经历</h3>
+
+<p>元月份经历了一个史上最奇特的咨询项目：Staffing好的3个人中，有两个离职了……。不过还好，通过两个月的微小工作，客户最终还是比较满意的，也很顺利的有了项目的第二期（虽然由于其他原因，第二期只做了一半）。</p>
+
+<p>其他的经历比较平淡：</p>
+
+<ul>
+<li>在回南天的3月去了一趟广州出差，做了一些前端性能相关的测试。</li>
+<li>在最热的7月份去了一趟上海出差，莫名其妙的做了一些前端性能相关的测试，以及<code>React Native</code>的一些预研。</li>
+<li>最后在寒冷的12月去了一趟深圳出差，做了一些安全测试（基于<code>OWASP</code>）、依赖关系图（基于<code>Doxygen</code>）等的Spike。</li>
+</ul>
+
+
+<p>不过总体来看，2016年经历的项目是最多的，而且多样性也很高：</p>
+
+<ul>
+<li>3个咨询项目</li>
+<li>3个交付项目</li>
+<li>3个售前</li>
+</ul>
+
+
+<h3>其他</h3>
+
+<p>应王欢要求，除了一起吃过几次饭之外，今年跟王欢基本上没有交集。倒是多亏了他的脸，在楼下的来福士和他喝了不少次咖啡。</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/12/huanghe-resized.png" alt="" /></p>
+
+<p>这是九月份去付莹家的黄河时和同事们的合影，第一次开车走高速去那么远的地方，后座还有一个澳洲的客户。</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/12/cycling-resized.png" alt="" /></p>
+
+<p>骑行了一半儿，有一群开着车的同事追了上来，跟我们一起吃了个饭，我们骑车回去，他们则开车/坐车回去了。</p>
+
+<p><img src="http://abruzzi.github.com/images/2016/12/reunion-resized.png" alt="" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[微服务场景下的自动化测试]]></title>
@@ -5446,424 +5557,6 @@ Workshop至少需要包含这样几部分：</p>
 <h3>总结</h3>
 
 <p>使用<code>BNF</code>定义一个复杂配置文件的规则，事实上一个比较容易的工作。要手写这样一个解析器需要花费很多的时间，而且当你需要parser多种配置文件时，这将是一个非常无聊且痛苦的事情。学习<code>jison</code>可以帮助你很快的编写出小巧的解析器，在上面的<code>Mapfile</code>的例子中，所有的代码还不到<code>100</code>行。下一次再遇到诸如复杂的文本解析，配置文件读取的时候，先不要忙着编写<code>正则表达式</code>，试试更高效，更轻便的<code>jison</code>吧。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[工程中的编译原理 -- Jison入门篇]]></title>
-    <link href="http://abruzzi.github.com/2015/09/write-a-parser/"/>
-    <updated>2015-09-30T18:45:00+10:00</updated>
-    <id>http://abruzzi.github.com/2015/09/write-a-parser</id>
-    <content type="html"><![CDATA[<h3>前言</h3>
-
-<p>在代码编写中，很多时候我们都会处理字符串：发现字符串中的某些规律，然后将想要的部分抽取出来。对于发杂一些的场景，我们会使用<code>正则表达式</code>来帮忙，正则表达式强大而灵活，主流的变成语言如<code>Java</code>，<code>Ruby</code>的标准库中都对其由很好的支持。</p>
-
-<p>但是有时候，当接收到的字符串结构更加复杂（往往会这样）的时候，正则表达式要么会变的不够用，要么变得超出我们能理解的复杂度。这时候，我们可能借助一些更为强大的工具。</p>
-
-<p>下面是一个实际的例子，这个代码片段是MapServer的配置文件，它用来描述地图中的一个层，其中包含了嵌套的<code>CLASS</code>，而<code>CLASS</code>自身又包含了一个嵌套的<code>STYLE</code>节。显然，正则表达式在解释这样复杂的结构化数据方面，是无法满足需求的。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>LAYER
-</span><span class='line'>  NAME         "counties"
-</span><span class='line'>  DATA         "counties-in-shaanxi-3857"
-</span><span class='line'>  STATUS       default
-</span><span class='line'>  TYPE         POLYGON
-</span><span class='line'>  TRANSPARENCY 70
-</span><span class='line'>
-</span><span class='line'>  CLASS
-</span><span class='line'>    NAME       "polygon"
-</span><span class='line'>    STYLE
-</span><span class='line'>      COLOR     255 255 255
-</span><span class='line'>      OUTLINECOLOR 40 44 52
-</span><span class='line'>    END
-</span><span class='line'>  END
-</span><span class='line'>END</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在UNIX世界，很早的时候，人们就开发出了很多用来生成<code>解释器</code>(parser)的工具，比如早期的<a href="https://en.wikipedia.org/wiki/Lex_(software">lex</a>)/<a href="https://en.wikipedia.org/wiki/Yacc">yacc</a>之类的工具和后来的<a href="https://en.wikipedia.org/wiki/GNU_bison">bison</a>。通过这些工具，程序员只需要定义一个结构化的文法，工具就可以自动生成解释器的C代码，非常容易。在JavaScript世界中，有一个非常类似的工具，叫做<a href="https://zaach.github.io/jison/">jison</a>。在本文中，我将以jison为例，说明在JavaScript中自定义一个解释器是何等的方便。</p>
-
-<p><strong>注意</strong>，我们这里说的<code>解释器</code>不是一个编译器，编译器有非常复杂的后端（抽象语法树的生成，虚拟机器指令，或者机器码的生成等等），我们这里仅仅讨论一个编译器的<strong>前端</strong>。</p>
-
-<h3>一点理论知识</h3>
-
-<p>本文稍微需要一点理论知识，当年编译原理课的时候，各种名词诸如<code>规约</code>，<code>推导式</code>，<code>终结符</code>，<code>非终结符</code>等等，</p>
-
-<h4>上下文无关文法（Context Free Grammar）</h4>
-
-<p>先看看维基上的这段定义：</p>
-
-<blockquote><p>在计算机科学中，若一个形式文法 G = (N, Σ, P, S) 的产生式规则都取如下的形式：V -> w，则称之为上下文无关文法（英语：context-free grammar，缩写为CFG），其中 V∈N ，w∈(N∪Σ)* 。上下文无关文法取名为“上下文无关”的原因就是因为字符 V 总可以被字串 w 自由替换，而无需考虑字符 V 出现的上下文。</p></blockquote>
-
-<p>基本上跟没说一样。要定义一个上下文无关文法，数学上的精确定义是一个在4元组：<code>G = (N, Σ, P, S)</code>，其中</p>
-
-<ol>
-<li>N是“非终结符”的集合</li>
-<li>Σ是“终结符”的集合，与N的交集为空（不想交）</li>
-<li>P表示规则集（即N中的一些元素以何种方式）</li>
-<li>S表示起始变量，是一个“非终结符”</li>
-</ol>
-
-
-<p>其中，规则集P是重中之重，我们会在下一小节解释。经过这个形式化的解释，基本还是等于没说，在继续之前，我们先来看一下BNF，然后结合一个例子来帮助理解。</p>
-
-<p>话说我上一次写这种<a href="http://www.cnblogs.com/abruzzi/archive/2009/06/06/1497449.html">学院派的文章</a>还是2009年，时光飞逝。</p>
-
-<h4>巴科斯范式（Backus Normal Form）</h4>
-
-<p>维基上的解释是：</p>
-
-<blockquote><p>巴科斯范式（英语：Backus Normal Form，缩写为 BNF），又称为巴科斯-诺尔范式（英语：Backus-Naur Form，也译为巴科斯-瑙尔范式、巴克斯-诺尔范式），是一种用于表示上下文无关文法的语言，上下文无关文法描述了一类形式语言。它是由约翰·巴科斯（John Backus）和彼得·诺尔（Peter Naur）首先引入的用来描述计算机语言语法的符号集。</p></blockquote>
-
-<p>简而言之，它是由推导公式的集合组成，比如下面这组公式：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>S -&gt; T + T | T - T | T
-</span><span class='line'>T -&gt; F * F | F / F | F
-</span><span class='line'>F -&gt; NUMBER | '(' S ')'
-</span><span class='line'>NUMBER -&gt;  0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9</span></code></pre></td></tr></table></div></figure>
-
-
-<p>可以被“继续分解”的元素，我们称之为“非终结符”，如上式中的<code>S</code>, <code>T</code>, <code>NUMBER</code>，而无法再细分的如<code>0..9</code>，<code>(</code>，<code>)</code>则被称之为终结符。<code>|</code>表示或的关系。在上面的公式集合中，<code>S</code>可以被其右边的<code>T+T</code>替换，也可以被<code>T-T</code>替换，还可以被<code>T</code>本身替换。回到上一小节最后留的悬疑，在这里：</p>
-
-<ol>
-<li>N就是{<code>S</code>, <code>T</code>, <code>F</code>, <code>NUMBER</code>}</li>
-<li>Σ就是{<code>0</code>, <code>1</code>, &#8230;, <code>9</code>, <code>(</code>, <code>)</code>, <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>}</li>
-<li>P就是上面的BNF式子</li>
-<li>S就是这个的<code>S</code>(第一个等式的左边状态)</li>
-</ol>
-
-
-<p>上面的BNF其实就是四则运算的形式定义了，也就是说，由这个BNF可以解释一切出现在四则运算中的文法，比如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>1+1
-</span><span class='line'>8*2+3
-</span><span class='line'>(10-6)*4/2</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而所谓上下文无关，指的是在推导式的左边，都是非终结符，并且可以<strong>无条件</strong>的被其右边的式子替换。此处的<strong>无条件</strong>就是上下文无关。</p>
-
-<h3>实现一个四则运算计算器</h3>
-
-<p>我们这里要使用<a href="https://zaach.github.io/jison/">jison</a>，jison是一个npm包，所以安装非常容易：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>npm install -g jison
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>安装之后，你本地就会有一个命令行工具<code>jison</code>，这个工具可以将你定义的<code>jison</code>文件编译成一个<code>.js</code>文件，这个文件就是解释器的源码。我们先来定义一些<code>符号</code>(token)，所谓<code>token</code>就是上述的<code>终结符</code>：</p>
-
-<h4>第一步：识别数字</h4>
-
-<p>创建一个新的文本文件，假设就叫<code>calc.jison</code>，在其中定义一段这样的符号表:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="err">\</span><span class="nx">s</span><span class="o">+</span>                   <span class="cm">/* skip whitespace */</span>
-</span><span class='line'><span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">9</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">9</span><span class="p">]</span><span class="o">+</span><span class="p">)</span><span class="o">?</span>    <span class="k">return</span> <span class="s1">&#39;NUMBER&#39;</span>
-</span><span class='line'><span class="o">&lt;&lt;</span><span class="nx">EOF</span><span class="o">&gt;&gt;</span>               <span class="k">return</span> <span class="s1">&#39;EOF&#39;</span>
-</span><span class='line'><span class="p">.</span>                     <span class="k">return</span> <span class="s1">&#39;INVALID&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里我们定义了4个符号，所有的空格（<code>\s+</code>），我们都跳过；如果遇到数字，则返回<code>NUMBER</code>；如果遇到文件结束，则返回<code>EOF</code>；其他的任意字符(.)都返回<code>INVALID</code>。</p>
-
-<p>定义好符号之后，我们就可以编写<code>BNF</code>了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">expressions</span>
-</span><span class='line'>    <span class="o">:</span> <span class="nx">NUMBER</span> <span class="nx">EOF</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">$1</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">$1</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里我们定义了一条规则，即<code>expressions -&gt; NUMBER EOF</code>。在<code>jison</code>中，当匹配到规则之后，可以执行一个代码块，比如此处的输出语句<code>console.log($1)</code>。这个产生式的右侧有几个元素，就可以用<code>$加序号</code>来引用，如<code>$1</code>表示<code>NUMBER</code>实际对应的值，<code>$2</code>为<code>EOF</code>。</p>
-
-<p>通过命令</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>jison calc.jison
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>可以在当前目录下生成一个<code>calc.js</code>文件，现在来创建一个文件<code>expr</code>，文件内容为一个数字，然后执行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>node calc.js expr
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>来测试我们的解释器：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">echo</span> <span class="s2">&quot;3.14&quot;</span> &gt; expr
-</span><span class='line'><span class="nv">$ </span>node calc.js expr
-</span><span class='line'>3.14
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>目前我们完整的代码仅仅20行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="cm">/* lexical grammar */</span>
-</span><span class='line'><span class="o">%</span><span class="nx">lex</span>
-</span><span class='line'><span class="o">%%</span>
-</span><span class='line'>
-</span><span class='line'><span class="err">\</span><span class="nx">s</span><span class="o">+</span>                   <span class="cm">/* skip whitespace */</span>
-</span><span class='line'><span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">9</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">9</span><span class="p">]</span><span class="o">+</span><span class="p">)</span><span class="o">?</span>    <span class="k">return</span> <span class="s1">&#39;NUMBER&#39;</span>
-</span><span class='line'><span class="o">&lt;&lt;</span><span class="nx">EOF</span><span class="o">&gt;&gt;</span>               <span class="k">return</span> <span class="s1">&#39;EOF&#39;</span>
-</span><span class='line'><span class="p">.</span>                     <span class="k">return</span> <span class="s1">&#39;INVALID&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">/</span><span class="nx">lex</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">%</span><span class="nx">start</span> <span class="nx">expressions</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">%%</span> <span class="cm">/* language grammar */</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">expressions</span>
-</span><span class='line'>    <span class="o">:</span> <span class="nx">NUMBER</span> <span class="nx">EOF</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">$1</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">$1</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>加法</h4>
-
-<p>我们的解析器现在只能计算一个数字（输入给定的数字，给出同样的输出），我们来为它添加一条新的规则:加法。首先我们来扩展目前的BNF，添加一条新的规则：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">expressions</span>
-</span><span class='line'>    <span class="o">:</span> <span class="nx">statement</span> <span class="nx">EOF</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">$1</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">$1</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">statement</span><span class="o">:</span>
-</span><span class='line'>  <span class="nx">NUMBER</span> <span class="nx">PLUS</span> <span class="nx">NUMBER</span>
-</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$1</span> <span class="o">+</span> <span class="nx">$3</span><span class="p">}</span>
-</span><span class='line'>  <span class="o">|</span>
-</span><span class='line'>  <span class="nx">NUMBER</span>
-</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$1</span><span class="p">}</span>
-</span><span class='line'>  <span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>即，<code>expressions</code>由<code>statement</code>组成，而<code>statement</code>可以有两个规则规约得到，一个就是纯数字，另一个是<code>数字 加号 数字</code>，这里的<code>PLUS</code>是我们定义的一个新的符号：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="s2">&quot;+&quot;</span>    <span class="k">return</span> <span class="s2">&quot;PLUS&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当输入匹配到规则<code>数字 加号 数字</code>时，对应的块<code>{$$ = $1 + $3}</code>会被执行，也就是说，两个<code>NUMBER</code>对应的值会加在一起，然后赋值给整个表达式的值，这样就完成了<strong>语义</strong>的翻译。</p>
-
-<p>我们在文件<code>expr</code>中写入算式：<code>3.14+1</code>，然后测试：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>jison calc.jison
-</span><span class='line'><span class="nv">$ </span>node calc.js expr
-</span><span class='line'>13.14
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>嗯，结果有点不对劲，两个数字都被当成了字符串而拼接在一起了，这是因为JavaScript中，<code>+</code>的二义性和弱类型的自动转换导致的，我们需要做一点修改：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">statement</span><span class="o">:</span>
-</span><span class='line'>  <span class="nx">NUMBER</span> <span class="nx">PLUS</span> <span class="nx">NUMBER</span>
-</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">$1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">$3</span><span class="p">)}</span>
-</span><span class='line'>  <span class="o">|</span>
-</span><span class='line'>  <span class="nx">NUMBER</span>
-</span><span class='line'>  <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$1</span><span class="p">}</span>
-</span><span class='line'>  <span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们使用JavaScript内置的<code>parseFloat</code>将字符串转换为数字类型，再做加法即可：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>jison calc.jison
-</span><span class='line'><span class="nv">$ </span>node calc.js expr
-</span><span class='line'>4.140000000000001
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>更多的规则</h4>
-
-<p>剩下的事情基本就是把BNF翻译成<code>jison</code>的语法了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>S -&gt; T + T | T - T | T
-</span><span class='line'>T -&gt; F * F | F / F | F
-</span><span class='line'>F -&gt; NUMBER | <span class="s1">&#39;(&#39;</span> S <span class="s1">&#39;)&#39;</span>
-</span><span class='line'>NUMBER -&gt;  0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">expressions</span>
-</span><span class='line'>    <span class="o">:</span> <span class="nx">statement</span> <span class="nx">EOF</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">$1</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">$1</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">statement</span><span class="o">:</span>
-</span><span class='line'>  <span class="nx">term</span> <span class="nx">PLUS</span> <span class="nx">term</span> <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$1</span> <span class="o">+</span> <span class="nx">$3</span><span class="p">}</span>
-</span><span class='line'>  <span class="o">|</span>
-</span><span class='line'>  <span class="nx">term</span> <span class="nx">MINUS</span> <span class="nx">term</span> <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$1</span> <span class="o">-</span> <span class="nx">$3</span><span class="p">}</span>
-</span><span class='line'>  <span class="o">|</span>
-</span><span class='line'>  <span class="nx">term</span> <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$1</span><span class="p">}</span>
-</span><span class='line'>  <span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">term</span><span class="o">:</span>
-</span><span class='line'>  <span class="nx">factor</span> <span class="nx">MULTIPLE</span> <span class="nx">factor</span> <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$1</span> <span class="o">*</span> <span class="nx">$3</span><span class="p">}</span>
-</span><span class='line'>  <span class="o">|</span>
-</span><span class='line'>  <span class="nx">factor</span> <span class="nx">DIVIDE</span> <span class="nx">factor</span> <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$1</span> <span class="o">/</span> <span class="nx">$3</span><span class="p">}</span>
-</span><span class='line'>  <span class="o">|</span>
-</span><span class='line'>  <span class="nx">factor</span> <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$1</span><span class="p">}</span>
-</span><span class='line'>  <span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">factor</span><span class="o">:</span>
-</span><span class='line'>  <span class="nx">NUMBER</span> <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">$1</span><span class="p">)}</span>
-</span><span class='line'>  <span class="o">|</span>
-</span><span class='line'>  <span class="nx">LP</span> <span class="nx">statement</span> <span class="nx">RP</span> <span class="p">{</span><span class="nx">$$</span> <span class="o">=</span> <span class="nx">$2</span><span class="p">}</span>
-</span><span class='line'>  <span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，像复杂一些的四则运算：<code>(10-2) * 3 + 2/4</code>，我们的计算器也已经有能力来计算出结果了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>jison calc.jison
-</span><span class='line'><span class="nv">$ </span>node calc.js expr
-</span><span class='line'>24.5
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>总结</h3>
-
-<p>我们在本文中讨论了BNF和上下文无关文法，以及这些理论如何与工程实践联系起来。这里的<code>四则运算计算器</code>当然是一个很简单的例子，不过我们从中可以看到将<code>BNF</code>形式文法翻译成实际可以工作的代码是多么方便。我在后续的文章中会介绍<code>jison</code>更高级的用法，以及如何在实际项目中使用<code>jison</code>产生的解释器。</p>
 ]]></content>
   </entry>
   

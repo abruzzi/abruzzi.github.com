@@ -9,8 +9,8 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Bower简介 Bower安装及简单配置 Bower是一个基于Node.js的依赖管理工具，它是一个npm的包，因此安装十分简单，由于我们需要在所有项目中都可以使用bower，因此将其安装在全局目录下： 1
-$ npm install -g bower 安装完成之后，可以通过bower &hellip;">
+  <meta name="description" content="一个实际的场景 大部分命令行程序都被设计成了可以被管道连接起来的，这样在命令行里可以很容易的讲很多命令串起来，从而完成极为强大的功能。比如： 1
+$ find . -name "*.js" | xargs basename | uniq | wc -l &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +79,169 @@ $ npm install -g bower 安装完成之后，可以通过bower &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/12/expect-how-to-make-yourself-more-efficient/">使用expect来自动化交互式命令</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-14T17:40:00+11:00" pubdate data-updated="true">Dec 14<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>一个实际的场景</h3>
+
+<p>大部分命令行程序都被设计成了可以被管道连接起来的，这样在命令行里可以很容易的讲很多命令串起来，从而完成极为强大的功能。比如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ find . -name "*.js" | xargs basename | uniq | wc -l</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个命令会递归的查找当前目录下所有的JavaScript文件，然后用<code>basename</code>去掉可能存在的路径字符串(比如，<code>basename path/to/file</code>会返回<code>file</code>)，然后我们使用uniq来保证查找列表中得每个条目都是唯一的，最后用<code>wc -l</code>来统计行数。</p>
+
+<p>但是并非所有场景都不需要人的干预，比如一个<strong>vpn</strong>链接的建立过程：</p>
+
+<ol>
+<li>选择vpn的Group名称</li>
+<li>填写用户名</li>
+<li>填写密码</li>
+<li>等待连接建立，然后程序退出</li>
+</ol>
+
+
+<p><img src="http://abruzzi.github.com/images/2013/12/vpnlogin.png" alt="image" /></p>
+
+<p>像这种需要用户交互操作的程序，是无法通过常规的方式来完成自动化的。如果你经常需要做这样的操作，比如网络环境并不稳定，每天需要连接2-3次，那也是一个非常烦人的事情。</p>
+
+<p><a href="http://expect.sourceforge.net/">Expect</a>正是为这种场景设计的。</p>
+
+<h3>Expect简介</h3>
+
+<p><a href="http://expect.sourceforge.net/">Expect</a>用来自动化这些<code>交互式</code>的命令行程序，比如telnet, ftp等。</p>
+
+<p>Expect脚本非常简单，基本的模式是：</p>
+
+<ol>
+<li>启动一个命令A</li>
+<li>当命令的输出中包含字符串X的话</li>
+<li>输入Y</li>
+</ol>
+
+
+<p>用expect的脚本来表示的话，代码如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/expect
+</span><span class='line'>
+</span><span class='line'>spawn A
+</span><span class='line'>expect "X"
+</span><span class='line'>send "Y"</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>spawn</code>会启动一个进程，<code>expect</code>会负责和这个进程来交互。如果没有匹配到指定的字符串，则在一个超时时间内expect就会退出。当然可以通过<code>set timeout -1</code>来让程序expect永远等待下去。</p>
+
+<h3>两个小例子</h3>
+
+<h4>自动的登录到vpn服务器上</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/expect
+</span><span class='line'>
+</span><span class='line'>set addr "vpn.service.com.au"
+</span><span class='line'>set user "qiu.juntao"
+</span><span class='line'>set pass "mypassword"
+</span><span class='line'>
+</span><span class='line'>set timeout -1 
+</span><span class='line'>spawn /opt/cisco/anyconnect/bin/vpn connect $addr
+</span><span class='line'>
+</span><span class='line'>expect "Group: "
+</span><span class='line'>send "1\r"
+</span><span class='line'>
+</span><span class='line'>expect "Username: " 
+</span><span class='line'>send "$user\r"
+</span><span class='line'>
+</span><span class='line'>expect "Password: " 
+</span><span class='line'>send "$pass\r"
+</span><span class='line'>
+</span><span class='line'>expect "&gt;&gt; state: Connected"</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>自动通过ssh登录到远程</h4>
+
+<p>另外一个问题是，如果需要这个session保持下去，比如需要自动<code>ssh</code>到一个远程的服务器上，但是又不想每次都输入认证信息，则可以进入<code>inactive</code>模式：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/expect
+</span><span class='line'>
+</span><span class='line'>set pass "mypassword"
+</span><span class='line'>
+</span><span class='line'>set timeout -1 
+</span><span class='line'>spawn ssh user@remote.dev.env.com
+</span><span class='line'>
+</span><span class='line'>expect "Password:"
+</span><span class='line'>send "$pass\r"
+</span><span class='line'>
+</span><span class='line'>interact</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样就可以完成自动登录了，而expect回一直等到你从ssh中退出。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1836,136 +1999,6 @@ $ npm install -g bower 安装完成之后，可以通过bower &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/06/setup-lisp-development-env-on-mac/">在Mac下搭建Common Lisp开发环境(Emacs)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-03T16:22:00+10:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h4>Lisp编译器（解释器）</h4>
-
-<p>首先需要一个Lisp的编译器，<a href="http://www.sbcl.org/platform-table.html">SBCL</a>是一个开源的实现，支持所有POSIX平台。你可以选择从源码编译，也可以下载二进制包。而由于使用mac，可以用强大的homebrew来安装：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ brew install sbcl</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>简单使用</h5>
-
-<p>使用<code>sbcl</code>启动交互环境，如果用lisp的术语来说，这是一个REPL(read–eval–print loop )。这个环境中就可以尝试Common Lisp编程了。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ sbcl
-</span><span class='line'>
-</span><span class='line'>This is SBCL 1.1.7.0-aeb9307, an implementation of ANSI Common Lisp.
-</span><span class='line'>More information about SBCL is available at &lt;http://www.sbcl.org/&gt;.
-</span><span class='line'>
-</span><span class='line'>SBCL is free software, provided as is, with absolutely no warranty.
-</span><span class='line'>It is mostly in the public domain; some portions are provided under
-</span><span class='line'>BSD-style licenses.  See the CREDITS and COPYING files in the
-</span><span class='line'>distribution for more information.
-</span><span class='line'>
-</span><span class='line'>* (+ 1 2 3 4 5 6)
-</span><span class='line'>**21**
-</span><span class='line'>
-</span><span class='line'>* (quit)
-</span><span class='line'>
-</span><span class='line'>$</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但是这个环境对开发者不是非常友好，比如不支持上下键导航，不支持左右键，非常原始，可以使用Emacs来作为开发环境，当然如果你更喜欢vim（像我一样），也没有任何问题。不过这是一个很好的学习Emacs编辑环境的机会，可以尝试一下。</p>
-
-<h4>Emacs + Slime</h4>
-
-<p><a href="http://common-lisp.net/project/slime/">Slime</a>是一个Emacs下开发Common Lisp程序的一个插件，它本身就是由lisp写成的，下载之后是一个压缩包，将其解压缩到<code>~/.eamcs.d/</code>目录中即可。
-然后在<code>~/.emacs</code>文件中添加下面的配置：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>; slime setup
-</span><span class='line'>(setq inferior-lisp-program "/usr/local/bin/sbcl")
-</span><span class='line'>(add-to-list 'load-path "~/.emacs.d/slime/")
-</span><span class='line'>(require 'slime)
-</span><span class='line'>(slime-setup)</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>Emacs的“开发者”配置</h5>
-
-<p>默认的eamcs界面比较简陋，我的vim使用的solarized主题，觉得配色非常合理，结果在github上发现了其对应的<a href="https://github.com/sellout/emacs-color-theme-solarized">emacs主题</a>。现在之后，同样解压在<code>~/.emacs.d/</code>目录中，然后在<code>~/.emacs</code>加上一下配置即可。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>; color theme setup 
-</span><span class='line'>(add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-color-theme-solarized/")
-</span><span class='line'>(load-theme 'solarized-dark t)
-</span><span class='line'>
-</span><span class='line'>; hide the tool bar
-</span><span class='line'>(tool-bar-mode -1)
-</span><span class='line'>
-</span><span class='line'>; set the font
-</span><span class='line'>(set-face-attribute 'default nil :font "Monaco")
-</span><span class='line'>(set-face-attribute 'default nil :height 170)
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>效果图</h4>
-
-<p><img src="http://abruzzi.github.com/images/2013/06/emacs.resized.png" alt="image" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/8/">&larr; Older</a>
@@ -1983,6 +2016,10 @@ $ npm install -g bower 安装完成之后，可以通过bower &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2016/12/my-2016/">我的2016</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/10/testing-in-microservice-context/">微服务场景下的自动化测试</a>
       </li>
     
@@ -1998,10 +2035,6 @@ $ npm install -g bower 安装完成之后，可以通过bower &hellip;">
         <a href="/2016/05/practise-in-programming/">无他，但手熟尔</a>
       </li>
     
-      <li class="post">
-        <a href="/2016/05/design-for-failure/">为故障和失败做设计</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -2011,7 +2044,7 @@ $ npm install -g bower 安装完成之后，可以通过bower &hellip;">
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2016 - Qiu Juntao -
+  Copyright &copy; 2017 - Qiu Juntao -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
 </p>
 
