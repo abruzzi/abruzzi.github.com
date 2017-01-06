@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="自动告警脚本 最近项目上有这样一个需求：系统中有一个后台服务会不断的生成监控日志，根据系统的运行情况，它每天会在目录/var/alarms下生成一个文件，文件名带有时间戳，其中内容格式如下： 1
+  <meta name="description" content="一个小故事 三年前，我在一篇博客里不无自豪的记录了python编写的小函数，当时感觉python真强大，11行代码就写出了一个配置文件的解析器。 1
 2
 3
 4
@@ -17,7 +17,12 @@
 6
 7
 8
-$ cat /var/alarms/alarms- &hellip;">
+9
+10
+11
+12
+13
+def loadUserInfo(fileName): userinfo = {} file &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -86,6 +91,301 @@ $ cat /var/alarms/alarms- &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/03/list-comprehension-in-python/">Python中的 List Comprehension 以及 Generator</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-30T17:06:00+11:00" pubdate data-updated="true">Mar 30<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>一个小故事</h3>
+
+<p>三年前，我在<a href="http://icodeit.org/2012/07/post-from-python-vim-2/">一篇博客</a>里不无自豪的记录了python编写的小函数，当时感觉python真强大，11行代码就写出了一个配置文件的解析器。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">def</span> <span class="nf">loadUserInfo</span><span class="p">(</span><span class="n">fileName</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">userinfo</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>    <span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">while</span> <span class="nb">file</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">line</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">break</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="p">):</span>
+</span><span class='line'>            <span class="k">continue</span>
+</span><span class='line'>        <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">userinfo</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="n">userinfo</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最近正在跟同事学习<code>python在数据挖掘中的应用</code>，又专门学习了一下python本身，然后用<code>list comprehension</code>简化了以下上面的代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">def</span> <span class="nf">loadUserInfo</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">dict</span><span class="p">([</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="s">&quot;r&quot;</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;#&quot;</span><span class="p">)])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个函数和上面的函数的功能一样，都是读取一个指定的<code>key=value</code>格式的文件，然后构建出来一个<code>映射</code>（当然，在Python中叫做<code>字典</code>）对象，该函数还会跳过空行和<code>#</code>开头的行。</p>
+
+<p>比如，我想要查看一下<code>.wgetrc</code>配置文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">print</span><span class="p">(</span><span class="n">loadUserInfo</span><span class="p">(</span><span class="s">&quot;/Users/jtqiu/.wgetrc&quot;</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>假设我的<code>.wgetrc</code>文件配置如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="n">http</span><span class="o">-</span><span class="n">proxy</span><span class="o">=</span><span class="mf">10.18</span><span class="o">.</span><span class="mf">0.254</span><span class="p">:</span><span class="mi">3128</span>
+</span><span class='line'><span class="n">ftp</span><span class="o">-</span><span class="n">proxy</span><span class="o">=</span><span class="mf">10.18</span><span class="o">.</span><span class="mf">0.254</span><span class="p">:</span><span class="mi">3128</span>
+</span><span class='line'><span class="c">#http_proxy=10.1.1.28:3128</span>
+</span><span class='line'><span class="n">use_proxy</span><span class="o">=</span><span class="n">yes</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>则上面的函数会产生这样的输出：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="p">{</span><span class="s">&#39;use_proxy&#39;</span><span class="p">:</span> <span class="s">&#39;yes&#39;</span><span class="p">,</span> <span class="s">&#39;ftp-proxy&#39;</span><span class="p">:</span> <span class="s">&#39;10.18.0.254:3128&#39;</span><span class="p">,</span> <span class="s">&#39;http-proxy&#39;</span><span class="p">:</span> <span class="s">&#39;10.18.0.254:3128&#39;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>list comprehension（列表推导式）</h3>
+
+<p>在python中，<code>list comprehension</code>（或译为列表推导式）可以很容易的从一个列表生成另外一个列表，从而完成诸如<code>map</code>, <code>filter</code>等的动作，比如：</p>
+
+<p>要把一个字符串数组中的每个字符串都变成大写：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;john&quot;</span><span class="p">,</span> <span class="s">&quot;jack&quot;</span><span class="p">,</span> <span class="s">&quot;sean&quot;</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'><span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果用列表推导式，只需要一行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>结果都是一样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="p">[</span><span class="s">&#39;JOHN&#39;</span><span class="p">,</span> <span class="s">&#39;JACK&#39;</span><span class="p">,</span> <span class="s">&#39;SEAN&#39;</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>另外一个例子，如果想要过滤出一个数字列表中的所有偶数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="n">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'><span class="k">for</span> <span class="n">number</span> <span class="ow">in</span> <span class="n">numbers</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">number</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果写成列表推导式：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">numbers</span> <span class="k">if</span> <span class="n">x</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>结果也是一样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>显然，列表推导更加短小，也更加表意。</p>
+
+<h3>迭代器</h3>
+
+<p>在了解<code>generator</code>之前，我们先来看一个<code>迭代器</code>的概念。有时候我们不需要将整个列表都放在内存中，特别是当列表的尺寸比较大的时候。</p>
+
+<p>比如我们定义一个函数，它会返回一个连续的整数的列表：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">def</span> <span class="nf">myrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">num</span><span class="p">,</span> <span class="n">nums</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[]</span>
+</span><span class='line'>    <span class="k">while</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">nums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">nums</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当我们计算诸如<code>myrange(50)</code>或者<code>myrange(100)</code>时，不会有任何问题，但是当获取诸如<code>myrange(10000000000)</code>的时候，由于这个函数的内部会将数字保存在一个临时的列表中，因此会有很多的内存占用。</p>
+
+<p>因此在python有了迭代器的概念：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">class</span> <span class="nc">myrange</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">self</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># for python 3</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">i</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">i</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个对象其实实现了两个特殊的方法：<code>__iter__</code>（对于python3来说，是<code>__next__</code>）和<code>next</code>方法。其中<code>next</code>每次只返回一个值，如果迭代已经结束，就抛出一个<code>StopIteration</code>的异常。实现了这两个方法的类都可以算作是一个迭代器，他们可以被用于<code>可迭代</code>的上下文中，比如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">myrange</span> <span class="kn">import</span> <span class="n">myrange</span>
+</span><span class='line'><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">myrange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</span><span class='line'><span class="mi">0</span>
+</span><span class='line'><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</span><span class='line'><span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是可以看到这个函数中有很多的样板代码，因此我们有了生成器表达式来简化这个过程：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">def</span> <span class="nf">myrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">while</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">yield</span> <span class="n">num</span>
+</span><span class='line'>        <span class="n">num</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意此处的<code>yield</code>关键字，每次使用<code>next</code>来调用这个函数时都会求值一次num并返回，具体的细节可以<a href="http://www.jeffknupp.com/blog/2013/04/07/improve-your-python-yield-and-generators-explained/">参考这里</a>。</p>
+
+<h3>区别</h3>
+
+<p>简单来说，两者都可以在迭代器上下文中使用，看起来几乎是一样的。不同的地方是<code>generator</code>可以节省内存空间，从而提高执行速度。<code>generator</code>更适合一次性的列表处理，比如只是需要一个中间列表作为转换。而列表推导则更适合要将<code>列表</code>保存下来，以备后续使用的场景。</p>
+
+<p>这里也有<a href="http://stackoverflow.com/questions/47789/generator-expressions-vs-list-comprehension">一些讨论</a>，可以一并参看。</p>
+
+<h3>参考</h3>
+
+<ol>
+<li><a href="http://anandology.com/python-practice-book/iterators.html">Iterators &amp; Generators</a></li>
+<li><a href="https://wiki.python.org/moin/Generators">Generators Wiki</a></li>
+</ol>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3265,110 +3565,6 @@ $ cat /var/alarms/alarms- &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/12/my-2014/">我的2014</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-12-27T23:56:00+11:00" pubdate data-updated="true">Dec 27<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>依照惯例，我每年在元旦时候都会写一篇回顾，总结过去，展望未来。不过很少跟上一年指定的<code>计划</code>真正去比较，一般都是列举一下这一年做的事情。</p>
-
-<p>大致分下来，可以分为上半年和下半年两部分，这当然不是废话。因为上半年和下半年分别在两个完全不同的项目上工作。</p>
-
-<h3>技术咨询项目</h3>
-
-<p>上半年在一个国内咨询项目上，主要做的事情有（其实我是作为前端专家加入的，不过后来工作重心发生了改变）：</p>
-
-<ol>
-<li>GIS平台</li>
-<li>大数据平台</li>
-</ol>
-
-
-<p>关于GIS最后的产出是一系列博客，而且还在<a href="http://www.infoq.com/cn/articles/visualization-of-the-global-seismic-system">InfoQ</a>上发表了一篇。</p>
-
-<p><img src="/images/2014/04/openlayers-earthquake-resized.png" alt="earthquake" /></p>
-
-<p>而后来我又根据我iPhone上照片的经纬度信息，汇总出了一个热力图（使用<a href="http://qgis.org/en/site/">QGis</a>）：</p>
-
-<p><img src="/images/2014/12/places-resized.png" alt="heat map" /></p>
-
-<p>大数据相关的所有东西都在<a href="https://gist.github.com/abruzzi">我的gist上</a>，还没有时间整理。</p>
-
-<h3>硬件</h3>
-
-<p>回到办公室之后，发现了硬件小组提供的一大堆有意思的工具和器件，包括<code>3D打印机</code>，<code>Arduino</code>的一些芯片等，为了纪念我的GIS项目，我还打印了一个瓦片：</p>
-
-<p><img src="/images/2014/12/tile-resized.png" alt="tile" /></p>
-
-<p>不断将我拖延了4年的机器小车组装了起来，而且还使用舵机，蓝牙，超声波等模块制作了一个实际的雷达：</p>
-
-<p><img src="/images/2014/12/radar-resized.png" alt="radar" /></p>
-
-<h3>Sessions &amp; Workshop</h3>
-
-<p>5月底回到办公室后，我发现Office的气氛其实比我来的时候低落了很多，ThoughtWorks的感觉非常淡了。</p>
-
-<p>一方面是新人太多，而来新的项目所在的11楼由于客户的关系（我自以为），同事们的积极性极低。一个最容易看到的信号就是Session变得很少，我尝试做一些改变。</p>
-
-<p>分别做了一些关于自动化测试，JavaScript方面的Session和Workshop，下面是《可测试的JavaScript》的Workshop。这是我第一次组织比较大的，而且时间比较长的Workshop。</p>
-
-<p><img src="/images/2014/12/testable-javascript-resized.png" alt="testable-javascript" /></p>
-
-<p>有了上一次的Feedback，在年底的时候，我又组织了一次为期3周的Workshop，受众更是扩大到了各种角色，包括BA，UX，UIDev，QA等等。</p>
-
-<p><img src="/images/2014/12/3-pages-resized.png" alt="3 pages" /></p>
-
-<h3>写作</h3>
-
-<p>今年的博客数量减少了，一个原因是我在编写我的第二本书<a href="http://icodeit.org/lwweb/">《轻量级Web应用开发》</a>，经过几个月的坚持和努力，这本书已经编写完成，应该会在明年(2015年)年初与读者见面。</p>
-
-<p>另外，在休年假的时候（3周3页面之后），我将Workshop的内容做了整理，并加入了一些<code>设计</code>相关的内容，形成了一本电子书，名为<a href="http://juntao.gitbooks.io/3-web-designs-in-3-weeks/">《3 web designs in 3 weeks》</a>。</p>
-
-<h3>其他</h3>
-
-<p>我正在努力的向<code>UX</code>角色的转变，所谓<code>千里之行，始于足下</code>。我在休年假期间，买了一大堆UX相关的书籍。目前正在努力学习画画：</p>
-
-<p><img src="/images/2014/12/drawing-resized.png" alt="两点透视" /></p>
-
-<p>在今天的CST的创新课上，我们一起设想了几个场景，下面是我自己画的图：</p>
-
-<p><img src="/images/2014/12/scenario-resized.png" alt="场景" /></p>
-
-<p>最后是一张我自己设计的自己的名片：</p>
-
-<p><img src="/images/2014/12/my-card-resized.png" alt="name card" /></p>
-
-<p>希望来年可以在自己努力的路上看到一些成果吧。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/5/">&larr; Older</a>
@@ -3386,6 +3582,10 @@ $ cat /var/alarms/alarms- &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2017/01/why-software-is-complex/">软件开发为什么很难</a>
+      </li>
+    
+      <li class="post">
         <a href="/2016/12/my-2016/">我的2016</a>
       </li>
     
@@ -3399,10 +3599,6 @@ $ cat /var/alarms/alarms- &hellip;">
     
       <li class="post">
         <a href="/2016/09/how-to-design-a-training/">如何设计一次培训</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/05/practise-in-programming/">无他，但手熟尔</a>
       </li>
     
   </ul>
