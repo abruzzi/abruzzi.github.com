@@ -8,22 +8,23 @@ categories:
 - Methodology
 ---
 
-### 为什么软件开发这么复杂
+## 为什么软件开发这么复杂
 
-最初在1999年被Dave Snowden开发出来的[Cynefin](https://en.wikipedia.org/wiki/Cynefin_framework)框架尝试把世界上的问题划分到了5个域中（大类）：
+最初在1999年被Dave Snowden开发出来的**[Cynefin](https://en.wikipedia.org/wiki/Cynefin_framework)框架**尝试把世界上的问题划分到了5个域中（大类）：
 
 ![](/images/2017/01/cynefin-resized.png)
 
-- 简单（Simple）问题，该域中的因果关系非常明显，解决这些问题的方法是感知——分类——响应（Sense - Categorise - Respond），有对应的**最佳**实践
-- 复合（Complicated）问题，该域中的因果关系需要分析，或者需要一些其他形式的调查和/或专业知识的应用，解决这些问题的方法是感知——分析——响应（Sense - Analyze - Respond ），有对应的**好的**实践
-- 复杂（Complex）问题，该域中的因果关系仅能够从回顾中发现，解决这些问题的方法是探索——感知——响应（Probe - Sense - Respond ），我们能够感知**涌现**实践（emergent practice）
-- 混乱（Chaotic）问题，该域中没有系统级别的因果关系，方法是行动——感知——响应（Act - Sense - Respond ），我们能够发现**新颖**实践（novel practice）
+- 简单（Simple）问题，该域中的因果关系非常明显，解决这些问题的方法是 `感知-分类-响应`（Sense-Categorise-Respond），有对应的**最佳**实践
+- 复合（Complicated）问题，该域中的因果关系需要分析，或者需要一些其他形式的调查和/或专业知识的应用，解决这些问题的方法是`感知-分析-响应`（Sense-Analyze-Respond），有对应的**好的**实践
+- 复杂（Complex）问题，该域中的因果关系仅能够从回顾中发现，解决这些问题的方法是`探索-感知-响应`（Probe-Sense-Respond），我们能够感知**涌现**实践（emergent practice）
+- 混乱（Chaotic）问题，该域中没有系统级别的因果关系，方法是`行动-感知-响应`（Act-Sense-Respond），我们能够发现**新颖**实践（novel practice）
 - 失序（Disorder）问题，无需问题，该域没有因果关系，不可感知，其中的问题也也无法被解决
 
 显然，软件开发过程更多地是一个复杂（Complex）问题。在一个产品被开发出来之前，不确定性非常高，团队（包括业务人员和技术人员）对产品的知识也是最少的，而且需要大量的学习和尝试才可以明确下一步可能的方向。不幸的是，很多时候我们需要在一开始（不确定性最高的时候）就为项目做计划。这种从传统行业中非常适合的方法在软件开发领域不再适用，这也是敏捷开发、精益等方法论在软件开发中更加适合的原因。
 
 ![](/images/2017/01/learning-curve-resized.png)
-来源：http://alistair.cockburn.us/Disciplined+Learning
+
+*来源：http://alistair.cockburn.us/Disciplined+Learning*
 
 正因为软件开发事实上是一个学习的过程，我们学习到的新知识反过来会帮助我们对问题的定义，从而带来变化。这里的变化可能来自两个方向：
 
@@ -39,7 +40,8 @@ categories:
 ### 一个小例子
 
 ![](/images/2017/01/ui-resized.png)
-来源：https://d13yacurqjgara.cloudfront.net/users/749341/screenshots/2228676/uielements_day021_dribbbleinvites.jpg
+
+*来源：https://d13yacurqjgara.cloudfront.net/users/749341/screenshots/2228676/uielements_day021_dribbbleinvites.jpg*
 
 这是一个经过设计师精确设计的界面，在它被设计出来之前，用户事实上无法准确的描述出它。设计过程中经历了很多的诸如：
 
@@ -50,8 +52,8 @@ categories:
 
 往复多次之后，界面确定了。在没有仔细思考使用场景的时候，开发会误以为这个功能非常简单。但是如果你是一个有经验的开发者，很快会想到的一些问题是：
 
-- 在宽屏下应该如何展示
-- 在Tablet上如何展示
+- 在宽屏下如何展示
+- 在平板上如何展示
 - 在手机上如何展示
 - 即使仅仅支持桌面版，跨浏览器要考虑吗？支持哪些版本？
 - 有些UI效果在低版本的浏览器上不工作，需要Shim技术
