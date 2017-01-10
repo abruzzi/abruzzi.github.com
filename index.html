@@ -9,8 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="问题的分类 最初在1999年被Dave Snowden开发出来的Cynefin框架尝试把世界上的问题划分到了5个域中（大类）： 简单（Simple）问题，该域中的因果关系非常明显，解决这些问题的方法是 感知-分类-响应（Sense-Categorise-Respond），有对应的最佳实践
-复合（ &hellip;">
+  <meta name="description" content="DDD为什么很难实施 领域驱动设计（Domain Driven Design）的概念已经被发明了十多年，而且也不乏相关著作，但是业界宣称自己应用了DDD原则的项目，软件却鲜有耳闻。随着微服务架构的流行，DDD在边界识别，服务划分等方面不断被提及，作为一种应对复杂软件的方法论，似乎又被重视起来了。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +78,218 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2017/01/why-ddd-is-so-hard/">实施领域驱动设计的正确姿势</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-01-11T00:48:00+11:00" pubdate data-updated="true">Jan 11<span>th</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>DDD为什么很难实施</h2>
+
+<p>领域驱动设计（<a href="https://en.wikipedia.org/wiki/Domain-driven_design">Domain Driven Design</a>）的概念已经被发明了十多年，而且也不乏相关著作，但是业界宣称自己应用了DDD原则的项目，软件却鲜有耳闻。随着微服务架构的流行，DDD在边界识别，服务划分等方面不断被提及，作为一种应对复杂软件的方法论，似乎又被重视起来了。</p>
+
+<p>那么，为什么这个听起来很靠谱的方法论实际上很难实施呢？我们以DDD创始人<code>Eric Evans</code>的经典书籍《领域驱动设计：软件核心复杂性应对之道》为例，分析一下，可能的原因是这样的：</p>
+
+<ul>
+<li>新概念数量比较多</li>
+<li>战术/战略都有所涉及</li>
+<li>不同层次的概念混杂（除了设计模式之外，还有架构风格的讨论）在一起</li>
+</ul>
+
+
+<h3>繁复而混杂的概念</h3>
+
+<p>领域，子域，核心子域，通用子域，实体，值对象，领域服务，应用服务，领域事件，统一语言，衔接上下文，遵循者等等。DDD中有着大量的新概念，而且这些概念有些是技术相关的，有些是问题相关的，交织在一起之后，很难理清头绪。</p>
+
+<p><img src="/images/2017/01/ddd-full-diagram-resized.png" alt="DDD Full" /></p>
+
+<p>DDD中的模式又分为战术的和战略的两大部分，有很多团队应用了战术相关的，比如实体，值对象，领域服务，仓库等模式，代码看似DDD，实则与DDD强调的<code>以领域为中心</code>相去甚远，陷入了开发者太过于关注技术本身的老路上，这种现象还有个专门的名词，叫<a href="http://stackoverflow.com/questions/4196668/domain-driven-design-ddd-pitfalls">DDD-Lite</a>。</p>
+
+<h3>不同的思维方式要求</h3>
+
+<p>DDD要求读者既有具体Coding的技能，有需要跳出圈外，以架构师的角度来审视整个系统。DDD需要开发者以一个全新的视角去认识软件开发，强调对业务流程的熟悉，强调与领域专家一起协作，强调软件的表达能力和进化能力。而这些思维方式的转变，都有很大阻力的（想想从面向对象世界切换到函数式编程，再到响应式函数编程的切换）。</p>
+
+<blockquote><p>It should be noted that no ethically-trained software engineer would ever consent to write a DestroyBaghdad procedure. Basic professional ethics would instead require him to write a DestroyCity procedure, to which Baghdad could be given as a parameter.  &#8211; Nathaniel Borenstein</p></blockquote>
+
+<p>我自己在工作的前4年，非常反感业务，认为<code>case by case</code>的业务流程会严重影响我的代码的通用性。然而事实是，纯粹通用的代码是不存在的。毕竟，诸如IoC容器，Web等基础设施已经相当完善，完全无需我们重复发明轮子。而作为应用开发人员，更重要的是在充分理解业务的前提下，写出易于维护，易于扩展，可以更快速响应业务变化的代码。</p>
+
+<p>正因为如此，DDD在一定程度上会让程序员感到不适，它太强调领域了，而领域又是独一无二的，每个公司的每个系统都有其独立性，这就要求你的代码可能没法做到<code>纯粹</code>。</p>
+
+<h2>正确姿势</h2>
+
+<p>要解决上面提到的这些问题，正确的实施DDD来指导实际的开发工作，需要至少做到这样几个事情。首先，明确分清<code>问题</code>和<code>方案</code>（这是初学DDD者最容易犯的错误）；其次，转变思维方式，将软件开发的重心放在梳理并明确业务需求上，而不是代码逻辑上；最后，需要应用一些合理的工程实践来促成DDD-Lite的落地。</p>
+
+<h3>分清问题和解决方案</h3>
+
+<p>我们说领域（子域，通用子域，支撑子域等）的时候，是在讨论问题域，即定义我们要解决的问题是什么。而说到限界上下文，聚合，实体，仓库则是在讨论解决方案部分，人们很容易将两者搞混。</p>
+
+<p>在电商的领域中，一些典型的问题是：</p>
+
+<ul>
+<li>如何获得更多的客户</li>
+<li>如何让客户更快速的找到自己想要的商品</li>
+<li>如何准确的推荐相关产品给客户</li>
+<li>用户如何付费</li>
+</ul>
+
+
+<p>要解决这些问题，人们可能会开发出来一个软件系统，也可能会用手工的流程，也可能是混合模式。同样，一些具体的解决方案的例子是：</p>
+
+<ul>
+<li>商品促销子系统</li>
+<li>全文搜索系统</li>
+<li>推荐子系统</li>
+<li>支付平台</li>
+</ul>
+
+
+<p>显然，解决方案是在问题定义之后才产生的，而定义问题本身是一件<code>开发人员</code>不擅长的工作，这也是为什么DDD特别强调领域专家的原因。实施DDD需要从领域专家，技术专家的深入合作中，得出一个模型。其实，DDD的核心就是要解决一个问题：建立领域问题的软件模型，这个模型需要满足这样几个条件：</p>
+
+<ul>
+<li>能准确表达领域概念，业务流程等（无需经过翻译）</li>
+<li>容易演进</li>
+<li>每个领域有自己的解决方案</li>
+</ul>
+
+
+<h3>思维方式转变</h3>
+
+<p>开发者要将思维方式转变成<code>以业务规则优先</code>是一件非常困难的事儿。毕竟经过了多年的训练，特别是抽象思维的训练，开发者很喜欢<code>通用</code>的技巧，比如管道-过滤器，线程池，解析器等等。然而业务规则往往是具体的，而且很多时候，需求变化的方向会破坏掉开发者精心构筑的抽象体系。</p>
+
+<p>然而个思维方式的转变正是成功实施DDD关键所在：愿意和业务人员一起理解沟通，理解业务是实施DDD的第一步。其实每个行业的业务都有很多有意思的地方，我在ThoughtWorks，由于工作性质的原因，可以接触到很多不同的客户，不同的业务。每个项目上，我都很乐于去向业务人员学习，业务在现实世界中是如何运作的：房产中介如何打广告，房东如何付费，房地产广告平台如何从中盈利；无线基站如何建设，工人如何去施工，甚至基站铁塔如何避雷，如何防雨；保单的类型，付费年限，如何分红等等。</p>
+
+<p>每个不同的业务都可以学到很多人们在解决问题时发明出来的新思路，新方法。这些思路和方法未尝不可以反过来应用在软件开发上。</p>
+
+<h3>工程实践</h3>
+
+<ul>
+<li>敏捷方法</li>
+<li>自动化测试</li>
+</ul>
+
+
+<h4>敏捷方法</h4>
+
+<p>其实早在敏捷宣言产生的时代，人们就已经发现了<code>客户合作胜过合同谈判</code>。与客户保持高度的合作（最好是业务人员就坐在开发人员旁边），实时的反馈收集并根据反馈进行方向调整都是敏捷方法中倡导的。而DDD更进一步，需要和业务人员一起，定义出领域模型的原型，包括一些白板上的图和代码原型，并根据敏捷方法进行持续的演进。</p>
+
+<p>比如这里提出的一些实践可以比较好的帮助你来实施<code>DDD</code>:</p>
+
+<ul>
+<li>需求的Kickoff（BA，开发，QA一起来明确需求的含义）</li>
+<li>结对编程（不限于开发之间的结对，也可能是不同角色间的结对）</li>
+<li>回顾会议</li>
+</ul>
+
+
+<p>通过敏捷实践，我们可以建立起快速的<code>反馈机制</code>，和对变化的响应能力，冗长的流程和不透明的价值流向会导致很多问题。</p>
+
+<h4>自动化测试</h4>
+
+<p>另一方面，要保证模型的可理解性，除了<code>Clean Code</code>的一些原则之外，自动化测试也是一个必不可少的工程实践。领域模型在<strong>意图表现</strong>上需要做到极致，而单元测试/功能测试则以用例的方式将模型<code>用起来</code>。这要求开发者使用<code>实例化需求</code>，<code>行为驱动开发</code>等方法编写实践作支撑。</p>
+
+<p>测试不是为了覆盖率，也不能仅仅只是为了自动化一些手工的工作。在DDD的上下文中，自动化测试更多的是完整表达业务意图的用例。</p>
+
+<h5>实例化需求</h5>
+
+<p>测试需要以实际用户的角度来编写，并以<code>实例</code>的方式描述。这样即使自动化做不了，这个<code>实例</code>依然是一个很好的文档。当然，为了保证这个文档不过期（和代码实现不匹配），还是强烈建议可以将其自动化起来。</p>
+
+<p>比如这里有个例子，人事经理想要找一些开发人员来分配到项目上，这个找人的过程有两条很简单的规则：</p>
+
+<ul>
+<li>开发人员的技能要和项目的要求匹配</li>
+<li>开发人员当前不在项目上（比如当前项目为Beach即为空闲状态）</li>
+</ul>
+
+
+<p>用<code>Cucumber</code>写的测试看起来是这样的：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Feature: Find employee by skills
+</span><span class='line'>  As a staffing manager
+</span><span class='line'>  I want to find employee by skills
+</span><span class='line'>  So that I know whether we have the staff or we need to hire new ones
+</span><span class='line'>
+</span><span class='line'>  Background: persona
+</span><span class='line'>    Given we have the following employees:
+</span><span class='line'>      | name   | currentProject | role | skills    |
+</span><span class='line'>      | Juntao | Consulting     | Dev  | Java,Ruby |
+</span><span class='line'>      | Yanyu  | Beach          | Dev  | Ruby      |
+</span><span class='line'>      | Jiawei | Beach          | Dev  | Java,Ruby |
+</span><span class='line'>      | Momo   | Beach          | Dev  | Python    |
+</span><span class='line'>
+</span><span class='line'>  Scenario: Search by skills
+</span><span class='line'>    Given I have a project which require "Ruby" as language
+</span><span class='line'>    When I search staff by skill
+</span><span class='line'>    Then I should get the following names:
+</span><span class='line'>      | Yanyu  |
+</span><span class='line'>      | Jiawei |</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>迭代开发</h4>
+
+<p>软件开发本身就具有很高的复杂度，正如我在<a href="http://icodeit.org/2017/01/why-software-is-complex/">上一篇博客</a>里提到的，在项目启动之初，无论是业务专家还是开发者，对软件系统的知识都是非常有限的。迭代式的开发方式更加契合这种复杂度很高的活动。业务人员和开发一起，在建模、实现的过程中会对领域进行深入的学习，并产生新的知识。反过来这些新的知识又会影响模型的进一步进化。</p>
+
+<p><img src="/images/2015/08/waterfall-v-agile-about.gif" alt="" /></p>
+
+<p>迭代开发的方式可以帮助我们将这个复杂度很高的过程变得平缓一些，而且从一个个小的迭代中学习，并根据反馈来指导新的方向，可以快速的帮助团队建立信心，同时对业务的理解更为深入，使得整个开发过程越来越平顺。</p>
+
+<h2>小结</h2>
+
+<p>简而言之，要顺利实施DDD，需要至少做到：</p>
+
+<ul>
+<li>明确概念，分清<code>问题域</code>和<code>解决方案域</code></li>
+<li>转变思维方式，为<code>业务梳理和理解</code>赋予最高的优先级</li>
+<li>通过<code>工程实践</code>来确保落地</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2527,266 +2738,6 @@ Workshop至少需要包含这样几部分：</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2016/02/performance-testing-in-ci/">CI上的Web前端性能测试</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-02-20T18:18:00+11:00" pubdate data-updated="true">Feb 20<span>th</span>, 2016</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Web站点的响应速度</h2>
-
-<p>雅虎在2006年就发布了一份提升Web站点响应速度的<a href="https://developer.yahoo.com/performance/rules.html">最佳实践指南</a>。该指南包含了35条规则，分为7个类别。这些规则已经被广泛使用，并指导人们在新的站点设计时更有针对性的考虑问题。这份指南已经成了Web前端性能度量的一个事实标准了。</p>
-
-<p><a href="http://yslow.org/">YSlow</a>是一个基于这份指南的测试工具，它可以测试一个站点是否“慢”，以及为什么“慢”？你可以通过很多方式来使用<a href="http://yslow.org/">YSlow</a>，比如Firefox，Chrome的插件，命令行工具，甚至PhantomJS这样的无头（Headless）浏览器。YSlow会检测你的站点中的资源是否没有压缩，是否缺失了超时设置，更进一步，它还会检测你的JS/CSS是否已经压缩/精简化，图片的尺寸，是否使用了CDN等等很多的维度。它还可以生成很多格式的报告，比如打分信息，TAP协议的输出，以及junit测试报告的格式。</p>
-
-<p>我们这里讨论如何在持续集成服务器上设置一个<code>YSlow</code>任务，这个任务会在每次构建之后，测试你应用的性能指标，以帮助你更快的发现和定位问题。当然，我推荐你在<code>staging</code>环境，很多开发者在测试环境，本地开发环境都会启动很多对<code>Debug</code>友好的设置，比如未压缩的JS/CSS，没有超时设置的响应等，这会导致该构建任务的<code>打分</code>不够准确。</p>
-
-<p><img src="/images/2016/02/jenkins-report-resized.png" alt="jenkins failure" /></p>
-
-<h3>搭建CI环境</h3>
-
-<p>按照传统方式，如果要搭建一个这样的CI任务，我们需要至少做这样一些事情：</p>
-
-<ul>
-<li>安装JDK</li>
-<li>安装Jenkins</li>
-<li>安装<a href="http://phantomjs.org/">PhantomJS</a></li>
-<li>安装<a href="http://yslow.org/phantomjs/">YSlow.js脚本</a></li>
-</ul>
-
-
-<p>然后设置环境变量，在Jenkins上创建任务，并运行YSlow.js脚本。这个任务很简单，只需要设置好参数，然后将结果输出为Jenkins上的报告即可。比如：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>phantomjs /var/share/yslow.js -i grade -threshold <span class="s2">&quot;B&quot;</span> -f junit <span class="se">\</span>
-</span><span class='line'>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/ &gt; yslow.xml
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li><code>-i grade</code> 展示打分（grade）信息（还可以是basic/stats/all）等</li>
-<li><code>-threshold "B"</code> 指定失败的阈值为B</li>
-<li><code>-f junit</code> 输出为<code>junit</code>识别的XML格式</li>
-</ul>
-
-
-<p>这里的阈值可以是数字（0-100分），字母（A-F级别）或者一个JSON字符串（混合使用）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>-threshold <span class="s1">&#39;{&quot;overall&quot;: &quot;B&quot;, &quot;ycdn&quot;: &quot;F&quot;, &quot;yexpires&quot;: 85}&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的命令会测试站点<code>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/</code>的各项指标，并应用雅虎的那35条规则，并最终生成一个<code>junit</code>测试报告格式的文件：<code>yslow.xml</code>。</p>
-
-<p>但是维护CI环境是一个比较麻烦的事情，而且既然每个项目都可能会用到这样的<code>基础设施</code>，一种好的做法就是将其做成一个<code>镜像</code>保存起来，以方便其他项目的复用！这里我们使用<code>docker</code>来安装和配置我们的CI环境，配置完成之后，我们可以将<code>docker</code>的镜像分享给其他团队，也可以供我们在下一个项目中使用。</p>
-
-<h3>基于docker/docker-compose的环境搭建</h3>
-
-<p>在<a href="https://www.docker.com/">docker</a>出现之前，我们要搭建一个<code>测试</code>或者<code>staging</code>环境，往往需要很多个不同角色的机器：有专门的数据库服务器，文件服务器，缓存服务器，Web服务器，反向代理等等。这样在成本上显然是个不小的开销，如果将所有不同的组件部署在同一台机器上，则又可能互相干扰，只需要一个小小的失误，整个系统就需要重新配置。更可怕的是，这个环境和生产系统不一致，那么很可能真实的错误要等到系统上线之后才会被发现。</p>
-
-<p>比如在2012年，我所在的一个项目中，客户的系统采用传统的J2EE架构。本地开发中，我们使用了Jetty作为容器，而<code>测试</code>和<code>Staging</code>环境使用了Tomcat。由于Tomcat对空格的处理和Jetty有所不同，我们在本地测试通过，并且运行良好的代码，在<code>Staging</code>变得完全不能工作。这个问题花费了团队很多时间来排查错误。</p>
-
-<p>在<code>docker</code>出现之后，我们可以在一台物理机器上运行多个互不干涉的容器，每个容器可以是一个组件（比如运行数据库的容器，Web服务器容器等等）。这样不但缩减了成本，而且可以让我们的环境尽可能和生产环境一致（有的项目甚至直接将CI出来的镜像应用到生产中）。不过对多个容器的管理是一个很麻烦的事情，好在<code>docker</code>提供了<a href="https://docs.docker.com/compose/overview/">docker-compose</a>工具来解决这个问题。使用<code>docker-compose</code>可以定义一组互相独立，但是又可以协作在一起的容器，这样我们可以很容易的搭建一个<code>仿生产</code>环境。</p>
-
-<p>比如我们可以定义个<code>docker-compse.yml</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">app</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">build</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">.</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">links</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">db:postgres</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">ports</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">8000:8000</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">volumes</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">.:/app</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">working_dir</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/app</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">entrypoint</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/app/start.sh</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">environment</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">JDBC_DATABASE_URL</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">jdbc:postgresql://postgres:5432/bookmarks</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">DATABASE_USER</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">bookmarks-user</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">DATABASE_PASS</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">bookmarks-password</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">db</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">postgres:9.3</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">ports</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">5432:5432</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">environment</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">POSTGRES_DB</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">bookmarks</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">POSTGRES_USER</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">bookmarks-user</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">POSTGRES_PASSWORD</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">bookmarks-password</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个<code>docker-compose</code>定义了两个组件，<code>app</code>和<code>db</code>。<code>db</code>使用了<code>postgres:9.3</code>镜像，并设置了自己的环境变量。<code>app</code>则从当前目录<code>.</code>构建一个新的镜像，<code>app</code>与<code>db</code>通过<code>links</code>属性连接起来。</p>
-
-<p>如果在当前目录执行<code>docker-compose build</code>命令，<code>docker-compose</code>会找到本地的<code>Dockerfile</code>，然后构建出一个<code>docker</code>的镜像，并启动该容器，同时，它还会启动<code>postgres:9.3</code>容器作为数据库组件。这样我们的环境就被完整的搭建好了。</p>
-
-<h4>搭建CI环境</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">app</span><span class="p-Indicator">:</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">build</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">.</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">ports</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">8080:8080</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">50000:50000</span>
-</span><span class='line'>  <span class="l-Scalar-Plain">volumes</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">./data:/var/jenkins_home</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个配置，表明我们会根据当前目录的<code>Dockerfile</code>来构建一个镜像。</p>
-
-<p>通过命令<code>volumns</code>，我们将本地目录<code>./data</code>映射为<code>jenkins_home</code>，这样我们定义的job信息，以及插件的安装都会放到本地的目录中，方便管理。配置完成之后，构建并启动该容器：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">FROM jenkins:latest</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain"># Env</span>
-</span><span class='line'><span class="l-Scalar-Plain">ENV PHANTOMJS_VERSION 1.9.6</span>
-</span><span class='line'><span class="l-Scalar-Plain">ENV PHANTOMJS_YSLOW_VERSION 3.1.8</span>
-</span><span class='line'><span class="l-Scalar-Plain">ENV SHARE_BIN /var/share</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain"># Install stuff by using root</span>
-</span><span class='line'><span class="l-Scalar-Plain">USER root</span>
-</span><span class='line'><span class="l-Scalar-Plain">RUN apt-get update</span>
-</span><span class='line'><span class="l-Scalar-Plain">RUN apt-get upgrade -y</span>
-</span><span class='line'><span class="l-Scalar-Plain">RUN apt-get install -y git wget libfreetype6 libfontconfig bzip2</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">RUN mkdir -p $SHARE_BIN</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">RUN wget -q --no-check-certificate -O /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 \</span>
-</span><span class='line'><span class="l-Scalar-Plain">https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2</span>
-</span><span class='line'><span class="l-Scalar-Plain">RUN tar -xjf /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 -C /tmp</span>
-</span><span class='line'><span class="l-Scalar-Plain">RUN rm -f /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2</span>
-</span><span class='line'><span class="l-Scalar-Plain">RUN mv /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64/ $SHARE_BIN/phantomjs</span>
-</span><span class='line'><span class="l-Scalar-Plain">RUN ln -s $SHARE_BIN/phantomjs/bin/phantomjs /usr/bin/phantomjs</span>
-</span><span class='line'>
-</span><span class='line'><span class="l-Scalar-Plain">RUN wget -q --no-check-certificate -O /tmp/yslow-phantomjs-$PHANTOMJS_YSLOW_VERSION.zip \</span>
-</span><span class='line'><span class="l-Scalar-Plain">http://yslow.org/yslow-phantomjs-$PHANTOMJS_YSLOW_VERSION.zip</span>
-</span><span class='line'><span class="l-Scalar-Plain">RUN unzip /tmp/yslow-phantomjs-$PHANTOMJS_YSLOW_VERSION.zip -d $SHARE_BIN/</span>
-</span><span class='line'><span class="l-Scalar-Plain">USER jenkins</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>执行下面的命令来设置并启动CI服务器：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>docker-compose up
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2016/02/jenkins-in-docker-resized.png" alt="jenkins in docker" /></p>
-
-<p>创建新任务，并指定该任务执行的命令为：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>phantomjs /var/share/yslow.js -i grade -threshold <span class="s2">&quot;B&quot;</span> -f junit <span class="se">\</span>
-</span><span class='line'>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/ &gt; yslow.xml
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>由于此时<code>phantomjs</code>已经被安装到了容器中，我们可以直接在jenkins中使用。运行结束之后，这个命令会生成一个报告：</p>
-
-<p><img src="/images/2016/02/jenkins-report-resized.png" alt="jenkins failure" /></p>
-
-<ul>
-<li>没有压缩内容</li>
-<li>没有添加过期的头信息</li>
-</ul>
-
-
-<p>在产品环境，我们需要使用反向代理来添加这些头信息，以保证最终用户在使用Web站点时的体验。</p>
-
-<h3>总结</h3>
-
-<p>我们只需要很少的配置就可以设置好一个工作良好的CI任务，这样在程序员某天引入了未经压缩的JS/CSS或者UX不小心提供了巨大而未经处理的图片时，你可以尽快的得到通知，并在正是上线之前发现这些问题。</p>
-
-<p><a href="https://github.com/abruzzi/phantomjs-yslow">代码配置</a>在这里。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -2802,6 +2753,10 @@ Workshop至少需要包含这样几部分：</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2017/01/why-ddd-is-so-hard/">实施领域驱动设计的正确姿势</a>
+      </li>
+    
+      <li class="post">
         <a href="/2017/01/why-software-is-complex/">软件开发为什么很难</a>
       </li>
     
@@ -2815,10 +2770,6 @@ Workshop至少需要包含这样几部分：</p>
     
       <li class="post">
         <a href="/2016/09/what-should-qa-do-in-a-agile-team/">测试自动化后，我们还需要QA吗？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/09/how-to-design-a-training/">如何设计一次培训</a>
       </li>
     
   </ul>

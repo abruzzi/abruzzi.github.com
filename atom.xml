@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-01-07T01:05:32+11:00</updated>
+  <updated>2017-01-11T01:36:23+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,191 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[实施领域驱动设计的正确姿势]]></title>
+    <link href="http://abruzzi.github.com/2017/01/why-ddd-is-so-hard/"/>
+    <updated>2017-01-11T00:48:00+11:00</updated>
+    <id>http://abruzzi.github.com/2017/01/why-ddd-is-so-hard</id>
+    <content type="html"><![CDATA[<h2>DDD为什么很难实施</h2>
+
+<p>领域驱动设计（<a href="https://en.wikipedia.org/wiki/Domain-driven_design">Domain Driven Design</a>）的概念已经被发明了十多年，而且也不乏相关著作，但是业界宣称自己应用了DDD原则的项目，软件却鲜有耳闻。随着微服务架构的流行，DDD在边界识别，服务划分等方面不断被提及，作为一种应对复杂软件的方法论，似乎又被重视起来了。</p>
+
+<p>那么，为什么这个听起来很靠谱的方法论实际上很难实施呢？我们以DDD创始人<code>Eric Evans</code>的经典书籍《领域驱动设计：软件核心复杂性应对之道》为例，分析一下，可能的原因是这样的：</p>
+
+<ul>
+<li>新概念数量比较多</li>
+<li>战术/战略都有所涉及</li>
+<li>不同层次的概念混杂（除了设计模式之外，还有架构风格的讨论）在一起</li>
+</ul>
+
+
+<h3>繁复而混杂的概念</h3>
+
+<p>领域，子域，核心子域，通用子域，实体，值对象，领域服务，应用服务，领域事件，统一语言，衔接上下文，遵循者等等。DDD中有着大量的新概念，而且这些概念有些是技术相关的，有些是问题相关的，交织在一起之后，很难理清头绪。</p>
+
+<p><img src="http://abruzzi.github.com/images/2017/01/ddd-full-diagram-resized.png" alt="DDD Full" /></p>
+
+<p>DDD中的模式又分为战术的和战略的两大部分，有很多团队应用了战术相关的，比如实体，值对象，领域服务，仓库等模式，代码看似DDD，实则与DDD强调的<code>以领域为中心</code>相去甚远，陷入了开发者太过于关注技术本身的老路上，这种现象还有个专门的名词，叫<a href="http://stackoverflow.com/questions/4196668/domain-driven-design-ddd-pitfalls">DDD-Lite</a>。</p>
+
+<h3>不同的思维方式要求</h3>
+
+<p>DDD要求读者既有具体Coding的技能，有需要跳出圈外，以架构师的角度来审视整个系统。DDD需要开发者以一个全新的视角去认识软件开发，强调对业务流程的熟悉，强调与领域专家一起协作，强调软件的表达能力和进化能力。而这些思维方式的转变，都有很大阻力的（想想从面向对象世界切换到函数式编程，再到响应式函数编程的切换）。</p>
+
+<blockquote><p>It should be noted that no ethically-trained software engineer would ever consent to write a DestroyBaghdad procedure. Basic professional ethics would instead require him to write a DestroyCity procedure, to which Baghdad could be given as a parameter.  &#8211; Nathaniel Borenstein</p></blockquote>
+
+<p>我自己在工作的前4年，非常反感业务，认为<code>case by case</code>的业务流程会严重影响我的代码的通用性。然而事实是，纯粹通用的代码是不存在的。毕竟，诸如IoC容器，Web等基础设施已经相当完善，完全无需我们重复发明轮子。而作为应用开发人员，更重要的是在充分理解业务的前提下，写出易于维护，易于扩展，可以更快速响应业务变化的代码。</p>
+
+<p>正因为如此，DDD在一定程度上会让程序员感到不适，它太强调领域了，而领域又是独一无二的，每个公司的每个系统都有其独立性，这就要求你的代码可能没法做到<code>纯粹</code>。</p>
+
+<h2>正确姿势</h2>
+
+<p>要解决上面提到的这些问题，正确的实施DDD来指导实际的开发工作，需要至少做到这样几个事情。首先，明确分清<code>问题</code>和<code>方案</code>（这是初学DDD者最容易犯的错误）；其次，转变思维方式，将软件开发的重心放在梳理并明确业务需求上，而不是代码逻辑上；最后，需要应用一些合理的工程实践来促成DDD-Lite的落地。</p>
+
+<h3>分清问题和解决方案</h3>
+
+<p>我们说领域（子域，通用子域，支撑子域等）的时候，是在讨论问题域，即定义我们要解决的问题是什么。而说到限界上下文，聚合，实体，仓库则是在讨论解决方案部分，人们很容易将两者搞混。</p>
+
+<p>在电商的领域中，一些典型的问题是：</p>
+
+<ul>
+<li>如何获得更多的客户</li>
+<li>如何让客户更快速的找到自己想要的商品</li>
+<li>如何准确的推荐相关产品给客户</li>
+<li>用户如何付费</li>
+</ul>
+
+
+<p>要解决这些问题，人们可能会开发出来一个软件系统，也可能会用手工的流程，也可能是混合模式。同样，一些具体的解决方案的例子是：</p>
+
+<ul>
+<li>商品促销子系统</li>
+<li>全文搜索系统</li>
+<li>推荐子系统</li>
+<li>支付平台</li>
+</ul>
+
+
+<p>显然，解决方案是在问题定义之后才产生的，而定义问题本身是一件<code>开发人员</code>不擅长的工作，这也是为什么DDD特别强调领域专家的原因。实施DDD需要从领域专家，技术专家的深入合作中，得出一个模型。其实，DDD的核心就是要解决一个问题：建立领域问题的软件模型，这个模型需要满足这样几个条件：</p>
+
+<ul>
+<li>能准确表达领域概念，业务流程等（无需经过翻译）</li>
+<li>容易演进</li>
+<li>每个领域有自己的解决方案</li>
+</ul>
+
+
+<h3>思维方式转变</h3>
+
+<p>开发者要将思维方式转变成<code>以业务规则优先</code>是一件非常困难的事儿。毕竟经过了多年的训练，特别是抽象思维的训练，开发者很喜欢<code>通用</code>的技巧，比如管道-过滤器，线程池，解析器等等。然而业务规则往往是具体的，而且很多时候，需求变化的方向会破坏掉开发者精心构筑的抽象体系。</p>
+
+<p>然而个思维方式的转变正是成功实施DDD关键所在：愿意和业务人员一起理解沟通，理解业务是实施DDD的第一步。其实每个行业的业务都有很多有意思的地方，我在ThoughtWorks，由于工作性质的原因，可以接触到很多不同的客户，不同的业务。每个项目上，我都很乐于去向业务人员学习，业务在现实世界中是如何运作的：房产中介如何打广告，房东如何付费，房地产广告平台如何从中盈利；无线基站如何建设，工人如何去施工，甚至基站铁塔如何避雷，如何防雨；保单的类型，付费年限，如何分红等等。</p>
+
+<p>每个不同的业务都可以学到很多人们在解决问题时发明出来的新思路，新方法。这些思路和方法未尝不可以反过来应用在软件开发上。</p>
+
+<h3>工程实践</h3>
+
+<ul>
+<li>敏捷方法</li>
+<li>自动化测试</li>
+</ul>
+
+
+<h4>敏捷方法</h4>
+
+<p>其实早在敏捷宣言产生的时代，人们就已经发现了<code>客户合作胜过合同谈判</code>。与客户保持高度的合作（最好是业务人员就坐在开发人员旁边），实时的反馈收集并根据反馈进行方向调整都是敏捷方法中倡导的。而DDD更进一步，需要和业务人员一起，定义出领域模型的原型，包括一些白板上的图和代码原型，并根据敏捷方法进行持续的演进。</p>
+
+<p>比如这里提出的一些实践可以比较好的帮助你来实施<code>DDD</code>:</p>
+
+<ul>
+<li>需求的Kickoff（BA，开发，QA一起来明确需求的含义）</li>
+<li>结对编程（不限于开发之间的结对，也可能是不同角色间的结对）</li>
+<li>回顾会议</li>
+</ul>
+
+
+<p>通过敏捷实践，我们可以建立起快速的<code>反馈机制</code>，和对变化的响应能力，冗长的流程和不透明的价值流向会导致很多问题。</p>
+
+<h4>自动化测试</h4>
+
+<p>另一方面，要保证模型的可理解性，除了<code>Clean Code</code>的一些原则之外，自动化测试也是一个必不可少的工程实践。领域模型在<strong>意图表现</strong>上需要做到极致，而单元测试/功能测试则以用例的方式将模型<code>用起来</code>。这要求开发者使用<code>实例化需求</code>，<code>行为驱动开发</code>等方法编写实践作支撑。</p>
+
+<p>测试不是为了覆盖率，也不能仅仅只是为了自动化一些手工的工作。在DDD的上下文中，自动化测试更多的是完整表达业务意图的用例。</p>
+
+<h5>实例化需求</h5>
+
+<p>测试需要以实际用户的角度来编写，并以<code>实例</code>的方式描述。这样即使自动化做不了，这个<code>实例</code>依然是一个很好的文档。当然，为了保证这个文档不过期（和代码实现不匹配），还是强烈建议可以将其自动化起来。</p>
+
+<p>比如这里有个例子，人事经理想要找一些开发人员来分配到项目上，这个找人的过程有两条很简单的规则：</p>
+
+<ul>
+<li>开发人员的技能要和项目的要求匹配</li>
+<li>开发人员当前不在项目上（比如当前项目为Beach即为空闲状态）</li>
+</ul>
+
+
+<p>用<code>Cucumber</code>写的测试看起来是这样的：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Feature: Find employee by skills
+</span><span class='line'>  As a staffing manager
+</span><span class='line'>  I want to find employee by skills
+</span><span class='line'>  So that I know whether we have the staff or we need to hire new ones
+</span><span class='line'>
+</span><span class='line'>  Background: persona
+</span><span class='line'>    Given we have the following employees:
+</span><span class='line'>      | name   | currentProject | role | skills    |
+</span><span class='line'>      | Juntao | Consulting     | Dev  | Java,Ruby |
+</span><span class='line'>      | Yanyu  | Beach          | Dev  | Ruby      |
+</span><span class='line'>      | Jiawei | Beach          | Dev  | Java,Ruby |
+</span><span class='line'>      | Momo   | Beach          | Dev  | Python    |
+</span><span class='line'>
+</span><span class='line'>  Scenario: Search by skills
+</span><span class='line'>    Given I have a project which require "Ruby" as language
+</span><span class='line'>    When I search staff by skill
+</span><span class='line'>    Then I should get the following names:
+</span><span class='line'>      | Yanyu  |
+</span><span class='line'>      | Jiawei |</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>迭代开发</h4>
+
+<p>软件开发本身就具有很高的复杂度，正如我在<a href="http://icodeit.org/2017/01/why-software-is-complex/">上一篇博客</a>里提到的，在项目启动之初，无论是业务专家还是开发者，对软件系统的知识都是非常有限的。迭代式的开发方式更加契合这种复杂度很高的活动。业务人员和开发一起，在建模、实现的过程中会对领域进行深入的学习，并产生新的知识。反过来这些新的知识又会影响模型的进一步进化。</p>
+
+<p><img src="http://abruzzi.github.com/images/2015/08/waterfall-v-agile-about.gif" alt="" /></p>
+
+<p>迭代开发的方式可以帮助我们将这个复杂度很高的过程变得平缓一些，而且从一个个小的迭代中学习，并根据反馈来指导新的方向，可以快速的帮助团队建立信心，同时对业务的理解更为深入，使得整个开发过程越来越平顺。</p>
+
+<h2>小结</h2>
+
+<p>简而言之，要顺利实施DDD，需要至少做到：</p>
+
+<ul>
+<li>明确概念，分清<code>问题域</code>和<code>解决方案域</code></li>
+<li>转变思维方式，为<code>业务梳理和理解</code>赋予最高的优先级</li>
+<li>通过<code>工程实践</code>来确保落地</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[软件开发为什么很难]]></title>
@@ -5106,208 +5291,6 @@ Workshop至少需要包含这样几部分：</p>
 <li><a href="https://ochronus.com/react-reflux-example/">React Reflux Example</a></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[看看这些年你都学了什么？]]></title>
-    <link href="http://abruzzi.github.com/2015/11/what-you-have-learnt-those-years/"/>
-    <updated>2015-11-01T17:03:00+11:00</updated>
-    <id>http://abruzzi.github.com/2015/11/what-you-have-learnt-those-years</id>
-    <content type="html"><![CDATA[<h3>数据可视化</h3>
-
-<p>多年下来，我的<code>Google Bookmarks</code>里已经有近万条的书签。大部分内容是我在读过一遍之后就收藏起来的，也有很多看了一眼之后，觉得不错，然后收藏起来准备以后读的（当然，你也知道，再也没有打开过）。</p>
-
-<p>有没有一个方法可以让我以可视化的方式，看到这些年我都学了那些东西呢？将书签列表作为源数据，然后将这些信息可视化出来会非常有意思：比如收藏夹中的热门词是什么，哪段时间收藏了多少条的书签（学习投入程度趋势）等等。</p>
-
-<p>下图是我的书签中，排行前<code>30</code>的关键字排序。可以明显的看出，我对于<code>JavaScript</code>的喜爱程度相当高，对<code>美食</code>的喜爱也超过了<code>python</code>和<code>linux</code>。</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/11/bookmarks-trending-resized.png" alt="bookmarks trending" /></p>
-
-<p>这里我将使用<code>python</code>，结合<code>python</code>的一些库来实现<code>书签可视化</code>。简而言之，整个过程可以分成这样几个步骤：</p>
-
-<ol>
-<li>将Google Bookmarks导出为本地文件</li>
-<li>将书签文件解析为容易处理的内部格式（比如python的dict等）</li>
-<li>由于书签中会有中文的句子，所以会涉及到分词</li>
-<li>统计词语的频率，并绘制成图标</li>
-</ol>
-
-
-<h4>数据源</h4>
-
-<p><code>Google Bookmarks</code>本身可以直接导出成<code>HTML</code>文件。该<code>HTML</code>文件包含了时间戳和书签的标题，我们可以通过<code>python</code>的库<code>BeautifulSoup</code>将HTML中的文本抽取出来：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">load_bookmarks_data</span><span class="p">():</span>
-</span><span class='line'>  <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s">&#39;bookmarks_10_21_15.html&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="s">&quot;html.parser&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">soup</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
-</span><span class='line'>  
-</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
-</span><span class='line'>  <span class="k">print</span> <span class="n">load_bookmarks_data</span><span class="p">()</span>    
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>BeautifulSoup</code>提供非常好用的API来抽取结构化文档中的内容。</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/11/bookmark-titles-resized.png" alt="bookmark titles" /></p>
-
-<h4>分词</h4>
-
-<p><code>BeautifulSoup</code>获得的是一条条独立的句子，我们需要使用分词器将所有的句子分解成片段。这里我使用了<code>jieba</code>（<a href="https://github.com/fxsjy/jieba">结巴分词</a>）分词器来完成这个任务：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">jieba</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="s">&quot;我在出报表，你的博客写的怎么样了&quot;</span>
-</span><span class='line'><span class="n">seg_list</span> <span class="o">=</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">seg_list</span><span class="p">:</span>
-</span><span class='line'>     <span class="k">print</span> <span class="n">seg</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>将会输出：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">我</span>
-</span><span class='line'><span class="err">在</span>
-</span><span class='line'><span class="err">出</span>
-</span><span class='line'><span class="err">报表</span>
-</span><span class='line'><span class="err">，</span>
-</span><span class='line'><span class="err">你</span>
-</span><span class='line'><span class="err">的</span>
-</span><span class='line'><span class="err">博客</span>
-</span><span class='line'><span class="err">写</span>
-</span><span class='line'><span class="err">的</span>
-</span><span class='line'><span class="err">怎么样</span>
-</span><span class='line'><span class="err">了</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们定义一个方法来将上一步中的文本分词：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">extract_segments</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">seg_list</span> <span class="o">=</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="n">seg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">seg_list</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>分词之后，我们将单词转换为小写，并剔除掉那些长度小于1的字符串。这样可以保证所有的词都是词语。python的<code>list推导式</code>写起来非常简洁，一行代码就完成了<code>过滤</code>和<code>映射</code>的工作。</p>
-
-<h4>可视化</h4>
-
-<p>有了分好的词之后，只需要统计每个词出现的频率，然后按照频率来绘制图表。我们使用<code>python</code>标准库中的<code>Counter</code>来实现：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">tokenize</span><span class="p">():</span> 
-</span><span class='line'>  <span class="n">filtered</span> <span class="o">=</span> <span class="n">extract_segments</span><span class="p">(</span><span class="n">load_bookmarks_data</span><span class="p">())</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">Counter</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">filtered</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>要获取前<code>N</code>个，只需要使用<code>most_common(N)</code>即可：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">tokenize</span><span class="p">()</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[(</span><span class="s">u&#39;and&#39;</span><span class="p">,</span> <span class="mi">552</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;the&#39;</span><span class="p">,</span> <span class="mi">501</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;with&#39;</span><span class="p">,</span> <span class="mi">485</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;to&#39;</span><span class="p">,</span> <span class="mi">446</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;javascript&#39;</span><span class="p">,</span> <span class="mi">432</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;in&#39;</span><span class="p">,</span> <span class="mi">330</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;for&#39;</span><span class="p">,</span> <span class="mi">308</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;...&#39;</span><span class="p">,</span> <span class="mi">270</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;java&#39;</span><span class="p">,</span> <span class="mi">270</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;blog&#39;</span><span class="p">,</span> <span class="mi">269</span><span class="p">)]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有了数据之后，使用<code>matplotlib</code>做一个简单的<code>bar</code>图标：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">matplotlib</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">visualize</span><span class="p">():</span>
-</span><span class='line'>  <span class="n">frame</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">tokenize</span><span class="p">()</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;keywords&#39;</span><span class="p">,</span> <span class="s">&#39;frequencies&#39;</span><span class="p">])</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">ax</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s">&#39;bar&#39;</span><span class="p">)</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;bookmarks_trending.png&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://abruzzi.github.com/images/2015/11/bookmarks-trending-with-stops-resized.png" alt="" /></p>
-
-<h4>stopwords</h4>
-
-<p>不过，上图中有很多噪音信息，如<code>and</code>, <code>the</code>等，这些在所有文章中都会出现的词并没有实际意义，统称为<code>stopwords</code>。通常在计算过程中会将其忽略：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">tokenize</span><span class="p">():</span>  
-</span><span class='line'>  <span class="n">stoplist</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;me&#39;</span><span class="p">,</span> <span class="s">&#39;my&#39;</span><span class="p">,</span> <span class="s">&#39;myself&#39;</span><span class="p">,</span> <span class="s">&#39;we&#39;</span><span class="p">,</span> <span class="s">&#39;our&#39;</span><span class="p">,</span> <span class="s">&#39;ours&#39;</span><span class="p">,</span> <span class="s">&#39;ourselves&#39;</span><span class="p">,</span> <span class="s">&#39;you&#39;</span><span class="p">,</span> <span class="s">&#39;your&#39;</span><span class="p">,</span> <span class="s">&#39;yours&#39;</span><span class="p">,</span> <span class="s">&#39;yourself&#39;</span><span class="p">,</span> <span class="s">&#39;yourselves&#39;</span><span class="p">,</span> <span class="s">&#39;he&#39;</span><span class="p">,</span> <span class="s">&#39;him&#39;</span><span class="p">,</span> <span class="s">&#39;his&#39;</span><span class="p">,</span> <span class="s">&#39;himself&#39;</span><span class="p">,</span> <span class="s">&#39;she&#39;</span><span class="p">,</span> <span class="s">&#39;her&#39;</span><span class="p">,</span> <span class="s">&#39;hers&#39;</span><span class="p">,</span> <span class="s">&#39;herself&#39;</span><span class="p">,</span> <span class="s">&#39;it&#39;</span><span class="p">,</span> <span class="s">&#39;its&#39;</span><span class="p">,</span> <span class="s">&#39;itself&#39;</span><span class="p">,</span> <span class="s">&#39;they&#39;</span><span class="p">,</span> <span class="s">&#39;them&#39;</span><span class="p">,</span> <span class="s">&#39;their&#39;</span><span class="p">,</span> <span class="s">&#39;theirs&#39;</span><span class="p">,</span> <span class="s">&#39;themselves&#39;</span><span class="p">,</span> <span class="s">&#39;what&#39;</span><span class="p">,</span> <span class="s">&#39;which&#39;</span><span class="p">,</span> <span class="s">&#39;who&#39;</span><span class="p">,</span> <span class="s">&#39;whom&#39;</span><span class="p">,</span> <span class="s">&#39;this&#39;</span><span class="p">,</span> <span class="s">&#39;that&#39;</span><span class="p">,</span> <span class="s">&#39;these&#39;</span><span class="p">,</span> <span class="s">&#39;those&#39;</span><span class="p">,</span> <span class="s">&#39;am&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="s">&#39;are&#39;</span><span class="p">,</span> <span class="s">&#39;was&#39;</span><span class="p">,</span> <span class="s">&#39;were&#39;</span><span class="p">,</span> <span class="s">&#39;be&#39;</span><span class="p">,</span> <span class="s">&#39;been&#39;</span><span class="p">,</span> <span class="s">&#39;being&#39;</span><span class="p">,</span> <span class="s">&#39;have&#39;</span><span class="p">,</span> <span class="s">&#39;has&#39;</span><span class="p">,</span> <span class="s">&#39;had&#39;</span><span class="p">,</span> <span class="s">&#39;having&#39;</span><span class="p">,</span> <span class="s">&#39;do&#39;</span><span class="p">,</span> <span class="s">&#39;does&#39;</span><span class="p">,</span> <span class="s">&#39;did&#39;</span><span class="p">,</span> <span class="s">&#39;doing&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;an&#39;</span><span class="p">,</span> <span class="s">&#39;the&#39;</span><span class="p">,</span> <span class="s">&#39;and&#39;</span><span class="p">,</span> <span class="s">&#39;but&#39;</span><span class="p">,</span> <span class="s">&#39;if&#39;</span><span class="p">,</span> <span class="s">&#39;or&#39;</span><span class="p">,</span> <span class="s">&#39;because&#39;</span><span class="p">,</span> <span class="s">&#39;as&#39;</span><span class="p">,</span> <span class="s">&#39;until&#39;</span><span class="p">,</span> <span class="s">&#39;while&#39;</span><span class="p">,</span> <span class="s">&#39;of&#39;</span><span class="p">,</span> <span class="s">&#39;at&#39;</span><span class="p">,</span> <span class="s">&#39;by&#39;</span><span class="p">,</span> <span class="s">&#39;for&#39;</span><span class="p">,</span> <span class="s">&#39;with&#39;</span><span class="p">,</span> <span class="s">&#39;about&#39;</span><span class="p">,</span> <span class="s">&#39;against&#39;</span><span class="p">,</span> <span class="s">&#39;between&#39;</span><span class="p">,</span> <span class="s">&#39;into&#39;</span><span class="p">,</span> <span class="s">&#39;through&#39;</span><span class="p">,</span> <span class="s">&#39;during&#39;</span><span class="p">,</span> <span class="s">&#39;before&#39;</span><span class="p">,</span> <span class="s">&#39;after&#39;</span><span class="p">,</span> <span class="s">&#39;above&#39;</span><span class="p">,</span> <span class="s">&#39;below&#39;</span><span class="p">,</span> <span class="s">&#39;to&#39;</span><span class="p">,</span> <span class="s">&#39;from&#39;</span><span class="p">,</span> <span class="s">&#39;up&#39;</span><span class="p">,</span> <span class="s">&#39;down&#39;</span><span class="p">,</span> <span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="s">&#39;out&#39;</span><span class="p">,</span> <span class="s">&#39;on&#39;</span><span class="p">,</span> <span class="s">&#39;off&#39;</span><span class="p">,</span> <span class="s">&#39;over&#39;</span><span class="p">,</span> <span class="s">&#39;under&#39;</span><span class="p">,</span> <span class="s">&#39;again&#39;</span><span class="p">,</span> <span class="s">&#39;further&#39;</span><span class="p">,</span> <span class="s">&#39;then&#39;</span><span class="p">,</span> <span class="s">&#39;once&#39;</span><span class="p">,</span> <span class="s">&#39;here&#39;</span><span class="p">,</span> <span class="s">&#39;there&#39;</span><span class="p">,</span> <span class="s">&#39;when&#39;</span><span class="p">,</span> <span class="s">&#39;where&#39;</span><span class="p">,</span> <span class="s">&#39;why&#39;</span><span class="p">,</span> <span class="s">&#39;how&#39;</span><span class="p">,</span> <span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="s">&#39;any&#39;</span><span class="p">,</span> <span class="s">&#39;both&#39;</span><span class="p">,</span> <span class="s">&#39;each&#39;</span><span class="p">,</span> <span class="s">&#39;few&#39;</span><span class="p">,</span> <span class="s">&#39;more&#39;</span><span class="p">,</span> <span class="s">&#39;most&#39;</span><span class="p">,</span> <span class="s">&#39;other&#39;</span><span class="p">,</span> <span class="s">&#39;some&#39;</span><span class="p">,</span> <span class="s">&#39;such&#39;</span><span class="p">,</span> <span class="s">&#39;no&#39;</span><span class="p">,</span> <span class="s">&#39;nor&#39;</span><span class="p">,</span> <span class="s">&#39;not&#39;</span><span class="p">,</span> <span class="s">&#39;only&#39;</span><span class="p">,</span> <span class="s">&#39;own&#39;</span><span class="p">,</span> <span class="s">&#39;same&#39;</span><span class="p">,</span> <span class="s">&#39;so&#39;</span><span class="p">,</span> <span class="s">&#39;than&#39;</span><span class="p">,</span> <span class="s">&#39;too&#39;</span><span class="p">,</span> <span class="s">&#39;very&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="s">&#39;can&#39;</span><span class="p">,</span> <span class="s">&#39;will&#39;</span><span class="p">,</span> <span class="s">&#39;just&#39;</span><span class="p">,</span> <span class="s">&#39;don&#39;</span><span class="p">,</span> <span class="s">&#39;should&#39;</span><span class="p">,</span> <span class="s">&#39;now&#39;</span><span class="p">]</span>
-</span><span class='line'>  <span class="n">stoplist</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">&#39;...&#39;</span><span class="p">,</span> <span class="s">&#39;com&#39;</span><span class="p">,</span> <span class="s">&#39;using&#39;</span><span class="p">,</span> <span class="s">u&#39;使用&#39;</span><span class="p">,</span> <span class="s">&#39;blog&#39;</span><span class="p">,</span> <span class="s">u&#39;博客&#39;</span><span class="p">,</span> <span class="s">u&#39;博客园&#39;</span><span class="p">,</span> <span class="s">u&#39;做法&#39;</span><span class="p">,</span> <span class="s">u&#39;论坛&#39;</span><span class="p">,</span> <span class="s">&#39;part&#39;</span><span class="p">,</span> <span class="s">u&#39;部分&#39;</span><span class="p">,</span> <span class="s">u&#39;天下&#39;</span><span class="p">])</span>
-</span><span class='line'>  <span class="n">filtered</span> <span class="o">=</span> <span class="n">extract_segments</span><span class="p">(</span><span class="n">load_bookmarks_data</span><span class="p">())</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="k">return</span> <span class="n">Counter</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">filtered</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stoplist</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>重新绘制即可获得上文中的图：</p>
-
-<p><img src="http://abruzzi.github.com/images/2015/11/bookmarks-trending-resized.png" alt="bookmarks trending" /></p>
-
-<p>完整的代码<a href="https://github.com/abruzzi/bookmarks-viz">请参考这里</a>。</p>
 ]]></content>
   </entry>
   
