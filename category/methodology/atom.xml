@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Methodology | I code it]]></title>
   <link href="http://abruzzi.github.com/category/methodology/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-01-11T01:36:23+11:00</updated>
+  <updated>2017-01-12T12:53:13+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -86,6 +86,23 @@
 </ul>
 
 
+<h4>DDD战略模式</h4>
+
+<p><img src="/images/2017/01/problem-and-domain-resized.png" alt="" /></p>
+
+<p>这是Vaughn Vernon的著作<a href="https://vaughnvernon.co/?page_id=168">《Implement Domain Driven Design》</a>中的一张图，整个外边的大圈是业务对应的领域（问题域），这个大的圈被虚线划分成了很多小的子域（依然是问题域，不过每个子域要解决的问题都不相同），子域有很多类型，比如核心子域，支撑子域，通用子域等。对应的，每个域都可能有自己的<code>限界上下文</code>，上下文之间有不同类型的<code>上下文映射</code>模式。</p>
+
+<p>子域的边界由<code>通用语言</code>来划分，也就是说，每个子域有自己区别于其他子域的语言（也就是自己的业务概念，业务规则）。比如财务系统中，提及的概念如毛利，净利率，投入回报比，发票，报销等等，与招聘系统中的候选人，面试，宣讲，校招等等都大不相同。</p>
+
+<p>正确的应用DDD的战略模式来帮助问题的识别和理解，比单纯的应用<code>DDD-Lite</code>要重要得多。</p>
+
+<ul>
+<li>通用语言</li>
+<li>限界上下文</li>
+<li>上下文映射</li>
+</ul>
+
+
 <h3>思维方式转变</h3>
 
 <p>开发者要将思维方式转变成<code>以业务规则优先</code>是一件非常困难的事儿。毕竟经过了多年的训练，特别是抽象思维的训练，开发者很喜欢<code>通用</code>的技巧，比如管道-过滤器，线程池，解析器等等。然而业务规则往往是具体的，而且很多时候，需求变化的方向会破坏掉开发者精心构筑的抽象体系。</p>
@@ -111,11 +128,18 @@
 <ul>
 <li>需求的Kickoff（BA，开发，QA一起来明确需求的含义）</li>
 <li>结对编程（不限于开发之间的结对，也可能是不同角色间的结对）</li>
-<li>回顾会议</li>
+<li>代码审视</li>
+<li>代码重构</li>
+<li>Mini Showcase</li>
+<li><del>回顾会议</del></li>
 </ul>
 
 
 <p>通过敏捷实践，我们可以建立起快速的<code>反馈机制</code>，和对变化的响应能力，冗长的流程和不透明的价值流向会导致很多问题。</p>
+
+<p>如果我们承认自己不是全知全能的，需要不断地通过学习来不断的理解业务，那么重构就编程了一件自然而言地、必须做的事情了。通过重构，我们将之前模糊的业务概念清晰起来，将缺失的概念补齐，将代码中的华为到消除。</p>
+
+<p><code>Mini Showcase</code>强调开发者在完成需求的过程中，不定期的与BA，QA等角色交流、确认。如果有理解不正确的地方，可以尽快发现，然后解决。</p>
 
 <h4>自动化测试</h4>
 
@@ -177,11 +201,13 @@ Then I should get the following names:
 <p>简而言之，要顺利实施DDD，需要至少做到：</p>
 
 <ul>
-<li>明确概念，分清<code>问题域</code>和<code>解决方案域</code></li>
+<li>明确概念，分清<code>问题域</code>和<code>解决方案域</code>，应用DDD的战略模式</li>
 <li>转变思维方式，为<code>业务梳理和理解</code>赋予最高的优先级</li>
 <li>通过<code>工程实践</code>来确保落地</li>
 </ul>
 
+
+<p>当然，如何来实施战略模式（通用语言，限界上下文，上下文映射）也需要一些工程实践的帮助，我会在另外一篇文章中详细讨论。</p>
 ]]></content>
   </entry>
   
