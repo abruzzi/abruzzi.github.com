@@ -1,0 +1,692 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>为什么优秀的程序员喜欢命令行 - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="程序员的日常工作 The three chief virtues of a programmer are: Laziness, Impatience and Hubris. &#8211; Larry Wall 懒惰这个特点位于程序员的三大美德之首： &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2017/01/why-top-programmers-hate-gui">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.gmirror.org/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.gmirror.org/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.gmirror.org/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">文章</a></li>
+  <li><a href="/blog/archives">文章归档</a></li>
+  <li><a href="/publish">出版物</a></li>
+  <li><a href="/about-me">关于</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">为什么优秀的程序员喜欢命令行</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-01-17T21:06:00+11:00" pubdate data-updated="true">Jan 17<span>th</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>程序员的日常工作</h2>
+
+<blockquote><p>The three chief virtues of a programmer are: Laziness, Impatience and Hubris. &#8211; Larry Wall</p></blockquote>
+
+<p><code>懒惰</code>这个特点位于<code>程序员的三大美德</code>之首：唯有懒惰才会驱动程序员尽可能的将日常工作自动化起来，解放自己的双手，节省自己的时间。而<code>GUI</code>，不得不说，天然就是为了让<strong>自动化</strong>变得困难的一种设计。GUI更强调的是与人类的直接交互：通过视觉手段将信息以多层次的方式呈现，使用视觉元素进行指引，最后系统在后台进行实际的处理，并将最终结果以视觉手段展现出来。</p>
+
+<p>这种更强调<code>交互</code>过程的设计初衷使得自动化变得非常困难。另一方面，由于GUI是为人类设计的，它的响应就不能太快，至少要留给操作者反应时间（甚至有些用户操作需要人为的加入一些延迟，以提升用户体验）。</p>
+
+<p>程序员除了写代码之外，还有很多事情要做，比如自动化测试，基础设施的配置和管理，持续集成/持续发布环境，甚至有些团队好需要做一些与运维相关的事情（线上问题监控，环境监控等）。</p>
+
+<ul>
+<li>开发/测试</li>
+<li>基础设施管理</li>
+<li>持续集成/持续发布</li>
+<li>运维工作</li>
+<li><del>娱乐</del></li>
+</ul>
+
+
+<h3>UNIX编程哲学</h3>
+
+<p>关于UNIX哲学，其实坊间有多个版本，这里有一个比较<a href="https://zh.wikipedia.org/wiki/Unix%E5%93%B2%E5%AD%A6">详细的清单</a>。虽然有不同的版本，但是有很多一致的地方：</p>
+
+<ol>
+<li>小即是美</li>
+<li>让程序只做好一件事</li>
+<li>尽可能早地创建原型(然后逐步演进)</li>
+<li>数据应该保存为文本文件</li>
+<li>避免使用可定制性低下的用户界面</li>
+</ol>
+
+
+<p>这里列举一些小的例子，我们来看看命令行工具是如何通过应用这些哲学来简化工作，提高效率的。一旦你熟练掌握这些技能，就再也无法摆脱它，也再也忍受不了低效而难用的各种<code>GUI</code>工具了。</p>
+
+<h3>命令行如何帮助程序员提升效率</h3>
+
+<h4>一个高阶计算器</h4>
+
+<p>在我的编程生涯的早期，读过的最为振奋的一本书是<a href="https://book.douban.com/subject/1033144/">《UNIX编程环境》</a>，和其他基本UNIX世界的大部头比起来，这本书其实还是比较小众的。我读大二的时候这本书已经出版了差不多22年(中文版也已经有7年了)，有一些内容已经过时了，比如没有返回值的<code>main</code>函数，外置的参数列表等等，不过在学习到<code>HOC</code>(High Order Calculator)的全部开发过程时，我依然被深深的震撼到了。</p>
+
+<p>简而言之，这个<code>HOC</code>语言的开发过程需要这样几个组件：</p>
+
+<ul>
+<li>词法分析器<code>lex</code></li>
+<li>语法分析器<code>yacc</code></li>
+<li>标准数学库<code>stdlib</code></li>
+</ul>
+
+
+<p>另外还有一些自定义的函数等，最后通过<code>make</code>连接在一起。我跟着书上的讲解，对着书把所有代码都敲了一遍。所有的操作都是在一台很老的IBM的ThinkPad T20上完成的，而且全部都在命令行中进行（当然，还在命令行里听着歌）。</p>
+
+<p>这也是我第一次彻底被UNIX的哲学所折服的体验：</p>
+
+<ul>
+<li>每个工具只做且做好一件事</li>
+<li>工具可以协作起来</li>
+<li>一切面向文本</li>
+</ul>
+
+
+<p>下面是书中的<code>Makefile</code>脚本，通过简单的配置，就将一些<strong>各司其职</strong>的小工具协作起来，完成一个<code>编程语言</code>程序的预编译、编译、链接、二进制生成的动作。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='make'><span class='line'><span class="nv">YFLAGS</span> <span class="o">=</span> -d
+</span><span class='line'><span class="nv">OBJS</span> <span class="o">=</span> hoc.o code.o init.o math.o symbol.o
+</span><span class='line'>
+</span><span class='line'>hoc5: <span class="k">$(</span>OBJS<span class="k">)</span>
+</span><span class='line'>  cc <span class="k">$(</span>OBJS<span class="k">)</span> -lm -o hoc5
+</span><span class='line'>
+</span><span class='line'>hoc.o code.o init.o symbol.o: hoc.h
+</span><span class='line'>
+</span><span class='line'>code.o init.o symbol.o: x.tab.h
+</span><span class='line'>
+</span><span class='line'>x.tab.h: y.tab.h
+</span><span class='line'>  -cmp -s x.tab.h y.tab.h <span class="o">||</span> cp y.tab.h x.tab.h
+</span><span class='line'>
+</span><span class='line'>pr:   hoc.y hoc.h code.c init.c math.c symbol.c
+</span><span class='line'>  @pr <span class="nv">$?</span>
+</span><span class='line'>  @touch pr
+</span><span class='line'>
+</span><span class='line'>clean:
+</span><span class='line'>  rm -f <span class="k">$(</span>OBJS<span class="k">)</span> <span class="o">[</span>xy<span class="o">]</span>.tab.<span class="o">[</span>ch<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>虽然现在来看，这本书的很多内容已经过期（特别是离它第一次出版已经过去了近30年），有兴趣的朋友可以读一读。</p>
+
+<h3>基础设施自动化</h3>
+
+<p>开发过程中，工程师还需要关注的一个问题是：软件运行的环境。我在上学的时候，刚开始学习Linux的时候，会在Windows机器上装一个虚拟机软件VMWare，然后在VMWare中安装一个<code>Redhat Linux 9</code>。这样当我不小心把Linux玩坏了之后，只需要重装一下就行了，不影响我的其他数据（比如课程作业，文档之类）。不过每次重装也挺麻烦，需要找到<code>iso</code>镜像文件，再挂载到本地的虚拟光驱上，然后再用VMWare来安装。</p>
+
+<p>而且这些动作都是在GUI里完成的，每次都要做很多重复的事情：找镜像文件，使用虚拟光驱软件挂载，启动VMWare，安装Linux，配置个人偏好，配置用户名/密码等等。熟练之后，我可以在30分钟 &#8211; 60分钟安装和配置好一个新的环境。</p>
+
+<h4>Vagrant</h4>
+
+<p>后来我就发现了<code>Vagrant</code>，它支持开发者通过配置的方式将机器描述出来，然后通过命令行的方式来安装并启动，比如下面这个配置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">VAGRANTFILE_API_VERSION</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Vagrant</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="no">VAGRANTFILE_API_VERSION</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="s2">&quot;precise64&quot;</span>
+</span><span class='line'>  <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="ss">:ip</span> <span class="o">=&gt;</span> <span class="s2">&quot;192.168.2.100&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>它定义了一个虚拟机，使用<code>Ubuntu Precise 64</code>的镜像，然后为其配置一个网络地址<code>192.168.2.100</code>，定义好之后，我只需要执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>vagrant up
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我的机器就可以在几分钟内装好，因为这个动作是命令行里完成的，我可以在持续集成环境里做同样的事情 &#8211; 只需要一条命令。定义好的这个文件可以在团队内共享，可以放入版本管理，团队里的任何一个成员都可以在几分钟内得到一个和我一样的环境。</p>
+
+<h4>Ansible</h4>
+
+<p>一般而言，对于一个软件项目而言，一个全新的操作系统基本上没有任何用处。为了让应用跑起来，我们还需要很多东西。比如Web服务器，Java环境，cgi路径等，除了安装一些软件之外，还有大量的配置工作要做，比如<code>apache httpd</code>服务器的文档根路径，JAVA_HOME环境变量等等。</p>
+
+<p>这些工作做好了，一个环境才算就绪。我记得在上一个项目上，不小心把测试环境的Tomcat目录给删除了，结果害的另外一位同事花了三四个小时才把环境恢复回来（包括重新安装Tomcat，配置一些JAVA_OPTS，应用的部署等）。</p>
+
+<p>不过还在我们有很多工具可以帮助开发者完成环境的自动化准备，比如：Chef, Puppet, Ansible。只需要一些简单的配置，然后结合一个命令行应用，整个过程就可以自动化起来了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">setup custom repo</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">apt</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">pkg=python-pycurl state=present</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">enable carbon</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">copy</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">dest=/etc/default/graphite-carbon content=&#39;CARBON_CACHE_ENABLED=true&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">install graphite and deps</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">apt</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">name= state=present</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">with_items</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">packages</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">install graphite and deps</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">pip</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">name= state=present</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">with_items</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">python_packages</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">setup apache</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">copy</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">src=apache2-graphite.conf dest=/etc/apache2/sites-available/default</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">notify</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">restart apache</span>
+</span><span class='line'>
+</span><span class='line'><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">configure wsgi</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">file</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">path=/etc/apache2/wsgi state=directory</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上边的配置描述了安装<code>graphite-carbon</code>，配置<code>apahce</code>等很多手工的劳动，开发者现在只需要执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>ansible
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>就可以将整个过程自动化起来。现在如果我不小心把<code>Tomcat</code>删了，只需要几分钟就可以重新配置一个全新的，当然整个过程还是自动的。这在GUI下完全无法想象，特别是有如此多的定制内容的场景下。</p>
+
+<h3>持续集成/持续发布</h3>
+
+<p>日常开发任务中，除了实际的编码和环境配置之外，另一大部分内容就是持续集成/持续发布了。借助于命令行，这个动作也可以非常高效和自动化。</p>
+
+<h4>Jenkins</h4>
+
+<p>持续集成/持续发布已经是很多企业IT的基本配置了。各个团队通过持续集成环境来编译代码、静态检查、执行单元测试、端到端测试、生成报告、打包、部署到测试环境等等。</p>
+
+<p><img src="/images/2017/01/jenkins-resized.png" alt="" /></p>
+
+<p>比如在<code>Jenkins</code>环境中，在最前的版本中，要配置一个构建任务需要很多的GUI操作，不过在新版本中，大部分操作都已经可以写成脚本。</p>
+
+<p>这样的方式，使得自动化变成了可能，要复制一个已有的<code>pipline</code>，或者要修改一些配置、命令、变量等等，再也不需要用鼠标点来点去了。而且这些代码可以纳入项目代码库中，和其他代码一起被管理，维护，变更历史也更容易追踪和回滚（在GUI上，特别是基于Web的，回滚操作基本上属于不可能）。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">node</span> <span class="o">{</span>
+</span><span class='line'>   <span class="kt">def</span> <span class="n">mvnHome</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="nf">stage</span><span class="o">(</span><span class="s1">&#39;Preparation&#39;</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// for display purposes</span>
+</span><span class='line'>      <span class="n">git</span> <span class="s1">&#39;https://github.com/jglick/simple-maven-project-with-tests.git&#39;</span>
+</span><span class='line'>      <span class="n">mvnHome</span> <span class="o">=</span> <span class="n">tool</span> <span class="s1">&#39;M3&#39;</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">stage</span><span class="o">(</span><span class="s1">&#39;Build&#39;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">sh</span> <span class="s2">&quot;&#39;${mvnHome}/bin/mvn&#39; -Dmaven.test.failure.ignore clean package&quot;</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="n">stage</span><span class="o">(</span><span class="s1">&#39;Results&#39;</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">junit</span> <span class="s1">&#39;**/target/surefire-reports/TEST-*.xml&#39;</span>
+</span><span class='line'>      <span class="n">archive</span> <span class="s1">&#39;target/*.jar&#39;</span>
+</span><span class='line'>   <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面这段<code>groovy</code>脚本定义了三个<code>Stage</code>，每个<code>Stage</code>中分别有自己的命令，这种以代码来控制的方式显然比GUI编辑的方式更加高效，自动化也编程了可能。</p>
+
+<h3>运维工作</h3>
+
+<h4>自动化监控</h4>
+
+<p>Graphite是一个功能强大的监控工具，不过其背后的理念倒是很简单：</p>
+
+<ul>
+<li>存储基于时间线的数据</li>
+<li>将数据渲染成图，并定期刷新</li>
+</ul>
+
+
+<p>用户只需要将数据按照一定格式定期发送给<code>Graphite</code>，剩下的事情就交给<code>Graphite</code>了，比如它可以消费这样的数据：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">instance</span><span class="o">.</span><span class="na">prod</span><span class="o">.</span><span class="na">cpu</span><span class="o">.</span><span class="na">load</span> <span class="mi">40</span> <span class="mi">1484638635</span>
+</span><span class='line'><span class="n">instance</span><span class="o">.</span><span class="na">prod</span><span class="o">.</span><span class="na">cpu</span><span class="o">.</span><span class="na">load</span> <span class="mi">35</span> <span class="mi">1484638754</span>
+</span><span class='line'><span class="n">instance</span><span class="o">.</span><span class="na">prod</span><span class="o">.</span><span class="na">cpu</span><span class="o">.</span><span class="na">load</span> <span class="mi">23</span> <span class="mi">1484638812</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>第一个字段表示数据的<strong>名称</strong>，比如此处<code>instance.prod.cpu.load</code>表示<code>prod</code>实例的CPU负载，第二个字段表示数据的<strong>值</strong>，最后一个字段表示时间戳。</p>
+
+<p>这样，<code>Graphite</code>就会将所有同一个名称下的值按照时间顺序画成图。</p>
+
+<p><img src="/images/2017/01/graphite-demo-resized.png" alt="" /></p>
+
+<p><a href="https://techblog.chegg.com/2013/06/17/making-best-use-of-graphite-for-dynamic-services/">图片来源</a></p>
+
+<p>默认地，<code>Graphite</code>会监听一个网络端口，用户通过网络将信息发送给这个端口，然后<code>Graphite</code>会将信息持久化起来，然后定期刷新。简而言之，只需要一条命令就可以做到发送数据：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nb">echo</span> <span class="s2">&quot;instance.prod.cpu.load 23 `date +%s`&quot;</span> | nc -q0 graphite.server 2003
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>date +%s</code>会生成当前时间戳，然后通过<code>echo</code>命令将其拼成一个完整的字符串，比如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>instance.prod.cpu.load 23 1484638812
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后通过管道<code>|</code>将这个字符串通过网络发送给<code>graphite.server</code>这台机器的<code>2003</code>端口。这样数据就被记录在<code>graphite.server</code>上了。</p>
+
+<h5>定时任务</h5>
+
+<p>如果我们要自动的将数据每隔几秒就发送给<code>graphite.server</code>，只需要改造一下这行命令：</p>
+
+<ol>
+<li>获取当前CPU的load</li>
+<li>获取当前时间戳</li>
+<li>拼成一个字符串</li>
+<li>发送给<code>graphite.server</code>的<code>2003</code>端口</li>
+<li>每隔5分钟做重复一下1-4</li>
+</ol>
+
+
+<p>获取CPU的load在大多数系统中都很容易：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>ps -A -o %cpu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里的参数:</p>
+
+<ul>
+<li><code>-A</code>表示统计所有当前进程</li>
+<li><code>-o %cpu</code>表示仅显示<code>%cpu</code>列的数值</li>
+</ul>
+
+
+<p>这样可以得到每个进程占用CPU复杂的数字：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>%CPU
+</span><span class='line'>  12.0
+</span><span class='line'>  8.2
+</span><span class='line'>  1.2
+</span><span class='line'>  ...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下一步是将这些数字加起来。通过<code>awk</code>命令，可以很容易做到这一点：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>awk <span class="s1">&#39;{s+=$1} END {print s}&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>比如要计算<code>1 2 3</code>的和：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">echo</span> <span class="s2">&quot;1\n2\n3&quot;</span> | awk <span class="s1">&#39;{s+=$1} END {print s}&#39;</span>
+</span><span class='line'>6
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过管道可以讲两者连起来：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>ps -A -o %cpu | awk <span class="s1">&#39;{s+=$1} END {print s}&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们测试一下效果：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>ps -A -o %cpu | awk <span class="s1">&#39;{s+=$1} END {print s}&#39;</span>
+</span><span class='line'>28.6
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>看来还不错，有个这个脚本，通过<code>crontab</code>来定期调用即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nv">SERVER</span><span class="o">=</span>graphite.server
+</span><span class='line'><span class="nv">PORT</span><span class="o">=</span>2003
+</span><span class='line'><span class="nv">LOAD</span><span class="o">=</span><span class="sb">`</span>ps -A -o %cpu | awk <span class="s1">&#39;{s+=$1} END {print s}&#39;</span><span class="sb">`</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;instance.prod.cpu.load ${LOAD} `date +%s`&quot;</span> | nc -q0 <span class="k">${</span><span class="nv">SERVER</span><span class="k">}</span> <span class="k">${</span><span class="nv">PORT</span><span class="k">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然，如果使用<code>Grafana</code>等强调UI的工具，可以很容易的做的更加酷炫：</p>
+
+<p><img src="/images/2017/01/grafana-demo-resized.png" alt="" /></p>
+
+<p><a href="http://www.virtual-valley.net/netapp-performance-monitor/">图片来源</a></p>
+
+<p><em>想想用GUI应用如何做到这些工作。</em></p>
+
+<h3>娱乐</h3>
+
+<h4>命令行的MP3播放器</h4>
+
+<p>最早的时候，有一个叫做<code>mpg123</code>的命令行工具，用来播放MP3文件。不过这个工具是商用的，于是就有人写了一个工具，叫<code>mpg321</code>，基本上是<code>mpg123</code>的开源克隆。不过后来<code>mpg123</code>自己也开源了，这是后话不提。</p>
+
+<p>将我的所有<code>mp3</code>文件的路径保存成一个文件，相当于我的歌单：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>ls /Users/jtqiu/Music/*.mp3 &gt; favorites.list
+</span><span class='line'><span class="nv">$ </span>cat favorites.list
+</span><span class='line'>...
+</span><span class='line'>/Users/jtqiu/Music/Rolling In The Deep-Adele.mp3
+</span><span class='line'>/Users/jtqiu/Music/Wavin<span class="s1">&#39; Flag-K&#39;</span>Naan.mp3
+</span><span class='line'>/Users/jtqiu/Music/蓝莲花-许巍.mp3
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后我将这个歌单交给mpg321去在后台播放：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>mpg321 -q --list favorites.list &amp;
+</span><span class='line'><span class="o">[</span>1<span class="o">]</span> 10268
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样我就可以一边写代码一边听音乐，如果听烦了，只需要将这个后台任务切换到前台<code>fg</code>，然后就可以关掉了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">fg</span>
+</span><span class='line'><span class="o">[</span>1<span class="o">]</span>  + 10268 running    mpg321 -q --list favorites.list
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>小结</h3>
+
+<p>综上，优秀的程序员借助命令行的特性，可以成倍（有时候是跨越数量级的）地提高工作效率，从而有更多的时间进行思考、学习新的技能，或者开发新的工具帮助某项工作的自动化。这也是<strong>优秀的程序员之所以优秀</strong>的原因。而面向手工的，原始的图形界面会拖慢这一过程，很多原本可以自动化起来的工作被淹没在“简单的GUI”之中。</p>
+
+<p>最后补充一点，本文的关键在于强调<code>优秀的程序员</code>与命令行的关系，而不在GUI应用和命令行应用的优劣。GUI应用当然有其使用场景，比如做3D建模，<code>GIS</code>系统，设计师的创作，图文并茂的字处理软件，电影播放器，网页浏览器等等。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-01-17T21:06:00+11:00" pubdate data-updated="true">Jan 17<span>th</span>, 2017</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/grafana/'>Grafana</a>, <a class='category' href='/category/graphite/'>Graphite</a>, <a class='category' href='/category/shell/'>Shell</a>, <a class='category' href='/category/unix/'>UNIX</a>, <a class='category' href='/category/文化/'>文化</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      <a href="/2017/01/why-top-programmers-hate-gui/">原始链接</a>，
+<strong>版权声明</strong>：自由转载-非商用-非衍生-保持署名| <a href='http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh'>Creative Commons BY-NC-ND 3.0</a>
+    </p>
+    
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2017/01/why-ddd-is-so-hard/" title="Previous Post: 实施领域驱动设计的正确姿势">&laquo; 实施领域驱动设计的正确姿势</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2017/01/why-top-programmers-hate-gui/">为什么优秀的程序员喜欢命令行</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2017/01/why-ddd-is-so-hard/">实施领域驱动设计的正确姿势</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2017/01/why-software-is-complex/">软件开发为什么很难</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2016/12/my-2016/">我的2016</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2016/10/testing-in-microservice-context/">微服务场景下的自动化测试</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2017/01/why-top-programmers-hate-gui/';
+        var disqus_url = 'http://abruzzi.github.com/2017/01/why-top-programmers-hate-gui/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

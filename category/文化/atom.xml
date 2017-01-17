@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 文化 | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/文化/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2017-01-18T01:36:00+11:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[为什么优秀的程序员喜欢命令行]]></title>
+    <link href="http://abruzzi.github.com/2017/01/why-top-programmers-hate-gui/"/>
+    <updated>2017-01-17T21:06:00+11:00</updated>
+    <id>http://abruzzi.github.com/2017/01/why-top-programmers-hate-gui</id>
+    <content type="html"><![CDATA[<h2>程序员的日常工作</h2>
+
+<blockquote><p>The three chief virtues of a programmer are: Laziness, Impatience and Hubris. -- Larry Wall</p></blockquote>
+
+<p><code>懒惰</code>这个特点位于<code>程序员的三大美德</code>之首：唯有懒惰才会驱动程序员尽可能的将日常工作自动化起来，解放自己的双手，节省自己的时间。而<code>GUI</code>，不得不说，天然就是为了让<strong>自动化</strong>变得困难的一种设计。GUI更强调的是与人类的直接交互：通过视觉手段将信息以多层次的方式呈现，使用视觉元素进行指引，最后系统在后台进行实际的处理，并将最终结果以视觉手段展现出来。</p>
+
+<p>这种更强调<code>交互</code>过程的设计初衷使得自动化变得非常困难。另一方面，由于GUI是为人类设计的，它的响应就不能太快，至少要留给操作者反应时间（甚至有些用户操作需要人为的加入一些延迟，以提升用户体验）。</p>
+
+<p>程序员除了写代码之外，还有很多事情要做，比如自动化测试，基础设施的配置和管理，持续集成/持续发布环境，甚至有些团队好需要做一些与运维相关的事情（线上问题监控，环境监控等）。</p>
+
+<ul>
+<li>开发/测试</li>
+<li>基础设施管理</li>
+<li>持续集成/持续发布</li>
+<li>运维工作</li>
+<li><del>娱乐</del></li>
+</ul>
+
+
+<h3>UNIX编程哲学</h3>
+
+<p>关于UNIX哲学，其实坊间有多个版本，这里有一个比较<a href="https://zh.wikipedia.org/wiki/Unix%E5%93%B2%E5%AD%A6">详细的清单</a>。虽然有不同的版本，但是有很多一致的地方：</p>
+
+<ol>
+<li>小即是美</li>
+<li>让程序只做好一件事</li>
+<li>尽可能早地创建原型(然后逐步演进)</li>
+<li>数据应该保存为文本文件</li>
+<li>避免使用可定制性低下的用户界面</li>
+</ol>
+
+
+<p>这里列举一些小的例子，我们来看看命令行工具是如何通过应用这些哲学来简化工作，提高效率的。一旦你熟练掌握这些技能，就再也无法摆脱它，也再也忍受不了低效而难用的各种<code>GUI</code>工具了。</p>
+
+<h3>命令行如何帮助程序员提升效率</h3>
+
+<h4>一个高阶计算器</h4>
+
+<p>在我的编程生涯的早期，读过的最为振奋的一本书是<a href="https://book.douban.com/subject/1033144/">《UNIX编程环境》</a>，和其他基本UNIX世界的大部头比起来，这本书其实还是比较小众的。我读大二的时候这本书已经出版了差不多22年(中文版也已经有7年了)，有一些内容已经过时了，比如没有返回值的<code>main</code>函数，外置的参数列表等等，不过在学习到<code>HOC</code>(High Order Calculator)的全部开发过程时，我依然被深深的震撼到了。</p>
+
+<p>简而言之，这个<code>HOC</code>语言的开发过程需要这样几个组件：</p>
+
+<ul>
+<li>词法分析器<code>lex</code></li>
+<li>语法分析器<code>yacc</code></li>
+<li>标准数学库<code>stdlib</code></li>
+</ul>
+
+
+<p>另外还有一些自定义的函数等，最后通过<code>make</code>连接在一起。我跟着书上的讲解，对着书把所有代码都敲了一遍。所有的操作都是在一台很老的IBM的ThinkPad T20上完成的，而且全部都在命令行中进行（当然，还在命令行里听着歌）。</p>
+
+<p>这也是我第一次彻底被UNIX的哲学所折服的体验：</p>
+
+<ul>
+<li>每个工具只做且做好一件事</li>
+<li>工具可以协作起来</li>
+<li>一切面向文本</li>
+</ul>
+
+
+<p>下面是书中的<code>Makefile</code>脚本，通过简单的配置，就将一些<strong>各司其职</strong>的小工具协作起来，完成一个<code>编程语言</code>程序的预编译、编译、链接、二进制生成的动作。</p>
+
+<p>```make
+YFLAGS = -d
+OBJS = hoc.o code.o init.o math.o symbol.o</p>
+
+<p>hoc5:   $(OBJS)</p>
+
+<pre><code>cc $(OBJS) -lm -o hoc5
+</code></pre>
+
+<p>hoc.o code.o init.o symbol.o: hoc.h</p>
+
+<p>code.o init.o symbol.o: x.tab.h</p>
+
+<p>x.tab.h: y.tab.h</p>
+
+<pre><code>-cmp -s x.tab.h y.tab.h || cp y.tab.h x.tab.h
+</code></pre>
+
+<p>pr: hoc.y hoc.h code.c init.c math.c symbol.c</p>
+
+<pre><code>@pr $?
+@touch pr
+</code></pre>
+
+<p>clean:</p>
+
+<pre><code>rm -f $(OBJS) [xy].tab.[ch]
+</code></pre>
+
+<p>```</p>
+
+<p>虽然现在来看，这本书的很多内容已经过期（特别是离它第一次出版已经过去了近30年），有兴趣的朋友可以读一读。</p>
+
+<h3>基础设施自动化</h3>
+
+<p>开发过程中，工程师还需要关注的一个问题是：软件运行的环境。我在上学的时候，刚开始学习Linux的时候，会在Windows机器上装一个虚拟机软件VMWare，然后在VMWare中安装一个<code>Redhat Linux 9</code>。这样当我不小心把Linux玩坏了之后，只需要重装一下就行了，不影响我的其他数据（比如课程作业，文档之类）。不过每次重装也挺麻烦，需要找到<code>iso</code>镜像文件，再挂载到本地的虚拟光驱上，然后再用VMWare来安装。</p>
+
+<p>而且这些动作都是在GUI里完成的，每次都要做很多重复的事情：找镜像文件，使用虚拟光驱软件挂载，启动VMWare，安装Linux，配置个人偏好，配置用户名/密码等等。熟练之后，我可以在30分钟 -- 60分钟安装和配置好一个新的环境。</p>
+
+<h4>Vagrant</h4>
+
+<p>后来我就发现了<code>Vagrant</code>，它支持开发者通过配置的方式将机器描述出来，然后通过命令行的方式来安装并启动，比如下面这个配置：</p>
+
+<p>```rb
+VAGRANTFILE_API_VERSION = "2"</p>
+
+<p>Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "precise64"
+  config.vm.network "private_network", :ip => "192.168.2.100"
+end
+```</p>
+
+<p>它定义了一个虚拟机，使用<code>Ubuntu Precise 64</code>的镜像，然后为其配置一个网络地址<code>192.168.2.100</code>，定义好之后，我只需要执行：</p>
+
+<p><code>sh
+$ vagrant up
+</code></p>
+
+<p>我的机器就可以在几分钟内装好，因为这个动作是命令行里完成的，我可以在持续集成环境里做同样的事情 -- 只需要一条命令。定义好的这个文件可以在团队内共享，可以放入版本管理，团队里的任何一个成员都可以在几分钟内得到一个和我一样的环境。</p>
+
+<h4>Ansible</h4>
+
+<p>一般而言，对于一个软件项目而言，一个全新的操作系统基本上没有任何用处。为了让应用跑起来，我们还需要很多东西。比如Web服务器，Java环境，cgi路径等，除了安装一些软件之外，还有大量的配置工作要做，比如<code>apache httpd</code>服务器的文档根路径，JAVA_HOME环境变量等等。</p>
+
+<p>这些工作做好了，一个环境才算就绪。我记得在上一个项目上，不小心把测试环境的Tomcat目录给删除了，结果害的另外一位同事花了三四个小时才把环境恢复回来（包括重新安装Tomcat，配置一些JAVA_OPTS，应用的部署等）。</p>
+
+<p>不过还在我们有很多工具可以帮助开发者完成环境的自动化准备，比如：Chef, Puppet, Ansible。只需要一些简单的配置，然后结合一个命令行应用，整个过程就可以自动化起来了：</p>
+
+<p>```yaml
+- name: setup custom repo
+  apt: pkg=python-pycurl state=present</p>
+
+<ul>
+<li><p>name: enable carbon
+copy: dest=/etc/default/graphite-carbon content='CARBON_CACHE_ENABLED=true'</p></li>
+<li><p>name: install graphite and deps
+apt: name= state=present
+with_items: packages</p></li>
+<li><p>name: install graphite and deps
+pip: name= state=present
+with_items: python_packages</p></li>
+<li><p>name: setup apache
+copy: src=apache2-graphite.conf dest=/etc/apache2/sites-available/default
+notify: restart apache</p></li>
+<li><p>name: configure wsgi
+file: path=/etc/apache2/wsgi state=directory
+```</p></li>
+</ul>
+
+
+<p>上边的配置描述了安装<code>graphite-carbon</code>，配置<code>apahce</code>等很多手工的劳动，开发者现在只需要执行：</p>
+
+<p><code>sh
+$ ansible
+</code></p>
+
+<p>就可以将整个过程自动化起来。现在如果我不小心把<code>Tomcat</code>删了，只需要几分钟就可以重新配置一个全新的，当然整个过程还是自动的。这在GUI下完全无法想象，特别是有如此多的定制内容的场景下。</p>
+
+<h3>持续集成/持续发布</h3>
+
+<p>日常开发任务中，除了实际的编码和环境配置之外，另一大部分内容就是持续集成/持续发布了。借助于命令行，这个动作也可以非常高效和自动化。</p>
+
+<h4>Jenkins</h4>
+
+<p>持续集成/持续发布已经是很多企业IT的基本配置了。各个团队通过持续集成环境来编译代码、静态检查、执行单元测试、端到端测试、生成报告、打包、部署到测试环境等等。</p>
+
+<p><img src="/images/2017/01/jenkins-resized.png" alt="" /></p>
+
+<p>比如在<code>Jenkins</code>环境中，在最前的版本中，要配置一个构建任务需要很多的GUI操作，不过在新版本中，大部分操作都已经可以写成脚本。</p>
+
+<p>这样的方式，使得自动化变成了可能，要复制一个已有的<code>pipline</code>，或者要修改一些配置、命令、变量等等，再也不需要用鼠标点来点去了。而且这些代码可以纳入项目代码库中，和其他代码一起被管理，维护，变更历史也更容易追踪和回滚（在GUI上，特别是基于Web的，回滚操作基本上属于不可能）。</p>
+
+<p>```groovy
+node {
+   def mvnHome</p>
+
+<p>   stage('Preparation') { // for display purposes</p>
+
+<pre><code>  git 'https://github.com/jglick/simple-maven-project-with-tests.git'
+  mvnHome = tool 'M3'
+</code></pre>
+
+<p>   }</p>
+
+<p>   stage('Build') {</p>
+
+<pre><code>  sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
+</code></pre>
+
+<p>   }</p>
+
+<p>   stage('Results') {</p>
+
+<pre><code>  junit '**/target/surefire-reports/TEST-*.xml'
+  archive 'target/*.jar'
+</code></pre>
+
+<p>   }
+}
+```</p>
+
+<p>上面这段<code>groovy</code>脚本定义了三个<code>Stage</code>，每个<code>Stage</code>中分别有自己的命令，这种以代码来控制的方式显然比GUI编辑的方式更加高效，自动化也编程了可能。</p>
+
+<h3>运维工作</h3>
+
+<h4>自动化监控</h4>
+
+<p>Graphite是一个功能强大的监控工具，不过其背后的理念倒是很简单：</p>
+
+<ul>
+<li>存储基于时间线的数据</li>
+<li>将数据渲染成图，并定期刷新</li>
+</ul>
+
+
+<p>用户只需要将数据按照一定格式定期发送给<code>Graphite</code>，剩下的事情就交给<code>Graphite</code>了，比如它可以消费这样的数据：</p>
+
+<p><code>
+instance.prod.cpu.load 40 1484638635
+instance.prod.cpu.load 35 1484638754
+instance.prod.cpu.load 23 1484638812
+</code></p>
+
+<p>第一个字段表示数据的<strong>名称</strong>，比如此处<code>instance.prod.cpu.load</code>表示<code>prod</code>实例的CPU负载，第二个字段表示数据的<strong>值</strong>，最后一个字段表示时间戳。</p>
+
+<p>这样，<code>Graphite</code>就会将所有同一个名称下的值按照时间顺序画成图。</p>
+
+<p><img src="/images/2017/01/graphite-demo-resized.png" alt="" /></p>
+
+<p><a href="https://techblog.chegg.com/2013/06/17/making-best-use-of-graphite-for-dynamic-services/">图片来源</a></p>
+
+<p>默认地，<code>Graphite</code>会监听一个网络端口，用户通过网络将信息发送给这个端口，然后<code>Graphite</code>会将信息持久化起来，然后定期刷新。简而言之，只需要一条命令就可以做到发送数据：</p>
+
+<p><code>sh
+echo "instance.prod.cpu.load 23 `date +%s`" | nc -q0 graphite.server 2003
+</code></p>
+
+<p><code>date +%s</code>会生成当前时间戳，然后通过<code>echo</code>命令将其拼成一个完整的字符串，比如：</p>
+
+<p><code>sh
+instance.prod.cpu.load 23 1484638812
+</code></p>
+
+<p>然后通过管道<code>|</code>将这个字符串通过网络发送给<code>graphite.server</code>这台机器的<code>2003</code>端口。这样数据就被记录在<code>graphite.server</code>上了。</p>
+
+<h5>定时任务</h5>
+
+<p>如果我们要自动的将数据每隔几秒就发送给<code>graphite.server</code>，只需要改造一下这行命令：</p>
+
+<ol>
+<li>获取当前CPU的load</li>
+<li>获取当前时间戳</li>
+<li>拼成一个字符串</li>
+<li>发送给<code>graphite.server</code>的<code>2003</code>端口</li>
+<li>每隔5分钟做重复一下1-4</li>
+</ol>
+
+
+<p>获取CPU的load在大多数系统中都很容易：</p>
+
+<p><code>sh
+ps -A -o %cpu
+</code></p>
+
+<p>这里的参数:</p>
+
+<ul>
+<li><code>-A</code>表示统计所有当前进程</li>
+<li><code>-o %cpu</code>表示仅显示<code>%cpu</code>列的数值</li>
+</ul>
+
+
+<p>这样可以得到每个进程占用CPU复杂的数字：</p>
+
+<p><code>sh
+%CPU
+  12.0
+  8.2
+  1.2
+  ...
+</code></p>
+
+<p>下一步是将这些数字加起来。通过<code>awk</code>命令，可以很容易做到这一点：</p>
+
+<p><code>sh
+$ awk '{s+=$1} END {print s}'
+</code></p>
+
+<p>比如要计算<code>1 2 3</code>的和：</p>
+
+<p><code>sh
+$ echo "1\n2\n3" | awk '{s+=$1} END {print s}'
+6
+</code></p>
+
+<p>通过管道可以讲两者连起来：</p>
+
+<p><code>sh
+$ ps -A -o %cpu | awk '{s+=$1} END {print s}'  
+</code></p>
+
+<p>我们测试一下效果：</p>
+
+<p><code>sh
+$ ps -A -o %cpu | awk '{s+=$1} END {print s}'  
+28.6
+</code></p>
+
+<p>看来还不错，有个这个脚本，通过<code>crontab</code>来定期调用即可：</p>
+
+<p>```sh</p>
+
+<h1>!/bin/bash</h1>
+
+<p>SERVER=graphite.server
+PORT=2003
+LOAD=<code>ps -A -o %cpu | awk '{s+=$1} END {print s}'</code></p>
+
+<p>echo "instance.prod.cpu.load ${LOAD} <code>date +%s</code>" | nc -q0 ${SERVER} ${PORT}
+```</p>
+
+<p>当然，如果使用<code>Grafana</code>等强调UI的工具，可以很容易的做的更加酷炫：</p>
+
+<p><img src="/images/2017/01/grafana-demo-resized.png" alt="" /></p>
+
+<p><a href="http://www.virtual-valley.net/netapp-performance-monitor/">图片来源</a></p>
+
+<p><em>想想用GUI应用如何做到这些工作。</em></p>
+
+<h3>娱乐</h3>
+
+<h4>命令行的MP3播放器</h4>
+
+<p>最早的时候，有一个叫做<code>mpg123</code>的命令行工具，用来播放MP3文件。不过这个工具是商用的，于是就有人写了一个工具，叫<code>mpg321</code>，基本上是<code>mpg123</code>的开源克隆。不过后来<code>mpg123</code>自己也开源了，这是后话不提。</p>
+
+<p>将我的所有<code>mp3</code>文件的路径保存成一个文件，相当于我的歌单：</p>
+
+<p><code>sh
+$ ls /Users/jtqiu/Music/*.mp3 &gt; favorites.list
+$ cat favorites.list
+...
+/Users/jtqiu/Music/Rolling In The Deep-Adele.mp3
+/Users/jtqiu/Music/Wavin' Flag-K'Naan.mp3
+/Users/jtqiu/Music/蓝莲花-许巍.mp3
+...
+</code></p>
+
+<p>然后我将这个歌单交给mpg321去在后台播放：</p>
+
+<p><code>sh
+$ mpg321 -q --list favorites.list &amp;           
+[1] 10268
+</code></p>
+
+<p>这样我就可以一边写代码一边听音乐，如果听烦了，只需要将这个后台任务切换到前台<code>fg</code>，然后就可以关掉了：</p>
+
+<p><code>sh
+$ fg
+[1]  + 10268 running    mpg321 -q --list favorites.list
+</code></p>
+
+<h3>小结</h3>
+
+<p>综上，优秀的程序员借助命令行的特性，可以成倍（有时候是跨越数量级的）地提高工作效率，从而有更多的时间进行思考、学习新的技能，或者开发新的工具帮助某项工作的自动化。这也是<strong>优秀的程序员之所以优秀</strong>的原因。而面向手工的，原始的图形界面会拖慢这一过程，很多原本可以自动化起来的工作被淹没在“简单的GUI”之中。</p>
+
+<p>最后补充一点，本文的关键在于强调<code>优秀的程序员</code>与命令行的关系，而不在GUI应用和命令行应用的优劣。GUI应用当然有其使用场景，比如做3D建模，<code>GIS</code>系统，设计师的创作，图文并茂的字处理软件，电影播放器，网页浏览器等等。</p>
+]]></content>
+  </entry>
+  
+</feed>

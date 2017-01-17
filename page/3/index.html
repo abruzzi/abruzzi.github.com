@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="数据可视化 多年下来，我的Google Bookmarks里已经有近万条的书签。大部分内容是我在读过一遍之后就收藏起来的，也有很多看了一眼之后，觉得不错，然后收藏起来准备以后读的（当然，你也知道，再也没有打开过）。 有没有一个方法可以让我以可视化的方式，看到这些年我都学了那些东西呢？ &hellip;">
+  <meta name="description" content="一点背景 React在设计之初就只关注在View本身上，其余部分如数据的获取，事件处理等，全然不在考虑之内。不过构建大型的Web前端应用，这些点又实在不可避免。所以Facebook的工程师提出了前端的Flux架构，这个架构的最大特点是单向数据流（后面详述）。但是Flux本身的实现有很多不合理的地方 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,562 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/11/get-started-with-reflux/">你为什么应该试一试Reflux？</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-09T23:03:00+11:00" pubdate data-updated="true">Nov 9<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>一点背景</h3>
+
+<p>React在设计之初就只关注在View本身上，其余部分如<code>数据的获取</code>，<code>事件处理</code>等，全然不在考虑之内。不过构建大型的Web前端应用，这些点又实在不可避免。所以Facebook的工程师提出了前端的<code>Flux</code>架构，这个架构的最大特点是<code>单向数据流</code>（后面详述）。但是<code>Flux</code>本身的实现有很多不合理的地方，比如单例的Dispatcher会在系统中有多种事件时导致臃肿的<code>switch-cases</code>等。</p>
+
+<p>这里是Facebook官方提供的提供<a href="https://github.com/facebook/flux/tree/master/examples/flux-todomvc#structure-and-data-flow">Flux的结构图</a>。</p>
+
+<p><img src="/images/2015/11/flux-diagram-resized.png" alt="Flux Diagram" /></p>
+
+<p>其实整个Flux背后的思想也<a href="http://bitquabit.com/post/the-more-things-change/">不是什么新东西</a>。在很久之前，Win32的消息机制（以及很多的GUI系统）就在使用这个模型，而且这也是一种被证实可以用来构建大型软件的模型。</p>
+
+<p>鉴于Flux本身只是一个架构，而且Facebook提供的参考实现又有一些问题，所以社区有了很多版本的Flux实现。比如我们这里会用到的<a href="http://spoike.ghost.io/deconstructing-reactjss-flux/">Reflux</a>。</p>
+
+<h3>Reflux简介</h3>
+
+<p>简而言之，<a href="https://github.com/reflux/refluxjs">Reflux</a>里有两个组件：Store和Action。Store负责和数据相关的内容：从服务器上获取数据，并更新与其绑定的React组件（view controller）;Action是一个事件的集合。Action和Store通过convention来连接起来。</p>
+
+<p>具体来说，一个典型的过程是：</p>
+
+<ol>
+<li>用户的动作(或者定时器)在组件上触发一个Action</li>
+<li>Reflux会调用对应的Store上的callback（自动触发）</li>
+<li>这个callback在执行结束之后，会显式的触发（trigger）一个数据</li>
+<li>对应的组件（可能是多个）的state会被更新</li>
+<li>React组件检测到state的变化后，会自动重绘自身</li>
+</ol>
+
+
+<p><img src="/images/2015/11/reflux-data-flow.png" alt="reflux data flow" /></p>
+
+<h3>一个例子</h3>
+
+<p>我们这里将使用React/Reflux开发一个实际的例子，从最简单的功能开始，逐步将其构建为一个较为复杂的应用。</p>
+
+<p>这个应用是一个书签展示应用（数据来源于我的Google Bookmarks）。第一个版本的界面是这样的：</p>
+
+<p><img src="/images/2015/11/bookmarks-list-resized.png" alt="bookmarks list" /></p>
+
+<p>要构建这样一个列表应用，我们需要这样几个部分：</p>
+
+<ol>
+<li>一个用来<code>fetch</code>数据，存储数据的store （BookmarkStore）</li>
+<li>一个用来表达事件的<code>Action</code>（BookmarkActions）</li>
+<li>一个列表组件（BookmarkList）</li>
+<li>一个组件条目组件（Bookmark）</li>
+</ol>
+
+
+<h4>定义Actions</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">Reflux</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;reflux&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">BookmarkActions</span> <span class="o">=</span> <span class="nx">Reflux</span><span class="p">.</span><span class="nx">createActions</span><span class="p">([</span>
+</span><span class='line'>  <span class="s1">&#39;fetch&#39;</span>
+</span><span class='line'><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">BookmarkActions</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>第一个版本，我们只需要定义一个<code>fetch</code>事件即可。然后在<code>Store</code>中编写这个Action的回调：</p>
+
+<h4>定义Store</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">$</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;jquery&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">Reflux</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;reflux&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">BookmarkActions</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../actions/bookmark-actions&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">Utils</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../utils/fetch-client&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">BookmarkStore</span> <span class="o">=</span> <span class="nx">Reflux</span><span class="p">.</span><span class="nx">createStore</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">listenables</span><span class="o">:</span> <span class="p">[</span><span class="nx">BookmarkActions</span><span class="p">],</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">onFetch</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">onFetch</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">Utils</span><span class="p">.</span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/bookmarks&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">bookmarks</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">self</span><span class="p">.</span><span class="nx">trigger</span><span class="p">({</span>
+</span><span class='line'>              <span class="nx">data</span><span class="o">:</span> <span class="nx">bookmarks</span><span class="p">,</span>
+</span><span class='line'>              <span class="nx">match</span><span class="o">:</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>          <span class="p">});</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">BookmarkStore</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>此处，我们使用<code>listenables: [BookmarkActions]</code>来将Store和Action关联起来，根据<code>convention</code>，<code>on</code>+事件名称就是回调函数的名称。这样当<code>Action</code>被触发的时候，<code>onFetch</code>会被调用。当获取到数据之后，这里会显式的<code>trigger</code>一个数据。</p>
+
+<h4>List组件</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">React</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;react&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">Reflux</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;reflux&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">BookmarkStore</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../stores/bookmark-store.js&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">Bookmark</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./bookmark.js&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">BookmarkList</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createClass</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">mixins</span><span class="o">:</span> <span class="p">[</span><span class="nx">Reflux</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="nx">BookmarkStore</span><span class="p">,</span> <span class="s1">&#39;bookmarks&#39;</span><span class="p">)],</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">getInitialState</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">bookmarks</span><span class="o">:</span> <span class="p">{</span><span class="nx">data</span><span class="o">:</span> <span class="p">[]}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">list</span> <span class="o">=</span> <span class="p">[];</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">bookmarks</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">list</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">Bookmark</span> <span class="nx">title</span><span class="o">=</span><span class="p">{</span><span class="nx">item</span><span class="p">.</span><span class="nx">title</span><span class="p">}</span> <span class="nx">created</span><span class="o">=</span><span class="p">{</span><span class="nx">item</span><span class="p">.</span><span class="nx">created</span><span class="p">}</span><span class="o">/&gt;</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  
+</span><span class='line'>      <span class="k">return</span> <span class="o">&lt;</span><span class="nx">ul</span><span class="o">&gt;</span>
+</span><span class='line'>          <span class="p">{</span><span class="nx">list</span><span class="p">}</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="err">/ul&gt;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">BookmarkList</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在组件中，我们通过<code>mixins: [Reflux.connect(BookmarkStore, 'bookmarks')]</code>将Store和组件关联起来，这样List组件<code>state</code>上的<code>bookmarks</code>就和<code>BookmarkStore</code>连接起来了。当<code>state.bookmarks</code>变化之后，<code>render</code>方法就会被自动调用。</p>
+
+<p>对于每一个书签，就只是简单的展示内容即可：</p>
+
+<h4>Bookmark组件</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">React</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;react&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">Reflux</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;reflux&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">moment</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;moment&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">Bookmark</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createClass</span><span class="p">({</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">created</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">created</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">);</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">date</span> <span class="o">=</span> <span class="nx">moment</span><span class="p">(</span><span class="nx">created</span><span class="p">).</span><span class="nx">format</span><span class="p">(</span><span class="s1">&#39;YYYY-MM-DD&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span>
+</span><span class='line'>          <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;bookmark&#39;</span><span class="o">&gt;</span>
+</span><span class='line'>              <span class="o">&lt;</span><span class="nx">h5</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;title&#39;</span><span class="o">&gt;</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h5&gt;</span>
+</span><span class='line'>              <span class="o">&lt;</span><span class="nx">span</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="o">&gt;</span><span class="nx">Created</span> <span class="err">@</span> <span class="p">{</span><span class="nx">date</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/span&gt;</span>
+</span><span class='line'>          <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="err">/li&gt;;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Bookmark</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里我使用了<code>moment</code>库将<code>unix timestamp</code>转换为日期字符串，然后写在页面上。</p>
+
+<p>最后，<code>Utils</code>只是一个对<code>jQuery</code>的包装：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">$</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;jquery&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">Promise</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;promise&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">fetch</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Promise</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">url</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="nx">resolve</span><span class="p">).</span><span class="nx">fail</span><span class="p">(</span><span class="nx">reject</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">promise</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们再来总结一下，<code>BookmarkStore</code>在初始化的时候，显式地调用了<code>onFetch</code>，这个动作会导致<code>BookmarkList</code>组件的<code>state</code>的更新，这个更新会导致<code>BookmarkList</code>的重绘，<code>BookmarkList</code>会依次迭代所有的<code>Bookmark</code>。</p>
+
+<h3>更复杂一些</h3>
+
+<p>当然，Reflux的好处不仅仅是上面描述的这种单向数据流。当<code>Store</code>，<code>Actions</code>以及具体的<code>组件</code>被解耦之后，构建大型的应用才能成为可能。我们来对上面的应用做一下扩展：我们为列表添加一个搜索功能。</p>
+
+<p>随着用户的键入，我们发送请求到服务器，将过滤后的数据渲染为新的列表。我们需要这样几个东西</p>
+
+<ol>
+<li>一个SearchBox组件</li>
+<li>一个新的<code>Action</code>：<code>search</code></li>
+<li><code>BookmarkStore</code>上的一个新方法<code>onSearch</code></li>
+<li>组件<code>SearchBox</code>需要和<code>BookmarkActions</code>关联起来</li>
+</ol>
+
+
+<p>为了让用户看到匹配的效果，我们需要将匹配到的关键字高亮起来，这样我们需要在<code>Bookmark</code>组件中监听<code>BookmarkStore</code>，当<code>BookmarkStore</code>发生变化之后，我们就可以即时修改书签的<code>title</code>了。</p>
+
+<h4>搜索框组件</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">React</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;react&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">BookmarkActions</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../actions/bookmark-actions&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">SearchBox</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createClass</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">performSearch</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">keyword</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">refs</span><span class="p">.</span><span class="nx">keyword</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">BookmarkActions</span><span class="p">.</span><span class="nx">search</span><span class="p">(</span><span class="nx">keyword</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s2">&quot;search&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>          <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="s1">&#39;text&#39;</span>
+</span><span class='line'>              <span class="nx">placeholder</span><span class="o">=</span><span class="s1">&#39;type to search...&#39;</span>
+</span><span class='line'>              <span class="nx">ref</span><span class="o">=</span><span class="s2">&quot;keyword&quot;</span>
+</span><span class='line'>              <span class="nx">onChange</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">performSearch</span><span class="p">}</span> <span class="o">/&gt;</span>   
+</span><span class='line'>      <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">SearchBox</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>BookmarkStore</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">$</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;jquery&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">Reflux</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;reflux&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">BookmarkActions</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../actions/bookmark-actions&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">Utils</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../utils/fetch-client&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">BookmarkStore</span> <span class="o">=</span> <span class="nx">Reflux</span><span class="p">.</span><span class="nx">createStore</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">listenables</span><span class="o">:</span> <span class="p">[</span><span class="nx">BookmarkActions</span><span class="p">],</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="nx">onFetch</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">onFetch</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">Utils</span><span class="p">.</span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/bookmarks&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">bookmarks</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">self</span><span class="p">.</span><span class="nx">trigger</span><span class="p">({</span>
+</span><span class='line'>              <span class="nx">data</span><span class="o">:</span> <span class="nx">bookmarks</span><span class="p">,</span>
+</span><span class='line'>              <span class="nx">match</span><span class="o">:</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>          <span class="p">});</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">onSearch</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">keyword</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">Utils</span><span class="p">.</span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/bookmarks?keyword=&#39;</span><span class="o">+</span><span class="nx">keyword</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">bookmarks</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">self</span><span class="p">.</span><span class="nx">trigger</span><span class="p">({</span>
+</span><span class='line'>              <span class="nx">data</span><span class="o">:</span> <span class="nx">bookmarks</span><span class="p">,</span>
+</span><span class='line'>              <span class="nx">match</span><span class="o">:</span> <span class="nx">keyword</span>
+</span><span class='line'>          <span class="p">});</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">BookmarkStore</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们在<code>BookmarkStore</code>中添加了<code>onSearch</code>方法，它会根据关键字来调用后台API进行搜索，并将结果<code>trigger</code>出去。由于数据本身的结构并没有变化（只是数量会由于过滤而变少），因此<code>BookmarkList</code>是无需修改的。</p>
+
+<h4>书签高亮</h4>
+
+<p>当搜索匹配之后，我们可以将对应的关键字高亮起来，这时候我们需要修改<code>Bookmark</code>组件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">React</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;react&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">Reflux</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;reflux&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">moment</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;moment&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">BookmarkStore</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../stores/bookmark-store.js&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">Bookmark</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createClass</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">mixins</span><span class="o">:</span> <span class="p">[</span><span class="nx">Reflux</span><span class="p">.</span><span class="nx">listenTo</span><span class="p">(</span><span class="nx">BookmarkStore</span><span class="p">,</span> <span class="s1">&#39;onMatch&#39;</span><span class="p">)],</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">onMatch</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span>
+</span><span class='line'>            <span class="nx">match</span><span class="o">:</span> <span class="nx">data</span><span class="p">.</span><span class="nx">match</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">getInitialState</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">match</span><span class="o">:</span> <span class="s1">&#39;&#39;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">created</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">created</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">);</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">date</span> <span class="o">=</span> <span class="nx">moment</span><span class="p">(</span><span class="nx">created</span><span class="p">).</span><span class="nx">format</span><span class="p">(</span><span class="s1">&#39;YYYY-MM-DD&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">title</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">title</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">match</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">title</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nx">span</span>
+</span><span class='line'>              <span class="nx">dangerouslySetInnerHTML</span><span class="o">=</span><span class="p">{{</span>
+</span><span class='line'>                <span class="nx">__html</span> <span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">props</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="nx">match</span><span class="o">+</span><span class="s1">&#39;)&#39;</span><span class="p">,</span> <span class="s2">&quot;gi&quot;</span><span class="p">),</span> <span class="s1">&#39;&lt;span class=&quot;highlight&quot;&gt;$1&lt;/span&gt;&#39;</span><span class="p">)</span>
+</span><span class='line'>              <span class="p">}}</span> <span class="o">/&gt;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">return</span> <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span>
+</span><span class='line'>          <span class="o">&lt;</span><span class="nx">div</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;bookmark&#39;</span><span class="o">&gt;</span>
+</span><span class='line'>              <span class="o">&lt;</span><span class="nx">h5</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;title&#39;</span><span class="o">&gt;</span><span class="p">{</span><span class="nx">title</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/h5&gt;</span>
+</span><span class='line'>              <span class="o">&lt;</span><span class="nx">span</span> <span class="nx">className</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="o">&gt;</span><span class="nx">Created</span> <span class="err">@</span> <span class="p">{</span><span class="nx">date</span><span class="p">}</span><span class="o">&lt;</span><span class="err">/span&gt;</span>
+</span><span class='line'>          <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="err">/li&gt;;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Bookmark</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>mixins: [Reflux.listenTo(BookmarkStore, 'onMatch')]</code>表示，我们需要监听<code>BookmarkStore</code>的变化，当变化发生时，调用<code>OnMatch</code>方法。<code>OnMatch</code>会修改组件的<code>match</code>属性，从而触发<code>render</code>。</p>
+
+<p>在<code>render</code>中，我们替换关键字为<code>&lt;span class="highlight"&gt;$keyword&lt;/span&gt;</code>，这样就可以达到预期的效果了：</p>
+
+<p><img src="/images/2015/11/bookmark-search-resized.png" alt="bookmark search" /></p>
+
+<h3>结论</h3>
+
+<p>从上面的例子可以看到，我们从一开始就引入了Reflux。虽然第一个版本和React原生的写法差异并不是很大，但是当加入<code>SearchBox</code>功能之后，需要修改的地方非常清晰：添加<code>Actions</code>，在对应的<code>Store</code>中添加callback，然后在组件中使用。这种方法不仅可以最大程度的使用<code>React</code>的长处（diff render），而且使得代码逻辑变得较为清晰。</p>
+
+<p>随着业务代码的不断增加，Reflux提供的方式确实可以在一定程度上控制代码的复杂性和可读性。</p>
+
+<p>完整的<a href="https://github.com/abruzzi/react-reflux-demo">代码地址在这里</a>。</p>
+
+<h3>其他参考</h3>
+
+<ul>
+<li><a href="http://www.bunniesandbeatings.com/RefluxManifesto/">Reflux“宣言”</a></li>
+<li><a href="https://news.ycombinator.com/item?id=10381015">Flux is the new WndProc</a></li>
+<li><a href="https://ochronus.com/react-reflux-example/">React Reflux Example</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2838,190 +3394,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2015/06/do-we-really-short-for-front-end-developer/">我们真的缺前端工程师吗？</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-06-14T23:33:00+10:00" pubdate data-updated="true">Jun 14<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>前言</h3>
-
-<p>这两天在好几个地方都看到了一篇关于<a href="http://chuansong.me/n/1369941">为什么整个互联网行业都缺前端工程师？</a>的文章，文章本身是去年的，中心思想是：其实我们并不缺前端工程师，我们缺的是优秀的前端工程师。我还是比较同意作者观点的，不过略有意犹未尽的感觉。于是我结合自己的经验，也来聊一下这个话题：<strong>我们真的缺前端工程师吗？</strong></p>
-
-<p><code>
-These walls are kind of funny like that. First you hate them, then you get used to them.Enough time passed, get so you depend on them. That’s institutionalising.
-</code></p>
-
-<p>传统软件公司划分开发者的方式下，在前端部门的程序员永远不会去读缓存数据部分的代码，设计师也不太可能去和开发坐在一起，开发也不知道软件最终软件会以何种方式部署在服务器上。</p>
-
-<h3>什么是“前端”工程师</h3>
-
-<p>我在招聘广告和办公室的一些对话中，听到了一个新的角色：UI Dev，事实上我在知乎上还回答过一个<a href="http://www.zhihu.com/question/30170650">关于ThoughtWorks的UI Dev的问题</a>。简而言之，UI Dev可以快速的把设计师的作品实现为HTML/CSS/JavaScript代码。</p>
-
-<p><img src="/images/2015/06/website-development-resized.png" alt="front-end development" /></p>
-
-<p>如果按照这个标准，我觉得UI Dev对自己的要求太低了。毕竟要学会HTML/CSS实现mockup并不困难，但是成为一名前端工程师则需要掌握更多的知识：</p>
-
-<ul>
-<li>会用PS来进行图片的处理（比如切图，微调等）</li>
-<li>用HTML/CSS实现mockup（可能还有<a href="http://sass-lang.com/">SASS</a>/<a href="http://lesscss.org/">LESS</a>等工具）</li>
-<li>熟悉JavaScript（比如前端的MVVM框架，客户端模板）</li>
-<li>前端开发的工作流程（代码检查，精简化，模块化CSS，LiveReload，调试）</li>
-<li>编写测试（静态检查，单元测试）</li>
-<li>跨浏览器、跨设备的解决方法（不同分辨率，不同厂商）</li>
-<li>会根据项目的特点选择不同的前端技术栈（移动端，Web站点，响应式设计等）</li>
-</ul>
-
-
-<p>在有了基础的HTML/CSS/JS技能之后，你会尝试做的更好：</p>
-
-<ul>
-<li>如何更高效的操作DOM</li>
-<li>如何将CSS写的更加清晰易懂</li>
-<li>如何编写更加易于维护的代码（更有意义的单元测试）</li>
-<li>如何组织大型的项目结构，模块化，组件化等等</li>
-</ul>
-
-
-<p>这些要求事实上已经不那么容易做到了。它可能会花费你2到3年时间来完全掌握。但是2到3年之后，即便你已经成为了一个“合格的”前端工程师，这也还远远不够。在现实世界中，一个软件产品除了前端，还有非常广阔的空间，还有很多有趣的东西值得学习：</p>
-
-<ul>
-<li>HTTP协议本身（缓存，鉴权）</li>
-<li>Web容器/HTTP服务器如何工作</li>
-<li>无状态的Web应用的工作原理（如何让网站正确地运行在集群上）</li>
-<li>动态，静态内容如何分离部署（反向代理配置）</li>
-<li>安全机制如何配置</li>
-<li>监控机制如何配置</li>
-</ul>
-
-
-<p>有了这些，也算是有点端到端的意思了。这时你也已经不是一个“纯前端”工程师了，系统中的大部分问题你都可以搞定，不过日常工作中可能更多的职责还是做前端的开发。但是这些还不够，软件除了交付之外，还有一些非功能性的需求：</p>
-
-<ul>
-<li>端到端测试（UI测试，比如<a href="http://www.seleniumhq.org/">selenium server</a>/web driver）</li>
-<li>devops（比如数据库环境，测试服务器，CI服务器的自动化provision）</li>
-<li>基本的UI设计原则（在某些页面确实的情况下，根据系统的已有UI做设计）</li>
-<li>数据库性能优化</li>
-<li>性能测试</li>
-</ul>
-
-
-<p><del>不过这些还只是我对于Web开发这个领域的总结。其他领域，比如大数据，机器学习，GIS，图像/视频处理等等。</del></p>
-
-<p>这时候，你才能算是一个严格意义上的“前端”工程师。不从系统的角度来思考，不真正做一些后端开发/配置，并不能算是前端工程师，或者可以被称为<em>偏前端</em>工程师（partial frontend developer）。但是即使称为上边这样的“前端工程师”，我想这离一个优秀的工程师还是有<strong>很大差距</strong>的。</p>
-
-<p>我跟一位<a href="http://www.caicaiwan.com/">设计师同事</a>聊过这个问题：</p>
-
-<p><code>
-Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找到一些卡片（story卡或者需求文档说明书），然后撸袖子开干，干的过程中有很多自以为是的理解，同样有一些自以为是的牛逼实践（TDD啊，自动化啊），最后功能做完，大功告成，然后接着做下一个卡片。传统的Dev，或者苦逼屌丝程序员的世界就是这样的：需求从哪儿来，不知道；做完之后谁来负责质量，不知道；最终上线的时候怎么发布，不知道；线上有问题了怎么办，不知道。
-</code></p>
-
-<p>以及</p>
-
-<p><code>
-在ThoughtWorks，Dev的工作有了很大的变化，一个最明显的变化是边界的模糊。比如很多项目都不设QA角色，所有人都对质量负责，都做测试，也有OPs角色，但是大部分非生产环境都是Dev自己发布。也就是说，软件/项目生命周期中的大部分实践我们都能涉足，而且可以带来改进，提升效率。但是这只是往下游（从开发，到测试，到部署，到运维），反过来看上游，比如需求从哪儿来，Dev还是不知道。这毫无疑问是一个令人沮丧的事实，因为这需求的产生才是核心，也就是我昨天跟你聊的：一个idea如何变成一个可视化的原型，然后进一步演进为项目原型？
-</code></p>
-
-<p>开发工作不应该仅仅局限在编码上，作为开发者/工程师，应该尽可能的多了解一些上下文：比如我们的项目最终是给谁用的，需求从何而来，项目是如何部署在线上的等等。</p>
-
-<p><img src="/images/2015/06/software-life-cycle-resized.png" alt="software life cycle" /></p>
-
-<p>简而言之，开发者视野应该放开开阔一些。不要将自己局限在某种角色上，不但不要局限在前端/后端开发上，压根就不要局限在开发这种角色本身上，你在系统中，可以是设计师，还可以是业务分析师。虽然不一定最终要你去转行做BA，或者UX，但是更广阔的视野可以使你更加高效的发挥自己的作用，也可以在和别的角色互动式，快速的了解上下文。</p>
-
-<p>我所理解的，前端不一定要熟知所有这些知识和技能，但是<strong>一定不要认为自己做好了前端的一亩三分地就足够了</strong>，不要给自己设限。跨界会给你带来难以估量的好处，一个角色做久了，难免会产生一些盲点。这时候，换个视角，从其他角色的角度来看待你的工作，又会有很多新的发现。而且不仅如此，很可能你会发现之前很麻烦，很难搞定的事情，在新的方法/视角下变得很容易。</p>
-
-<h3>我的故事</h3>
-
-<h4>其实，我是一名后端开发</h4>
-
-<p>工作之后，我在很长一段时间是专注于“非前端”的领域。和很多刚入行的新人一样，我对计算机能触及的几乎一切领域都感兴趣：语言解释器，人工智能（遗传算法，隐式马尔科夫模型，自动纠错，模式识别），嵌入式开发，图形处理，操作系统的进程调度，进程间通信，多线程模型，各种脚本语言（python，ruby，JavaScript等等），另外，日常开发流程中的一些工具的定制化也会花去我很多的时间，比如如何配置vim，写几个小脚本来和编辑器做集成等等。更别说那些令人一听就觉得激动的编程范式：面向对象，基于消息总线，函数式编程等等。如果你感兴趣，可以看看我<a href="http://abruzzi.iteye.com/">几年前的博客</a>。</p>
-
-<p>我的上一家公司的产品是一个省级电网的收费/计费系统（电其实和我们在超市里购买的其他生活用品一样，也是一种商品）。我在那里工作了差不多两年，日常的开发方式就是ssh登陆到RHEL（Redhat Enterprise Linux）服务器上，用vim（当然有一堆的vim插件）开发C代码，调试器是gdb（对，就是那个很牛逼，但是对新手特别不友好的gdb）。</p>
-
-<p>我们用C语言给Apache的httpd写了一个扩展module，大约相当于现在rack里的中间件，这个module要和后端的一个要复杂的多的模块通信，其中不但涉及网络通信，还有*nix管道，缓冲，并发等等考虑。在这两年里，我几乎没有碰过任何的Web界面上的东西（除了用php写了一两百行的页面之外）。</p>
-
-<p>在加入这家公司之前，我在一家用Java做报表的公司工作，技术栈为J2EE。其中有一些前端的工作，但是并不很多，而且说实话，我当时有些看不太上这些技术。HTML/CSS在我心目中的地位比线程池，语言解析等差远了，所以我也没有认真地去系统学习。</p>
-
-<p>在加入ThoughtWorks之前，在“前端”方面，唯一算是比较擅长的也不过是写JavaScript，而且对于前端的MVVM框架，双向绑定，模块化等高级货都没听过。且不能论HTML/CSS的最佳实践，连根据设计稿做出一个静态页面的的能力也不具备。我之前有一点JSP/HTML经验，而CSS经验也并没有超出如何画一个细线表格的范畴。换句话说，我的前端（特别是HTML/CSS）是最近才学会的。</p>
-
-<h4>ThoughtWorks的开发</h4>
-
-<p>在ThoughtWorks，很多团队是按照feature团队来组建的。相对于传统的component团队（按部门划分，比如研发组，测试组，设计组等，每个组还有可能会再细分成如用户调研，流程设计，视觉设计等等），feature团队里配备了软件开发过程中需要的几乎所有角色：业务分析，测试工程师，开发工程师，设计师（设计师一般不会常驻），有的团队还有项目经理的角色。</p>
-
-<p>在feature团队里，你可以很容易看到不同的角色是如何工作的，很多时候，开发会和设计师一起来调整颜色，排版，布局，也可能和测试一起编写自动化测试用例，showcase等。也就是说，角色之间的藩篱在淡化，而就开发这一种角色而言，对于前端/后端的区分也会显得非常模糊，因为需求划分之后的story（敏捷开发中的一个术语，其实就是需求的一种展现方式）是端到端的，比如一个商品列表展示的story，会包括</p>
-
-<ul>
-<li>数据库的表结构</li>
-<li>访问数据库的<a href="https://en.wikipedia.org/wiki/Object-relational_mapping">ORM</a>部分，</li>
-<li>使用ORM的业务逻辑service</li>
-<li>响应客户端的controller（消费JSON或者XML的HTTP接口）</li>
-<li>发送请求，处理响应的JavaScript代码</li>
-<li>和设计稿一致的CSS样式</li>
-</ul>
-
-
-<p>而且在这个过程中还会涉及到一些外围的工具</p>
-
-<ul>
-<li>虚拟机环境准备</li>
-<li>数据库连接</li>
-<li>自动化测试（单元测试，集成测试，可能还有UI测试）</li>
-<li>数据库迁移脚本</li>
-</ul>
-
-
-<p>在这个过程中，开发者需要掌握和开发过程相关的一切实践中的一切工具.</p>
-
-<p>在我的<a href="http://www.thoughtworks.com/">ThoughtWorks</a>的第一个项目中，我是以Java开发工程师角色加入的，下项目的时候，我学会了自动化provision，<a href="https://cucumber.io/">cucumber</a>测试工具，Rails，<a href="https://gradle.org/">gradle</a>（没错，我之前用Java都是用IDE构建的，在Linux世界我用make），<a href="http://jasmine.github.io/2.0/introduction.html">jasmine</a>测试工具，<a href="http://backbonejs.org/">Backbone.js</a>，haml.js。</p>
-
-<p>第二个项目的时候，我是以前端工程师角色加入，下项目的时候，我学会了nginx配置缓存、负载均衡服务器，<a href="http://gatling.io/">gatling</a>测试工具，Hadoop/Spark等的集群配置，还有一些和项目相关的<a href="http://icodeit.org/2014/04/intro-map-gis/">GIS（地理信息系统）</a>的技术栈，前后端分离策略等。</p>
-
-<p>第三个项目我是以Java开发工程师角色加入的，下项目的时候，我学会了如何做性能测试，如何建立<a href="http://dashing.io/#setup">一个漂亮的Dashboard</a>（可以用来展现CI等），而且在业余时间系统的学习了CSS3和HTML5，将之前零敲碎打的那些知识串起来，这些总结做了几次内部培训后，还整理成了<a href="https://selfstore.io/products/348">一本电子书</a>。</p>
-
-<p>第四个项目我又变成了一个前端工程师，但是这个项目有意思的地方是跟mobile相关，于是页面性能，体验又变成了一个重点，下项目的时候，我对无状态的Web应用，session的持久化，<a href="https://www.gitbook.com/book/juntao/3-web-designs-in-3-weeks/details">CSS3的动画</a>，用Backbone.js组织多页面的方式等等又有了新的理解。</p>
-
-<p>如果这些经历造成了你觉得我很牛的错觉，那我应该道歉。我觉得自己勉强可以算是个合格的程序员：对学习保持着热情，对解决问题保持着热情，仅此而已。在项目上，如果我发现了问题，我就想办法解决，如果属于知识欠缺，那我就会去学习。我还远远没有到达精通这些技术的地步，但是在工程实践领域，根据<a href="https://en.wikipedia.org/wiki/Pareto_principle">80/20原则</a>，这些粗浅的知识足以解决80%的问题，而另外的20%，我们才真正需要一个专家来帮忙。也就是说，团队里需要有一个能解决20%的问题的前端工程师，而其他的80%的前端工作，应该可以被其他所有的开发完成，对于后端开发也是一样。</p>
-
-<p><del>尝试从系统级别去解决一个问题，而不是将问题抛给另外一个角色（后端工程师，UX或者QA）</del></p>
-
-<p>我是一个Dev，但是花了一些时间来学习界面设计，这里是我从设计到实现的两个小页面：</p>
-
-<p><img src="/images/2015/06/ilearn-resized.png" alt="ilearn" /></p>
-
-<p><img src="/images/2015/06/lightweight-resized.png" alt="lightweight" /></p>
-
-<h3>总结</h3>
-
-<p>我们缺的从来都不是前端/后端工程师，而是<strong>工程师</strong>(或者那些会系统思考，并总是想着解决问题的人)。角色划分在大的机构内可能是有意义的，就像历史上工厂里，工人被分为车工，钳工，木工，电工。但是这种模式在软件开发中未必好用，<strong>具体而微</strong>的小团队可能更具竞争力。而在一个个的小团队中，再细分前端后端就显得比较滑稽了。团队中的每个成员都应该具备基本的端到端能力（不仅仅是开发，更应该是具有业务上下文，即每个人都清楚我们要交付的最终产品是什么，以及这个产品是如何帮助最终用户的），每个成员也都需要为最终的交付物负责，而不是为自己的职责负责。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/4/">&larr; Older</a>
@@ -3039,6 +3411,10 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2017/01/why-top-programmers-hate-gui/">为什么优秀的程序员喜欢命令行</a>
+      </li>
+    
+      <li class="post">
         <a href="/2017/01/why-ddd-is-so-hard/">实施领域驱动设计的正确姿势</a>
       </li>
     
@@ -3052,10 +3428,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
     
       <li class="post">
         <a href="/2016/10/testing-in-microservice-context/">微服务场景下的自动化测试</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/09/what-should-qa-do-in-a-agile-team/">测试自动化后，我们还需要QA吗？</a>
       </li>
     
   </ul>
