@@ -118,7 +118,7 @@
 <li>开发/测试</li>
 <li>基础设施管理</li>
 <li>持续集成/持续发布</li>
-<li>运维工作</li>
+<li>运维（监控）工作</li>
 <li><del>娱乐</del></li>
 </ul>
 
@@ -207,7 +207,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>虽然现在来看，这本书的很多内容已经过期（特别是离它第一次出版已经过去了近30年），有兴趣的朋友可以读一读。</p>
+<p>虽然现在来看，这本书的很多内容已经过期（特别是离它第一次出版已经过去了近30年），有兴趣的朋友可以读一读。这里有一个<a href="http://memphis.compilertools.net/interpreter.html">Lex/Yacc的小例子</a>，有情趣的朋友可以看看。</p>
 
 <h3>基础设施自动化</h3>
 
@@ -217,7 +217,7 @@
 
 <h4>Vagrant</h4>
 
-<p>后来我就发现了<code>Vagrant</code>，它支持开发者通过配置的方式将机器描述出来，然后通过命令行的方式来安装并启动，比如下面这个配置：</p>
+<p>后来我就发现了<a href="https://www.vagrantup.com/">Vagrant</a>，它支持开发者通过配置的方式将机器描述出来，然后通过命令行的方式来安装并启动，比如下面这个配置：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -247,9 +247,9 @@
 
 <p>一般而言，对于一个软件项目而言，一个全新的操作系统基本上没有任何用处。为了让应用跑起来，我们还需要很多东西。比如Web服务器，Java环境，cgi路径等，除了安装一些软件之外，还有大量的配置工作要做，比如<code>apache httpd</code>服务器的文档根路径，JAVA_HOME环境变量等等。</p>
 
-<p>这些工作做好了，一个环境才算就绪。我记得在上一个项目上，不小心把测试环境的Tomcat目录给删除了，结果害的另外一位同事花了三四个小时才把环境恢复回来（包括重新安装Tomcat，配置一些JAVA_OPTS，应用的部署等）。</p>
+<p>这些工作做好了，一个环境才算就绪。我记得在上一个项目上，不小心把测试环境的Tomcat目录给删除了，结果害的另外一位同事花了三四个小时才把环境恢复回来（包括重新安装Tomcat，配置一些<em>JAVA_OPTS</em>，应用的部署等）。</p>
 
-<p>不过还在我们有很多工具可以帮助开发者完成环境的自动化准备，比如：Chef, Puppet, Ansible。只需要一些简单的配置，然后结合一个命令行应用，整个过程就可以自动化起来了：</p>
+<p>不过还在我们有很多工具可以帮助开发者完成环境的自动化准备，比如：<a href="https://www.chef.io/chef/">Chef</a>, <a href="https://puppet.com/">Puppet</a>, <a href="https://www.ansible.com/">Ansible</a>。只需要一些简单的配置，然后结合一个命令行应用，整个过程就可以自动化起来了：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -360,7 +360,7 @@
 
 <h4>自动化监控</h4>
 
-<p>Graphite是一个功能强大的监控工具，不过其背后的理念倒是很简单：</p>
+<p><a href="https://graphiteapp.org/">Graphite</a>是一个功能强大的监控工具，不过其背后的理念倒是很简单：</p>
 
 <ul>
 <li>存储基于时间线的数据</li>
@@ -431,7 +431,7 @@
 </ul>
 
 
-<p>这样可以得到每个进程占用CPU复杂的数字：</p>
+<p>这样可以得到每个进程占用CPU负载的数字：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -495,7 +495,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>当然，如果使用<code>Grafana</code>等强调UI的工具，可以很容易的做的更加酷炫：</p>
+<p>当然，如果使用<a href="http://grafana.org/">Grafana</a>等强调UI的工具，可以很容易的做的更加酷炫：</p>
 
 <p><img src="/images/2017/01/grafana-demo-resized.png" alt="" /></p>
 
@@ -507,7 +507,7 @@
 
 <h4>命令行的MP3播放器</h4>
 
-<p>最早的时候，有一个叫做<code>mpg123</code>的命令行工具，用来播放MP3文件。不过这个工具是商用的，于是就有人写了一个工具，叫<code>mpg321</code>，基本上是<code>mpg123</code>的开源克隆。不过后来<code>mpg123</code>自己也开源了，这是后话不提。</p>
+<p>最早的时候，有一个叫做<code>mpg123</code>的命令行工具，用来播放MP3文件。不过这个工具是商用的，于是就有人写了一个工具，叫<code>mpg321</code>，基本上是<code>mpg123</code>的开源克隆。不过后来<code>mpg123</code>自己也开源了，这是<a href="https://zeth.net/archive/2006/02/21/command-line-audio-players-mpg321-and-mpg123/">后话不提</a>。</p>
 
 <p>将我的所有<code>mp3</code>文件的路径保存成一个文件，相当于我的歌单：</p>
 
