@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UI | I code it]]></title>
   <link href="http://abruzzi.github.com/category/ui/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-01-18T17:12:25+11:00</updated>
+  <updated>2017-02-08T21:18:21+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,265 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[前端渲染性能提升]]></title>
+    <link href="http://abruzzi.github.com/2017/02/frontend-page-performance-tuning/"/>
+    <updated>2017-02-08T18:16:00+11:00</updated>
+    <id>http://abruzzi.github.com/2017/02/frontend-page-performance-tuning</id>
+    <content type="html"><![CDATA[<h2>Web页面的性能</h2>
+
+<p>我们每天都会浏览很多的Web页面，使用很多基于Web的应用。这些站点看起来既不一样，用途也都各有不同，有在线视频，<code>Social Media</code>，新闻，邮件客户端，在线存储，甚至图形编辑，地理信息系统等等。虽然有着各种各样的不同，但是相同的是，他们背后的工作原理都是一样的：</p>
+
+<ul>
+<li>用户输入网址</li>
+<li>浏览器加载<code>HTML/CSS/JS</code>，图片资源等</li>
+<li>浏览器将结果绘制成图形</li>
+<li>用户通过鼠标，键盘等与页面交互</li>
+</ul>
+
+
+<p><img src="/images/2017/02/internet-resized.png" alt="" /></p>
+
+<p>这些种类繁多的页面，在用户体验方面也有很大差异：有的响应很快，用户很容易就可以完成自己想要做的事情；有的则慢慢吞吞，让焦躁的用户在受挫之后拂袖而去。毫无疑问，性能是影响用户体验的一个非常重要的因素，而影响性能的因素非常非常多，从用户输入网址，到用户最终看到结果，需要有很多的参与方共同努力。这些参与方中任何一个环节的性能都会影响到用户体验。</p>
+
+<ul>
+<li>宽带网速</li>
+<li>DNS服务器的响应速度</li>
+<li>服务器的处理能力</li>
+<li>数据库性能</li>
+<li>路由转发</li>
+<li>浏览器处理能力</li>
+</ul>
+
+
+<p>早在2006年，雅虎就发布了提升站点性能的<a href="https://developer.yahoo.com/performance/rules.html">指南</a>，Google也发布了类似的<a href="https://developers.google.com/speed/docs/insights/rules">指南</a>。而且有很多工具可以和浏览器一起工作，对你的Web页面的加载速度进行评估：分析页面中资源的数量，传输是否采用了压缩，JS、CSS是否进行了精简，有没有合理的使用缓存等等。</p>
+
+<p>如果你需要将这个过程与CI集成在一起，来对应用的性能进行监控，我去年写过一篇<a href="http://icodeit.org/2016/02/performance-testing-in-ci/">相关的博客</a>。</p>
+
+<p>本文打算从另一个角度来尝试加速页面的渲染：浏览器是如何工作的，要将一个页面渲染成用户可以看到的图形，浏览器都需要做什么，哪些过程比较耗时，以及如何避免这些过程（或者至少以更高效的方式）。</p>
+
+<h2>页面是如何被渲染的</h2>
+
+<p>说到性能优化，<strong>规则一</strong>就是：</p>
+
+<blockquote><p>If you can't measure it, you can't improve it. - Peter Drucker</p></blockquote>
+
+<p>根据浏览器的工作原理，我们可以分别对各个阶段进行度量。</p>
+
+<p><img src="/images/2017/02/how-browser-works-frame-resized.png" alt="" /></p>
+
+<p><em>图片来源：http://dietjs.com/tutorials/host#backend</em></p>
+
+<h3>像素渲染流水线</h3>
+
+<ol>
+<li>下载HTML文档</li>
+<li>解析HTML文档，生成<code>DOM</code></li>
+<li>下载文档中引用的CSS、JS</li>
+<li>解析CSS样式表，生成<code>CSSOM</code></li>
+<li>将JS代码交给JS引擎执行</li>
+<li>合并DOM和CSSOM，生成<code>Render Tree</code></li>
+<li>根据<code>Render Tree</code>进行布局<code>layout</code>（为每个元素计算尺寸和位置信息）</li>
+<li>绘制（Paint）每个层中的元素（绘制每个瓦片，瓦片这个词与GIS中的瓦片含义相同）</li>
+<li>执行图层合并（Composite Layers）</li>
+</ol>
+
+
+<p>使用Chrome的DevTools - Timing，可以很容易的获取一个页面的渲染情况，比如在<code>Event Log</code>页签上，我们可以看到每个阶段的耗时细节（清晰起见，我没有显示<code>Loading</code>和<code>Scripting</code>的耗时）：</p>
+
+<p><img src="/images/2017/02/timeline-resized.png" alt="Timeline" /></p>
+
+<p>上图中的Activity中，<code>Recalculate Style</code>就是上面的构建<code>CSSOM</code>的过程，其余Activity都分别于上述的过程匹配。</p>
+
+<p>应该注意的是，浏览器可能会将Render Tree分成好几个层来分别绘制，最后再合并起来形成最终的结果，这个过程一般发生在<code>GPU</code>中。</p>
+
+<p>Devtools中有一个选项：<code>Rendering - Layers Borders</code>，打开这个选项之后，你可以看到每个层，每个瓦片的边界。浏览器可能会启动多个线程来绘制不同的层/瓦片。</p>
+
+<p><img src="/images/2017/02/layer-and-tile-resized.png" alt="Layers and Tiles" /></p>
+
+<p>Chrome还提供一个<code>Paint Profiler</code>的高级功能，在<code>Event Log</code>中选择一个<code>Paint</code>，然后点击右侧的<code>Paint Profiler</code>就可以看到其中绘制的全过程：</p>
+
+<p><img src="/images/2017/02/paint-in-detial-resized.png" alt="Paint in detail" /></p>
+
+<p>你可以拖动滑块来看到随着时间的前进，页面上元素被逐步绘制出来了。我录制了一个我的知乎活动页面的视频，不过需要翻墙。</p>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/gley7VZFx_I" frameborder="0" allowfullscreen></iframe>
+
+
+<h3>常规策略</h3>
+
+<p>为了尽快的让用户看到页面内容，我们需要快速的完成<code>DOM+CSSOM</code> - <code>Layout</code> - <code>Paint</code> - <code>Composite Layers</code>的整个过程。一切会阻塞DOM生成，阻塞CSSOM生成的动作都应该尽可能消除，或者延迟。</p>
+
+<p>在这个前提下，常见的做法有两种：</p>
+
+<h4>分割CSS</h4>
+
+<p>对于不同的浏览终端，同一终端的不同模式，我们可能会提供不同的规则集：</p>
+
+<p>```css
+@media print {</p>
+
+<pre><code>html {
+    font-family: 'Open Sans';
+    font-size: 12px;
+}
+</code></pre>
+
+<p>}</p>
+
+<p>@media orientation:landscape {</p>
+
+<pre><code>//
+</code></pre>
+
+<p>}
+```</p>
+
+<p>如果将这些内容写到统一个文件中，浏览器需要下载并解析这些内容（虽然不会实际应用这些规则）。更好的做法是，将这些内容通过对<code>link</code>元素的<code>media</code>属性来指定：</p>
+
+<p><code>html
+&lt;link href="print.css" rel="stylesheet" media="print"&gt;
+&lt;link href="landscape.css" rel="stylesheet" media="orientation:landscape"&gt;
+</code></p>
+
+<p>这样，<code>print.css</code>和<code>landscape.css</code>的内容不会阻塞Render Tree的建立，用户可以更快的看到页面，从而获得更好的体验。</p>
+
+<h4>异步JavaScript</h4>
+
+<p>我们知道，JavaScript的执行会阻塞DOM的构建过程，这是因为JavaScript中可能会有DOM操作：</p>
+
+<p>```js
+var element = document.createElement('<div></div>');
+element.style.width = '200px';
+element.style.color = 'blue';</p>
+
+<p>body.appendChild(element);
+```</p>
+
+<p>因此浏览器会等等待JS引擎的执行，执行结束之后，再恢复DOM的构建。但是并不是所有的JavaScript都会设计DOM操作，比如审计信息，WebWorker等，对于这些脚本，我们可以显式地指定该脚本是<strong>不阻塞DOM渲染</strong>的。</p>
+
+<p>```html</p>
+
+<script src="worker.js" async></script>
+
+
+<p>```</p>
+
+<p>带有<code>async</code>标记的脚本，浏览器仍然会下载它，并在合适的时机执行，但是不会影响DOM树的构建过程。</p>
+
+<h3>首次渲染之后</h3>
+
+<p>在首次渲染之后，页面上的元素还可能被不断的重新布局，重新绘制。如果处理不当，这些动作可能会产生性能问题，产生不好的用户体验。</p>
+
+<ul>
+<li>访问元素的某些属性</li>
+<li>通过JavaScript修改元素的CSS属性</li>
+<li>在<code>onScroll</code>中做耗时任务</li>
+<li>图片的预处理（事先裁剪图片，而不是依赖浏览器在布局时的缩放）</li>
+<li>在其他Event Handler中做耗时任务</li>
+<li>过多的动画</li>
+<li>过多的数据处理（可以考虑放入<code>WebWorker</code>内执行）</li>
+</ul>
+
+
+<h4>触发布局/回流</h4>
+
+<p>元素的一些属性和方法，当在被访问或者被调用的时候，会触发浏览器的布局动作（以及后续的Paint动作），而布局基本上都会波及页面上的所有元素。当页面元素比较多的时候，布局和绘制都会花费比较大。</p>
+
+<p>比如访问一个元素的<code>offsetWidth</code>（布局宽度）属性时，浏览器需要重新计算（重新布局），然后才能返回最新的值。如果这个动作发生在一个很大的循环中，那么浏览器就不得不进行多次的重新布局，这可能会产生严重的性能问题：</p>
+
+<p>```js
+for(var i = 0; i &lt; list.length; i++) {</p>
+
+<pre><code>list[i].style.width = parent.offsetWidth + 'px';
+</code></pre>
+
+<p>}
+```</p>
+
+<p>正确的做法是，先将这个值读出来，然后缓存在一个变量上（触发一次重新布局），以便后续使用：</p>
+
+<p>```js
+var parentWidth = parent.offsetWidth;
+for(var i = 0; i &lt; list.length; i++) {</p>
+
+<pre><code>list[i].style.width = parentWidth + 'px';
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这里有一个完整的列表<a href="https://gist.github.com/paulirish/5d52fb081b3570c81e3a">触发布局</a>。</p>
+
+<h4>CSS样式修改</h4>
+
+<h5>布局相关属性修改</h5>
+
+<p>修改布局相关属性，会触发<code>Layout - Paint - Composite Layers</code>，比如对位置，尺寸信息的修改：</p>
+
+<p>```js
+var element = document.querySelector('#id');
+element.style.width = '100px';
+element.style.height = '100px';</p>
+
+<p>element.style.top = '20px';
+element.style.left = '20px';
+```</p>
+
+<h5>绘制相关属性修改</h5>
+
+<p>修改绘制相关属性，不会触发<code>Layout</code>，但是会触发后续的<code>Paint - Composite Layers</code>，比如对背景色，前景色的修改：</p>
+
+<p><code>js
+var element = document.querySelector('#id');
+element.style.backgroundColor = 'red';
+</code></p>
+
+<h5>其他属性</h5>
+
+<p>除了上边的两种之外，有一些特别的属性可以在不同的层中单独绘制，然后再合并图层。对这种属性的访问（如果正确使用了CSS）不会触发<code>Layout - Paint</code>，而是直接进行<code>Compsite Layers</code>:</p>
+
+<ul>
+<li>transform</li>
+<li>opacity</li>
+</ul>
+
+
+<p><code>transform</code>展开的话又分为: <code>translate</code>, <code>scale</code>, <code>rotate</code>等，这些层应该放入单独的渲染层中，为了对这个元素创建一个独立的渲染层，你必须提升该元素。</p>
+
+<p>可以通过这样的方式来提升该元素：</p>
+
+<p><code>css
+.element {
+  will-change: transform;
+}
+</code></p>
+
+<p>这里有一个视频，可以看到，当鼠标挪动到特定元素时，由于CSS样式的变化，元素会被重新绘制：</p>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/c6wKfDpbwu8" frameborder="0" allowfullscreen></iframe>
+
+
+<p><a href="https://csstriggers.com/">CSS Triggers</a>是一个完整的CSS属性列表，其中包含了会影响布局或者绘制的CSS属性，以及在不同的浏览器上的不同表现。</p>
+
+<h3>总结</h3>
+
+<p>了解浏览器的工作方式，对我们做前端页面渲染性能的分析和优化都非常有帮助。为了高效而智能的完成渲染，浏览器也在不断的进行优化，比如资源的预加载，更好的利用GPU（启用更多的线程来渲染）等等。</p>
+
+<p>另一方面，我们在编写前端的HTML、JS、CSS时，也需要考虑浏览器的现状：如何减少DOM、CSSOM的构建时间，如何将耗时任务放在单独的线程中（通过<code>WebWorker</code>）。</p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li>Google出品的<a href="https://developers.google.com/web/fundamentals/performance/?hl=zh-cn">Web基础</a></li>
+<li>一篇关于如何<a href="https://varvy.com/pagespeed/optimize-css-delivery.html">优化CSS的文章</a></li>
+<li><a href="https://varvy.com/performance/cssom.html">CSSOM</a>的介绍</li>
+<li>一篇关于<a href="https://css-tricks.com/specifics-on-css-specificity/">CSS优先级</a>的文章</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用node-webkit构建桌面应用程序]]></title>

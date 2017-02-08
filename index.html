@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="程序员的日常工作 The three chief virtues of a programmer are: Laziness, Impatience and Hubris. &#8211; Larry Wall 懒惰这个特点位于程序员的三大美德之首： &hellip;">
+  <meta name="description" content="Web页面的性能 我们每天都会浏览很多的Web页面，使用很多基于Web的应用。这些站点看起来既不一样，用途也都各有不同，有在线视频，Social Media，新闻，邮件客户端，在线存储，甚至图形编辑，地理信息系统等等。虽然有着各种各样的不同，但是相同的是，他们背后的工作原理都是一样的： &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,313 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2017/02/frontend-page-performance-tuning/">前端渲染性能提升</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-02-08T18:16:00+11:00" pubdate data-updated="true">Feb 8<span>th</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Web页面的性能</h2>
+
+<p>我们每天都会浏览很多的Web页面，使用很多基于Web的应用。这些站点看起来既不一样，用途也都各有不同，有在线视频，<code>Social Media</code>，新闻，邮件客户端，在线存储，甚至图形编辑，地理信息系统等等。虽然有着各种各样的不同，但是相同的是，他们背后的工作原理都是一样的：</p>
+
+<ul>
+<li>用户输入网址</li>
+<li>浏览器加载<code>HTML/CSS/JS</code>，图片资源等</li>
+<li>浏览器将结果绘制成图形</li>
+<li>用户通过鼠标，键盘等与页面交互</li>
+</ul>
+
+
+<p><img src="/images/2017/02/internet-resized.png" alt="" /></p>
+
+<p>这些种类繁多的页面，在用户体验方面也有很大差异：有的响应很快，用户很容易就可以完成自己想要做的事情；有的则慢慢吞吞，让焦躁的用户在受挫之后拂袖而去。毫无疑问，性能是影响用户体验的一个非常重要的因素，而影响性能的因素非常非常多，从用户输入网址，到用户最终看到结果，需要有很多的参与方共同努力。这些参与方中任何一个环节的性能都会影响到用户体验。</p>
+
+<ul>
+<li>宽带网速</li>
+<li>DNS服务器的响应速度</li>
+<li>服务器的处理能力</li>
+<li>数据库性能</li>
+<li>路由转发</li>
+<li>浏览器处理能力</li>
+</ul>
+
+
+<p>早在2006年，雅虎就发布了提升站点性能的<a href="https://developer.yahoo.com/performance/rules.html">指南</a>，Google也发布了类似的<a href="https://developers.google.com/speed/docs/insights/rules">指南</a>。而且有很多工具可以和浏览器一起工作，对你的Web页面的加载速度进行评估：分析页面中资源的数量，传输是否采用了压缩，JS、CSS是否进行了精简，有没有合理的使用缓存等等。</p>
+
+<p>如果你需要将这个过程与CI集成在一起，来对应用的性能进行监控，我去年写过一篇<a href="http://icodeit.org/2016/02/performance-testing-in-ci/">相关的博客</a>。</p>
+
+<p>本文打算从另一个角度来尝试加速页面的渲染：浏览器是如何工作的，要将一个页面渲染成用户可以看到的图形，浏览器都需要做什么，哪些过程比较耗时，以及如何避免这些过程（或者至少以更高效的方式）。</p>
+
+<h2>页面是如何被渲染的</h2>
+
+<p>说到性能优化，<strong>规则一</strong>就是：</p>
+
+<blockquote><p>If you can&#8217;t measure it, you can&#8217;t improve it. - Peter Drucker</p></blockquote>
+
+<p>根据浏览器的工作原理，我们可以分别对各个阶段进行度量。</p>
+
+<p><img src="/images/2017/02/how-browser-works-frame-resized.png" alt="" /></p>
+
+<p><em>图片来源：http://dietjs.com/tutorials/host#backend</em></p>
+
+<h3>像素渲染流水线</h3>
+
+<ol>
+<li>下载HTML文档</li>
+<li>解析HTML文档，生成<code>DOM</code></li>
+<li>下载文档中引用的CSS、JS</li>
+<li>解析CSS样式表，生成<code>CSSOM</code></li>
+<li>将JS代码交给JS引擎执行</li>
+<li>合并DOM和CSSOM，生成<code>Render Tree</code></li>
+<li>根据<code>Render Tree</code>进行布局<code>layout</code>（为每个元素计算尺寸和位置信息）</li>
+<li>绘制（Paint）每个层中的元素（绘制每个瓦片，瓦片这个词与GIS中的瓦片含义相同）</li>
+<li>执行图层合并（Composite Layers）</li>
+</ol>
+
+
+<p>使用Chrome的DevTools - Timing，可以很容易的获取一个页面的渲染情况，比如在<code>Event Log</code>页签上，我们可以看到每个阶段的耗时细节（清晰起见，我没有显示<code>Loading</code>和<code>Scripting</code>的耗时）：</p>
+
+<p><img src="/images/2017/02/timeline-resized.png" alt="Timeline" /></p>
+
+<p>上图中的Activity中，<code>Recalculate Style</code>就是上面的构建<code>CSSOM</code>的过程，其余Activity都分别于上述的过程匹配。</p>
+
+<p>应该注意的是，浏览器可能会将Render Tree分成好几个层来分别绘制，最后再合并起来形成最终的结果，这个过程一般发生在<code>GPU</code>中。</p>
+
+<p>Devtools中有一个选项：<code>Rendering - Layers Borders</code>，打开这个选项之后，你可以看到每个层，每个瓦片的边界。浏览器可能会启动多个线程来绘制不同的层/瓦片。</p>
+
+<p><img src="/images/2017/02/layer-and-tile-resized.png" alt="Layers and Tiles" /></p>
+
+<p>Chrome还提供一个<code>Paint Profiler</code>的高级功能，在<code>Event Log</code>中选择一个<code>Paint</code>，然后点击右侧的<code>Paint Profiler</code>就可以看到其中绘制的全过程：</p>
+
+<p><img src="/images/2017/02/paint-in-detial-resized.png" alt="Paint in detail" /></p>
+
+<p>你可以拖动滑块来看到随着时间的前进，页面上元素被逐步绘制出来了。我录制了一个我的知乎活动页面的视频，不过需要翻墙。</p>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/gley7VZFx_I" frameborder="0" allowfullscreen></iframe>
+
+
+<h3>常规策略</h3>
+
+<p>为了尽快的让用户看到页面内容，我们需要快速的完成<code>DOM+CSSOM</code> - <code>Layout</code> - <code>Paint</code> - <code>Composite Layers</code>的整个过程。一切会阻塞DOM生成，阻塞CSSOM生成的动作都应该尽可能消除，或者延迟。</p>
+
+<p>在这个前提下，常见的做法有两种：</p>
+
+<h4>分割CSS</h4>
+
+<p>对于不同的浏览终端，同一终端的不同模式，我们可能会提供不同的规则集：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="k">@media</span> <span class="nt">print</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nt">html</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">font-family</span><span class="o">:</span> <span class="s1">&#39;Open Sans&#39;</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">font-size</span><span class="o">:</span> <span class="m">12px</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@media</span> <span class="nt">orientation</span><span class="nd">:landscape</span> <span class="p">{</span>
+</span><span class='line'>  <span class="o">//</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果将这些内容写到统一个文件中，浏览器需要下载并解析这些内容（虽然不会实际应用这些规则）。更好的做法是，将这些内容通过对<code>link</code>元素的<code>media</code>属性来指定：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">&quot;print.css&quot;</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">media=</span><span class="s">&quot;print&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">&quot;landscape.css&quot;</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">media=</span><span class="s">&quot;orientation:landscape&quot;</span><span class="nt">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，<code>print.css</code>和<code>landscape.css</code>的内容不会阻塞Render Tree的建立，用户可以更快的看到页面，从而获得更好的体验。</p>
+
+<h4>异步JavaScript</h4>
+
+<p>我们知道，JavaScript的执行会阻塞DOM的构建过程，这是因为JavaScript中可能会有DOM操作：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">element</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;&lt;div&gt;&lt;/div&gt;&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">element</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="s1">&#39;200px&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nx">element</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">color</span> <span class="o">=</span> <span class="s1">&#39;blue&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因此浏览器会等等待JS引擎的执行，执行结束之后，再恢复DOM的构建。但是并不是所有的JavaScript都会设计DOM操作，比如审计信息，WebWorker等，对于这些脚本，我们可以显式地指定该脚本是<strong>不阻塞DOM渲染</strong>的。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;worker.js&quot;</span> <span class="na">async</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>带有<code>async</code>标记的脚本，浏览器仍然会下载它，并在合适的时机执行，但是不会影响DOM树的构建过程。</p>
+
+<h3>首次渲染之后</h3>
+
+<p>在首次渲染之后，页面上的元素还可能被不断的重新布局，重新绘制。如果处理不当，这些动作可能会产生性能问题，产生不好的用户体验。</p>
+
+<ul>
+<li>访问元素的某些属性</li>
+<li>通过JavaScript修改元素的CSS属性</li>
+<li>在<code>onScroll</code>中做耗时任务</li>
+<li>图片的预处理（事先裁剪图片，而不是依赖浏览器在布局时的缩放）</li>
+<li>在其他Event Handler中做耗时任务</li>
+<li>过多的动画</li>
+<li>过多的数据处理（可以考虑放入<code>WebWorker</code>内执行）</li>
+</ul>
+
+
+<h4>触发布局/回流</h4>
+
+<p>元素的一些属性和方法，当在被访问或者被调用的时候，会触发浏览器的布局动作（以及后续的Paint动作），而布局基本上都会波及页面上的所有元素。当页面元素比较多的时候，布局和绘制都会花费比较大。</p>
+
+<p>比如访问一个元素的<code>offsetWidth</code>（布局宽度）属性时，浏览器需要重新计算（重新布局），然后才能返回最新的值。如果这个动作发生在一个很大的循环中，那么浏览器就不得不进行多次的重新布局，这可能会产生严重的性能问题：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">list</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">list</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">offsetWidth</span> <span class="o">+</span> <span class="s1">&#39;px&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>正确的做法是，先将这个值读出来，然后缓存在一个变量上（触发一次重新布局），以便后续使用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">parentWidth</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">offsetWidth</span><span class="p">;</span>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">list</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">list</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">parentWidth</span> <span class="o">+</span> <span class="s1">&#39;px&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里有一个完整的列表<a href="https://gist.github.com/paulirish/5d52fb081b3570c81e3a">触发布局</a>。</p>
+
+<h4>CSS样式修改</h4>
+
+<h5>布局相关属性修改</h5>
+
+<p>修改布局相关属性，会触发<code>Layout - Paint - Composite Layers</code>，比如对位置，尺寸信息的修改：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">element</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;#id&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">element</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="s1">&#39;100px&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nx">element</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="s1">&#39;100px&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">element</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">top</span> <span class="o">=</span> <span class="s1">&#39;20px&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nx">element</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">left</span> <span class="o">=</span> <span class="s1">&#39;20px&#39;</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>绘制相关属性修改</h5>
+
+<p>修改绘制相关属性，不会触发<code>Layout</code>，但是会触发后续的<code>Paint - Composite Layers</code>，比如对背景色，前景色的修改：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">element</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="s1">&#39;#id&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">element</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">backgroundColor</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>其他属性</h5>
+
+<p>除了上边的两种之外，有一些特别的属性可以在不同的层中单独绘制，然后再合并图层。对这种属性的访问（如果正确使用了CSS）不会触发<code>Layout - Paint</code>，而是直接进行<code>Compsite Layers</code>:</p>
+
+<ul>
+<li>transform</li>
+<li>opacity</li>
+</ul>
+
+
+<p><code>transform</code>展开的话又分为: <code>translate</code>, <code>scale</code>, <code>rotate</code>等，这些层应该放入单独的渲染层中，为了对这个元素创建一个独立的渲染层，你必须提升该元素。</p>
+
+<p>可以通过这样的方式来提升该元素：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nc">.element</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">will</span><span class="o">-</span><span class="n">change</span><span class="o">:</span> <span class="n">transform</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里有一个视频，可以看到，当鼠标挪动到特定元素时，由于CSS样式的变化，元素会被重新绘制：</p>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/c6wKfDpbwu8" frameborder="0" allowfullscreen></iframe>
+
+
+<p><a href="https://csstriggers.com/">CSS Triggers</a>是一个完整的CSS属性列表，其中包含了会影响布局或者绘制的CSS属性，以及在不同的浏览器上的不同表现。</p>
+
+<h3>总结</h3>
+
+<p>了解浏览器的工作方式，对我们做前端页面渲染性能的分析和优化都非常有帮助。为了高效而智能的完成渲染，浏览器也在不断的进行优化，比如资源的预加载，更好的利用GPU（启用更多的线程来渲染）等等。</p>
+
+<p>另一方面，我们在编写前端的HTML、JS、CSS时，也需要考虑浏览器的现状：如何减少DOM、CSSOM的构建时间，如何将耗时任务放在单独的线程中（通过<code>WebWorker</code>）。</p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li>Google出品的<a href="https://developers.google.com/web/fundamentals/performance/?hl=zh-cn">Web基础</a></li>
+<li>一篇关于如何<a href="https://varvy.com/pagespeed/optimize-css-delivery.html">优化CSS的文章</a></li>
+<li><a href="https://varvy.com/performance/cssom.html">CSSOM</a>的介绍</li>
+<li>一篇关于<a href="https://css-tricks.com/specifics-on-css-specificity/">CSS优先级</a>的文章</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2553,336 +2860,6 @@ Workshop至少需要包含这样几部分：</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2016/05/about-session-and-security-api-2/">保护你的API（下）</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-12T22:50:00+10:00" pubdate data-updated="true">May 12<span>th</span>, 2016</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>前后端分离之后</h2>
-
-<p>前后端分离之后，在部署上通过一个反向代理就可以实现动静态分离，跨域问题的解决等。但是一旦引入鉴权，则又会产生新的问题。通常来说，鉴权是对于后台API/API背后的资源的保护，即<strong>未经授权的用户不能访问受保护资源</strong>。</p>
-
-<p>要实现这个功能有很多种方式，在应用程序之外设置完善的安全拦截器是最常见的方式。不过有点不够优雅的是，一些不太纯粹的、非功能性的代码和业务代码混在同一个代码库中。</p>
-
-<p>另一方面，各个业务系统都可能需要某种机制的鉴权，所以很多企业都会搭建SSO机制，即<a href="https://en.wikipedia.org/wiki/Single_sign-on">Single Sign-On</a>。这样可以避免人们在多个系统创建不同账号，设置不同密码，不同的超时时间等等。如果SSO系统已经先于系统存在了很久，那么新开发的系统完全不需要自己再配置一套用户管理机制了（一般SSO只会完成<strong>鉴权</strong>中<strong>鉴别</strong>的部分，<strong>授权</strong>还是需要各个业务系统自行处理）。</p>
-
-<p>本文中，我们使用基础设施（反向代理）的一些配置，来完成<strong>保护未授权资源</strong>的目的。在这个例子中，我们假设系统由这样几个服务器组成：</p>
-
-<h3>系统组成</h3>
-
-<p>这个实例中，我们的系统分为三部分</p>
-
-<ol>
-<li><code>kanban.com:8000</code>（业务系统前端）</li>
-<li><code>api.kanban.com:9000</code>（业务系统后端API）</li>
-<li><code>sso.kanban.com:8100</code> （单点登录系统，登陆界面）</li>
-</ol>
-
-
-<p>前端包含了HTML/JS/CSS等资源，是一个纯静态资源，所以本地磁盘即可。后端API则是一组需要被保护的API（比如查询工资详情，查询工作经历等）。最后，单点登录系统是一个简单的表单，用户填入用户名和密码后，如果登录成功，单点登录会将用户重定向到登录前的位置。</p>
-
-<p>我们举一个具体场景的例子：</p>
-
-<ol>
-<li>未登录用户访问<code>http://kanba.com:8000/index.html</code></li>
-<li>系统会重定向用户到<code>http://sso.kanban.com:8100/sso?return=http://kanba.com:8000/index.html</code></li>
-<li>用户看到登录页面，输入用户名、密码登录</li>
-<li>用户被重定向回<code>http://kanba.com:8000/index.html</code></li>
-<li>此外，<code>index.htm</code>l页面上的<code>app.js</code>对<code>api.kanban.com:9000</code>的访问也得到了授权</li>
-</ol>
-
-
-<h4>环境设置</h4>
-
-<p>简单起见，可以通过修改/etc/hosts文件来设置服务器环境：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>127.0.0.1 sso.kanban.com
-</span><span class='line'>127.0.0.1 api.kanban.com
-</span><span class='line'>127.0.0.1 kanban.com</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>nginx及auth_request</h3>
-
-<p>反向代理nginx有一个auth_request的模块。在一个虚拟host中，每个请求会先发往一个内部<code>location</code>，这个内部的<code>location</code>可以指向一个可以做鉴权的Endpoint。如果这个请求得到的结果是200，那么nginx会返回用户本来请求的内容，如果返回401，则将用户重定向到一个预定义的地址：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>server {
-</span><span class='line'>    listen 8000;
-</span><span class='line'>    server_name kanban.com;
-</span><span class='line'>
-</span><span class='line'>    root /usr/local/var/www/kanban/;
-</span><span class='line'>
-</span><span class='line'>    error_page 401 = @error401;
-</span><span class='line'>
-</span><span class='line'>    location @error401 {
-</span><span class='line'>        return 302 http://sso.kanban.com:8100/sso?return=$scheme://$http_host$request_uri;
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    auth_request /api/auth;
-</span><span class='line'>
-</span><span class='line'>    location = /api/auth {
-</span><span class='line'>        internal;
-</span><span class='line'>
-</span><span class='line'>        proxy_pass http://api.kanban.com:9000;
-</span><span class='line'>
-</span><span class='line'>        proxy_pass_request_body     off;
-</span><span class='line'>
-</span><span class='line'>        proxy_set_header Content-Length "";
-</span><span class='line'>        proxy_set_header X-Original-URI $request_uri;
-</span><span class='line'>        proxy_set_header Host $http_host;
-</span><span class='line'>        proxy_set_header X-Real-IP $remote_addr;
-</span><span class='line'>        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-</span><span class='line'>        proxy_set_header X-Forwarded-Proto $scheme;
-</span><span class='line'>
-</span><span class='line'>        if ($http_cookie ~* "w3=(\w+)") {
-</span><span class='line'>            set $token "$1";
-</span><span class='line'>        }
-</span><span class='line'>
-</span><span class='line'>        proxy_set_header X-KANBAN-TOKEN $token;
-</span><span class='line'>    }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>比如上面这个例子中，<code>auth_request</code>的URL为<code>/api/auth</code>，它是一个内部的location，外部无法访问。在这个<code>locaiton</code>中，请求会被转发到<code>http://api.kanban.com:9000</code>，根据nginx的正则语法，请求将会被转发到<code>http://api.kanban.com:9000/api/auth</code>（我们随后可以看到这个Endpoint的定义）。</p>
-
-<p>我们设置了请求的原始头信息，并禁用了request_body，如果cookie中包含了<code>w3=(\w+)</code>字样，则将这个w3的值抽取出来，并赋值给一个<code>X-KANBAN-TOKEN</code>的HTTP头。</p>
-
-<h4>权限Endpoint</h4>
-
-<p>对应的<code>/api/auth</code>的定义如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@RestController</span>
-</span><span class='line'><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&quot;/auth&quot;</span><span class="o">)</span>
-</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AuthController</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nd">@RequestMapping</span>
-</span><span class='line'>    <span class="kd">public</span> <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">simpleAuth</span><span class="o">(</span><span class="nd">@RequestHeader</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&quot;X-KANBAN-TOKEN&quot;</span><span class="o">,</span> <span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">)</span> <span class="n">String</span> <span class="n">token</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">if</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">token</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">return</span> <span class="k">new</span> <span class="n">ResponseEntity</span><span class="o">&lt;&gt;(</span><span class="s">&quot;Unauthorized&quot;</span><span class="o">,</span> <span class="n">HttpStatus</span><span class="o">.</span><span class="na">UNAUTHORIZED</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">return</span> <span class="k">new</span> <span class="n">ResponseEntity</span><span class="o">&lt;&gt;(</span><span class="s">&quot;Authorized&quot;</span><span class="o">,</span> <span class="n">HttpStatus</span><span class="o">.</span><span class="na">OK</span><span class="o">);</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果HTTP头上有<code>X-KANBAN-TOKEN</code>且值不为空，则返回200，否则返回401。</p>
-
-<p>当这个请求得到401之后，用户被重定向到<code>http://sso.kanban.com:8100/sso</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">error_page</span> <span class="mi">401</span> <span class="o">=</span> <span class="nd">@error401</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">location</span> <span class="nd">@error401</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="mi">302</span> <span class="nl">http:</span><span class="c1">//sso.kanban.com:8100/sso?return=$scheme://$http_host$request_uri;</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>SSO组件（简化版）</h3>
-
-<p>这里用<code>sinatra</code>定义了一个简单的SSO服务器（去除了实际的校验部分）</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;sinatra&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;uri&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">set</span> <span class="ss">:return_url</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
-</span><span class='line'><span class="n">set</span> <span class="ss">:bind</span><span class="p">,</span> <span class="s1">&#39;0.0.0.0&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">get</span> <span class="s1">&#39;/sso&#39;</span> <span class="k">do</span>
-</span><span class='line'>    <span class="n">settings</span><span class="o">.</span><span class="n">return_url</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:return</span><span class="o">]</span>
-</span><span class='line'>    <span class="n">send_file</span> <span class="s1">&#39;public/index.html&#39;</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">post</span> <span class="s1">&#39;/login&#39;</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">credential</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:credential</span><span class="o">]</span>
-</span><span class='line'>  <span class="c1"># check credential against database</span>
-</span><span class='line'>  <span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">return_url</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">response</span><span class="o">.</span><span class="n">set_cookie</span><span class="p">(</span><span class="s2">&quot;w3&quot;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>      <span class="ss">:domain</span> <span class="o">=&gt;</span> <span class="s2">&quot;.</span><span class="si">#{</span><span class="n">uri</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">:expires</span> <span class="o">=&gt;</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span> <span class="o">+</span> <span class="mi">2400</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">:value</span> <span class="o">=&gt;</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">credential</span><span class="o">[</span><span class="s1">&#39;name&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="ss">:path</span> <span class="o">=&gt;</span> <span class="s1">&#39;/&#39;</span>
-</span><span class='line'>      <span class="p">})</span>
-</span><span class='line'>  <span class="n">redirect</span> <span class="n">settings</span><span class="o">.</span><span class="n">return_url</span><span class="p">,</span> <span class="mi">302</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>/sso</code>对应的Login Form是：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">&quot;/login&quot;</span> <span class="na">method=</span><span class="s">&quot;post&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;credential[name]&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;password&quot;</span> <span class="na">name=</span><span class="s">&quot;credential[password]&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;/form&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当用户提交表单之后，我们只是简单的设置了<code>cookie</code>，并重定向用户到跳转前的URL。</p>
-
-<h3>前端页面</h3>
-
-<p>这个应用的前端应用非常简单，我们只需要将这些静态文件放到<code>/usr/local/var/www/kanban</code>目录下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>$ tree /usr/local/var/www/kanban
-</span><span class='line'>
-</span><span class='line'>├── index.html
-</span><span class='line'>└── scripts
-</span><span class='line'>    ├── app.js
-</span><span class='line'>    └── jquery.min.js
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中<code>index.html</code>中引用的<code>app.js</code>会请求一个受保护的资源：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/api/protected/1&#39;</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#message&#39;</span><span class="p">).</span><span class="nx">text</span><span class="p">(</span><span class="nx">message</span><span class="p">.</span><span class="nx">content</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>从下图中的网络请求可以看到重定向的流程：</p>
-
-<p><img src="/images/2016/05/redirection-resized.png" alt="redirection" /></p>
-
-<h3>总结</h3>
-
-<p>本文我们通过配置反向代理，将多个Endpoint组织起来。这个过程可以在应用程序中通过代码实现，也可以在基础设施中通过配置实现，通常来讲，如果可以通过配置来实现的，就尽量将其与负责业务逻辑的代码隔离出来。这样可以保证各个组件的独立性，也可以使得优化和定位问题更加容易。</p>
-
-<p>完整的代码可以在这里下载：</p>
-
-<ul>
-<li><a href="https://github.com/abruzzi/fake-sso">Fake SSO</a></li>
-<li><a href="https://github.com/abruzzi/spring-security-demo">Spring Security Demo</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -2898,6 +2875,10 @@ Workshop至少需要包含这样几部分：</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2017/02/frontend-page-performance-tuning/">前端渲染性能提升</a>
+      </li>
+    
+      <li class="post">
         <a href="/2017/01/why-top-programmers-hate-gui/">为什么优秀的程序员喜欢命令行</a>
       </li>
     
@@ -2911,10 +2892,6 @@ Workshop至少需要包含这样几部分：</p>
     
       <li class="post">
         <a href="/2016/12/my-2016/">我的2016</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/10/testing-in-microservice-context/">微服务场景下的自动化测试</a>
       </li>
     
   </ul>
