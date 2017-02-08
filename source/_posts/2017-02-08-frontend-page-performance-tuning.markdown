@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "前端渲染性能提升"
+title: "提升页面渲染效率的正确姿势"
 date: 2017-02-08 18:16
 comments: true
 categories: 
