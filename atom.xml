@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-08T21:18:21+11:00</updated>
+  <updated>2017-02-09T01:10:15+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[前端渲染性能提升]]></title>
+    <title type="html"><![CDATA[提升页面渲染效率的正确姿势]]></title>
     <link href="http://abruzzi.github.com/2017/02/frontend-page-performance-tuning/"/>
     <updated>2017-02-08T18:16:00+11:00</updated>
     <id>http://abruzzi.github.com/2017/02/frontend-page-performance-tuning</id>
