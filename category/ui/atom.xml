@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UI | I code it]]></title>
   <link href="http://abruzzi.github.com/category/ui/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T01:10:15+11:00</updated>
+  <updated>2017-02-09T12:33:32+11:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[提升页面渲染效率的正确姿势]]></title>
+    <title type="html"><![CDATA[如何提升页面渲染效率]]></title>
     <link href="http://abruzzi.github.com/2017/02/frontend-page-performance-tuning/"/>
     <updated>2017-02-08T18:16:00+11:00</updated>
     <id>http://abruzzi.github.com/2017/02/frontend-page-performance-tuning</id>
@@ -136,6 +136,84 @@
 
 <p>这样，<code>print.css</code>和<code>landscape.css</code>的内容不会阻塞Render Tree的建立，用户可以更快的看到页面，从而获得更好的体验。</p>
 
+<h4>高效的CSS规则</h4>
+
+<h5>CSS规则的优先级</h5>
+
+<p>很多使用SASS/LESS的开发人员，太过分的喜爱嵌套规则的特性，这可能会导致复杂的、无必要深层次的规则，比如：</p>
+
+<p>```css</p>
+
+<h1>container {</h1>
+
+<pre><code>p {
+    .title {
+        span {
+            color: #f3f3f3;
+        }
+    }
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>在生成的CSS中，可以看到：</p>
+
+<p>```css</p>
+
+<h1>container p .title span {</h1>
+
+<p>  color: #f3f3f3;
+}
+```</p>
+
+<p>而这个层次可能并非必要。CSS规则越复杂，在构建Render Tree时，浏览器花费的时间越长。CSS规则有自己的优先级，不同的写法对效率也会有影响，特别是当规则很多的时候。这里有一篇关于<a href="https://css-tricks.com/specifics-on-css-specificity/">CSS规则优先级</a>的文章可供参考。</p>
+
+<h5>使用GPU加速</h5>
+
+<p>很多动画都会定时执行，每次执行都可能会导致浏览器的重新布局，比如：</p>
+
+<p>```css
+@keyframes my {</p>
+
+<pre><code>20% {
+    top: 10px;
+}
+
+50% {
+    top: 120px;
+}
+
+80% {
+    top: 10px;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这些内容可以放到GPU加速执行（GPU是专门设计来进行图形处理的，在图形处理上，比CPU要高效很多）。可以通过使用<code>transform</code>来启动这一特性：</p>
+
+<p>```css
+@keyframes my {</p>
+
+<pre><code>20% {
+    transform: translateY(10px);
+}
+
+50% {
+    transform: translateY(120px);
+}
+
+80% {
+    transform: translateY(10px);
+}
+</code></pre>
+
+<p>}
+```</p>
+
 <h4>异步JavaScript</h4>
 
 <p>我们知道，JavaScript的执行会阻塞DOM的构建过程，这是因为JavaScript中可能会有DOM操作：</p>
@@ -247,7 +325,15 @@ element.style.backgroundColor = 'red';
 }
 </code></p>
 
-<p>这里有一个视频，可以看到，当鼠标挪动到特定元素时，由于CSS样式的变化，元素会被重新绘制：</p>
+<blockquote><p>CSS 属性 will-change 为web开发者提供了一种告知浏览器该元素会有哪些变化的方法，这样浏览器可以在元素属性真正发生变化之前提前做好对应的优化准备工作。</p></blockquote>
+
+<p>当然，额外的层次并不是没有代价的。太多的独立渲染层，虽然缩减了<code>Paint</code>的时间，但是增加了<code>Composite Layers</code>的时间，因此需要仔细权衡。在作调整之前，需要<code>Timeline</code>的运行结果来做支持。</p>
+
+<p>还记得性能优化的规则一吗？</p>
+
+<blockquote><p>If you can't measure it, you can't improve it. - Peter Drucker</p></blockquote>
+
+<p>下面这个视频里可以看到，当鼠标挪动到特定元素时，由于CSS样式的变化，元素会被重新绘制：</p>
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/c6wKfDpbwu8" frameborder="0" allowfullscreen></iframe>
 
@@ -266,7 +352,6 @@ element.style.backgroundColor = 'red';
 <li>Google出品的<a href="https://developers.google.com/web/fundamentals/performance/?hl=zh-cn">Web基础</a></li>
 <li>一篇关于如何<a href="https://varvy.com/pagespeed/optimize-css-delivery.html">优化CSS的文章</a></li>
 <li><a href="https://varvy.com/performance/cssom.html">CSSOM</a>的介绍</li>
-<li>一篇关于<a href="https://css-tricks.com/specifics-on-css-specificity/">CSS优先级</a>的文章</li>
 </ul>
 
 ]]></content>
