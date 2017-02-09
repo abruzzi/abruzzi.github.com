@@ -78,9 +78,10 @@ Chrome还提供一个`Paint Profiler`的高级功能，在`Event Log`中选择�
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/gley7VZFx_I" frameborder="0" allowfullscreen></iframe>
 
+
 ### 常规策略
 
-为了尽快的让用户看到页面内容，我们需要快速的完成`DOM+CSSOM` - `Layout` - `Paint` - `Composite Layers`的整个过程。一切会阻塞DOM生成，阻塞CSSOM生成的动作都应该尽可能消除，或者延迟。
+为了尽快的让用户看到页面内容，我们需要快速的完成`DOM+CSSOM - Layout - Paint - Composite Layers`的整个过程。一切会阻塞DOM生成，阻塞CSSOM生成的动作都应该尽可能消除，或者延迟。
 
 在这个前提下，常见的做法有两种：
 
@@ -114,7 +115,7 @@ Chrome还提供一个`Paint Profiler`的高级功能，在`Event Log`中选择�
 
 ##### CSS规则的优先级
 
-很多使用SASS/LESS的开发人员，太过分的喜爱嵌套规则的特性，这可能会导致复杂的、无必要深层次的规则，比如：
+很多使用`SASS/LESS`的开发人员，太过分的喜爱嵌套规则的特性，这可能会导致复杂的、无必要深层次的规则，比如：
 
 ```css
 #container {
@@ -181,7 +182,7 @@ Chrome还提供一个`Paint Profiler`的高级功能，在`Event Log`中选择�
 我们知道，JavaScript的执行会阻塞DOM的构建过程，这是因为JavaScript中可能会有DOM操作：
 
 ```js
-var element = document.createElement('<div></div>');
+var element = document.createElement('div');
 element.style.width = '200px';
 element.style.color = 'blue';
 
@@ -208,9 +209,13 @@ body.appendChild(element);
 - 过多的动画
 - 过多的数据处理（可以考虑放入`WebWorker`内执行）
 
-#### 触发布局/回流
+#### 强制同步布局/回流
 
 元素的一些属性和方法，当在被访问或者被调用的时候，会触发浏览器的布局动作（以及后续的Paint动作），而布局基本上都会波及页面上的所有元素。当页面元素比较多的时候，布局和绘制都会花费比较大。
+
+通过Timeline，有时候你会看到这样的警告：
+
+![](/images/2017/02/forced-reflow-resized.png)
 
 比如访问一个元素的`offsetWidth`（布局宽度）属性时，浏览器需要重新计算（重新布局），然后才能返回最新的值。如果这个动作发生在一个很大的循环中，那么浏览器就不得不进行多次的重新布局，这可能会产生严重的性能问题：
 
