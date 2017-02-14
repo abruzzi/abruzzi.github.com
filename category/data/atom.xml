@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Data | I code it]]></title>
   <link href="http://abruzzi.github.com/category/data/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[可视化你的足迹 - Web端]]></title>
     <link href="http://abruzzi.github.com/2015/09/show-your-map-in-browser/"/>
-    <updated>2015-09-20T22:44:00+10:00</updated>
+    <updated>2015-09-20T22:44:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/09/show-your-map-in-browser</id>
     <content type="html"><![CDATA[<h3>可视化你的足迹</h3>
 
@@ -169,7 +169,7 @@ L.tileLayer( 'http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {</p>
   <entry>
     <title type="html"><![CDATA[可视化你的足迹 - 服务器端]]></title>
     <link href="http://abruzzi.github.com/2015/09/visualize-your-steps/"/>
-    <updated>2015-09-18T13:36:00+10:00</updated>
+    <updated>2015-09-18T13:36:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/09/visualize-your-steps</id>
     <content type="html"><![CDATA[<h3>可视化你的足迹</h3>
 

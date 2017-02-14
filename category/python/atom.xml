@@ -4,7 +4,7 @@
   <title><![CDATA[Category: python | I code it]]></title>
   <link href="http://abruzzi.github.com/category/python/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[看看这些年你都学了什么？]]></title>
     <link href="http://abruzzi.github.com/2015/11/what-you-have-learnt-those-years/"/>
-    <updated>2015-11-01T17:03:00+11:00</updated>
+    <updated>2015-11-01T17:03:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/11/what-you-have-learnt-those-years</id>
     <content type="html"><![CDATA[<h3>数据可视化</h3>
 
@@ -184,7 +184,7 @@ return Counter([word for word in filtered if word not in stoplist])
   <entry>
     <title type="html"><![CDATA[Python中的 list comprehension 以及 generator]]></title>
     <link href="http://abruzzi.github.com/2015/03/list-comprehension-in-python/"/>
-    <updated>2015-03-30T17:06:00+11:00</updated>
+    <updated>2015-03-30T17:06:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/03/list-comprehension-in-python</id>
     <content type="html"><![CDATA[<h3>一个小故事</h3>
 
@@ -401,7 +401,7 @@ while num &lt; n:
   <entry>
     <title type="html"><![CDATA[搭建地图服务器（使用Mapnik）]]></title>
     <link href="http://abruzzi.github.com/2014/04/setup-map-server-by-mapnik/"/>
-    <updated>2014-04-12T14:07:00+10:00</updated>
+    <updated>2014-04-12T14:07:00+08:00</updated>
     <id>http://abruzzi.github.com/2014/04/setup-map-server-by-mapnik</id>
     <content type="html"><![CDATA[<h4>渲染引擎Mapnik</h4>
 
@@ -637,7 +637,7 @@ if (!map.getCenter()) {
   <entry>
     <title type="html"><![CDATA[GIS系统如何工作]]></title>
     <link href="http://abruzzi.github.com/2014/04/intro-map-gis/"/>
-    <updated>2014-04-10T23:45:00+10:00</updated>
+    <updated>2014-04-10T23:45:00+08:00</updated>
     <id>http://abruzzi.github.com/2014/04/intro-map-gis</id>
     <content type="html"><![CDATA[<h4>GIS系统如何工作</h4>
 
@@ -783,7 +783,7 @@ map.addLayer(layer);
   <entry>
     <title type="html"><![CDATA[utouch编辑器代码开源]]></title>
     <link href="http://abruzzi.github.com/2012/02/utouch%E7%BC%96%E8%BE%91%E5%99%A8%E4%BB%A3%E7%A0%81%E5%BC%80%E6%BA%90/"/>
-    <updated>2012-02-11T00:00:00+11:00</updated>
+    <updated>2012-02-11T00:00:00+08:00</updated>
     <id>http://abruzzi.github.com/2012/02/utouch编辑器代码开源</id>
     <content type="html"><![CDATA[<p><a href="https://code.google.com/p/utouch/" target="_blank">utouch</a>是一个基于<a href="http://wxpython.org/" target="_blank">wxpython</a>中wx.StyledEditCtrl控件的简易编辑器，而wx.StyledEditCtrl又是基于<a href="http://www.scintilla.org/" target="_blank">scintilla</a>的。utouch即使用到了python的便利性，又使用了了成熟而功能强大的<a href="http://www.scintilla.org/" target="_blank">scintilla</a>。而从扩展性上而言，python几乎原生就支持的非常好。</p>
 

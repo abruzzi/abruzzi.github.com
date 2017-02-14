@@ -4,7 +4,7 @@
   <title><![CDATA[Category: izero | I code it]]></title>
   <link href="http://abruzzi.github.com/category/izero/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[CI上的Web前端性能测试]]></title>
     <link href="http://abruzzi.github.com/2016/02/performance-testing-in-ci/"/>
-    <updated>2016-02-20T18:18:00+11:00</updated>
+    <updated>2016-02-20T18:18:00+08:00</updated>
     <id>http://abruzzi.github.com/2016/02/performance-testing-in-ci</id>
     <content type="html"><![CDATA[<h2>Web站点的响应速度</h2>
 
@@ -212,7 +212,7 @@ http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/ &gt; yslow.xml
   <entry>
     <title type="html"><![CDATA[不想当UX的开发不是好咨询师]]></title>
     <link href="http://abruzzi.github.com/2016/01/for-those-dev-who-doesnt-want-to-be-a-ux-cannot-be-a-good-consulant/"/>
-    <updated>2016-01-31T23:04:00+11:00</updated>
+    <updated>2016-01-31T23:04:00+08:00</updated>
     <id>http://abruzzi.github.com/2016/01/for-those-dev-who-doesnt-want-to-be-a-ux-cannot-be-a-good-consulant</id>
     <content type="html"><![CDATA[<h2>成为咨询师</h2>
 
@@ -375,7 +375,7 @@ http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/ &gt; yslow.xml
   <entry>
     <title type="html"><![CDATA[当我们谈论引导时，我们谈些什么？]]></title>
     <link href="http://abruzzi.github.com/2016/01/how-to-facilitate/"/>
-    <updated>2016-01-23T23:42:00+11:00</updated>
+    <updated>2016-01-23T23:42:00+08:00</updated>
     <id>http://abruzzi.github.com/2016/01/how-to-facilitate</id>
     <content type="html"><![CDATA[<h2>什么是引导（facilitation）</h2>
 

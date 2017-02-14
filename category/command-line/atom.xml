@@ -4,7 +4,7 @@
   <title><![CDATA[Category: command line | I code it]]></title>
   <link href="http://abruzzi.github.com/category/command-line/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[使用inotify/fswatch构建自动监控脚本]]></title>
     <link href="http://abruzzi.github.com/2015/03/build-monitor-script-based-on-inotify/"/>
-    <updated>2015-03-01T14:12:00+11:00</updated>
+    <updated>2015-03-01T14:12:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/03/build-monitor-script-based-on-inotify</id>
     <content type="html"><![CDATA[<h2>自动告警脚本</h2>
 
@@ -135,7 +135,7 @@ cat $FILE | mail -s "Alarm: $FILE" jutao.qiu@gmail.com
   <entry>
     <title type="html"><![CDATA[制作一个更漂亮的svn diff命令]]></title>
     <link href="http://abruzzi.github.com/2015/02/make-a-colorful-svn-diff/"/>
-    <updated>2015-02-18T14:14:00+11:00</updated>
+    <updated>2015-02-18T14:14:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/02/make-a-colorful-svn-diff</id>
     <content type="html"><![CDATA[<h3>Code Review</h3>
 

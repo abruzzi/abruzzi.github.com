@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ActiveRecord | I code it]]></title>
   <link href="http://abruzzi.github.com/category/activerecord/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[在既有数据库中使用ActiveRecord]]></title>
     <link href="http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm/"/>
-    <updated>2013-05-18T14:56:00+10:00</updated>
+    <updated>2013-05-18T14:56:00+08:00</updated>
     <id>http://abruzzi.github.com/2013/05/using-active-record-as-a-standalone-orm</id>
     <content type="html"><![CDATA[<h3>ActiveRecord</h3>
 

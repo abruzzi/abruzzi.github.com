@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ThoughtWorks | I code it]]></title>
   <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[测试自动化后，我们还需要QA吗？]]></title>
     <link href="http://abruzzi.github.com/2016/09/what-should-qa-do-in-a-agile-team/"/>
-    <updated>2016-09-24T23:43:00+10:00</updated>
+    <updated>2016-09-24T23:43:00+08:00</updated>
     <id>http://abruzzi.github.com/2016/09/what-should-qa-do-in-a-agile-team</id>
     <content type="html"><![CDATA[<h2>QA的职责</h2>
 
@@ -136,7 +136,7 @@
   <entry>
     <title type="html"><![CDATA[如何设计一次培训]]></title>
     <link href="http://abruzzi.github.com/2016/09/how-to-design-a-training/"/>
-    <updated>2016-09-10T13:35:00+10:00</updated>
+    <updated>2016-09-10T13:35:00+08:00</updated>
     <id>http://abruzzi.github.com/2016/09/how-to-design-a-training</id>
     <content type="html"><![CDATA[<h2>培训元模式</h2>
 
@@ -352,7 +352,7 @@ Workshop至少需要包含这样几部分：</p>
   <entry>
     <title type="html"><![CDATA[无他，但手熟尔]]></title>
     <link href="http://abruzzi.github.com/2016/05/practise-in-programming/"/>
-    <updated>2016-05-26T22:56:00+10:00</updated>
+    <updated>2016-05-26T22:56:00+08:00</updated>
     <id>http://abruzzi.github.com/2016/05/practise-in-programming</id>
     <content type="html"><![CDATA[<h2>高效幻象</h2>
 
@@ -525,7 +525,7 @@ Connecting to 10.180.1.1 9999
   <entry>
     <title type="html"><![CDATA[CI上的Web前端性能测试]]></title>
     <link href="http://abruzzi.github.com/2016/02/performance-testing-in-ci/"/>
-    <updated>2016-02-20T18:18:00+11:00</updated>
+    <updated>2016-02-20T18:18:00+08:00</updated>
     <id>http://abruzzi.github.com/2016/02/performance-testing-in-ci</id>
     <content type="html"><![CDATA[<h2>Web站点的响应速度</h2>
 
@@ -721,7 +721,7 @@ http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/ &gt; yslow.xml
   <entry>
     <title type="html"><![CDATA[技术的执念]]></title>
     <link href="http://abruzzi.github.com/2016/02/pitfall-of-technology/"/>
-    <updated>2016-02-14T17:34:00+11:00</updated>
+    <updated>2016-02-14T17:34:00+08:00</updated>
     <id>http://abruzzi.github.com/2016/02/pitfall-of-technology</id>
     <content type="html"><![CDATA[<h2>知识漩涡</h2>
 

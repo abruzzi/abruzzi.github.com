@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ruby | I code it]]></title>
   <link href="http://abruzzi.github.com/category/ruby/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[保护你的API（下）]]></title>
     <link href="http://abruzzi.github.com/2016/05/about-session-and-security-api-2/"/>
-    <updated>2016-05-12T22:50:00+10:00</updated>
+    <updated>2016-05-12T22:50:00+08:00</updated>
     <id>http://abruzzi.github.com/2016/05/about-session-and-security-api-2</id>
     <content type="html"><![CDATA[<h2>前后端分离之后</h2>
 
@@ -249,7 +249,7 @@ $(function() {</p>
   <entry>
     <title type="html"><![CDATA[编写体面的UI测试]]></title>
     <link href="http://abruzzi.github.com/2015/01/page-object-with-site-prism/"/>
-    <updated>2015-01-02T13:58:00+11:00</updated>
+    <updated>2015-01-02T13:58:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/01/page-object-with-site-prism</id>
     <content type="html"><![CDATA[<h3>PageObject简介</h3>
 
@@ -542,7 +542,7 @@ Given /I am on moving home page/ do</p>
   <entry>
     <title type="html"><![CDATA[一个简单的午餐推荐脚本]]></title>
     <link href="http://abruzzi.github.com/2014/09/simple-idea-and-simple-script/"/>
-    <updated>2014-09-18T21:55:00+10:00</updated>
+    <updated>2014-09-18T21:55:00+08:00</updated>
     <id>http://abruzzi.github.com/2014/09/simple-idea-and-simple-script</id>
     <content type="html"><![CDATA[<h3>千古谜题 --- 中午吃啥？</h3>
 

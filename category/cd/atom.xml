@@ -4,7 +4,7 @@
   <title><![CDATA[Category: CD | I code it]]></title>
   <link href="http://abruzzi.github.com/category/cd/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[穷人的持续集成与持续交付（下）]]></title>
     <link href="http://abruzzi.github.com/2016/01/a-poor-mans-cd-part2/"/>
-    <updated>2016-01-10T14:05:00+11:00</updated>
+    <updated>2016-01-10T14:05:00+08:00</updated>
     <id>http://abruzzi.github.com/2016/01/a-poor-mans-cd-part2</id>
     <content type="html"><![CDATA[<h1>客户端程序的的持续交付</h1>
 
@@ -277,7 +277,7 @@ AWS_SECRET_ACCESS_KEY=xxxxxxxxxx
   <entry>
     <title type="html"><![CDATA[穷人的持续集成与持续交付（上）]]></title>
     <link href="http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1/"/>
-    <updated>2016-01-09T23:34:00+11:00</updated>
+    <updated>2016-01-09T23:34:00+08:00</updated>
     <id>http://abruzzi.github.com/2016/01/a-poor-mans-cd-part1</id>
     <content type="html"><![CDATA[<h1>服务器端应用的持续交付</h1>
 

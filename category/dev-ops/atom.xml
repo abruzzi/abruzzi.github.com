@@ -4,7 +4,7 @@
   <title><![CDATA[Category: dev-ops | I code it]]></title>
   <link href="http://abruzzi.github.com/category/dev-ops/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[快速搭建IE测试环境（Virtualbox+ievms）]]></title>
     <link href="http://abruzzi.github.com/2014/09/setup-ie-series-testing-enviroments/"/>
-    <updated>2014-09-01T18:16:00+10:00</updated>
+    <updated>2014-09-01T18:16:00+08:00</updated>
     <id>http://abruzzi.github.com/2014/09/setup-ie-series-testing-enviroments</id>
     <content type="html"><![CDATA[<h3>IE下的测试</h3>
 

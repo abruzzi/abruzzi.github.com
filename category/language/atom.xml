@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Language | I code it]]></title>
   <link href="http://abruzzi.github.com/category/language/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[工程中的编译原理 -- Mapfile解析器]]></title>
     <link href="http://abruzzi.github.com/2015/10/mapfile-parser/"/>
-    <updated>2015-10-05T12:59:00+11:00</updated>
+    <updated>2015-10-05T12:59:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/10/mapfile-parser</id>
     <content type="html"><![CDATA[<h3>前言</h3>
 
@@ -334,7 +334,7 @@ node map.js expr
   <entry>
     <title type="html"><![CDATA[工程中的编译原理 -- Jison入门篇]]></title>
     <link href="http://abruzzi.github.com/2015/09/write-a-parser/"/>
-    <updated>2015-09-30T18:45:00+10:00</updated>
+    <updated>2015-09-30T18:45:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/09/write-a-parser</id>
     <content type="html"><![CDATA[<h3>前言</h3>
 

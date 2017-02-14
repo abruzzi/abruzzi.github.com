@@ -4,7 +4,7 @@
   <title><![CDATA[Category: functional programming | I code it]]></title>
   <link href="http://abruzzi.github.com/category/functional-programming/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Python中的 list comprehension 以及 generator]]></title>
     <link href="http://abruzzi.github.com/2015/03/list-comprehension-in-python/"/>
-    <updated>2015-03-30T17:06:00+11:00</updated>
+    <updated>2015-03-30T17:06:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/03/list-comprehension-in-python</id>
     <content type="html"><![CDATA[<h3>一个小故事</h3>
 
@@ -233,7 +233,7 @@ while num &lt; n:
   <entry>
     <title type="html"><![CDATA[underscore.js中的集合操作]]></title>
     <link href="http://abruzzi.github.com/2015/02/collection-operations-in-underscore-dot-js/"/>
-    <updated>2015-02-21T12:48:00+11:00</updated>
+    <updated>2015-02-21T12:48:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/02/collection-operations-in-underscore-dot-js</id>
     <content type="html"><![CDATA[<h2>underscore.js中的集合操作</h2>
 
@@ -605,7 +605,7 @@ var top10 = topWords(count(text), 10);
   <entry>
     <title type="html"><![CDATA[underscore.js中的函数式编程]]></title>
     <link href="http://abruzzi.github.com/2015/02/functional-programming-in-underscore-dot-js/"/>
-    <updated>2015-02-20T20:11:00+11:00</updated>
+    <updated>2015-02-20T20:11:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/02/functional-programming-in-underscore-dot-js</id>
     <content type="html"><![CDATA[<h2>JavaScript中的map/reduce</h2>
 
@@ -973,7 +973,7 @@ return _(mapped).reduce(function(frequencies, word) {
   <entry>
     <title type="html"><![CDATA[Common Lisp中的宏(Macro)]]></title>
     <link href="http://abruzzi.github.com/2013/06/macro-in-common-lisp/"/>
-    <updated>2013-06-15T11:12:00+10:00</updated>
+    <updated>2013-06-15T11:12:00+08:00</updated>
     <id>http://abruzzi.github.com/2013/06/macro-in-common-lisp</id>
     <content type="html"><![CDATA[<h4>Lisp与其他语言之区别</h4>
 
@@ -1172,7 +1172,7 @@ return _(mapped).reduce(function(frequencies, word) {
   <entry>
     <title type="html"><![CDATA[common lisp 里的一些基本概念]]></title>
     <link href="http://abruzzi.github.com/2013/06/common-lisp-basic/"/>
-    <updated>2013-06-13T16:15:00+10:00</updated>
+    <updated>2013-06-13T16:15:00+08:00</updated>
     <id>http://abruzzi.github.com/2013/06/common-lisp-basic</id>
     <content type="html"><![CDATA[<h3>Common Lisp</h3>
 

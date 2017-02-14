@@ -4,7 +4,7 @@
   <title><![CDATA[Category: SVN | I code it]]></title>
   <link href="http://abruzzi.github.com/category/svn/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[SVN中合并分支]]></title>
     <link href="http://abruzzi.github.com/2014/08/how-to-merge-branches-in-svn/"/>
-    <updated>2014-08-25T22:42:00+10:00</updated>
+    <updated>2014-08-25T22:42:00+08:00</updated>
     <id>http://abruzzi.github.com/2014/08/how-to-merge-branches-in-svn</id>
     <content type="html"><![CDATA[<h3>分支策略</h3>
 

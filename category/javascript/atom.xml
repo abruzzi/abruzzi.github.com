@@ -4,7 +4,7 @@
   <title><![CDATA[Category: JavaScript | I code it]]></title>
   <link href="http://abruzzi.github.com/category/javascript/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[你为什么应该试一试Reflux？]]></title>
     <link href="http://abruzzi.github.com/2015/11/get-started-with-reflux/"/>
-    <updated>2015-11-09T23:03:00+11:00</updated>
+    <updated>2015-11-09T23:03:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/11/get-started-with-reflux</id>
     <content type="html"><![CDATA[<h3>一点背景</h3>
 
@@ -378,7 +378,7 @@ render: function() {
   <entry>
     <title type="html"><![CDATA[工程中的编译原理 -- Mapfile解析器]]></title>
     <link href="http://abruzzi.github.com/2015/10/mapfile-parser/"/>
-    <updated>2015-10-05T12:59:00+11:00</updated>
+    <updated>2015-10-05T12:59:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/10/mapfile-parser</id>
     <content type="html"><![CDATA[<h3>前言</h3>
 
@@ -696,7 +696,7 @@ node map.js expr
   <entry>
     <title type="html"><![CDATA[工程中的编译原理 -- Jison入门篇]]></title>
     <link href="http://abruzzi.github.com/2015/09/write-a-parser/"/>
-    <updated>2015-09-30T18:45:00+10:00</updated>
+    <updated>2015-09-30T18:45:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/09/write-a-parser</id>
     <content type="html"><![CDATA[<h3>前言</h3>
 
@@ -1003,7 +1003,7 @@ $ node calc.js expr
   <entry>
     <title type="html"><![CDATA[又一篇JavaScript的函数式编程教程]]></title>
     <link href="http://abruzzi.github.com/2015/05/functional-programming-again/"/>
-    <updated>2015-05-23T17:37:00+10:00</updated>
+    <updated>2015-05-23T17:37:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/05/functional-programming-again</id>
     <content type="html"><![CDATA[<h2>前言</h2>
 
@@ -1293,7 +1293,7 @@ markedFeedList.html(template({feeds: markedFeeds}));
   <entry>
     <title type="html"><![CDATA[在Sublime Text中设置JavaScript构建]]></title>
     <link href="http://abruzzi.github.com/2014/12/setup-sublime-as-javascript-development-env/"/>
-    <updated>2014-12-21T18:52:00+11:00</updated>
+    <updated>2014-12-21T18:52:00+08:00</updated>
     <id>http://abruzzi.github.com/2014/12/setup-sublime-as-javascript-development-env</id>
     <content type="html"><![CDATA[<p>我在编写<a href="http://book.douban.com/subject/24165880/">《JavaScript核心概念及实践》</a>一书的时候，为了保证读者学习时可以比较专注语言本身，专门用Swing开发了一个小工具<a href="https://github.com/abruzzi/jsevaluator">JSEvaluator</a>。</p>
 

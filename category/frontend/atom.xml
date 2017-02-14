@@ -4,7 +4,7 @@
   <title><![CDATA[Category: frontend | I code it]]></title>
   <link href="http://abruzzi.github.com/category/frontend/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[前后端分离了，然后呢？]]></title>
     <link href="http://abruzzi.github.com/2015/06/whats-next-after-separate-frontend-and-backend/"/>
-    <updated>2015-06-22T21:29:00+10:00</updated>
+    <updated>2015-06-22T21:29:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/06/whats-next-after-separate-frontend-and-backend</id>
     <content type="html"><![CDATA[<h3>前言</h3>
 
@@ -399,7 +399,7 @@ mockMvc.perform(get("/api/fav-feeds/1"))
   <entry>
     <title type="html"><![CDATA[使用underscore.js构建前端应用]]></title>
     <link href="http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery/"/>
-    <updated>2015-02-21T21:21:00+11:00</updated>
+    <updated>2015-02-21T21:21:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery</id>
     <content type="html"><![CDATA[<h2>一个监控系统</h2>
 

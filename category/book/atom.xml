@@ -4,7 +4,7 @@
   <title><![CDATA[Category: book | I code it]]></title>
   <link href="http://abruzzi.github.com/category/book/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[如何写一本书？]]></title>
     <link href="http://abruzzi.github.com/2015/08/how-to-write-a-book/"/>
-    <updated>2015-08-04T13:24:00+10:00</updated>
+    <updated>2015-08-04T13:24:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/08/how-to-write-a-book</id>
     <content type="html"><![CDATA[<p>我在过去的几年中，写了4本书。有传统意义上的两本实体书：<a href="http://www.amazon.cn/JavaScript%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%AE%9E%E8%B7%B5-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B00COG3YVU/ref=sr_1_1?s=books&amp;ie=UTF8&amp;qid=1438658024&amp;sr=1-1">《JavaScript核心概念及实践》</a>和<a href="http://www.amazon.cn/%E8%BD%BB%E9%87%8F%E7%BA%A7Web%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91-%E9%82%B1%E4%BF%8A%E6%B6%9B/dp/B012R5A1NQ/ref=sr_1_2?s=books&amp;ie=UTF8&amp;qid=1438658024&amp;sr=1-2">《轻量级Web应用开发》</a>，还有两本电子书<a href="https://selfstore.io/products/348">《3周3页面》</a>和<a href="https://selfstore.io/products/351">《函数式编程乐趣》</a>。当然对我而言，主职工作是软件开发，写作是个副业。</p>
 
@@ -160,7 +160,7 @@ expect(headline.getDOMNode().textContent).toEqual(text);
   <entry>
     <title type="html"><![CDATA[JavaScript核心概念及实践勘误表]]></title>
     <link href="http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao/"/>
-    <updated>2013-05-16T11:29:00+10:00</updated>
+    <updated>2013-05-16T11:29:00+08:00</updated>
     <id>http://abruzzi.github.com/2013/05/javascripthe-xin-gai-nian-ji-shi-jian-kan-wu-biao</id>
     <content type="html"><![CDATA[<h3>《JavaScript核心概念及实践》勘误表</h3>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Jasmine | I code it]]></title>
   <link href="http://abruzzi.github.com/category/jasmine/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[如何测试AngularJS中的Service]]></title>
     <link href="http://abruzzi.github.com/2014/01/how-to-test-service-in-angularjs/"/>
-    <updated>2014-01-04T14:22:00+11:00</updated>
+    <updated>2014-01-04T14:22:00+08:00</updated>
     <id>http://abruzzi.github.com/2014/01/how-to-test-service-in-angularjs</id>
     <content type="html"><![CDATA[<h3>Service的典型示例</h3>
 
@@ -217,7 +217,7 @@ resource has been created
   <entry>
     <title type="html"><![CDATA[如何测试AngularJS中的Controller]]></title>
     <link href="http://abruzzi.github.com/2013/12/how-to-test-controller-in-angularjs/"/>
-    <updated>2013-12-28T17:40:00+11:00</updated>
+    <updated>2013-12-28T17:40:00+08:00</updated>
     <id>http://abruzzi.github.com/2013/12/how-to-test-controller-in-angularjs</id>
     <content type="html"><![CDATA[<h3>AngularJS中的一个典型的Controller</h3>
 

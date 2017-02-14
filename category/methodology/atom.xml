@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Methodology | I code it]]></title>
   <link href="http://abruzzi.github.com/category/methodology/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[实施领域驱动设计的正确姿势]]></title>
     <link href="http://abruzzi.github.com/2017/01/why-ddd-is-so-hard/"/>
-    <updated>2017-01-11T00:48:00+11:00</updated>
+    <updated>2017-01-11T00:48:00+08:00</updated>
     <id>http://abruzzi.github.com/2017/01/why-ddd-is-so-hard</id>
     <content type="html"><![CDATA[<h2>DDD为什么很难实施</h2>
 
@@ -214,7 +214,7 @@ Then I should get the following names:
   <entry>
     <title type="html"><![CDATA[软件开发为什么很难]]></title>
     <link href="http://abruzzi.github.com/2017/01/why-software-is-complex/"/>
-    <updated>2017-01-06T18:06:00+11:00</updated>
+    <updated>2017-01-06T18:06:00+08:00</updated>
     <id>http://abruzzi.github.com/2017/01/why-software-is-complex</id>
     <content type="html"><![CDATA[<h2>问题的分类</h2>
 
@@ -396,7 +396,7 @@ doMessage(5, "Hello, world", log);
   <entry>
     <title type="html"><![CDATA[无他，但手熟尔]]></title>
     <link href="http://abruzzi.github.com/2016/05/practise-in-programming/"/>
-    <updated>2016-05-26T22:56:00+10:00</updated>
+    <updated>2016-05-26T22:56:00+08:00</updated>
     <id>http://abruzzi.github.com/2016/05/practise-in-programming</id>
     <content type="html"><![CDATA[<h2>高效幻象</h2>
 

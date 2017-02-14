@@ -4,7 +4,7 @@
   <title><![CDATA[Category: cgi | I code it]]></title>
   <link href="http://abruzzi.github.com/category/cgi/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Web是怎么工作的: CGI脚本]]></title>
     <link href="http://abruzzi.github.com/2014/04/how-web-works-cgi/"/>
-    <updated>2014-04-20T19:22:00+10:00</updated>
+    <updated>2014-04-20T19:22:00+08:00</updated>
     <id>http://abruzzi.github.com/2014/04/how-web-works-cgi</id>
     <content type="html"><![CDATA[<h4>CGI的一些背景</h4>
 

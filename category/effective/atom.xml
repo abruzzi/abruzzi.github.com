@@ -4,7 +4,7 @@
   <title><![CDATA[Category: effective | I code it]]></title>
   <link href="http://abruzzi.github.com/category/effective/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-09T13:01:22+11:00</updated>
+  <updated>2017-02-14T09:42:10+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[underscore.js中的集合操作]]></title>
     <link href="http://abruzzi.github.com/2015/02/collection-operations-in-underscore-dot-js/"/>
-    <updated>2015-02-21T12:48:00+11:00</updated>
+    <updated>2015-02-21T12:48:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/02/collection-operations-in-underscore-dot-js</id>
     <content type="html"><![CDATA[<h2>underscore.js中的集合操作</h2>
 
@@ -388,7 +388,7 @@ var top10 = topWords(count(text), 10);
   <entry>
     <title type="html"><![CDATA[underscore.js中的函数式编程]]></title>
     <link href="http://abruzzi.github.com/2015/02/functional-programming-in-underscore-dot-js/"/>
-    <updated>2015-02-20T20:11:00+11:00</updated>
+    <updated>2015-02-20T20:11:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/02/functional-programming-in-underscore-dot-js</id>
     <content type="html"><![CDATA[<h2>JavaScript中的map/reduce</h2>
 
@@ -756,7 +756,7 @@ return _(mapped).reduce(function(frequencies, word) {
   <entry>
     <title type="html"><![CDATA[制作一个更漂亮的svn diff命令]]></title>
     <link href="http://abruzzi.github.com/2015/02/make-a-colorful-svn-diff/"/>
-    <updated>2015-02-18T14:14:00+11:00</updated>
+    <updated>2015-02-18T14:14:00+08:00</updated>
     <id>http://abruzzi.github.com/2015/02/make-a-colorful-svn-diff</id>
     <content type="html"><![CDATA[<h3>Code Review</h3>
 
