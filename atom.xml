@@ -4,7 +4,7 @@
   <title><![CDATA[I code it]]></title>
   <link href="http://abruzzi.github.com/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-02-14T09:42:10+08:00</updated>
+  <updated>2017-02-14T09:47:12+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -419,7 +419,7 @@
 
 <p>我对于一个程序员是否优秀，也有自己的标准，那就是TA对<strong>命令行的熟悉／喜爱程度</strong>。这个特点可以很好的看出TA是否是一个<strong>优秀的</strong>（或者<em>潜在优秀的</em>）程序员。我周围就有很多非常牛的程序员，无一例外的都非常擅长在命令行中工作。那什么叫<code>熟悉</code>命令行呢？简单来说，就是90%的日常工作内容可以在命令行完成。</p>
 
-<p>当然，喜欢／习惯使用命令行可能只是表象，其背后包含的实质才是优秀的程序员之所以优秀的原因。</p>
+<p>当然，喜欢／习惯使用命令行可能只是表象，其背后包含的实质才是优秀的程序员之所以<strong>优秀</strong>的原因。</p>
 
 <h3>自动化</h3>
 
