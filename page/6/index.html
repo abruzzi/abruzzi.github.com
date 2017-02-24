@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="千古谜题 &#8212; 中午吃啥？ 如果要列出一些日常最频繁的会问/被问的问题的一个列表，吃啥？绝对会排在前三位，对于程序员来说，一样频繁的还有诸如这是谁写的？，这尼玛啥意思啊？之类。 吃啥作为一个每天都会面对的问题，我们自然而言会想很多办法，比如随大流，其他人去哪儿我们跟着就行， &hellip;">
+  <meta name="description" content="Web前端的现状 目前的Web前端的现状较之5-6年前，简直不能同日而语：从所使用的技术、工具、框架到开发一个产品所需要付出的工作量，从前端开发从业人员的数量到Web应用的数量，从企业对于Web前端的重要程度的认识到Web实际上为企业带来的回报，一切都有了翻天覆地的变化。 借助HTML5+ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,323 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2014/09/get-started-with-node-webkit/">使用node-webkit构建桌面应用程序</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-21T17:12:00+08:00" pubdate data-updated="true">Sep 21<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Web前端的现状</h3>
+
+<p>目前的Web前端的现状较之5-6年前，简直不能同日而语：从所使用的技术、工具、框架到开发一个产品所需要付出的工作量，从前端开发从业人员的数量到Web应用的数量，从企业对于Web前端的重要程度的认识到Web实际上为企业带来的回报，一切都有了翻天覆地的变化。</p>
+
+<p>借助HTML5+CSS3的普及，加上一些开箱即用的CSS框架（如bootstrap，foundation等）支持，人们已经可以非常容易的从零开始搭建一个Web应用的前端。一个在UI方面非常业余的程序员也可以很快的做出一个像模像样的用户界面。而另一方面，基于操作系统原生API，要想设计并实现一个桌面应用，需要的付出则远远超过超过同水平的Web界面。</p>
+
+<h3>webkit浏览器内核</h3>
+
+<p><a href="https://www.webkit.org/">Webkit</a>作为最受欢迎的<em>浏览器内核</em>，自然有非常多的port。比如GTK+对它的port &#8211; <a href="http://webkitgtk.org/">WebkitGTK</a>，以及构建在WebkitGTK之上的Python的<a href="https://code.google.com/p/pywebkitgtk/">bind</a>。使用WebkitGTK的Python版本，开发人员可以用HTML+CSS来开发应用，然后写一点Python脚本，最后将其运行在桌面上。</p>
+
+<p>这里有个早期的例子来教你<a href="http://arstechnica.com/information-technology/2009/07/how-to-build-a-desktop-wysiwyg-editor-with-webkit-and-html-5/1/">如何写一个所见即所得的编辑器</a>。桌面应用开发中，对于用户界面的复杂性一直是一个难题，而这种方式可以减轻很多的用户界面开发的复杂性，将界面开发交给另外更加灵活，更加容易编写和调试方式：HTML+CSS。</p>
+
+<p>这种模式下基本的开发流程是编写一个HTML页面（作为程序入口），然后在这个页面上引入额外的CSS（界面风格）和JavaScript（动作），然后将这些资源交给工业级浏览器内核Webkit来渲染 &#8211; 这个过程和在浏览器中访问该文件并无二致，但是有两个额外的好处：</p>
+
+<ol>
+<li>页面运行在一个“桌面应用程序”中</li>
+<li>没有地址栏，状态栏，菜单栏等，看起来更像是一个桌面应用</li>
+<li>用户界面开发的复杂性被“外包”给一个更简单的环境</li>
+</ol>
+
+
+<p>这就是传说中的混合（hybrid）开发模式，比如现在移动开发中的cordova就是采用这种模式，使得本来被视为天堑的原生的用户界面开发变为坦途。</p>
+
+<h4>node-webkit</h4>
+
+<p><a href="https://github.com/rogerwang/node-webkit">node-webkit</a>是一个基于<a href="http://www.chromium.org/">chromium</a>和node.js的应用程序开发工具。它不但支持你使用传统的HTML5+CSS3+JS方式来开发你的应用程序，还支持无缝的与Node.js集成，也就是说，所有的Node支持的与操作系统交互的功能，如网络连接，文件系统，操作系统资源访问等，以及Node之上的第三方库都可以在node-webkit中进行使用。</p>
+
+<p>更好的是，node-webkit是一个跨平台的工具，你可以使用它构建出运行在Mac OS，Linux以及Windows下的应用程序。应用程序通过Node.js来进行与系统相关的访问，而用HTML5+CSS3进行用户界面部分的设计。</p>
+
+<p>node-webkit未必是未来桌面应用的唯一方式，但是却是一个非常好的选择，特别对于已经熟知Web前端开发技术栈的众多开发者来说，无需学习一门新的语言，一切都被很大程度的简化了。</p>
+
+<h4>第一个node-webkit应用程序</h4>
+
+<p>开发node-webkit应用程序非常简单。在<a href="https://github.com/rogerwang/node-webkit">这里下载</a>系统对应的版本。并确保对应的二进制文件(nwnw.exe)在系统的PATH之中。</p>
+
+<p>创建一个新的目录，然后在该目录中创建一个<code>package.json</code>文件和一个<code>index.html</code>文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>mkdir -p hello-node-webkit
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd </span>hello-node-webkit
+</span><span class='line'><span class="nv">$ </span>touch package.json index.html
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>package.json</code>文件的内容如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;hello-node-webkit&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;version&quot;</span><span class="o">:</span> <span class="s2">&quot;0.1.0&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;main&quot;</span><span class="o">:</span> <span class="s2">&quot;index.html&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>index.html</code>文件的内容如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;title&gt;</span>Hello node-webkit<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;h1&gt;</span>Hello node-webkit<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后将这两个文件打在一个<code>zip</code>格式压缩包中：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>zip -r hello-node-webkit.zip *
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后将这个文件重命名为<code>hello-node-webkit.nw</code>，最后使用node-webkit来启动这个应用程序。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span> ~/Tools/node-webkit.app/Contents/MacOS/node-webkit hello-node-webkit.nw
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2014/09/hello-node-webkit-resized.png" alt="image" /></p>
+
+<h4>添加外部JS/CSS</h4>
+
+<p>接下来我们为这个页面添加一些外部的引用：CSS/JavaScript文件。首先创建两个目录<code>style</code>和<code>script</code>，然后分别创建文件如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>├── index.html
+</span><span class='line'>├── package.json
+</span><span class='line'>├── script
+</span><span class='line'>│   ├── app.js
+</span><span class='line'>│   └── jquery.min.js
+</span><span class='line'>└── style
+</span><span class='line'>    └── style.css
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中，style.css定义了<code>h1</code>的简单样式：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nt">h1</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">20px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#999999</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而app.js则注册了一个简单的事件处理器：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;h1&quot;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>      <span class="nx">alert</span><span class="p">(</span><span class="s2">&quot;Heading 1 is clicked&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>此时的index.html修改如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;title&gt;</span>Hello node-webkit<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">type=</span><span class="s">&quot;text/css&quot;</span> <span class="na">href=</span><span class="s">&quot;style/style.css&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;h1&gt;</span>Hello node-webkit<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;script/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;script/app.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>还是按照上一小节的命令完成打包，改名，启动之后。点击<code>h1</code>元素时，会弹出对话框如下：</p>
+
+<p><img src="/images/2014/09/node-webkit-clicked-resized.png" alt="image" /></p>
+
+<p>在这个例子中，我们使用了外部的<code>css</code>文件来添加样式，还引入了<code>jQuery</code>作为访问DOM元素的工具，最后还使用了一段调用<code>jQuery</code>的JavaScript代码。</p>
+
+<h4>构建脚本</h4>
+
+<p>你可能已经注意到了，使用node-webkit开发非常方便。但是这一系列的动作（修改HTML+CSS，压缩打包，改名，启动）等有一部分重复工作，我们可以将其自动化。</p>
+
+<p>好在已经有了一个很好用的<code>grunt</code>的插件：<a href="https://github.com/mllrsohn/grunt-node-webkit-builder">grunt-node-webkit-builder</a>，这个插件可以帮助我们自动执行压缩打包这些动作。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>npm install grunt-node-webkit-builder
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后定义一个Gruntfile.js，这个文件中指定源文件（所有的HTML，JavaScript代码，CSS文件）所在目录，目标文件所在目录，需要构建的应用程序指定的操作系统平台等：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">grunt</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">grunt</span><span class="p">.</span><span class="nx">initConfig</span><span class="p">({</span>
+</span><span class='line'>        <span class="nx">pkg</span><span class="o">:</span> <span class="nx">grunt</span><span class="p">.</span><span class="nx">file</span><span class="p">.</span><span class="nx">readJSON</span><span class="p">(</span><span class="s1">&#39;package.json&#39;</span><span class="p">),</span>
+</span><span class='line'>        <span class="nx">nodewebkit</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>                <span class="nx">platforms</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;osx&#39;</span><span class="p">],</span>
+</span><span class='line'>                <span class="nx">buildDir</span><span class="o">:</span> <span class="s1">&#39;builds&#39;</span><span class="p">,</span>
+</span><span class='line'>            <span class="p">},</span>
+</span><span class='line'>            <span class="nx">src</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;app/**/*&#39;</span><span class="p">]</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">grunt</span><span class="p">.</span><span class="nx">loadNpmTasks</span><span class="p">(</span><span class="s1">&#39;grunt-node-webkit-builder&#39;</span><span class="p">);</span>
+</span><span class='line'>    <span class="nx">grunt</span><span class="p">.</span><span class="nx">registerTask</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;nodewebkit&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，我们修改之后，就可以很简单的执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>grunt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>来进行打包了。比如在Mac下，构建出来的应用位于<code>builds/&lt;app-name&gt;/osx</code>目录下，要启动该应用只需要在命令行输入</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>open builds/hello-node-webkit/osx/hello-node-webkit.app
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者在Finder中双击打开即可。</p>
+
+<p>可以看到上例中的应用程序还有浓重的浏览器痕迹，比如地址栏，刷新按钮，甚至还有一个<code>DevTools</code>的按钮。我们可以通过修改<code>package.json</code>来指定：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;hello-node-webkit&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;version&quot;</span><span class="o">:</span> <span class="s2">&quot;0.1.0&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;main&quot;</span><span class="o">:</span> <span class="s2">&quot;index.html&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;window&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s2">&quot;toolbar&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;width&quot;</span><span class="o">:</span> <span class="mi">800</span><span class="p">,</span>
+</span><span class='line'>        <span class="s2">&quot;height&quot;</span><span class="o">:</span> <span class="mi">600</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样的界面就更像是一个桌面应用了：</p>
+
+<p><img src="/images/2014/09/hello-without-address-resized.png" alt="image" /></p>
+
+<p>到目前为止，这个小的<em>应用程序</em>并没有什么有趣的特性，用户界面也毫无美感，但是有了这些基本知识和工具之后，我们就可以开始更进一步的开发。除了使用既有的CSS框架来完成用户界面的美化，我们还会使用node.js访问系统资源来构建真实的应用程序。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2305,318 +2622,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/01/how-to-test-service-in-angularjs/">如何测试AngularJS中的Service</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-01-04T14:22:00+08:00" pubdate data-updated="true">Jan 4<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Service的典型示例</h3>
-
-<p>在AngularJS中，Service都是单例的实体，通常会将Service作为向后台交互的数据提供者，所有的需要数据的组件只需要依赖于这个Service即可。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">&#39;MyApp&#39;</span><span class="p">,</span> <span class="p">[]);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">app</span><span class="p">.</span><span class="nx">factory</span><span class="p">(</span><span class="s1">&#39;SearchSettingService&#39;</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">[</span><span class="s1">&#39;$http&#39;</span><span class="p">,</span> <span class="s1">&#39;$q&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$http</span><span class="p">,</span> <span class="nx">$q</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">setting</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>            <span class="kd">var</span> <span class="nx">deferred</span> <span class="o">=</span> <span class="nx">$q</span><span class="p">.</span><span class="nx">defer</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="nx">$http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">success</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">deferred</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">}).</span><span class="nx">error</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>                <span class="nx">deferred</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="s2">&quot;network error&quot;</span><span class="p">);</span>
-</span><span class='line'>            <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>            <span class="k">return</span> <span class="nx">deferred</span><span class="p">.</span><span class="nx">promise</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'><span class="p">}]);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>$httpBackend</h4>
-
-<p>测试的时候，我们不需要真实的发送HTTP请求来获取数据。如果可以只测试Service的逻辑，当发送请求时，我们将这个请求拦截下来，然后返回一个预定义好的数据即可：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have settings from http request&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span><span class="p">;</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;period&quot;</span><span class="o">:</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;date&quot;</span><span class="o">:</span> <span class="s2">&quot;Sat Dec 21 12:56:53 EST 2013&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">settingService</span><span class="p">.</span><span class="nx">setting</span><span class="p">();</span>
-</span><span class='line'>    <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">result</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>$httpBackend是AngularJS提供的一个测试用的服务，可以在spec中注入进来：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">module</span><span class="p">(</span><span class="s1">&#39;services&#39;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">inject</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">SearchSettingService</span><span class="p">,</span> <span class="nx">$httpBackend</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">settingService</span> <span class="o">=</span> <span class="nx">SearchSettingService</span><span class="p">;</span>
-</span><span class='line'>        <span class="nx">httpBackend</span> <span class="o">=</span> <span class="nx">$httpBackend</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>httpBackend</code>服务有一些很方便测试的方法：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="nx">url</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
-</span><span class='line'><span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectPOST</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">param</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>设置之后，当调用<code>httpBackend.flush</code>时，AngularJS会调用这个setup，发送的请求会被之前的setup拦截并返回，这样service中的数据就被填充好了。</p>
-
-<h4>Service测试的模板</h4>
-
-<p>或者说，当测试一个Service时，我们应该测那些方面呢？</p>
-
-<ol>
-<li>正常流程，一个完整的处理过程</li>
-<li>异常处理，如果服务器出错了，程序需要如何反馈？</li>
-<li>其他异常情况</li>
-</ol>
-
-
-<p>正常流程很容易，在调用service提供的方法之后，在获得的promise对象上调用then方法来填充一个数据即可，然后调用<code>httpBackend.flush()</code>来<strong>发送</strong>请求，最后验证数据的格式/内容是否正确。</p>
-
-<p>这个测试的主要目的是验证当调用service的方法时，service真实的发送了一个http请求：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should have settings from http request&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span><span class="p">;</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">expected</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;period&quot;</span><span class="o">:</span> <span class="s2">&quot;day&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s2">&quot;date&quot;</span><span class="o">:</span> <span class="s2">&quot;Sat Dec 21 12:56:53 EST 2013&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">settingService</span><span class="p">.</span><span class="nx">setting</span><span class="p">();</span>
-</span><span class='line'>    <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">result</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="nx">expected</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>对于异常的情况，比如服务器返回了错误，如<code>500</code>，那么最低程度，程序应该可以处理这个异常：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should throw error when network expection&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">error</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">expectGET</span><span class="p">(</span><span class="s1">&#39;/settings.json&#39;</span><span class="p">).</span><span class="nx">respond</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">settingService</span><span class="p">.</span><span class="nx">setting</span><span class="p">();</span>
-</span><span class='line'>    <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">result</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="nx">error</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">httpBackend</span><span class="p">.</span><span class="nx">flush</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">result</span><span class="p">).</span><span class="nx">toBeUndefined</span><span class="p">();</span>
-</span><span class='line'>    <span class="nx">expect</span><span class="p">(</span><span class="nx">error</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="s2">&quot;network error&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4><em>服务器</em> moco</h4>
-
-<p><a href="https://github.com/dreamhead/moco">moco</a>是同事<a href="http://dreamhead.blogbus.com/">郑晔</a>开发的一个测试框架/工具，基本上来说，moco是一个用来集成测试的用的HTTP服务器。</p>
-
-<p>你可以通过API方式或者启动moco服务器的方式来使用它，我比较喜欢将moco作为一个独立的服务器来使用：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>java -jar moco-runner-0.9-standalone.jar start -p 12306 -c moco.conf.json
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>比如<code>moco.conf.json</code>中定义了一下规则：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;request&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>            <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="s2">&quot;post&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="s2">&quot;uri&quot;</span><span class="o">:</span> <span class="s2">&quot;/resource&quot;</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>        <span class="s2">&quot;response&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>            <span class="s2">&quot;status&quot;</span><span class="o">:</span> <span class="mi">201</span><span class="p">,</span>
-</span><span class='line'>            <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;resource has been created&quot;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s2">&quot;request&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>            <span class="s2">&quot;uri&quot;</span><span class="o">:</span> <span class="s2">&quot;/resource&quot;</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>        <span class="s2">&quot;response&quot;</span><span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>            <span class="s2">&quot;status&quot;</span><span class="o">:</span> <span class="mi">200</span><span class="p">,</span>
-</span><span class='line'>            <span class="s2">&quot;file&quot;</span><span class="o">:</span> <span class="s2">&quot;resources.json&quot;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>则启动moco的服务器之后，所有发往<code>/resource</code>的<code>post</code>请求都会得到</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="mi">201</span>
-</span><span class='line'><span class="nx">resource</span> <span class="nx">has</span> <span class="nx">been</span> <span class="nx">created</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>的HTTP响应，这个功能在前端开发越来越独立的情况下变得非常好用。我最近在有很多小项目中都在尝试moco，非常的好用，后边会有相关的博客专门介绍。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/7/">&larr; Older</a>
@@ -2634,6 +2639,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2017/02/data-visualization-from-baby/">生活中的数据可视化之 &#8211; 换尿布</a>
+      </li>
+    
+      <li class="post">
         <a href="/2017/02/frontend-page-performance-tuning/">如何提升页面渲染效率</a>
       </li>
     
@@ -2647,10 +2656,6 @@
     
       <li class="post">
         <a href="/2017/01/why-software-is-complex/">软件开发为什么很难</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/12/my-2016/">我的2016</a>
       </li>
     
   </ul>

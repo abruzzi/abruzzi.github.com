@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="diff和patch是*nix上一对强大的工具，diff用以指出两个文件/目录之间的差异，而patch则用于将某个差异应用到一个文件上，从而消除差异(结果就是为老的文件打上新的补丁)。我们从最简单的场景来看：我们有一个文件的老版本load.js和新版本load-new.js。 1: &hellip;">
+  <meta name="description" content="&nbsp; 这篇关于Emacs的介绍是我在2011年部门内部分享的，当时有些刚进入后台组的同事抱怨没有一款顺手的开发工具，于是我整理了vim的使用手册，但是部门另一位大牛(emacser)建议我再顺便整理一下Emacs的文档。我对Emacs的水平非常一般，但是既然是给别人推荐， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,42 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/02/emacs%E5%8F%AF%E4%BB%A5%E5%81%9A%E4%BB%80%E4%B9%88%EF%BC%9F/">Emacs可以做什么？</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-06T00:00:00+08:00" pubdate data-updated="true">Feb 6<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><p>&nbsp; <p>这篇关于Emacs的介绍是我在2011年部门内部分享的，当时有些刚进入后台组的同事抱怨没有一款顺手的开发工具，于是我整理了vim的使用手册，但是部门另一位大牛(emacser)建议我再顺便整理一下Emacs的文档。我对Emacs的水平非常一般，但是既然是给别人推荐，自己不研究一下实在说不过去，在认真研究了1周之后，就整理出了这份文档。当然，想要在1周内就完全掌握这些技巧是不可能的，工具需要不断的使用，直到手指对那些命令产生记忆为止，才能算是入门。 <p>Emacs是一个神奇的编辑环境，下面仅举一些简单示例，介绍一下Emacs可以做什么。但是不涉及更详细的如何做，如何做到这些请参阅其他教程文档。 <h4>〇 shell环境</h4> <p>Emacs中可以很方便的进入shell模式(M-x shell)，而不用于shell来回切换，将shell搬进Emacs环境之中，运行命令，查看文件列表，操作svn，执行外部脚本等等。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image002.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image002" border="0" alt="clip_image002" src="http://abruzzi.github.com/images/2012/02/clip_image002_thumb.jpg" width="557" height="404" /></a> <p>图 Emacs中的shell环境 <h4>一 文件浏览器</h4> <p>相当于windows中的资源管理器，(M-x dired)，此时的Emacs是一个文件浏览器，如果光标所在的项是目录，此时回车会进入该目录，如果是文件，则打开该文件。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image004.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image004" border="0" alt="clip_image004" src="http://abruzzi.github.com/images/2012/02/clip_image004_thumb.jpg" width="557" height="351" /></a> <p>图 文件浏览器 <h4>二 编写代码</h4> <p>当然，我们使用Emacs的核心功能为代码编写功能。语法高亮，注释淡出等基本的自然支持，其他高级的功能在Emacs下则更为好用。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image006.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image006" border="0" alt="clip_image006" src="http://abruzzi.github.com/images/2012/02/clip_image006_thumb.jpg" width="557" height="404" /></a> <h4>三 调试代码</h4> <p>这个是日常工作中最为常用的功能之一，(M-x gdb)调用gdb，并与gdb交互，此时可以看到指令运行位置，可以设置/取消断点，查看变量地址/值等等。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image008.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image008" border="0" alt="clip_image008" src="http://abruzzi.github.com/images/2012/02/clip_image008_thumb.jpg" width="558" height="406" /></a> <p>图 调用gdb调试程序 <h4>四 比较文件</h4> <p>使用版本控制之后，最常用的功能为文件对比，(M-x ediff)可以对比两个文件(工作拷贝与版本库，或者版本库中的两个修订版之间) <p><a href="http://abruzzi.github.com/images/2012/02/clip_image010.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image010" border="0" alt="clip_image010" src="http://abruzzi.github.com/images/2012/02/clip_image010_thumb.jpg" width="558" height="414" /></a> <p>图 文件对比 <h4>五 增量搜索</h4> <p>与vim的编辑功能类似，Emacs具有增量搜索功能，(C-s/C-r)，被搜索词会高亮起来，便于查看。当然，查找/替换这些必备功能也非常好用。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image012.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image012" border="0" alt="clip_image012" src="http://abruzzi.github.com/images/2012/02/clip_image012_thumb.jpg" width="557" height="457" /></a> <p>图 关键字搜索 <h4>六 查看手册</h4> <p>开发中，遇到命令用法模糊，系统调用的参数顺序不明确，参数类型不确定，返回值意义等问题，都可以在Emacs中查看man手册来解决(M-x man) <p><a href="http://abruzzi.github.com/images/2012/02/clip_image014.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image014" border="0" alt="clip_image014" src="http://abruzzi.github.com/images/2012/02/clip_image014_thumb.jpg" width="557" height="431" /></a> <p>图 查看man手册 <h4>七 日历功能</h4> <p>事实上，Emacs有众多的小工具，如计算器，日历，心理医生等等。如过有兴趣，可以尝试自己开发一个小工具出来，要知道Emacs的可扩展性是无以伦比的。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image016.jpg" name="OLE_LINK1"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image016" border="0" alt="clip_image016" src="http://abruzzi.github.com/images/2012/02/clip_image016_thumb.jpg" width="558" height="166" /></a> <p>图 日历功能 <h4>八 待办事项</h4> <p><a href="http://abruzzi.github.com/images/2012/02/clip_image018.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image018" border="0" alt="clip_image018" src="http://abruzzi.github.com/images/2012/02/clip_image018_thumb.jpg" width="557" height="108" /></a> <p>图 待办事项 <h4>九 邮件客户端</h4> <p><a href="http://abruzzi.github.com/images/2012/02/clip_image020.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image020" border="0" alt="clip_image020" src="http://abruzzi.github.com/images/2012/02/clip_image020_thumb.jpg" width="558" height="423" /></a> <p>图 邮件客户端 <h4>十 娱乐功能</h4> <p>工作之余，可以在Emacs中启动一些小游戏。如俄罗斯方块，五子棋，贪吃蛇，泡泡等，可以调节一下紧绷的神经。 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image022.gif"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image022" border="0" alt="clip_image022" src="http://abruzzi.github.com/images/2012/02/clip_image022_thumb.gif" width="558" height="377" /></a> <p>图 Emacs中的俄罗斯方块 <p><a href="http://abruzzi.github.com/images/2012/02/clip_image024.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="clip_image024" border="0" alt="clip_image024" src="http://abruzzi.github.com/images/2012/02/clip_image024_thumb.jpg" width="557" height="395" /></a> <p>图 Emacs中的泡泡游戏</p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -686,42 +722,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/01/%E4%BD%BF%E7%94%A8securecrt%E8%BF%9E%E6%8E%A5%E4%B8%B2%E5%8F%A3/">使用SecureCRT连接串口</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-01-11T00:00:00+08:00" pubdate data-updated="true">Jan 11<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><p>在使用Arduino的时候，发现自带的IDE中的串口监视器不够好用，就配置了下SecureCRT连接。平时用SecureCRT只是用ssh和sftp，它的Serial也很好用，配置如下：</p> <p>创建新的连接，协议选择Serial：</p> <p><a href="http://abruzzi.github.com/images/2012/01/image.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" border="0" alt="image" src="http://abruzzi.github.com/images/2012/01/image_thumb.png" width="440" height="276" /></a></p> <p>选择COM口，波特率等参数</p> <p><a href="http://abruzzi.github.com/images/2012/01/image1.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="image" border="0" alt="image" src="http://abruzzi.github.com/images/2012/01/image_thumb1.png" width="434" height="273" /></a></p> <p>建立好之后即可连接了：</p> <p><a href="http://abruzzi.github.com/images/2012/01/distance-trace-2.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="distance-trace-2" border="0" alt="distance-trace-2" src="http://abruzzi.github.com/images/2012/01/distance-trace-2_thumb.png" width="437" height="289" /></a></p></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/15/">&larr; Older</a>
@@ -739,6 +739,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2017/02/data-visualization-from-baby/">生活中的数据可视化之 &#8211; 换尿布</a>
+      </li>
+    
+      <li class="post">
         <a href="/2017/02/frontend-page-performance-tuning/">如何提升页面渲染效率</a>
       </li>
     
@@ -752,10 +756,6 @@
     
       <li class="post">
         <a href="/2017/01/why-software-is-complex/">软件开发为什么很难</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2016/12/my-2016/">我的2016</a>
       </li>
     
   </ul>
