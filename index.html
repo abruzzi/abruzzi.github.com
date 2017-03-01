@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="数据来源 从女儿心心出生开始，我们就通过各种方式记录她的各种信息：睡眠记录，吃药记录，体温记录，换尿布记录，哺乳记录等等。毕竟，处于忙乱状态的人们是很难精确地回忆各种数字的，特别是在体检时面对医生的询问时。大部分父母无法准确回答小孩上周平均的睡眠时间，或者平均的小便次数， &hellip;">
+  <meta name="description" content="可视化之根 多年前读过一篇非常震撼的文章，叫《Lisp之根》（英文版：The roots of Lisp），大意是Lisp仅仅通过一种数据结构（列表）和有限的几个函数，就构建出了一门极为简洁，且极具扩展性的编程语言。当时就深深的被这种设计哲学所震撼：一方面它足够简单，每个单独的函数都足够简单， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,541 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2017/03/visualise-the-data-around-you/">一张引人注目的可视化图表的背后</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-03-01T10:25:00+08:00" pubdate data-updated="true">Mar 1<span>st</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>可视化之根</h2>
+
+<p>多年前读过一篇非常震撼的文章，叫<a href="http://daiyuwen.freeshell.org/gb/rol/roots_of_lisp.html">《Lisp之根》</a>（英文版：<a href="http://www.paulgraham.com/rootsoflisp.html">The roots of Lisp</a>），大意是Lisp仅仅通过一种数据结构（列表）和有限的几个函数，就构建出了一门极为简洁，且极具扩展性的编程语言。当时就深深的被这种设计哲学所震撼：一方面它足够简单，每个单独的函数都足够简单，另一方面它有非常复杂，像宏，高阶函数，递归等机制可以构建出任意复杂的程序，而复杂的机制又是由简单的组件组成的。</p>
+
+<p>数据的可视化也是一样，组成一幅内容清晰、表达力强、美观的可视化信息图的也仅仅是一些基本的元素，这些元素的不同组合却可以产生出令人着迷的力量。</p>
+
+<p>要列出“可视化元素之根”很容易：位置、长度、角度、形状、纹理、面积（体积）、色相、饱和度等几种有限的元素，邱南森在他的<a href="https://book.douban.com/subject/25833225/">《数据之美》</a>中提供了一张视觉元素的图，其中包含了大部分常用的元素。</p>
+
+<p><img src="/images/2017/03/cues-resized.png" alt="" /></p>
+
+<p>令人振奋的是，这些元素可以自由组合，而且组合的结果往往是<code>1+1&gt;2</code>的。</p>
+
+<h3>心理学与认知系统</h3>
+
+<p>数据可视化其实是基于人类的视觉认知系统的，因此对人类视觉系统的工作方式有一些了解可以帮助我们设计出更为高效（更快的传递我们想要表达的信息给读者）的可视化作品。</p>
+
+<h4>心理物理学</h4>
+
+<p>在生活中，我们会遇到这样的场景：一件原价10元的商品，如果降价为5元，则消费者很容易购买；而一件原价100元的商品，降价为95元，则难以刺激消费者产生购买的冲动。这两个打折的绝对数字都是5元，但是效果是不一样的。</p>
+
+<p><a href="https://zh.wikipedia.org/wiki/%E9%9F%8B%E4%BC%AF-%E8%B2%BB%E5%B8%8C%E7%B4%8D%E5%AE%9A%E7%90%86">韦伯-费希纳定理</a>描述的正是这种<em>非理性</em>的场景。这个定理的一个比较装逼的描述是：</p>
+
+<blockquote><p>感觉量与物理量的对数值成正比，也就是说，感觉量的增加落后于物理量的增加，物理量成几何级数增长，而心理量成算术级数增长，这个经验公式被称为费希纳定律或韦伯-费希纳定律。</p>
+
+<p>&#8211; 摘自百度百科</p></blockquote>
+
+<p>这个现象由人类的大脑构造而固有，因此在设计可视化作品时也应该充分考虑，比如：</p>
+
+<ul>
+<li>避免使用面积图作为对比</li>
+<li>在做对比类图形时，当差异不明显时需要考虑采用非线性的视觉元素</li>
+<li>选用多种颜色作为视觉编码时，差异应该足够大</li>
+</ul>
+
+
+<p>比如：</p>
+
+<p><img src="/images/2017/03/squares-resized.png" alt="" /></p>
+
+<p>如上图中，当面积增大之后，肉眼越来越难从形状的大小中<strong>解码</strong>出实际的数据差异，上边的三组矩形（每行的两个为一组），背后对应的数据如下，可以看到每组中的两个矩形的绝对差都是<strong>5</strong>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">width</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="nx">height</span><span class="o">:</span> <span class="mi">5</span><span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">width</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span> <span class="nx">height</span><span class="o">:</span> <span class="mi">10</span><span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">{</span><span class="nx">width</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span> <span class="nx">height</span><span class="o">:</span> <span class="mi">50</span><span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">width</span><span class="o">:</span> <span class="mi">55</span><span class="p">,</span> <span class="nx">height</span><span class="o">:</span> <span class="mi">55</span><span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">{</span><span class="nx">width</span><span class="o">:</span> <span class="mi">100</span><span class="p">,</span> <span class="nx">height</span><span class="o">:</span> <span class="mi">100</span><span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span><span class="nx">width</span><span class="o">:</span> <span class="mi">105</span><span class="p">,</span> <span class="nx">height</span><span class="o">:</span> <span class="mi">105</span><span class="p">}</span>
+</span><span class='line'><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>格式塔学派</h4>
+
+<p><a href="https://zh.wikipedia.org/wiki/%E6%A0%BC%E5%BC%8F%E5%A1%94%E5%AD%A6%E6%B4%BE">格式塔学派</a>是心理学中的一个重要流派，她强调整体认识，而不是<code>结构主义</code>的组成说。格式塔认为，人类在看到画面时，会优先将其简化为一个整体，然后再细化到每个部分；而不是先识别出各个部分，再拼接为整体。</p>
+
+<p>比如那条著名的斑点狗：</p>
+
+<p><img src="/images/2017/03/dog-dog-resized.png" alt="" /></p>
+
+<p>我们的眼睛-大脑可以很容易的看出阴影中的斑点狗，而不是先识别出狗的四条腿或者尾巴（事实上在这张图中，人眼无法识别出各个独立的部分）。</p>
+
+<p>格式塔理论有几个很重要的原理：</p>
+
+<ul>
+<li>接近性原理</li>
+<li>相似性原理</li>
+<li>封闭性原理</li>
+<li>连续性原理</li>
+<li>主体/背景原理</li>
+</ul>
+
+
+<p>当然，格式塔学派后续还有一些发展，总结出了更多的原理。工程上，这些原理还在大量使用，指导设计师设计各式各样的用户界面。鉴于网上已经有众多的格式塔理论及其应用的文章，这里就不在赘述。有兴趣的同学可以参考这几篇文章：</p>
+
+<ul>
+<li><a href="http://www.uisdc.com/gestalt-psychology-knowledge">优设上的一篇格式塔文章</a></li>
+<li><a href="http://www.uisdc.com/gestalt-website">优设上的一篇关于格式塔与Web设计的文章</a></li>
+<li><a href="http://cdc.tencent.com/2010/07/23/%E6%A0%BC%E5%BC%8F%E5%A1%94%E5%BF%83%E7%90%86%E5%AD%A65%E9%A1%B9%E6%B3%95%E5%88%99%E7%9A%84%E5%AD%A6%E4%B9%A0%E4%B8%8E%E6%80%9D%E8%80%83/">腾讯CDC的一篇格式塔介绍</a></li>
+</ul>
+
+
+<h3>视觉设计的基本原则</h3>
+
+<p><a href="https://book.douban.com/subject/3323633/">《写给大家看的设计书》</a>一书中，作者用通俗易懂的方式给出了几条设计的基本原则，这些原则完全可以直接用在数据可视化中的设计中：</p>
+
+<ul>
+<li>亲密性（将有关联的信息物理上放在一起，而关联不大的则通过留白等手段分开）</li>
+<li>对齐（将元素通过水平，垂直方向对齐，方便视觉识别）</li>
+<li>重复（重复使用某一模式，比如标题1的字体颜色，标题2的字体颜色等，保持重复且一致）</li>
+<li>对比（通过强烈的对比将不同的信息区分开）</li>
+</ul>
+
+
+<p><img src="/images/2017/03/alignment-desc-resized.png" alt="" /></p>
+
+<p>如果稍加留意，就会发现现实世界中在大量的使用这几个原则。1，2，3三个标题的形式就是重复性的体现；每个标题的内容自成一体是因为组成它的元素（数字，两行文字）的距离比较近，根据亲密性原则，人眼会自动将其归为一类；超大的数字字体和较小的文字形成了对比；大标题的颜色和其他内容形成了对比等等。</p>
+
+<p>这些原则其实跟上面提到的格式塔学派，以及韦伯-费希纳定理事实上是相关的，在理解了这些人类视觉识别的机制之后，使用这些原则就非常自然和得心应手了。</p>
+
+<h4>一些例子</h4>
+
+<ul>
+<li>淡化图表的网格（和数据图形产生对比）</li>
+<li>通过深色来强调标尺（强烈的线条和其余部分产生对比）</li>
+<li>离群点的高亮（通过不同颜色产生对比）</li>
+<li>使用颜色（通过不同的颜色，利用亲密性原则方便读者对数据分组）</li>
+<li>元素颜色和legend（使用重复性原则）</li>
+<li>同一个页面上有多个图表，采取同样的图例，色彩选择（强调重复性原则）</li>
+</ul>
+
+
+<p><img src="/images/2017/03/twers-gender-compare-resized.png" alt="" /></p>
+
+<h3>实例</h3>
+
+<p><a href="http://icodeit.org/2017/02/data-visualization-from-baby/">上篇文章</a>提到我通过一个手机App收集到了女儿成长的一些记录，包括哺乳信息，换尿布记录，以及睡眠信息。这个例子中，我会一步步的介绍如何将这些信息可视化出来，并解释其中使用的视觉原理。</p>
+
+<p>可视化的第一步是要明确<code>你想要从数据中获取什么信息</code>，我想要获取的信息是孩子的睡眠总量以及睡眠时间分布情况。</p>
+
+<h4>进阶版的条形图</h4>
+
+<p>确定了可视化的目的之后，第二步是选取合适的视觉编码。上面提到过，对于人眼来说，最精确的视觉编码方式是长度。我们可以将<code>睡眠时间</code>转化为<code>长度</code>来展现，最简单的方式是按天聚合，然后化成柱状图。比如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="mi">2016</span><span class="o">/</span><span class="mi">11</span><span class="o">/</span><span class="mi">21</span><span class="p">,</span><span class="mi">768</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">/</span><span class="mi">11</span><span class="o">/</span><span class="mi">22</span><span class="p">,</span><span class="mi">760</span>
+</span><span class='line'><span class="mi">2016</span><span class="o">/</span><span class="mi">11</span><span class="o">/</span><span class="mi">23</span><span class="p">,</span><span class="mi">700</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>不过这种图无法看出时间的分布。我们可以考虑通过条形图的变体来满足前面提到的两个核心诉求。先来在纸上画一个简单的草图。纵轴是24小时，横轴是日期。和普通的条形图不一样的是，每个条形的总长度是固定的，而且条形代表的不是简单非数据类型，而是24小时。在草稿中，每个画斜线的方块表示孩子在睡眠状态，而虚线部分表示她醒着。</p>
+
+<p><img src="/images/2017/03/sleeping-bar-draft-resized.png" alt="" /></p>
+
+<h4>原始数据</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">name</span><span class="p">,</span><span class="nx">date</span><span class="p">,</span><span class="nx">length</span><span class="p">,</span><span class="nx">note</span>
+</span><span class='line'><span class="err">心心</span><span class="p">,</span><span class="mi">2016</span><span class="o">/</span><span class="mi">11</span><span class="o">/</span><span class="mi">21</span> <span class="mi">19</span><span class="o">:</span><span class="mi">23</span><span class="p">,</span><span class="mi">119</span><span class="p">,</span>
+</span><span class='line'><span class="err">心心</span><span class="p">,</span><span class="mi">2016</span><span class="o">/</span><span class="mi">11</span><span class="o">/</span><span class="mi">21</span> <span class="mi">22</span><span class="o">:</span><span class="mi">04</span><span class="p">,</span><span class="mi">211</span><span class="p">,</span>
+</span><span class='line'><span class="err">心心</span><span class="p">,</span><span class="mi">2016</span><span class="o">/</span><span class="mi">11</span><span class="o">/</span><span class="mi">22</span> <span class="mi">02</span><span class="o">:</span><span class="mi">03</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span>
+</span><span class='line'><span class="err">心心</span><span class="p">,</span><span class="mi">2016</span><span class="o">/</span><span class="mi">11</span><span class="o">/</span><span class="mi">22</span> <span class="mi">02</span><span class="o">:</span><span class="mi">23</span><span class="p">,</span><span class="mi">118</span><span class="p">,</span>
+</span><span class='line'><span class="err">心心</span><span class="p">,</span><span class="mi">2016</span><span class="o">/</span><span class="mi">11</span><span class="o">/</span><span class="mi">22</span> <span class="mi">05</span><span class="o">:</span><span class="mi">58</span><span class="p">,</span><span class="mi">242</span><span class="p">,</span>
+</span><span class='line'><span class="err">心心</span><span class="p">,</span><span class="mi">2016</span><span class="o">/</span><span class="mi">11</span><span class="o">/</span><span class="mi">22</span> <span class="mi">10</span><span class="o">:</span><span class="mi">57</span><span class="p">,</span><span class="mi">128</span><span class="p">,</span>
+</span><span class='line'><span class="err">心心</span><span class="p">,</span><span class="mi">2016</span><span class="o">/</span><span class="mi">11</span><span class="o">/</span><span class="mi">22</span> <span class="mi">14</span><span class="o">:</span><span class="mi">35</span><span class="p">,</span><span class="mi">127</span><span class="p">,</span>
+</span><span class='line'><span class="err">心心</span><span class="p">,</span><span class="mi">2016</span><span class="o">/</span><span class="mi">11</span><span class="o">/</span><span class="mi">22</span> <span class="mi">17</span><span class="o">:</span><span class="mi">15</span><span class="p">,</span><span class="mi">127</span><span class="p">,</span>
+</span><span class='line'><span class="err">心心</span><span class="p">,</span><span class="mi">2016</span><span class="o">/</span><span class="mi">11</span><span class="o">/</span><span class="mi">22</span> <span class="mi">20</span><span class="o">:</span><span class="mi">02</span><span class="p">,</span><span class="mi">177</span><span class="p">,</span>
+</span><span class='line'><span class="err">心心</span><span class="p">,</span><span class="mi">2016</span><span class="o">/</span><span class="mi">11</span><span class="o">/</span><span class="mi">23</span> <span class="mi">01</span><span class="o">:</span><span class="mi">27</span><span class="p">,</span><span class="mi">197</span><span class="p">,</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里有个问题，我们的纵轴是24小时，如果她晚上23点开始睡觉，睡了3个小时，那么这个条形就回超出24格的轴。我写了一个函数来做数据转换:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="nb">require</span> <span class="s1">&#39;csv&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;active_support/all&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">csv</span> <span class="o">=</span> <span class="no">CSV</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;./visualization/data/sleeping_data_refined.csv&#39;</span><span class="p">,</span> <span class="ss">:headers</span> <span class="o">=&gt;</span> <span class="ss">:first_row</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'><span class="n">csv</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">row</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">date</span> <span class="o">=</span> <span class="no">DateTime</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">row</span><span class="o">[</span><span class="s1">&#39;date&#39;</span><span class="o">]</span><span class="p">,</span> <span class="s2">&quot;%Y/%m/%d %H:%M&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">mins_until_end_of_day</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">seconds_until_end_of_day</span> <span class="o">/</span> <span class="mi">60</span>
+</span><span class='line'>    <span class="n">diff</span> <span class="o">=</span> <span class="n">mins_until_end_of_day</span> <span class="o">-</span> <span class="n">row</span><span class="o">[</span><span class="s1">&#39;length&#39;</span><span class="o">].</span><span class="n">to_i</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">diff</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">then</span>
+</span><span class='line'>        <span class="n">data</span> <span class="o">&lt;&lt;</span> <span class="p">{</span>
+</span><span class='line'>            <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="n">row</span><span class="o">[</span><span class="s1">&#39;name&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">:date</span> <span class="o">=&gt;</span> <span class="n">row</span><span class="o">[</span><span class="s1">&#39;date&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">:length</span> <span class="o">=&gt;</span> <span class="n">row</span><span class="o">[</span><span class="s1">&#39;length&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">:note</span> <span class="o">=&gt;</span> <span class="n">row</span><span class="o">[</span><span class="s1">&#39;note&#39;</span><span class="o">]</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>        <span class="n">data</span> <span class="o">&lt;&lt;</span> <span class="p">{</span>
+</span><span class='line'>            <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="n">row</span><span class="o">[</span><span class="s1">&#39;name&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">:date</span> <span class="o">=&gt;</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y/%m/%d %H:%M&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="ss">:length</span> <span class="o">=&gt;</span> <span class="n">mins_until_end_of_day</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">:note</span> <span class="o">=&gt;</span> <span class="n">row</span><span class="o">[</span><span class="s1">&#39;note&#39;</span><span class="o">]</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">data</span> <span class="o">&lt;&lt;</span> <span class="p">{</span>
+</span><span class='line'>            <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="n">row</span><span class="o">[</span><span class="s1">&#39;name&#39;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">:date</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">beginning_of_day</span> <span class="o">+</span> <span class="mi">1</span><span class="o">.</span><span class="n">day</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y/%m/%d %H:%M&quot;</span><span class="p">),</span>
+</span><span class='line'>            <span class="ss">:length</span> <span class="o">=&gt;</span> <span class="n">diff</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span>
+</span><span class='line'>            <span class="ss">:note</span> <span class="o">=&gt;</span> <span class="n">row</span><span class="o">[</span><span class="s1">&#39;note&#39;</span><span class="o">]</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有了<em>干净</em>的数据之后，我们可以编写一些前端的代码来绘制条形图了。画图的时候有几个要注意的点：</p>
+
+<ul>
+<li>每天内的时间段对应的矩形需要有相同的X坐标</li>
+<li>不同的睡眠长度要有颜色区分（睡眠时间越长，颜色越深）</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">dateRange</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">uniq</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">date</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">date</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="nx">date</span><span class="p">.</span><span class="nx">getYear</span><span class="p">(),</span> <span class="nx">date</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">(),</span> <span class="nx">date</span><span class="p">.</span><span class="nx">getDate</span><span class="p">()].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">xScale</span><span class="p">.</span><span class="nx">domain</span><span class="p">(</span><span class="nx">dateRange</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">d</span><span class="p">.</span><span class="nx">date</span><span class="p">;</span> <span class="p">}));</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">getFirstInDomain</span><span class="p">(</span><span class="nx">date</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">domain</span> <span class="o">=</span> <span class="nx">xScale</span><span class="p">.</span><span class="nx">domain</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">findIndex</span><span class="p">(</span><span class="nx">domain</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">date</span><span class="p">.</span><span class="nx">getYear</span><span class="p">()</span> <span class="o">===</span> <span class="nx">d</span><span class="p">.</span><span class="nx">getYear</span><span class="p">()</span>
+</span><span class='line'>          <span class="o">&amp;&amp;</span> <span class="nx">date</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">()</span> <span class="o">===</span> <span class="nx">d</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">()</span>
+</span><span class='line'>          <span class="o">&amp;&amp;</span> <span class="nx">date</span><span class="p">.</span><span class="nx">getDate</span><span class="p">()</span> <span class="o">===</span> <span class="nx">d</span><span class="p">.</span><span class="nx">getDate</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">domain</span><span class="p">[</span><span class="nx">index</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>函数<code>getFirstInDomain</code>可以根据一个日期值返回一个<code>X</code>坐标，这样<code>2016/11/21 19:23</code>和<code>2016/11/21 22:04</code>都会返回一个整数值（借助d3提供的标尺函数）。</p>
+
+<p>另外，我们根据每次睡觉的分钟数将睡眠质量划分为5个等级：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">level</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">scale</span><span class="p">.</span><span class="nx">threshold</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">domain</span><span class="p">([</span><span class="mi">60</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">240</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">range</span><span class="p">([</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="s2">&quot;fine&quot;</span><span class="p">,</span> <span class="s2">&quot;medium&quot;</span><span class="p">,</span> <span class="s2">&quot;good&quot;</span><span class="p">,</span> <span class="s2">&quot;great&quot;</span><span class="p">,</span> <span class="s2">&quot;prefect&quot;</span><span class="p">]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在绘制过程中，根据实际数据值来确定不同的<em>CSS Class</em>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">svg</span><span class="p">.</span><span class="nx">selectAll</span><span class="p">(</span><span class="s2">&quot;.bar&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">enter</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;rect&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nx">level</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; bar&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">})</span>
+</span><span class='line'><span class="c1">//...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>实现之后，看起来是这个样子的。事实上这个图标可以比较清楚的看出大部分睡眠集中在0-6点，而中午的10-13点以及黄昏18-20点基本上只有一些零星的睡眠。</p>
+
+<p><img src="/images/2017/03/star-bar-color-resized.png" alt="" /></p>
+
+<h4>星空图</h4>
+
+<p>上面的图有一个缺点，是当日期很多的时候（上图差不多有100天的数据），X轴会比较难画，如果缩减成按周，或者按月，又会增加很多额外的复杂度。</p>
+
+<p>另外一个尝试是变形：既然这个统计是和时间相关的，那么圆形的钟表形象是一个很好的隐喻，每天24小时自然的可以映射为一个圆。而睡眠时间可以通过弧长来表示，睡眠时间越长，弧长越大：</p>
+
+<p><img src="/images/2017/03/sleeping-circle-draft-resized.png" alt="" /></p>
+
+<h4>角度转弧度</h4>
+
+<p>我们首先将整个圆（360度）按照分钟划分，则每分钟对应的角度数为：<code>360/(24*60)</code>，再将角度转化为弧度：<code>degree * π/180</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">perAngle</span> <span class="o">=</span> <span class="p">(</span><span class="mi">360</span> <span class="o">/</span> <span class="p">(</span><span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span><span class="o">/</span><span class="mi">180</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>那么对于指定的时间，比如<code>10:20</code>，先计算出其分钟数：<code>10*60+20</code>，再乘以<code>preAngle</code>，就可以得出起始弧度，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">startAngle</span><span class="p">(</span><span class="nx">date</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="p">(</span><span class="nx">date</span><span class="p">.</span><span class="nx">getHours</span><span class="p">()</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="nx">date</span><span class="p">.</span><span class="nx">getMinutes</span><span class="p">())</span> <span class="o">*</span> <span class="nx">perAngle</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">start</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">endAngle</span><span class="p">(</span><span class="nx">date</span><span class="p">,</span> <span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">end</span> <span class="o">=</span> <span class="p">(</span><span class="nx">date</span><span class="p">.</span><span class="nx">getHours</span><span class="p">()</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="nx">date</span><span class="p">.</span><span class="nx">getMinutes</span><span class="p">()</span> <span class="o">+</span> <span class="nx">length</span><span class="p">)</span> <span class="o">*</span> <span class="nx">perAngle</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">end</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>实现的结果是这样的：</p>
+
+<p><img src="/images/2017/03/star-middle-resized.png" alt="" /></p>
+
+<p>初看起来，它像是星空图，但是不同的颜色含义没有那么直观，引入<code>Legend</code>之后。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">colorScale</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">scale</span><span class="p">.</span><span class="nx">linear</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">range</span><span class="p">([</span><span class="s2">&quot;#2c7bb6&quot;</span><span class="p">,</span> <span class="s2">&quot;#00a6ca&quot;</span><span class="p">,</span><span class="s2">&quot;#00ccbc&quot;</span><span class="p">,</span><span class="s2">&quot;#90eb9d&quot;</span><span class="p">,</span><span class="s2">&quot;#ffff8c&quot;</span><span class="p">,</span><span class="s2">&quot;#f9d057&quot;</span><span class="p">].</span><span class="nx">reverse</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">defs</span> <span class="o">=</span> <span class="nx">vis</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;defs&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">linearGradient</span> <span class="o">=</span> <span class="nx">defs</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;linearGradient&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;linear-gradient&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;x1&quot;</span><span class="p">,</span> <span class="s2">&quot;0%&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;y1&quot;</span><span class="p">,</span> <span class="s2">&quot;0%&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">,</span> <span class="s2">&quot;100%&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;y2&quot;</span><span class="p">,</span> <span class="s2">&quot;0%&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">linearGradient</span><span class="p">.</span><span class="nx">selectAll</span><span class="p">(</span><span class="s2">&quot;stop&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">data</span><span class="p">(</span> <span class="nx">colorScale</span><span class="p">.</span><span class="nx">range</span><span class="p">()</span> <span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">enter</span><span class="p">().</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;stop&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;offset&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">,</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">i</span><span class="o">/</span><span class="p">(</span><span class="nx">colorScale</span><span class="p">.</span><span class="nx">range</span><span class="p">().</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span> <span class="p">})</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;stop-color&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">d</span><span class="p">;</span> <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>启用该<code>Legend</code>之后：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">legendWidth</span> <span class="o">=</span> <span class="mi">300</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">legendsvg</span> <span class="o">=</span> <span class="nx">vis</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;g&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;legendWrapper&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;transform&quot;</span><span class="p">,</span> <span class="s2">&quot;translate(&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">width</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="nx">legendWidth</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">height</span> <span class="o">-</span> <span class="mi">40</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//Draw the Rectangle</span>
+</span><span class='line'><span class="nx">legendsvg</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;rect&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;legendRect&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="o">-</span><span class="nx">legendWidth</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="nx">legendWidth</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;fill&quot;</span><span class="p">,</span> <span class="s2">&quot;url(#linear-gradient)&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//Append title</span>
+</span><span class='line'><span class="nx">legendsvg</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;legendTitle&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;text-anchor&quot;</span><span class="p">,</span> <span class="s2">&quot;middle&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="s2">&quot;Sleeping Minutes&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2017/03/star-with-legend-resized.png" alt="" /></p>
+
+<p>图上的每段弧都会有鼠标移动上去的tooltip，这样可以很好的和读者大脑中的钟表隐喻对照起来，使得图表更容易理解。</p>
+
+<p><img src="/images/2017/03/star-with-tooltip-resized.png" alt="" /></p>
+
+<p>由于我将整个圆分成了24份，这点和普通的钟表事实上有差异，那么如果加上钟表的刻度，会不会更好一些呢？从结果来看，这样的标线反而有点画蛇添足，所以我在最后的版本中去掉了钟表的标线。</p>
+
+<p>最终的结果在这里：<a href="http://bl.ocks.org/abruzzi/d01a221df9cf79b918a00033695092c9">心心的睡眠记录</a>，完整的<a href="https://github.com/abruzzi/health-recording">代码在这里</a>。</p>
+
+<h4>更进一步</h4>
+
+<p>一个完整的可视化作品，不但要运用各种视觉编码来将数据转换为视觉元素，背景信息也同样重要。既然这个星空图是关于<code>睡眠主题</code>的，那么一个包含她在睡觉的图片集合则会加强这种视觉暗示，帮助读者快速理解。</p>
+
+<p>当然，背景信息只是补充作用，需要避免喧宾夺主。因此图片做了模糊处理，且加上了深灰色的半透明Mask（此处应用了格式塔理论中的主体/背景原理）。</p>
+
+<p><img src="/images/2017/03/star-dark-resized.png" alt="" /></p>
+
+<h3>小结</h3>
+
+<p>这篇文章讨论了可视化作品背后的一些视觉元素理论，以及人类的视觉识别机制。在这些机制的基础上，介绍了如何运用常用的设计原则来进行视觉编码。最后，通过一个实例来介绍如何运用这些元素 &#8211; 以及更重要的，这些元素的组合 &#8211; 来制作一个漂亮的、有意义的可视化图表。</p>
+
+<p>参考资料：</p>
+
+<ul>
+<li><a href="https://book.douban.com/subject/6792322/">《认知与设计》</a></li>
+<li><a href="https://book.douban.com/subject/3323633/">《写给大家看的设计书》</a></li>
+<li><a href="https://book.douban.com/subject/25833225/">《数据之美》</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2780,240 +3315,6 @@ Workshop至少需要包含这样几部分：</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2016/05/practise-in-programming/">无他，但手熟尔</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-05-26T22:56:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2016</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>高效幻象</h2>
-
-<p>通过对自己的行为观察，我发现在很多时候，我以为我掌握了的知识和技能其实并不牢靠。我引以为豪的<code>高效</code>其实犹如一个彩色的肥皂泡，轻轻一碰就会破碎，散落一地。</p>
-
-<h3>你可能只是精通搜索</h3>
-
-<p>我们现在所处的时代，信息爆炸，每个人每天都会接触，阅读很多的信息，快速消费，快速遗忘。那种每天早上起来如同皇帝批阅奏折的、虚假的误以为掌握知识的错觉，驱动我们进入一个恶性循环。</p>
-
-<p>即使在我们真的打算解决问题，进行主动学习时，更多的也只是在熟练使用搜索引擎而已（在一个领域待久了，你所使用的关键字准确度自然要比新人高一些，仅此而已）。精通了高效率搜索之后，你会产生一种你<code>精通搜索到的知识本身</code>的<strong>错觉</strong>。</p>
-
-<p><img src="/images/2016/05/stackoverflow-oreilly.png" alt="stack overflow" /></p>
-
-<h4>如何写一个Shell脚本</h4>
-
-<p>在写博客的时候，我通常会在文章中配图。图片一般会放在一个有固定格式的目录中，比如现在是2016年5月，我本地就会有一个名为<code>$BLOG_HOME/images/2016/05</code>的目录。由于使用的是<code>markdown</code>，在插入图片时我就不得不输入完整的图片路径，如：<code>/images/2016/05/stack-overflow.png</code>。但是我又不太记得路径中的<code>images</code>是单数(<code>image</code>)还是复数(<code>images</code>)，而且图片格式又可能是<code>jpg</code>,<code>jpeg</code>,<code>gif</code>或者<code>png</code>，我也经常会搞错，这会导致图片无法正确显示。另外，放入该目录的原始文件尺寸有可能比较大，我通常需要将其缩放成800像素宽（长度无所谓，因为文章总是要从上往下阅读）。</p>
-
-<p>为了自动化这个步骤，我写了一个小的Shell脚本。当你输入一个文件名如：<code>stack-overflow.png</code>后，它会缩放这个文件到800像素宽，结果是一个新的图片文件，命名为<code>stack-overflow-resized.png</code>，另外它将符合<code>markdown</code>语法的文件路径拷贝到剪贴板里：<code>/images/2016/05/stack-overflow-resized.png</code>，这样我在文章正文中只需要用<code>Command+V</code>粘贴就可以了。</p>
-
-<p>有了思路，写起来就很容易了。缩放图片的命令我是知道的：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>convert -resize 800 stack-overflow.png stack-overflow-resized.png
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但是要在文件明上加入<code>-resized</code>，需要分割文件名和文件扩展名，在<code>Bash</code>里如何做到这一点呢？Google一下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">FULLFILE</span><span class="o">=</span><span class="nv">$1</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">FILENAME</span><span class="o">=</span><span class="k">$(</span>basename <span class="s2">&quot;$FULLFILE&quot;</span><span class="k">)</span>
-</span><span class='line'><span class="nv">EXTENSION</span><span class="o">=</span><span class="s2">&quot;${FILENAME##*.}&quot;</span>
-</span><span class='line'><span class="nv">FILENAME</span><span class="o">=</span><span class="s2">&quot;${FILENAME%.*}&quot;</span>
-</span><span class='line'>
-</span><span class='line'>convert -resize 800 <span class="nv">$FULLFILE</span> <span class="nv">$FILENAME</span>-resized.EXTENSION
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>难看是有点难看，不过还是可以工作的。接下来是按照当前日期生成完整路径，<code>date</code>命令我是知道的，而且我知道它的<code>format</code>格式很复杂，而且跟<code>JavaScript</code>里Date对象的<code>format</code>又不太一样（事实上，世界上有多少种日期工具，基本上就有多少种格式）。再Google一下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>date +<span class="s2">&quot;/images/%Y/%m/&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最后一步将路径拷贝到剪贴板也容易，Mac下的<code>pbcopy</code>我也会用：<code>echo</code>一下字符串变量，再管道到<code>pbcopy</code>即可：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">PREFIX</span><span class="o">=</span><span class="sb">`</span>date +<span class="s2">&quot;/images/%Y/%m/&quot;</span><span class="sb">`</span>
-</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;$PREFIX$FILENAME-resized.EXTENSION&quot;</span> | pbcopy
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但是将内容粘贴到<code>markdown</code>里之后，我发现这个脚本多了一个换行。我想这个应该是<code>echo</code>自己的行为吧，会给字符串自动加上一个换行符。Google一下，发现加上<code>-n</code>参数就可以解决这个问题。</p>
-
-<p>好了，完整的脚本写好了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'><span class="nv">FULLFILE</span><span class="o">=</span><span class="nv">$1</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">FILENAME</span><span class="o">=</span><span class="k">$(</span>basename <span class="s2">&quot;$FULLFILE&quot;</span><span class="k">)</span>
-</span><span class='line'><span class="nv">EXTENSION</span><span class="o">=</span><span class="s2">&quot;${FILENAME##*.}&quot;</span>
-</span><span class='line'><span class="nv">FILENAME</span><span class="o">=</span><span class="s2">&quot;${FILENAME%.*}&quot;</span>
-</span><span class='line'>
-</span><span class='line'>convert -resize 800 <span class="nv">$FULLFILE</span> <span class="nv">$FILENAME</span>-resized.EXTENSION
-</span><span class='line'>
-</span><span class='line'><span class="nv">PREFIX</span><span class="o">=</span><span class="sb">`</span>date +<span class="s2">&quot;/images/%Y/%m/&quot;</span><span class="sb">`</span>
-</span><span class='line'><span class="nb">echo</span> -n <span class="s2">&quot;$PREFIX$FILENAME-resized.EXTENSION&quot;</span> | pbcopy
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>嗯，还不错，整个过程中就用了我十几分钟时间而已，以后我在写博客时插入图片就方便多了！</p>
-
-<p>不过等等，好像有点不对劲儿，我回过头来看了看这段脚本：7行代码只有1行是我独立写的！没有<code>Google</code>的话，查看<code>man date</code>和<code>man echo</code>也可以解决其中一部分问题，不过文件扩展名部分估计又得花较长时间。</p>
-
-<p>仔细分析一下，之前的成就感荡然无存。</p>
-
-<h4>更多的例子</h4>
-
-<p>我相信，过几周我再来写这样一个简单的脚本时，上面那一幕还是会出现。开发者的IDE的外延已经将<code>Google</code>和<code>Stack Overflow</code>集成了。很难想象没有这两个IDE的<code>插件</code>我要怎样工作。</p>
-
-<p>其实除此之外，日常工作中这样的事情每时每刻都在发生：</p>
-
-<ol>
-<li>Ansible里如何创建一个给用户<code>robot</code>读写权限的目录？</li>
-<li>Python 3中启动简单HTTPServer的命令是？</li>
-<li>Spring Boot的Gradle String是？</li>
-<li>Mongodb中如何为用户<code>robot</code>授权？</li>
-<li>Gulp里一个Task依赖另一个Task怎么写？</li>
-</ol>
-
-
-<p>等等等等，这个列表可以根据你的技术栈，偏向前端/后端的不同而不同，但是相同的是在<code>Google</code>和<code>Stack Overflow</code>上搜索，阅读会浪费很多时间，而这些本来都是可以避免的。</p>
-
-<h3>肌肉记忆</h3>
-
-<p>大脑在对信息存储上有很高级的设计，如果某件事情不值得记忆，大脑会自动过滤掉（比如我们很容易获得的搜索结果）。而对于那些频繁发生，计算结果又不会变化的信息，大脑会将其下放到“更低级别”的神经去记忆。比如各种运动中的肌肉记忆，习武之人梦寐以求的“拳拳服膺”，“不期然而然，莫知之而至”。</p>
-
-<p>这里也有两个小例子：</p>
-
-<h4>一个C语言的小程序</h4>
-
-<p>上周末我买了一个茶轴的机械键盘，打开包装之后我很兴奋，赶紧插在我的笔记本上，打开一个编辑器，心说敲一些代码体验一下。几秒钟后，我发现敲出来的是：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp"># include &lt;stdio.h&gt;</span>
-</span><span class='line'><span class="cp"># include &lt;stdlib.h&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="n">argc</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Usage: %s ip port</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
-</span><span class='line'>      <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s">&quot;Connecting to %s %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">atoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]));</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后在命令行里</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>gcc -o hello hello.c
-</span><span class='line'><span class="nv">$ </span>./hello
-</span><span class='line'>Usage: ./hello ip port
-</span><span class='line'>
-</span><span class='line'><span class="nv">$ </span>./hello 10.180.1.1 9999
-</span><span class='line'>Connecting to 10.180.1.1 9999
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>整个过程极为流畅，上一次开发C代码已经是4年多前了。也就是说，我的手指已经记下了所有的这些命令：</p>
-
-<ol>
-<li>Linux下<code>main</code>函数的convention</li>
-<li><code>fprintf</code>的签名</li>
-<li><code>stderr/stdout</code>用法的区分</li>
-<li><code>main</code>函数不同场景的返回值</li>
-<li><code>gcc</code>命令的用法</li>
-</ol>
-
-
-<p>另外一个小例子是<code>vim</code>编辑器。我使用<code>vim</code>已经有很多年了，现在在任何一个Linux服务器上，编辑那些<code>/etc/nginx/nginx.conf</code>之类的配置文件时，手指就会<code>自动</code>的找到快捷键，<code>自动</code>的完成搜索，替换，跳转等等操作。</p>
-
-<h3>刻意练习</h3>
-
-<p>对比这两个例子，一方面我惊讶于自己目前对搜索引擎、<code>Stack Overflow</code>的依赖；一方面惊讶于<code>肌肉记忆力</code>的深远和神奇。结合一下两者，我发现自己的开发效率有望得到很大的提升。</p>
-
-<p>比如上面列出的那些略显尴尬的问题，如果我的手指可以<code>自动</code>的敲出这些答案，那么节省下的搜索、等待、阅读的时间就可以用来干别的事情，比如跑步啊，骑车啊，去驾校学车被教练骂啊等等，总之，去过自己的生活。</p>
-
-<p>这方面的书籍，博客都已经有很多，比如我们在ThoughtWorks University里实践的<code>Code Kata</code>，<code>JavaScript Dojo</code>，<code>TDD Dojo</code>之类，都已经证明其有效性。</p>
-
-<p>如果你打算做一些相关的练习，从<code>Kata</code>开始是一个不错的选择。每个<code>Kata</code>都包含一个简单的编程问题，你需要不断的去练习它（同一个题目做20遍，50遍等）。前几次你是在解决问题本身，慢慢就会变成在审视自己的编程习惯，发现并改进（比如快捷键的使用，语法的熟悉程度等等），这样在实际工作中你会以外的发现自己的速度变快了，而且对于重构的信心会变大很多。其实道理也很简单：如果你总是赶着deadline来完成任务，怎么会有时间来做优化呢？</p>
-
-<p>这里有一些参考资料和<code>Kata</code>的题目，可供参考：</p>
-
-<ul>
-<li><a href="https://sites.google.com/site/steveyegge2/practicing-programming">Practicing Programming</a></li>
-<li><a href="https://blog.codinghorror.com/the-ultimate-code-kata/">The Ultimate Code Kata</a></li>
-<li><a href="http://codekata.com/">一些Kata的题目</a></li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -3029,6 +3330,10 @@ Workshop至少需要包含这样几部分：</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2017/03/visualise-the-data-around-you/">一张引人注目的可视化图表的背后</a>
+      </li>
+    
+      <li class="post">
         <a href="/2017/02/data-visualization-from-baby/">生活中的数据可视化之 &#8211; 换尿布</a>
       </li>
     
@@ -3042,10 +3347,6 @@ Workshop至少需要包含这样几部分：</p>
     
       <li class="post">
         <a href="/2017/01/why-ddd-is-so-hard/">实施领域驱动设计的正确姿势</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2017/01/why-software-is-complex/">软件开发为什么很难</a>
       </li>
     
   </ul>

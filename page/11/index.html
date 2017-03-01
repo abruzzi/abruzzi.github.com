@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="Generate typical project layout If you are as lazy as I am, you may want to generate typecial project layout automatically, let&#8217;s do it by &hellip;">
+  <meta name="description" content="In my last post, I mentioned to how to setup a intellij project by using gradle. and today we are going to talk about how to using intellij to write &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,330 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/10/simplified-tdd-by-using-interllij/">Simplified TDD by Using Intellij</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-15T20:42:00+08:00" pubdate data-updated="true">Oct 15<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In my last <a href="">post</a>, I mentioned to how to setup a intellij project by using gradle. and today we are going to talk about how to using intellij to write a demo java project from scratch(right after the <em>gradle idea</em> command).</p>
+
+<p>To begin with TDD in java, we need some packages for that:
+-   junit
+-   hamcrest</p>
+
+<p>Let&#8217;s all of those dependencies in build.gradle:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='groovy'><span class='line'><span class="n">repositories</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">mavenCentral</span><span class="o">()</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">dependencies</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">testCompile</span> <span class="s1">&#39;junit:junit:4.8.2&#39;</span>
+</span><span class='line'>    <span class="n">testCompile</span> <span class="s1">&#39;org.hamcrest:hamcrest-core:1.2.1&#39;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and rerun the <em>gradle idea</em> command.</p>
+
+<p>After intellij .ipr file generated, we can open it by intellij, and then create a project, let&#8217;s say the basic structure of the project is like this:</p>
+
+<pre><code>└── src
+    ├── main
+    │   ├── java
+    │   │   └── org
+    │   │       └── icodeit
+    │   │           └── library
+    │   │               ├── Book.java
+    │   │               └── Library.java
+    │   └── resources
+    └── test
+        ├── java
+        │   └── org
+        │       └── icodeit
+        │           └── library
+        │               ├── BookTest.java
+        │               └── LibraryTest.java
+        └── resources
+</code></pre>
+
+<p>Basically, we are going to build a simple library which allow user to add/borrow/return books to/from.</p>
+
+<p>We simply devide it to the following tasks:</p>
+
+<ul>
+<li>User can add book to library</li>
+<li>User can get all books in a specific category</li>
+<li>User can know how many books left in library</li>
+<li>User can borrow book from library</li>
+<li>User can return book when he/she finished</li>
+<li>User can be told whether there are books he/she want left in library</li>
+</ul>
+
+
+<p>Let&#8217;s do it step by step, by following the TDD way. Of course, we need to add tests at vert first:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldAddBookToLibrary</span><span class="o">(){</span>
+</span><span class='line'>    <span class="n">Library</span> <span class="n">library</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Library</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">library</span><span class="o">.</span><span class="na">addBook</span><span class="o">(</span><span class="n">book</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">library</span><span class="o">.</span><span class="na">getTotalBookNumber</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is a test used for test add book functionality, after the addition, we can tell by invoke <em>getTotalBookNumber</em> method (Of course, we need to make sure the project can be compiled, just add a new class Book.java and some fake methods in the Library.java). So, first we run the test (<em>Ctrl-Shift-F10</em>), and the test will fail.</p>
+
+<p>Then we add the implementation of those functionalities:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Library</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Book</span><span class="o">&gt;</span> <span class="n">books</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">Library</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">books</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">Book</span><span class="o">&gt;();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="c1">//...</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">addBook</span><span class="o">(</span><span class="n">Book</span> <span class="n">book</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">books</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">book</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">getTotalBookNumber</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">books</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we can get a green test. TDD is in a form of &#8220;Red-Green-Refactor&#8221;, so far we&#8217;ve got nothing to refactor, let&#8217;s add one more test:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldGetBooksByCategory</span><span class="o">(){</span>
+</span><span class='line'>    <span class="n">Library</span> <span class="n">library</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Library</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Book</span> <span class="n">book1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Book</span> <span class="n">book2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The python programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">Book</span> <span class="n">book3</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The lean startup&quot;</span><span class="o">,</span> <span class="s">&quot;Business&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">library</span><span class="o">.</span><span class="na">addBook</span><span class="o">(</span><span class="n">book1</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">library</span><span class="o">.</span><span class="na">addBook</span><span class="o">(</span><span class="n">book2</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">library</span><span class="o">.</span><span class="na">addBook</span><span class="o">(</span><span class="n">book3</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">library</span><span class="o">.</span><span class="na">getBookByCategory</span><span class="o">(</span><span class="s">&quot;Development&quot;</span><span class="o">).</span><span class="na">size</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then the implementation:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Book</span><span class="o">&gt;</span> <span class="n">getBookByCategory</span><span class="o">(</span><span class="n">String</span> <span class="n">category</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">List</span><span class="o">&lt;</span><span class="n">Book</span><span class="o">&gt;</span> <span class="n">grouped</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">Book</span><span class="o">&gt;();</span>
+</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="n">Book</span> <span class="n">book</span> <span class="o">:</span> <span class="n">books</span><span class="o">){</span>
+</span><span class='line'>        <span class="k">if</span><span class="o">(</span><span class="n">book</span><span class="o">.</span><span class="na">getCategory</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">category</span><span class="o">)){</span>
+</span><span class='line'>            <span class="n">grouped</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">book</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">grouped</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And what if the logic cames more complex, say:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldCanReturnBookToLibrary</span><span class="o">(){</span>
+</span><span class='line'>    <span class="n">Library</span> <span class="n">library</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Library</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Book</span> <span class="n">originBook</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">library</span><span class="o">.</span><span class="na">addBook</span><span class="o">(</span><span class="n">originBook</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">library</span><span class="o">.</span><span class="na">getBookCount</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Book</span> <span class="n">borrowed</span> <span class="o">=</span> <span class="n">library</span><span class="o">.</span><span class="na">borrowBook</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">library</span><span class="o">.</span><span class="na">getBookCount</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="mi">0</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">library</span><span class="o">.</span><span class="na">returnBook</span><span class="o">(</span><span class="n">borrowed</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">library</span><span class="o">.</span><span class="na">getBookCount</span><span class="o">(</span><span class="s">&quot;The ruby programming language&quot;</span><span class="o">),</span> <span class="n">is</span><span class="o">(</span><span class="mi">1</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When user borrowed a book from library, others can not borrow it any more of course, until the previous user return it back.</p>
+
+<p>We can tell the specification by reading the test itself, and we don&#8217;t care about the code in this prespective. On the other hand, when we try to implement the logic, we can focus on the small piece of code and get it done:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">getBookCount</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">bookCount</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>    <span class="k">for</span><span class="o">(</span><span class="n">Book</span> <span class="n">book</span> <span class="o">:</span> <span class="n">books</span><span class="o">){</span>
+</span><span class='line'>        <span class="k">if</span><span class="o">(</span><span class="n">book</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">)){</span>
+</span><span class='line'>            <span class="n">bookCount</span><span class="o">++;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">bookCount</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="n">Book</span> <span class="nf">borrowBook</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">getBookCount</span><span class="o">(</span><span class="n">name</span><span class="o">)</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">books</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">books</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">).</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">book</span> <span class="o">=</span> <span class="n">books</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">book</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">returnBook</span><span class="o">(</span><span class="n">Book</span> <span class="n">book</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">books</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">book</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, the princple is really easy to follow:
+-   Tasking (spearate the goal to some smaller parts)
+-   Testing
+-   Coding
+-   Refactoring</p>
+
+<p>The benefit is obverisly: there is no isolated code any more. Actually, the shorter of the code, the cleaner it will be.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -670,79 +994,6 @@ handler(datamodel);
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/07/post-from-python-vim-2/">Post From Python + Vim</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-07-13T00:00:00+08:00" pubdate data-updated="true">Jul 13<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><h2>How to load a key-value pair config file</h2></p>
-
-<p><p>Recently, I want to parse a simple configration file in python, and I<br />
-don&#8217;t like use other existing libraries, because they are all<br />
-full-functionality, just too complex for me.</p></p>
-
-<p><p>Finally I found a simple way to do that, code is following:</p></p>
-
-<p><pre><code>def loadUserInfo(fileName):
-    userinfo = {}
-    file = open(fileName, "r")
-    while file:
-        line = file.readline()
-        if len(line) == 0:
-            break
-        if line.startswith('#'):
-            continue
-        key, value = line.split("=")
-        userinfo[key.strip()] = value.strip()</code></pre></p>
-
-<p>    return userinfo
-</p>
-
-<p><p>Key features:</p></p>
-
-<p><ol>
-<li>Simple enough</li>
-<li>Comment supported</li>
-<li>Nothing much </li>
-</ol></p>
-
-<p><h2>Misc</h2></p>
-
-<p><p>Another intersting thing is this blog is post by my vim + python, it&#8217;s<br />
-cool to write blog in my favorest editor.</p></p>
-
-<p><p>中文应该没有问题吧？</p>
-</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/12/">&larr; Older</a>
@@ -760,6 +1011,10 @@ cool to write blog in my favorest editor.</p></p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2017/03/visualise-the-data-around-you/">一张引人注目的可视化图表的背后</a>
+      </li>
+    
+      <li class="post">
         <a href="/2017/02/data-visualization-from-baby/">生活中的数据可视化之 &#8211; 换尿布</a>
       </li>
     
@@ -773,10 +1028,6 @@ cool to write blog in my favorest editor.</p></p>
     
       <li class="post">
         <a href="/2017/01/why-ddd-is-so-hard/">实施领域驱动设计的正确姿势</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2017/01/why-software-is-complex/">软件开发为什么很难</a>
       </li>
     
   </ul>
