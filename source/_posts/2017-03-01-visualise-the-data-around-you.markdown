@@ -353,8 +353,6 @@ $ montage *.jpg -geometry +0+0 -resize 128x128^ \
 
 这条命令将当前目录下的所有的`jpg`文件缩放成128x128像素，并从中间开始裁剪`-gravity center`，`+0+0`表示图片之间的缝隙，最后将结果写入到`xinxin-sleeping.jpg`中。
 
-![](/images/2017/03/xinxin-sleeping-resized.png)
-
 拼接好图片之后，就可以通过CSS或者图片编辑器为其添加模糊效果，并设置深灰色半透明遮罩。
 
 ```css
