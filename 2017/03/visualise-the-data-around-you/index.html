@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>一张引人注目的可视化图表的背后 - I code it</title>
+  <title>一张漂亮的可视化图表背后 - I code it</title>
   <meta name="author" content="Qiu Juntao">
 
   
@@ -81,7 +81,7 @@
   
   <header>
     
-      <h1 class="entry-title">一张引人注目的可视化图表的背后</h1>
+      <h1 class="entry-title">一张漂亮的可视化图表背后</h1>
     
     
       <p class="meta">
@@ -459,7 +459,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>那么对于指定的时间，比如<code>10:20</code>，先计算出其分钟数：<code>10*60+20</code>，再乘以<code>preAngle</code>，就可以得出起始弧度，</p>
+<p>那么对于指定的时间，比如<code>10:20</code>，先计算出其分钟数：<code>10*60+20</code>，再乘以<code>preAngle</code>，就可以得出起始弧度；起始时间的分钟数加上睡眠时长，再乘以<code>preAngle</code>，就是结束弧度。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -486,7 +486,7 @@
 
 <p><img src="/images/2017/03/star-middle-resized.png" alt="" /></p>
 
-<p>初看起来，它像是星空图，但是不同的颜色含义没有那么直观，引入<code>Legend</code>之后。</p>
+<p>初看起来，它像是星空图，但是图中的不同颜色含义没有那么直观，我们需要在图上补充一个图例。通过使用d3的线性标尺和定义svg的渐变来实现：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -525,7 +525,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>启用该<code>Legend</code>之后：</p>
+<p>定义好渐变和渐变的颜色取值范围之后，就可以来绘制图例了。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -582,6 +582,8 @@
 
 <p>由于我将整个圆分成了24份，这点和普通的钟表事实上有差异，那么如果加上钟表的刻度，会不会更好一些呢？从结果来看，这样的标线反而有点画蛇添足，所以我在最后的版本中去掉了钟表的标线。</p>
 
+<p>可以看到，我们通过圆形的钟表隐喻来体现每一天的睡眠分布，然后用颜色的深浅来表示每次睡眠的时长。由于钟表的形象已经深入人心，因此读者很容易发现<code>0点</code>在圆环群的正上方。中心的黄色实心圆帮助读者视线先聚焦在最内侧的圆上，然后逐渐向外，这和日期的分布方向正好一致。</p>
+
 <p>最终的结果在这里：<a href="http://bl.ocks.org/abruzzi/d01a221df9cf79b918a00033695092c9">心心的睡眠记录</a>，完整的<a href="https://github.com/abruzzi/health-recording">代码在这里</a>。</p>
 
 <h4>更进一步</h4>
@@ -596,7 +598,9 @@
 
 <p>这篇文章讨论了可视化作品背后的一些视觉元素理论，以及人类的视觉识别机制。在这些机制的基础上，介绍了如何运用常用的设计原则来进行视觉编码。最后，通过一个实例来介绍如何运用这些元素 &#8211; 以及更重要的，这些元素的组合 &#8211; 来制作一个漂亮的、有意义的可视化图表。</p>
 
-<p>参考资料：</p>
+<h4>参考资料</h4>
+
+<p>这里有一些关于认知系统和设计原则的书籍，如果你感兴趣的话，可以用来参考</p>
 
 <ul>
 <li><a href="https://book.douban.com/subject/6792322/">《认知与设计》</a></li>
@@ -676,7 +680,7 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/2017/03/visualise-the-data-around-you/">一张引人注目的可视化图表的背后</a>
+        <a href="/2017/03/visualise-the-data-around-you/">一张漂亮的可视化图表背后</a>
       </li>
     
       <li class="post">
