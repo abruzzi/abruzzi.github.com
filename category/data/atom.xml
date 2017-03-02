@@ -4,7 +4,7 @@
   <title><![CDATA[Category: data | I code it]]></title>
   <link href="http://abruzzi.github.com/category/data/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-03-02T10:57:21+08:00</updated>
+  <updated>2017-03-02T11:01:35+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -398,8 +398,6 @@ $ montage *.jpg -geometry +0+0 -resize 128x128^ \
 </code></p>
 
 <p>这条命令将当前目录下的所有的<code>jpg</code>文件缩放成128x128像素，并从中间开始裁剪<code>-gravity center</code>，<code>+0+0</code>表示图片之间的缝隙，最后将结果写入到<code>xinxin-sleeping.jpg</code>中。</p>
-
-<p><img src="/images/2017/03/xinxin-sleeping-resized.png" alt="" /></p>
 
 <p>拼接好图片之后，就可以通过CSS或者图片编辑器为其添加模糊效果，并设置深灰色半透明遮罩。</p>
 
