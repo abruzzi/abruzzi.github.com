@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "一张引人注目的可视化图表的背后"
+title: "一张漂亮的可视化图表背后"
 date: 2017-03-01 10:25
 comments: true
 categories: 
@@ -257,7 +257,7 @@ svg.selectAll(".bar")
 var perAngle = (360 / (24 * 60)) * (Math.PI/180);
 ```
 
-那么对于指定的时间，比如`10:20`，先计算出其分钟数：`10*60+20`，再乘以`preAngle`，就可以得出起始弧度，
+那么对于指定的时间，比如`10:20`，先计算出其分钟数：`10*60+20`，再乘以`preAngle`，就可以得出起始弧度；起始时间的分钟数加上睡眠时长，再乘以`preAngle`，就是结束弧度。
 
 ```js
 function startAngle(date) {
@@ -275,7 +275,7 @@ function endAngle(date, length) {
 
 ![](/images/2017/03/star-middle-resized.png)
 
-初看起来，它像是星空图，但是不同的颜色含义没有那么直观，引入`Legend`之后。
+初看起来，它像是星空图，但是图中的不同颜色含义没有那么直观，我们需要在图上补充一个图例。通过使用d3的线性标尺和定义svg的渐变来实现：
 
 ```js
 var colorScale = d3.scale.linear()
@@ -297,7 +297,7 @@ linearGradient.selectAll("stop")
   .attr("stop-color", function(d) { return d; });
 ```
 
-启用该`Legend`之后：
+定义好渐变和渐变的颜色取值范围之后，就可以来绘制图例了。
 
 ```js
 var legendWidth = 300;
@@ -322,8 +322,8 @@ legendsvg.append("text")
   .attr("y", -10)
   .style("text-anchor", "middle")
   .text("Sleeping Minutes");
-
 ```
+
 ![](/images/2017/03/star-with-legend-resized.png)
 
 图上的每段弧都会有鼠标移动上去的tooltip，这样可以很好的和读者大脑中的钟表隐喻对照起来，使得图表更容易理解。
@@ -331,6 +331,8 @@ legendsvg.append("text")
 ![](/images/2017/03/star-with-tooltip-resized.png)
 
 由于我将整个圆分成了24份，这点和普通的钟表事实上有差异，那么如果加上钟表的刻度，会不会更好一些呢？从结果来看，这样的标线反而有点画蛇添足，所以我在最后的版本中去掉了钟表的标线。
+
+可以看到，我们通过圆形的钟表隐喻来体现每一天的睡眠分布，然后用颜色的深浅来表示每次睡眠的时长。由于钟表的形象已经深入人心，因此读者很容易发现`0点`在圆环群的正上方。中心的黄色实心圆帮助读者视线先聚焦在最内侧的圆上，然后逐渐向外，这和日期的分布方向正好一致。
 
 最终的结果在这里：[心心的睡眠记录](http://bl.ocks.org/abruzzi/d01a221df9cf79b918a00033695092c9)，完整的[代码在这里](https://github.com/abruzzi/health-recording)。
 
@@ -346,7 +348,9 @@ legendsvg.append("text")
 
 这篇文章讨论了可视化作品背后的一些视觉元素理论，以及人类的视觉识别机制。在这些机制的基础上，介绍了如何运用常用的设计原则来进行视觉编码。最后，通过一个实例来介绍如何运用这些元素 -- 以及更重要的，这些元素的组合 -- 来制作一个漂亮的、有意义的可视化图表。
 
-参考资料：
+#### 参考资料
+
+这里有一些关于认知系统和设计原则的书籍，如果你感兴趣的话，可以用来参考
 
 - [《认知与设计》](https://book.douban.com/subject/6792322/)
 - [《写给大家看的设计书》](https://book.douban.com/subject/3323633/)
