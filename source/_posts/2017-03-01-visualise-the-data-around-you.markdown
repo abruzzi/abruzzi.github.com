@@ -340,6 +340,27 @@ legendsvg.append("text")
 
 一个完整的可视化作品，不但要运用各种视觉编码来将数据转换为视觉元素，背景信息也同样重要。既然这个星空图是关于`睡眠主题`的，那么一个包含她在睡觉的图片集合则会加强这种视觉暗示，帮助读者快速理解。
 
+##### 制作背景图
+
+我从相册中选取了很多女儿睡觉时拍的照片，现在需要有个工具将这些照片缩小成合适大小，然后拼接成一个大的图片。这其中有很多有趣的地方，比如图片有横屏、竖屏之分，有的还是正方形的，我需要让缩放的结果是正方形的，这样容易拼接一些。
+
+好在有`imagemagick`这种神器，只需要一条命令就可以做到：
+
+```sh
+$ montage *.jpg -geometry +0+0 -resize 128x128^ \
+-gravity center -crop 128x128+0+0 xinxin-sleeping.jpg
+```
+
+这条命令将当前目录下的所有的`jpg`文件缩放成128x128像素，并从中间开始裁剪`-gravity center`，`+0+0`表示图片之间的缝隙，最后将结果写入到`xinxin-sleeping.jpg`中。拼接好图片之后，就可以通过CSS或者图片编辑器为其添加模糊效果，并设置深灰色半透明遮罩。
+
+```css
+body {
+	background-image:url('/xinxin-sleeping.png');
+	background-size:cover;
+	background-position:center;
+}
+```
+
 当然，背景信息只是补充作用，需要避免喧宾夺主。因此图片做了模糊处理，且加上了深灰色的半透明Mask（此处应用了格式塔理论中的主体/背景原理）。
 
 ![](/images/2017/03/star-dark-resized.png)
