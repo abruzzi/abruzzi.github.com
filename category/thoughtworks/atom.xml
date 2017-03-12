@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ThoughtWorks | I code it]]></title>
   <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-03-02T11:01:35+08:00</updated>
+  <updated>2017-03-12T23:02:22+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,267 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ThoughtWorks洞见讲什么？]]></title>
+    <link href="http://abruzzi.github.com/2017/03/whats-the-thoughtworks-insight-talking-about/"/>
+    <updated>2017-03-12T22:03:00+08:00</updated>
+    <id>http://abruzzi.github.com/2017/03/whats-the-thoughtworks-insight-talking-about</id>
+    <content type="html"><![CDATA[<h2>ThoughtWorks洞见</h2>
+
+<p><a href="http://insights.thoughtworkers.org/">ThoughtWorks洞见</a>是ThoughtWorks的一个媒体渠道，汇集了来自ThoughtWorks最优秀的经验和思考，并分享给真正对软件有意愿思考和不断改进的人（修改自官方版本）。</p>
+
+<p>截至目前为止，ThoughtWorks洞见已经汇集了50余位作者的300+篇文章（就在刚才，又有一篇更新）。那么这些文章中都在讨论什么样的话题呢？这篇文章将通过一些技术手段，提取出洞见中的关键字，然后采用可视化的方式呈现出来。</p>
+
+<h3>数据获取</h3>
+
+<p>本来我打算从<code>RSS</code>上读feed，解析出文章的<code>link</code>，再将所有文章爬一遍，最后保存到本地。不过写了几行代码后发现<code>Wordpress</code>(ThoughtWorks洞见目前托管在一个Wordpress上)默认地只输出最新的<code>feed</code>，这对于关键字提取来说数量远远不够。众所周知，语料库越大，效果越好。</p>
+
+<p>既然是洞见本质上来说就是一个静态站点，那么最简单、最暴力的方式就是直接把站点克隆到本地。这一步通过使用<code>wget</code>可以很容易做到：</p>
+
+<p><code>sh
+wget --mirror -p --html-extension --convert-links -e robots=off -P . \
+http://insights.thoughtworkers.org/
+</code></p>
+
+<p>默认地，<code>wget</code>会以站点的完整域名为目录名，然后保存整个站点到本地。我大概看了一下，其实不需要所有的目录，只需要一个层次即可，所以这里用<code>find</code>来做一个过滤，然后将文件名写到一个本地文件<code>filepaths</code>中。</p>
+
+<p><code>sh
+find insights.thoughtworkers.org/ -name index.html -depth 2 &gt; filepaths
+</code></p>
+
+<p>这个文件的内容是这样的：</p>
+
+<p><code>
+insights.thoughtworkers.org/10-common-questions-of-ba/index.html
+insights.thoughtworkers.org/10-tips-for-good-offshore-ba/index.html
+insights.thoughtworkers.org/10-ways-improve-your-pairing-experience/index.html
+insights.thoughtworkers.org/100-years-computer-science/index.html
+insights.thoughtworkers.org/1000-cars-improve-beijing-transportation/index.html
+insights.thoughtworkers.org/3d-printing/index.html
+insights.thoughtworkers.org/4-advices-for-aid/index.html
+insights.thoughtworkers.org/5-appointments-with-agile-team/index.html
+insights.thoughtworkers.org/5-ways-exercise-visual-design/index.html
+insights.thoughtworkers.org/7-step-agenda-effective-retrospective/index.html
+insights.thoughtworkers.org/a-decade/index.html
+insights.thoughtworkers.org/about-team-culture/index.html
+insights.thoughtworkers.org/about-tw-insights/index.html
+insights.thoughtworkers.org/agile-coach/index.html
+insights.thoughtworkers.org/agile-communication/index.html
+insights.thoughtworkers.org/agile-craftman/index.html
+...
+</code></p>
+
+<h3>数据处理</h3>
+
+<p>这样我就可以很容易在python脚本中读取各个文件并做处理了。有了文件之后，需要做这样一些事情：</p>
+
+<ol>
+<li>抽取HTML中的文本信息</li>
+<li>将文本分词成列表</li>
+<li>计算列表中所有词的<a href="https://zh.wikipedia.org/wiki/Tf-idf">TFIDF</a>值</li>
+<li>将结果持久化到本地</li>
+</ol>
+
+
+<p>这里需要用到这样一些pyhton库：</p>
+
+<ol>
+<li>BeautifulSoap 解析HTML文档并抽取文本</li>
+<li>jieba 分词</li>
+<li>sk-learn 计算TFIDF值</li>
+<li>pandas 其他数据处理</li>
+</ol>
+
+
+<p>```py
+def extract_post_content(file):</p>
+
+<pre><code>soup = BeautifulSoup(open(file).read(), "html.parser")
+return soup.find('div', attrs={'class': 'entry-content'}).text
+</code></pre>
+
+<p>def extract_all_text():</p>
+
+<pre><code>with open('filepaths') as f:
+    content = f.readlines()
+
+file_list = [x.strip() for x in content]
+return map(extract_post_content, file_list)
+</code></pre>
+
+<p>def extract_segments(data):</p>
+
+<pre><code>seg_list = jieba.cut(data, cut_all=False)
+return [seg.strip() for seg in seg_list if len(seg) &gt; 1]
+</code></pre>
+
+<p>def tfidf_calc():</p>
+
+<pre><code>corpus = [" ".join(item) for item in map(extract_segments, extract_all_text())]
+</code></pre>
+
+<p>tfidf_calc()
+```</p>
+
+<p><code>extract_post_content</code>函数用来打开一篇博客的HTML文件，并提取其中的<code>div.entry-content</code>中的文本内容。<code>extract_all_text</code>函数用来对文件<code>filepaths</code>中的每一行（一篇洞见文章的本地文件路径）都调用一次<code>extract_post_content</code>。而函数<code>extract_segments</code>会使用<code>jieba</code>来对每篇文章进行分词，并生成一个单词组成给的列表。最后，在函数<code>tfidf_calc</code>中，通过一个列表推导式来生成语料库。</p>
+
+<p>有了语料库之后，很容易使用<code>sk-learn</code>来进行计算：</p>
+
+<p>```py
+def tfidf_calc():</p>
+
+<pre><code>corpus = [" ".join(item) for item in map(extract_segments, extract_all_text())]
+
+with open('stopwords-utf8.txt') as f:
+    content = f.readlines()
+
+content.extend(['来说', '事情', '提供', '带来', '发现'])
+stopwords = [x.strip().decode('utf-8') for x in content]
+
+vectorizer = TfidfVectorizer(min_df=1, smooth_idf=False, sublinear_tf=True, stop_words=stopwords)
+vectorizer.fit_transform(corpus)
+</code></pre>
+
+<p>```</p>
+
+<p>当然，由于处理的是中文，我们需要提供<code>停止词</code>来避免对无意义的词的统计（<code>这个</code>，<code>那个</code>，<code>然后</code>等等基本上每篇都会出现多次的词）。在经过<code>transform</code>之后，我们就得到了一个稀疏矩阵和词汇表，以及对应的tdidf的值，我们使用<code>pandas</code>提供的DataFrame来进行排序和存储即可：</p>
+
+<p>```py
+def tfidf_calc():</p>
+
+<pre><code>#...
+
+data = dict(zip(vectorizer.get_feature_names(), vectorizer.idf_))
+result = DataFrame(data.items(), columns=['word', 'tfidf']).sort_values(by='tfidf', ascending=True).head(50)
+
+result.to_csv('top-50-words-in-tw-insight.csv')
+</code></pre>
+
+<p>```</p>
+
+<p><code>
+index,word,tfidf
+15809,分享,1.06875559542
+5228,方式,1.37439147148
+8815,时间,1.39884256735
+5128,工作,1.40380535669
+21799,过程,1.47066830192
+4225,开发,1.48675443967
+12707,项目,1.49217450714
+10527,技术,1.49762411191
+20900,简单,1.49762411191
+18756,团队,1.59512247639
+...
+</code></p>
+
+<h3>可视化</h3>
+
+<h4>单词云</h4>
+
+<p>```js
+d3.csv('top-16-words-in-tw-insight.csv', function(err, data) {</p>
+
+<pre><code>data.forEach(function(d) {
+    d.tfidf = +d.tfidf
+});
+
+d3.layout.cloud().size([1600, 900])
+    .words(data)
+    .rotate(0)
+    .fontSize(function(d) { return Math.round(54/(d.tfidf-1)); })
+    .on("end", draw)
+    .start();
+</code></pre>
+
+<p>});
+```</p>
+
+<p>这里我直接使用了一个第三方的单词云插件<code>d3.layout.cloud</code>，提供一个callback函数<code>draw</code>，当布局结束之后，插件会调用这个回调：</p>
+
+<p>```js
+function draw(words) {</p>
+
+<pre><code>d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("class", "wordcloud")
+    .append("g")
+    .attr("transform", "translate(" + width/2 + "," + height/2 +")")
+    .selectAll("text")
+    .data(words)
+    .enter().append("text")
+    .style("font-size", function(d) { return Math.round(54/(d.tfidf-1)) + "px"; })
+    .style("fill", function(d, i) { return color(i); })
+    .attr("transform", function(d) {
+        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+    })
+    .text(function(d) { return d.word; });
+</code></pre>
+
+<p>}
+```</p>
+
+<p><img src="/images/2017/03/tw-insights-gray-resized.png" alt="" /></p>
+
+<h4>背景图制作</h4>
+
+<p><code>sh
+mkdir -p authors/ &amp;&amp; cp wp-content/authors/* authors/
+cd authors
+mogrify -format png *.jpg
+rm *.jpg
+</code></p>
+
+<p>将作者的头像制作成一张9x6的大<code>蒙太奇</code>图：</p>
+
+<p>```sh
+montage *.png  -geometry +0+0 -resize 128x128^ -gravity center -crop 128x128+0+0 -tile 9x6 \</p>
+
+<pre><code>tw-insight-authors.png
+</code></pre>
+
+<p>```</p>
+
+<p><img src="/images/2017/03/tw-insight-authors-resized.png" alt="" /></p>
+
+<h4>后期处理</h4>
+
+<p><img src="/images/2017/03/tw-insights-10-resized.png" alt="" /></p>
+
+<p>可以看出，ThoughtWorks洞见中最为关键（Top 16）的信息依次是：</p>
+
+<p><code>
+分享
+方式
+时间
+工作
+过程
+开发
+项目
+技术
+简单
+团队
+情况
+代码
+设计
+系统
+解决
+功能
+</code></p>
+
+<p><code>分享</code>一词位居榜首还是略显意外，而且前50里竟然没有诸如<code>敏捷</code>，<code>精益</code>等原本以为会入围的词。</p>
+
+<h3>资料</h3>
+
+<ol>
+<li><a href="https://github.com/abruzzi/tw-insights-viz">完整的代码</a>在此。</li>
+<li>阮一峰老师对<a href="http://www.ruanyifeng.com/blog/2013/03/tf-idf.html">TFIDF的解释文章</a></li>
+<li>陈皓对<a href="http://coolshell.cn/articles/8422.html">TFIDF的解释文章</a></li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[测试自动化后，我们还需要QA吗？]]></title>
@@ -715,76 +976,6 @@ http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/ &gt; yslow.xml
 <p>我们只需要很少的配置就可以设置好一个工作良好的CI任务，这样在程序员某天引入了未经压缩的JS/CSS或者UX不小心提供了巨大而未经处理的图片时，你可以尽快的得到通知，并在正是上线之前发现这些问题。</p>
 
 <p><a href="https://github.com/abruzzi/phantomjs-yslow">代码配置</a>在这里。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[技术的执念]]></title>
-    <link href="http://abruzzi.github.com/2016/02/pitfall-of-technology/"/>
-    <updated>2016-02-14T17:34:00+08:00</updated>
-    <id>http://abruzzi.github.com/2016/02/pitfall-of-technology</id>
-    <content type="html"><![CDATA[<h2>知识漩涡</h2>
-
-<p>只需稍加留意，我们就会发现自己被各种技术，工具包围。<a href="https://www.thoughtworks.com/radar">ThoughtWorks的技术雷达</a>差不多每隔半年就会更新一次，而项目中更是会遇到很多已经从技术雷达上消失的技术，项目上的旧技术/旧框架还在服役，新的技术/工具/语言/框架又在迅速的出现，有些昙花一现，迅速被新的后来者取代，有的留下来了，不过也都在不断的演化，改变（不兼容的API，不同的版本等等随处可见）。</p>
-
-<p>如果你不幸是一个前端工程师，那么这个更新速度还要更加迅速。三年前<code>Backbone</code>是主流，两年前是<code>Angular.js</code>，去年是<code>React</code>，紧接着<code>Flux</code>，<code>Reflux</code>等作为React的扩展而成为了新的主流；<code>Grunt</code>流行过一段时间，很快被<code>Gulp</code>替代，而新的<code>Webpack</code>又依稀有大一统的趋势。每周几乎都能看到新的框架涌现，双向绑定，虚拟DOM，事件代理，同构，后端渲染，更友好的语法糖，更快的执行速度等等等等，几乎任何一个方向都有无穷无尽的变化。</p>
-
-<p><img src="/images/2016/02/full-stack-js-resized.png" alt="full stack js" /></p>
-
-<p>而后端也好不到哪里去，容器技术，Web框架，ORM，构建脚本，自动化测试工具，依赖管理，应用服务器等等，你总有很多的选项，却又无法在事先区分到底哪个技术/工具更靠谱，更适合项目。</p>
-
-<p>置身其中，往往有眼花缭乱，应接不暇的感觉。知识工作者当然需要<strong>终身不断</strong>的学习，但是像目前这种节奏，我很怀疑这是一种健康的状态。周围经常有人抱怨，好不容易上手了一个前端的MVC框架，一看周围的项目，大家已经在spike另外的框架/工具了（这意味着你在项目上无法使用该框架了……）。仅仅从学习的速度上来讲，我们已经远远无法跟上科技演化的节奏了，这是<strong>人类</strong>自身的一种限制。</p>
-
-<h3>知识的陷阱</h3>
-
-<p>假设你在一个<code>Ruby</code>项目上，学习了<code>Rails/ActiveRecord/RSpec/MySQL</code>。如果下一个项目还是<code>Ruby</code>，同样的技术站，你会觉得这是一种重复，因为除了业务逻辑、业务对象变化了之外，并没有新的内容，还是<strong>同样的</strong>技术。如果下一个项目是<code>Python</code>，技术栈变成了<code>Django/nose/PostgreSQL</code>，你可能会觉得有所提升，因为学到了不同的技术，框架，共建工具，测试工具等等，其实仔细观察，这还是一种重复，古人云：“换汤不换药”者，是也。</p>
-
-<p>在目前我们所处的时代，信息以远远超过人们能接受的速度不断的被创造出来，一方面信息传播的速度大大提升了，另一方面是信息传播的渠道也极具多样化。我们无时无刻不被过载的信息包围着，即使你不主动的去尝试获取新的信息，手机App里的微信，微博，Flipboard，Pocket，知乎，开发者头条，Feedly，果壳，丁香园等等的推送已经足以提供给你足够的信息（大部分甚至都来不及消费就变成了历史信息而被忽略）。</p>
-
-<p>以我自己为例，从2015年10月到现在（2016年2月），我学习了很多东西，看一下下面这张图：</p>
-
-<p><img src="/images/2016/02/tech-tree.png" alt="tech tree" /></p>
-
-<p>图中的灰色方框中的内容是项目要求的知识，另外的则是我根据自己的兴趣学习的（两者基本上各占一半）。事实上有很多内容（尤其是根据自己兴趣学习的）在真正要使用时，可能还需要学一遍。这些内容可能让我产生了<strong>我学到了好多东西</strong>的错觉。其实这个在另一个角度显现了技术人员的一个误区：以为自己可以掌握所有软件开发相关的知识（或者说太过于纵容自己的好奇心和兴趣）。</p>
-
-<h2>过载的信息</h2>
-
-<p>身处这样的信息过载环境，我们很难不为自己对信息的缺乏而感到不安，担心自己错过了什么重要的信息，这种担心和焦虑会促使我们进一步将时间消耗在对信息的获取上，从而更无暇思考什么是真正重要的。</p>
-
-<p><a href="http://book.douban.com/subject/1013208/">《如何阅读一本书》</a>将书分为两类：一种是提供资讯/信息（known）的，一种是帮助你理解（understand）信息的。相对于理解来讲，资讯本身其实并不那么重要。我们大部分人目前采用的碎片化的阅读方式无法提供给我们足够的“理解力”。我们都有这样的体验，有些书特别耗费脑力，读起来很累，而另一些书则非常轻松，易于消费。碎片话的阅读方式易于消费，只需要很少的思考就可以读懂，但是危害严重，它们并不会让帮助你提升理解力。</p>
-
-<p>但是直觉上我们会选择容易的事情来做，虽然这种浅层次的阅读只对扩展信息/资讯有帮助，对提升理解力则几乎无用。而我们在处理日常工作中的问题时，能真正帮助的，只有理解了的那部分知识。我在2014年，曾经有几个月屏蔽了所有微信，微博，内容聚合类的应用，也尽量少的去技术论坛，每天就是写代码，读纸质书，除了最初几天的忐忑之外，整个过程的收获非常大（而且也没有漏掉任何重要的信息）。</p>
-
-<h3>知识框架</h3>
-
-<p>技术人员有时候会有一种想要把所有技术都掌握的<code>执念</code>，这在局外人来看是一种荒诞不经的想法，但是置身其中，你很难看出这一点。毕竟，有意思的东西是在太多了，各种范式的编程语言，编译器技术，人工智能，数据可视化，地理信息系统，嵌入式设备，软硬件结合，大数据，自动化测试等等，每一个方向都有无穷无尽的有意思的东西。</p>
-
-<p>但是在知识规模如此巨大的今天，一个人是无法掌握所有技术的（更不用说新的技术还在不断的涌现出来）！这就要求我们有节制的来聚焦在某些技术上，而视其他技术如无物。当然这需要很大的勇气和魄力，不过唯有如此，技术人员才有可能有真正的长进和成就。</p>
-
-<p>我基于自己的经验，绘制了一个<code>Web开发</code>方面的知识框架，这个框架上包含了一个比较全的技能/知识集合，也是我认为一个<code>Web开发</code>人员应该掌握的一些知识点。</p>
-
-<p><img src="/images/2016/02/knowledge-framework.png" alt="knowledge framework" /></p>
-
-<p>在成为一个专家之前，你需要先对要学习的领域有一个全面的认识。也就是说，做<code>Web开发</code>，需要尽可能覆盖到这个框架上的所有点。一旦完成了这棵树上的所有节点，就不用再去做第二次了，这时候你可以尝试找到树上的某一个分支，深入下去。这个听起来好像和我之前文章中的观点有所矛盾，其实不然。我在<a href="http://icodeit.org/2015/06/do-we-really-short-for-front-end-developer/">《我们真的缺前端工程师》</a>一文中提到过，工程师不应该将自己束缚在前端开发上，要了解整个软件开发的全生命周期。这里的观点其实是一致的，即首先要了解软件开发全生命周期中的所有节点，然后再有所侧重的去找自己的兴趣点来发展，即：先建立广度，再建立深度。</p>
-
-<h2>应对方法</h2>
-
-<h3>对于知识的陷阱</h3>
-
-<p>当因自己的兴趣（而不是项目驱动，也就是没有实际的土壤来验证）而想要学习一个新的知识时，对照<code>知识框架</code>，如果发现你已经在历史上学过它了，那就强迫自己放弃这个念头。比如如果你很熟悉用<code>rspec</code>来编写测试，忽然有一天心血来潮，想要学习JUnit，正确的做法就是泡杯茶，等这种冲动自己过去。相信我，一旦有了Java项目，你可以非常快速的掌握JUnit，而且很快会找到对应的feature，就像一个长期工作在Java技术栈上的同事那样！</p>
-
-<h3>对于过载的信息</h3>
-
-<p>实践中，首先要令自己相信：<code>你无法掌握所有的知识，即使仅仅在软件开发领域</code>。有了这个大前提之后，你只需要采取<code>先建立广度，再建立深度</code>的原则即可：</p>
-
-<ul>
-<li>做减法（在建立了<code>知识框架</code>之后，有针对性的学习）</li>
-<li>主动，深度阅读经典</li>
-<li>为那些<code>有趣但非自己关注方向</code>的知识赋予较低的优先级</li>
-</ul>
-
-
-<p>另外，还可以尝试将微信，微博关闭一段时间，或者至少可以不去点那些朋友圈里的<code>《老X聊微服务》</code>或者<code>《12个你不知道的Sublime技巧》</code>文章，保持专注，保持简单。</p>
 ]]></content>
   </entry>
   
