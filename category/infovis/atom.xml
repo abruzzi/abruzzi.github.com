@@ -4,7 +4,7 @@
   <title><![CDATA[Category: infovis | I code it]]></title>
   <link href="http://abruzzi.github.com/category/infovis/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-03-13T09:07:27+08:00</updated>
+  <updated>2017-03-13T21:41:17+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -12,6 +12,272 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ThoughtWorks洞见讲什么？]]></title>
+    <link href="http://abruzzi.github.com/2017/03/whats-the-thoughtworks-insight-talking-about/"/>
+    <updated>2017-03-12T22:03:00+08:00</updated>
+    <id>http://abruzzi.github.com/2017/03/whats-the-thoughtworks-insight-talking-about</id>
+    <content type="html"><![CDATA[<h2>ThoughtWorks洞见</h2>
+
+<p><a href="http://insights.thoughtworkers.org/">ThoughtWorks洞见</a>是ThoughtWorks的一个媒体渠道，汇集了来自ThoughtWorks最优秀的经验和思考，并分享给真正对软件有意愿思考和不断改进的人（修改自官方版本）。</p>
+
+<p>截至目前为止，ThoughtWorks洞见已经汇集了50余位作者的300+篇文章（就在刚才，又有一篇更新）。那么这些文章中都在讨论什么样的话题呢？这篇文章将通过一些技术手段，提取出洞见中的关键字，然后采用可视化的方式呈现出来。</p>
+
+<h3>数据获取</h3>
+
+<p>本来我打算从<code>RSS</code>上读feed，解析出文章的<code>link</code>，再将所有文章爬一遍，最后保存到本地。不过写了几行代码后发现<code>Wordpress</code>(ThoughtWorks洞见目前托管在一个Wordpress上)默认地只输出最新的<code>feed</code>，这对于关键字提取来说数量远远不够。众所周知，语料库越大，效果越好。</p>
+
+<p>既然是洞见本质上来说就是一个静态站点，那么最简单、最暴力的方式就是直接把站点克隆到本地。这一步通过使用<code>wget</code>可以很容易做到：</p>
+
+<p><code>sh
+wget --mirror -p --html-extension --convert-links -e robots=off -P . \
+http://insights.thoughtworkers.org/
+</code></p>
+
+<p>默认地，<code>wget</code>会以站点的完整域名为目录名，然后保存整个站点到本地。我大概看了一下，其实不需要所有的目录，只需要一个层次即可，所以这里用<code>find</code>来做一个过滤，然后将文件名写到一个本地文件<code>filepaths</code>中。</p>
+
+<p><code>sh
+find insights.thoughtworkers.org/ -name index.html -depth 2 &gt; filepaths
+</code></p>
+
+<p>这个文件的内容是这样的：</p>
+
+<p><code>
+insights.thoughtworkers.org/10-common-questions-of-ba/index.html
+insights.thoughtworkers.org/10-tips-for-good-offshore-ba/index.html
+insights.thoughtworkers.org/10-ways-improve-your-pairing-experience/index.html
+insights.thoughtworkers.org/100-years-computer-science/index.html
+insights.thoughtworkers.org/1000-cars-improve-beijing-transportation/index.html
+insights.thoughtworkers.org/3d-printing/index.html
+insights.thoughtworkers.org/4-advices-for-aid/index.html
+insights.thoughtworkers.org/5-appointments-with-agile-team/index.html
+insights.thoughtworkers.org/5-ways-exercise-visual-design/index.html
+insights.thoughtworkers.org/7-step-agenda-effective-retrospective/index.html
+insights.thoughtworkers.org/a-decade/index.html
+insights.thoughtworkers.org/about-team-culture/index.html
+insights.thoughtworkers.org/about-tw-insights/index.html
+insights.thoughtworkers.org/agile-coach/index.html
+insights.thoughtworkers.org/agile-communication/index.html
+insights.thoughtworkers.org/agile-craftman/index.html
+...
+</code></p>
+
+<h3>数据处理</h3>
+
+<p>这样我就可以很容易在python脚本中读取各个文件并做处理了。有了文件之后，需要做这样一些事情：</p>
+
+<ol>
+<li>抽取HTML中的文本信息</li>
+<li>将文本分词成列表</li>
+<li><del>计算列表中所有词的<a href="https://zh.wikipedia.org/wiki/Tf-idf">TFIDF</a>值</del></li>
+<li>计算每个词出现的频率</li>
+<li>将结果持久化到本地</li>
+</ol>
+
+
+<p>这里需要用到这样一些pyhton库：</p>
+
+<ol>
+<li>BeautifulSoap 解析HTML文档并抽取文本</li>
+<li>jieba 分词</li>
+<li>sk-learn 计算单词出现频率</li>
+<li>pandas 其他数据处理</li>
+</ol>
+
+
+<p>```py
+def extract_post_content(file):</p>
+
+<pre><code>soup = BeautifulSoup(open(file).read(), "html.parser")
+return soup.find('div', attrs={'class': 'entry-content'}).text
+</code></pre>
+
+<p>def extract_all_text():</p>
+
+<pre><code>with open('filepaths') as f:
+    content = f.readlines()
+
+file_list = [x.strip() for x in content]
+return map(extract_post_content, file_list)
+</code></pre>
+
+<p>def extract_segments(data):</p>
+
+<pre><code>seg_list = jieba.cut(data, cut_all=False)
+return [seg.strip() for seg in seg_list if len(seg) &gt; 1]
+</code></pre>
+
+<p>def keywords_calc():</p>
+
+<pre><code>corpus = [" ".join(item) for item in map(extract_segments, extract_all_text())]
+</code></pre>
+
+<p>keywords_calc()
+```</p>
+
+<p><code>extract_post_content</code>函数用来打开一篇博客的HTML文件，并提取其中的<code>div.entry-content</code>中的文本内容。<code>extract_all_text</code>函数用来对文件<code>filepaths</code>中的每一行（一篇洞见文章的本地文件路径）都调用一次<code>extract_post_content</code>。而函数<code>extract_segments</code>会使用<code>jieba</code>来对每篇文章进行分词，并生成一个单词组成给的列表。最后，在函数<code>keywords_calc</code>中，通过一个列表推导式来生成语料库。</p>
+
+<p>有了语料库之后，很容易使用<code>sk-learn</code>来进行计算：</p>
+
+<p>```py
+def keywords_calc():</p>
+
+<pre><code>corpus = [" ".join(item) for item in map(extract_segments, extract_all_text())]
+
+with open('stopwords-utf8.txt') as f:
+    content = f.readlines()
+
+content.extend(['来说', '事情', '提供', '带来', '发现'])
+stopwords = [x.strip().decode('utf-8') for x in content]
+
+vectorizer = CountVectorizer(stop_words=stopwords)
+fit = vectorizer.fit_transform(corpus)
+</code></pre>
+
+<p>```</p>
+
+<p>当然，由于处理的是中文，我们需要提供<code>停止词</code>来避免对无意义的词的统计（<code>这个</code>，<code>那个</code>，<code>然后</code>等等基本上每篇都会出现多次的词）。在经过<code>transform</code>之后，我们就得到了一个稀疏矩阵和词汇表，以及对应的tdidf的值，我们使用<code>pandas</code>提供的DataFrame来进行排序和存储即可：</p>
+
+<p>```py
+def keywords_calc():</p>
+
+<pre><code>#...   
+data = dict(zip(vectorizer.get_feature_names(), fit.toarray().sum(axis=0)))
+top_100 = DataFrame(data.items(), columns=['word', 'freq'])
+    .sort_values('freq', ascending=False).head(100)
+top_100.to_csv('top-100-words-most-used-in-tw-insights.csv')
+</code></pre>
+
+<p>```</p>
+
+<p>运行结果如下：</p>
+
+<p><code>
+index,word,freq
+18761,团队,1922
+12479,测试,1851
+4226,开发,1291
+1910,服务,1288
+10531,技术,1248
+7081,用户,1145
+17517,代码,1078
+12712,项目,1062
+4957,需求,1049
+...
+</code></p>
+
+<h3>可视化</h3>
+
+<h4>单词云</h4>
+
+<p>```js
+d3.csv('top-20-words-in-tw-insight.csv', function(err, data) {</p>
+
+<pre><code>data.forEach(function(d) {
+    d.freq = +d.freq
+});
+
+d3.layout.cloud().size([1600, 900])
+    .words(data)
+    .rotate(0)
+    .fontSize(function(d) { return Math.round(d.freq/10); })
+    .on("end", draw)
+    .start();
+</code></pre>
+
+<p>});
+```</p>
+
+<p>这里我直接使用了一个第三方的单词云插件<code>d3.layout.cloud</code>，提供一个callback函数<code>draw</code>，当布局结束之后，插件会调用这个回调：</p>
+
+<p>```js
+function draw(words) {</p>
+
+<pre><code>d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("class", "wordcloud")
+    .append("g")
+    .attr("transform", "translate(" + width/2 + "," + height/2 +")")
+    .selectAll("text")
+    .data(words)
+    .enter().append("text")
+    .style("font-size", function(d) { return Math.round(d.freq/10) + "px"; })
+    .style("fill", function(d, i) { return color(i); })
+    .attr("transform", function(d) {
+        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+    })
+    .text(function(d) { return d.word; });
+</code></pre>
+
+<p>}
+```</p>
+
+<p><img src="/images/2017/03/tw-insights-color-18-resized.png" alt="" /></p>
+
+<h4>背景图制作</h4>
+
+<p><code>sh
+mkdir -p authors/ &amp;&amp; cp wp-content/authors/* authors/
+cd authors
+mogrify -format png *.jpg
+rm *.jpg
+</code></p>
+
+<p>将作者的头像制作成一张9x6的大<code>蒙太奇</code>图：</p>
+
+<p>```sh
+montage *.png  -geometry +0+0 -resize 128x128^ -gravity center -crop 128x128+0+0 -tile 9x6 \</p>
+
+<pre><code>tw-insight-authors.png
+</code></pre>
+
+<p>```</p>
+
+<p><img src="/images/2017/03/tw-insight-authors-resized.png" alt="" /></p>
+
+<h4>后期处理</h4>
+
+<p><img src="/images/2017/03/tw-insights-12-resized.png" alt="" /></p>
+
+<p>可以看出，ThoughtWorks洞见中最为关键（Top 10）的信息依次是：</p>
+
+<p><code>
+团队
+测试
+开发
+服务
+技术
+用户
+代码
+项目
+需求
+工作
+</code></p>
+
+<p>这个和ThoughtWorks的专业服务公司的属性基本吻合。不过前20里竟然没有诸如<code>敏捷</code>，<code>精益</code>这些原本以为会入围的词。</p>
+
+<h4>完善</h4>
+
+<p>基本的图形设计完成之后，再加入一些视觉元素，比如ThoughtWorks的标志性图案（代表开发文化和多样性），以及对应的说明性文字（文字的大小也错落开，和文字云遥相呼应）：</p>
+
+<p><img src="/images/2017/03/tw-insights-16-resized.png" alt="" /></p>
+
+<h3>资料</h3>
+
+<p>文中使用了比较简单的<code>CountVectorizer</code>做统计，<code>sk-learn</code>还提供了其他的向量化机制。我使用<code>TdidfVectorizer</code>做了一些计算，不过可能由于语料库的尺寸原因，效果比较奇怪，就暂时没有采用这种方式。</p>
+
+<p>不过，使用<code>TDIDF</code>来做关键词抽取在文本处理上也算是必备的技能，这里列一些参考资料，有兴趣的可以进行进一步的探索。</p>
+
+<ol>
+<li><a href="https://github.com/abruzzi/tw-insights-viz">完整的代码</a>在此。</li>
+<li>阮一峰老师对<a href="http://www.ruanyifeng.com/blog/2013/03/tf-idf.html">TFIDF的解释文章</a></li>
+<li>陈皓（左耳朵耗子）对<a href="http://coolshell.cn/articles/8422.html">TFIDF的解释文章</a></li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[一张漂亮的可视化图表背后]]></title>

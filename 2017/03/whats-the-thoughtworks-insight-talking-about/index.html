@@ -1,0 +1,598 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>ThoughtWorks洞见讲什么？ - I code it</title>
+  <meta name="author" content="Qiu Juntao">
+
+  
+  <meta name="description" content="ThoughtWorks洞见 ThoughtWorks洞见是ThoughtWorks的一个媒体渠道，汇集了来自ThoughtWorks最优秀的经验和思考，并分享给真正对软件有意愿思考和不断改进的人（修改自官方版本）。 截至目前为止，ThoughtWorks洞见已经汇集了50余位作者的300+篇文章 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://abruzzi.github.com/2017/03/whats-the-thoughtworks-insight-talking-about">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="I code it" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/libs/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.gmirror.org/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.gmirror.org/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.gmirror.org/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-28217566-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">I code it</a></h1>
+  
+    <h2>Code and Life</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:abruzzi.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">文章</a></li>
+  <li><a href="/blog/archives">文章归档</a></li>
+  <li><a href="/publish">出版物</a></li>
+  <li><a href="/about-me">关于</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">ThoughtWorks洞见讲什么？</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-03-12T22:03:00+08:00" pubdate data-updated="true">Mar 12<span>th</span>, 2017</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>ThoughtWorks洞见</h2>
+
+<p><a href="http://insights.thoughtworkers.org/">ThoughtWorks洞见</a>是ThoughtWorks的一个媒体渠道，汇集了来自ThoughtWorks最优秀的经验和思考，并分享给真正对软件有意愿思考和不断改进的人（修改自官方版本）。</p>
+
+<p>截至目前为止，ThoughtWorks洞见已经汇集了50余位作者的300+篇文章（就在刚才，又有一篇更新）。那么这些文章中都在讨论什么样的话题呢？这篇文章将通过一些技术手段，提取出洞见中的关键字，然后采用可视化的方式呈现出来。</p>
+
+<h3>数据获取</h3>
+
+<p>本来我打算从<code>RSS</code>上读feed，解析出文章的<code>link</code>，再将所有文章爬一遍，最后保存到本地。不过写了几行代码后发现<code>Wordpress</code>(ThoughtWorks洞见目前托管在一个Wordpress上)默认地只输出最新的<code>feed</code>，这对于关键字提取来说数量远远不够。众所周知，语料库越大，效果越好。</p>
+
+<p>既然是洞见本质上来说就是一个静态站点，那么最简单、最暴力的方式就是直接把站点克隆到本地。这一步通过使用<code>wget</code>可以很容易做到：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>wget --mirror -p --html-extension --convert-links -e <span class="nv">robots</span><span class="o">=</span>off -P . <span class="se">\</span>
+</span><span class='line'>http://insights.thoughtworkers.org/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>默认地，<code>wget</code>会以站点的完整域名为目录名，然后保存整个站点到本地。我大概看了一下，其实不需要所有的目录，只需要一个层次即可，所以这里用<code>find</code>来做一个过滤，然后将文件名写到一个本地文件<code>filepaths</code>中。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>find insights.thoughtworkers.org/ -name index.html -depth 2 &gt; filepaths
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个文件的内容是这样的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>insights.thoughtworkers.org/10-common-questions-of-ba/index.html
+</span><span class='line'>insights.thoughtworkers.org/10-tips-for-good-offshore-ba/index.html
+</span><span class='line'>insights.thoughtworkers.org/10-ways-improve-your-pairing-experience/index.html
+</span><span class='line'>insights.thoughtworkers.org/100-years-computer-science/index.html
+</span><span class='line'>insights.thoughtworkers.org/1000-cars-improve-beijing-transportation/index.html
+</span><span class='line'>insights.thoughtworkers.org/3d-printing/index.html
+</span><span class='line'>insights.thoughtworkers.org/4-advices-for-aid/index.html
+</span><span class='line'>insights.thoughtworkers.org/5-appointments-with-agile-team/index.html
+</span><span class='line'>insights.thoughtworkers.org/5-ways-exercise-visual-design/index.html
+</span><span class='line'>insights.thoughtworkers.org/7-step-agenda-effective-retrospective/index.html
+</span><span class='line'>insights.thoughtworkers.org/a-decade/index.html
+</span><span class='line'>insights.thoughtworkers.org/about-team-culture/index.html
+</span><span class='line'>insights.thoughtworkers.org/about-tw-insights/index.html
+</span><span class='line'>insights.thoughtworkers.org/agile-coach/index.html
+</span><span class='line'>insights.thoughtworkers.org/agile-communication/index.html
+</span><span class='line'>insights.thoughtworkers.org/agile-craftman/index.html
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>数据处理</h3>
+
+<p>这样我就可以很容易在python脚本中读取各个文件并做处理了。有了文件之后，需要做这样一些事情：</p>
+
+<ol>
+<li>抽取HTML中的文本信息</li>
+<li>将文本分词成列表</li>
+<li><del>计算列表中所有词的<a href="https://zh.wikipedia.org/wiki/Tf-idf">TFIDF</a>值</del></li>
+<li>计算每个词出现的频率</li>
+<li>将结果持久化到本地</li>
+</ol>
+
+
+<p>这里需要用到这样一些pyhton库：</p>
+
+<ol>
+<li>BeautifulSoap 解析HTML文档并抽取文本</li>
+<li>jieba 分词</li>
+<li>sk-learn 计算单词出现频率</li>
+<li>pandas 其他数据处理</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">def</span> <span class="nf">extract_post_content</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="s">&quot;html.parser&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;div&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;class&#39;</span><span class="p">:</span> <span class="s">&#39;entry-content&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">extract_all_text</span><span class="p">():</span>
+</span><span class='line'>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;filepaths&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">file_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">content</span><span class="p">]</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="n">extract_post_content</span><span class="p">,</span> <span class="n">file_list</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">extract_segments</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">seg_list</span> <span class="o">=</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span><span class="n">seg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">seg_list</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">keywords_calc</span><span class="p">():</span>
+</span><span class='line'>    <span class="n">corpus</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="n">extract_segments</span><span class="p">,</span> <span class="n">extract_all_text</span><span class="p">())]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">keywords_calc</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>extract_post_content</code>函数用来打开一篇博客的HTML文件，并提取其中的<code>div.entry-content</code>中的文本内容。<code>extract_all_text</code>函数用来对文件<code>filepaths</code>中的每一行（一篇洞见文章的本地文件路径）都调用一次<code>extract_post_content</code>。而函数<code>extract_segments</code>会使用<code>jieba</code>来对每篇文章进行分词，并生成一个单词组成给的列表。最后，在函数<code>keywords_calc</code>中，通过一个列表推导式来生成语料库。</p>
+
+<p>有了语料库之后，很容易使用<code>sk-learn</code>来进行计算：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">def</span> <span class="nf">keywords_calc</span><span class="p">():</span>
+</span><span class='line'>    <span class="n">corpus</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="n">extract_segments</span><span class="p">,</span> <span class="n">extract_all_text</span><span class="p">())]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;stopwords-utf8.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">content</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">&#39;来说&#39;</span><span class="p">,</span> <span class="s">&#39;事情&#39;</span><span class="p">,</span> <span class="s">&#39;提供&#39;</span><span class="p">,</span> <span class="s">&#39;带来&#39;</span><span class="p">,</span> <span class="s">&#39;发现&#39;</span><span class="p">])</span>
+</span><span class='line'>    <span class="n">stopwords</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">content</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">vectorizer</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">stop_words</span><span class="o">=</span><span class="n">stopwords</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">fit</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">corpus</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然，由于处理的是中文，我们需要提供<code>停止词</code>来避免对无意义的词的统计（<code>这个</code>，<code>那个</code>，<code>然后</code>等等基本上每篇都会出现多次的词）。在经过<code>transform</code>之后，我们就得到了一个稀疏矩阵和词汇表，以及对应的tdidf的值，我们使用<code>pandas</code>提供的DataFrame来进行排序和存储即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="k">def</span> <span class="nf">keywords_calc</span><span class="p">():</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="c">#...   </span>
+</span><span class='line'>    <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">vectorizer</span><span class="o">.</span><span class="n">get_feature_names</span><span class="p">(),</span> <span class="n">fit</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)))</span>
+</span><span class='line'>    <span class="n">top_100</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;word&#39;</span><span class="p">,</span> <span class="s">&#39;freq&#39;</span><span class="p">])</span>
+</span><span class='line'>        <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s">&#39;freq&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">top_100</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">&#39;top-100-words-most-used-in-tw-insights.csv&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行结果如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='py'><span class='line'><span class="n">index</span><span class="p">,</span><span class="n">word</span><span class="p">,</span><span class="n">freq</span>
+</span><span class='line'><span class="mi">18761</span><span class="p">,</span><span class="err">团队</span><span class="p">,</span><span class="mi">1922</span>
+</span><span class='line'><span class="mi">12479</span><span class="p">,</span><span class="err">测试</span><span class="p">,</span><span class="mi">1851</span>
+</span><span class='line'><span class="mi">4226</span><span class="p">,</span><span class="err">开发</span><span class="p">,</span><span class="mi">1291</span>
+</span><span class='line'><span class="mi">1910</span><span class="p">,</span><span class="err">服务</span><span class="p">,</span><span class="mi">1288</span>
+</span><span class='line'><span class="mi">10531</span><span class="p">,</span><span class="err">技术</span><span class="p">,</span><span class="mi">1248</span>
+</span><span class='line'><span class="mi">7081</span><span class="p">,</span><span class="err">用户</span><span class="p">,</span><span class="mi">1145</span>
+</span><span class='line'><span class="mi">17517</span><span class="p">,</span><span class="err">代码</span><span class="p">,</span><span class="mi">1078</span>
+</span><span class='line'><span class="mi">12712</span><span class="p">,</span><span class="err">项目</span><span class="p">,</span><span class="mi">1062</span>
+</span><span class='line'><span class="mi">4957</span><span class="p">,</span><span class="err">需求</span><span class="p">,</span><span class="mi">1049</span>
+</span><span class='line'><span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>可视化</h3>
+
+<h4>单词云</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">d3</span><span class="p">.</span><span class="nx">csv</span><span class="p">(</span><span class="s1">&#39;top-20-words-in-tw-insight.csv&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">data</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">d</span><span class="p">.</span><span class="nx">freq</span> <span class="o">=</span> <span class="o">+</span><span class="nx">d</span><span class="p">.</span><span class="nx">freq</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">d3</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">cloud</span><span class="p">().</span><span class="nx">size</span><span class="p">([</span><span class="mi">1600</span><span class="p">,</span> <span class="mi">900</span><span class="p">])</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">words</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">rotate</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">fontSize</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">round</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">freq</span><span class="o">/</span><span class="mi">10</span><span class="p">);</span> <span class="p">})</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="nx">draw</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里我直接使用了一个第三方的单词云插件<code>d3.layout.cloud</code>，提供一个callback函数<code>draw</code>，当布局结束之后，插件会调用这个回调：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">draw</span><span class="p">(</span><span class="nx">words</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">d3</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;svg&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="nx">width</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="nx">height</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;wordcloud&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;g&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;transform&quot;</span><span class="p">,</span> <span class="s2">&quot;translate(&quot;</span> <span class="o">+</span> <span class="nx">width</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nx">height</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span><span class="s2">&quot;)&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">selectAll</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="nx">words</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">enter</span><span class="p">().</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;font-size&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">round</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">freq</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="p">;</span> <span class="p">})</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;fill&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">color</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span> <span class="p">})</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;transform&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="s2">&quot;translate(&quot;</span> <span class="o">+</span> <span class="p">[</span><span class="nx">d</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span> <span class="nx">d</span><span class="p">.</span><span class="nx">y</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;)rotate(&quot;</span> <span class="o">+</span> <span class="nx">d</span><span class="p">.</span><span class="nx">rotate</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">})</span>
+</span><span class='line'>        <span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">d</span><span class="p">.</span><span class="nx">word</span><span class="p">;</span> <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2017/03/tw-insights-color-18-resized.png" alt="" /></p>
+
+<h4>背景图制作</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>mkdir -p authors/ <span class="o">&amp;&amp;</span> cp wp-content/authors/* authors/
+</span><span class='line'><span class="nb">cd </span>authors
+</span><span class='line'>mogrify -format png *.jpg
+</span><span class='line'>rm *.jpg
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将作者的头像制作成一张9x6的大<code>蒙太奇</code>图：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>montage *.png  -geometry +0+0 -resize 128x128^ -gravity center -crop 128x128+0+0 -tile 9x6 <span class="se">\</span>
+</span><span class='line'>  tw-insight-authors.png
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2017/03/tw-insight-authors-resized.png" alt="" /></p>
+
+<h4>后期处理</h4>
+
+<p><img src="/images/2017/03/tw-insights-12-resized.png" alt="" /></p>
+
+<p>可以看出，ThoughtWorks洞见中最为关键（Top 10）的信息依次是：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>团队
+</span><span class='line'>测试
+</span><span class='line'>开发
+</span><span class='line'>服务
+</span><span class='line'>技术
+</span><span class='line'>用户
+</span><span class='line'>代码
+</span><span class='line'>项目
+</span><span class='line'>需求
+</span><span class='line'>工作
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个和ThoughtWorks的专业服务公司的属性基本吻合。不过前20里竟然没有诸如<code>敏捷</code>，<code>精益</code>这些原本以为会入围的词。</p>
+
+<h4>完善</h4>
+
+<p>基本的图形设计完成之后，再加入一些视觉元素，比如ThoughtWorks的标志性图案（代表开发文化和多样性），以及对应的说明性文字（文字的大小也错落开，和文字云遥相呼应）：</p>
+
+<p><img src="/images/2017/03/tw-insights-16-resized.png" alt="" /></p>
+
+<h3>资料</h3>
+
+<p>文中使用了比较简单的<code>CountVectorizer</code>做统计，<code>sk-learn</code>还提供了其他的向量化机制。我使用<code>TdidfVectorizer</code>做了一些计算，不过可能由于语料库的尺寸原因，效果比较奇怪，就暂时没有采用这种方式。</p>
+
+<p>不过，使用<code>TDIDF</code>来做关键词抽取在文本处理上也算是必备的技能，这里列一些参考资料，有兴趣的可以进行进一步的探索。</p>
+
+<ol>
+<li><a href="https://github.com/abruzzi/tw-insights-viz">完整的代码</a>在此。</li>
+<li>阮一峰老师对<a href="http://www.ruanyifeng.com/blog/2013/03/tf-idf.html">TFIDF的解释文章</a></li>
+<li>陈皓（左耳朵耗子）对<a href="http://coolshell.cn/articles/8422.html">TFIDF的解释文章</a></li>
+</ol>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Qiu Juntao</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2017-03-12T22:03:00+08:00" pubdate data-updated="true">Mar 12<span>th</span>, 2017</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/category/thoughtworks/'>ThoughtWorks</a>, <a class='category' href='/category/data/'>data</a>, <a class='category' href='/category/infovis/'>infovis</a>, <a class='category' href='/category/visualization/'>visualization</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      <a href="/2017/03/whats-the-thoughtworks-insight-talking-about/">原始链接</a>，
+<strong>版权声明</strong>：自由转载-非商用-非衍生-保持署名| <a href='http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh'>Creative Commons BY-NC-ND 3.0</a>
+    </p>
+    
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2017/03/visualise-the-data-around-you/" title="Previous Post: 一张漂亮的可视化图表背后">&laquo; 一张漂亮的可视化图表背后</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2017/03/whats-the-thoughtworks-insight-talking-about/">ThoughtWorks洞见讲什么？</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2017/03/visualise-the-data-around-you/">一张漂亮的可视化图表背后</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2017/02/data-visualization-from-baby/">生活中的数据可视化之 -- 换尿布</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2017/02/frontend-page-performance-tuning/">如何提升页面渲染效率</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2017/01/why-top-programmers-hate-gui/">为什么优秀的程序员喜欢命令行</a>
+      </li>
+    
+  </ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - Qiu Juntao -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'icodeit';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://abruzzi.github.com/2017/03/whats-the-thoughtworks-insight-talking-about/';
+        var disqus_url = 'http://abruzzi.github.com/2017/03/whats-the-thoughtworks-insight-talking-about/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
