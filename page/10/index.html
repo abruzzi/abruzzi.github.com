@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="heroku 使用heroku，开发人员可以很容易的将自己的应用程序公开给世界上的其他用户使用，heroku会为你提供一个url，一些预设的空间如数据库（postgresql）等。这对于需要频繁远程showcase的场景提供了非常好的方式， &hellip;">
+  <meta name="description" content="一些闲话 虽然对开源社区没有任何杰出的贡献，但是我自己在业余时间开发的很多小东西都是开源的，有部分放在google code上，可是除了一个sTodo有几个用户外，其他的工具几乎都纯属自娱自乐。虽然当时做的时候自己非常投入，会各种YY，假设用户会需要这个功能，会需要那个功能，用户会需要脚本化， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,136 +78,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/01/developing-with-heroku/">将应用程序部署到heroku</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-01-26T19:02:00+08:00" pubdate data-updated="true">Jan 26<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>heroku</h3>
-
-<p>使用heroku，开发人员可以很容易的将自己的应用程序公开给世界上的其他用户使用，heroku会为你提供一个url，一些预设的空间如数据库（postgresql）等。这对于需要频繁远程showcase的场景提供了非常好的方式，当然对于开发人员向其他的开发人员或者最终用户展现自己的框架的外观/行为等场景也会非常有用。</p>
-
-<h3>在heroku上注册用户</h3>
-
-<p>首先，当然是在heroku上<a href="https://api.heroku.com/signup/devcenter">注册一个开发账户</a>，如果你已经注册过，就请接着第二步</p>
-
-<h3>下载heroku的本地Toolbox</h3>
-
-<p>heroku提供了一个很好用的<a href="https://toolbelt.heroku.com/">工具包</a>，通过这个工具包，开发人员可以很容易的对部署在heroku上的应用程序做操作。</p>
-
-<h3>在本地登陆heroku</h3>
-
-<p>如果没有上传过key的话，heroku会提醒你创建一个新的ssh公钥，然后上传到heroku（这个过程与使用github非常类似）</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku login
-</span><span class='line'>Enter your Heroku credentials.
-</span><span class='line'>Email: adam@example.com
-</span><span class='line'>Password: 
-</span><span class='line'>Could not find an existing public key.
-</span><span class='line'>Would you like to generate one? [Yn] 
-</span><span class='line'>Generating new SSH public key.
-</span><span class='line'>Uploading ssh public key /Users/adam/.ssh/id_rsa.pub</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果已经上传过key，则可以直接登陆</p>
-
-<h3>准备工作</h3>
-
-<p>在本地生成一个应用程序的基本结构，如：<code>Gemfile</code>，目录结构等。然后在本地配置好git环境，比如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git init
-</span><span class='line'>$ git add .
-</span><span class='line'>$ git commit -m "init"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>准备Procfile：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>web: bundle exec ruby app.rb -p $PORT -E production</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>app.rb</code>相当于你的应用程序的主入口(main)，<code>-E</code>指定运行环境（此处指定为production），你的应用程序可能会根据次设置来进行一些资源的选择（数据库指向，资源文件位置等）</p>
-
-<p>在上传之前，需要确保自己的应用程序可以在本地正常运行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>foreman start</span></code></pre></td></tr></table></div></figure>
-
-
-<p>应用程序将在本地的5000端口上运行，此时可以做一些简单的验证，保证应用程序运行正常。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ git add .
-</span><span class='line'>$ git commit -m "ready for deploy app to heroku"</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>上传你的App</h3>
-
-<p>这时，可以很轻易的将App上传到heroku了：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ heroku create
-</span><span class='line'>$ git push heroku master</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当然，第一次上传可能会比较慢（取决于你应用程序的大小），如果一切正常，heroku将会尝试根据你的Gemfile来安装依赖，安装完成之后，会尝试根据Procfile中的配置启动你的应用程序。</p>
-
-<p>如果你的应用程序会访问数据库（非postgresql的数据库），那么建议在Gemfile中指定当测试时使用该数据库，而在production环境中使用postgresql，因为heroku使用的正是postgresql：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>configure :test do
-</span><span class='line'>    DataMapper.setup(:default, ENV['DATABASE_URL'] || "local-db-url")
-</span><span class='line'>    DataMapper.finalize.auto_upgrade!
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我的应用在本地使用sqlite，而在heroku中使用其提供的postgresql。</p>
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>
@@ -1239,6 +1109,133 @@ one of my <em>smart</em> colleagues, and got this solution.</p>
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/10/customize-matcher-by-using-hamcrest/">Customize Matcher by Using Hamcrest</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-15T22:24:00+08:00" pubdate data-updated="true">Oct 15<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Although we can write tests all by the default matchers that hamcrest provided, but somehow we need the code to be more readable, and maintainable, so it&#8217;s a good way to try customize our own matchers.</p>
+
+<p>We discussed how to TDD in last post, and in the book class we talked:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldGetBookInfo</span><span class="o">(){</span>
+</span><span class='line'>    <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The Ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">book</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;The Ruby programming language&quot;</span><span class="o">));</span>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">book</span><span class="o">.</span><span class="na">getCategory</span><span class="o">(),</span> <span class="n">is</span><span class="o">(</span><span class="s">&quot;Development&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The default <em>is</em> matcher can get the job done, but not that readable, we can simply provide a customized matcher for this case:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Test</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">shouldGetBookInfoByMatcher</span><span class="o">(){</span>
+</span><span class='line'>    <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Book</span><span class="o">(</span><span class="s">&quot;The Ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assertThat</span><span class="o">(</span><span class="n">book</span><span class="o">,</span> <span class="n">BookMatcher</span><span class="o">.</span><span class="na">isCorrect</span><span class="o">(</span><span class="s">&quot;The Ruby programming language&quot;</span><span class="o">,</span> <span class="s">&quot;Development&quot;</span><span class="o">));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Thanks for the flexibility of hamcrest, just extends the <em>BaseMatcher<T></em> like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">class</span> <span class="nc">BookMatcher</span> <span class="kd">extends</span> <span class="n">BaseMatcher</span><span class="o">&lt;</span><span class="n">Book</span><span class="o">&gt;</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">String</span> <span class="n">category</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="nf">BookMatcher</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">category</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">category</span> <span class="o">=</span> <span class="n">category</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">matches</span><span class="o">(</span><span class="n">Object</span> <span class="n">item</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">Book</span> <span class="n">book</span> <span class="o">=</span> <span class="o">(</span><span class="n">Book</span><span class="o">)</span><span class="n">item</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">book</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">name</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">book</span><span class="o">.</span><span class="na">getCategory</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">category</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">describeTo</span><span class="o">(</span><span class="n">Description</span> <span class="n">description</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">BookMatcher</span> <span class="nf">isCorrect</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">category</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">new</span> <span class="nf">BookMatcher</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">category</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/page/11/">&larr; Older</a>
@@ -1256,10 +1253,6 @@ one of my <em>smart</em> colleagues, and got this solution.</p>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/2017/03/whats-the-thoughtworks-insight-talking-about/">ThoughtWorks洞见讲什么？</a>
-      </li>
-    
-      <li class="post">
         <a href="/2017/03/visualise-the-data-around-you/">一张漂亮的可视化图表背后</a>
       </li>
     
@@ -1273,6 +1266,10 @@ one of my <em>smart</em> colleagues, and got this solution.</p>
     
       <li class="post">
         <a href="/2017/01/why-top-programmers-hate-gui/">为什么优秀的程序员喜欢命令行</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2017/01/why-ddd-is-so-hard/">实施领域驱动设计的正确姿势</a>
       </li>
     
   </ul>
