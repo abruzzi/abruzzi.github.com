@@ -61,14 +61,15 @@ insights.thoughtworkers.org/agile-craftman/index.html
 
 1.  抽取HTML中的文本信息
 1.  将文本分词成列表
-1.  计算列表中所有词的[TFIDF](https://zh.wikipedia.org/wiki/Tf-idf)值
+1.  <del>计算列表中所有词的[TFIDF](https://zh.wikipedia.org/wiki/Tf-idf)值</del>
+1.  计算每个词出现的频率
 1.  将结果持久化到本地
 
 这里需要用到这样一些pyhton库：
 
 1.  BeautifulSoap 解析HTML文档并抽取文本
 1.  jieba 分词
-1.  sk-learn 计算TFIDF值
+1.  sk-learn 计算单词出现频率
 1.  pandas 其他数据处理
 
 
@@ -89,18 +90,18 @@ def extract_segments(data):
     return [seg.strip() for seg in seg_list if len(seg) > 1]
 
 
-def tfidf_calc():        
+def keywords_calc():        
     corpus = [" ".join(item) for item in map(extract_segments, extract_all_text())]
 
-tfidf_calc()
+keywords_calc()
 ```
 
-`extract_post_content`函数用来打开一篇博客的HTML文件，并提取其中的`div.entry-content`中的文本内容。`extract_all_text`函数用来对文件`filepaths`中的每一行（一篇洞见文章的本地文件路径）都调用一次`extract_post_content`。而函数`extract_segments`会使用`jieba`来对每篇文章进行分词，并生成一个单词组成给的列表。最后，在函数`tfidf_calc`中，通过一个列表推导式来生成语料库。
+`extract_post_content`函数用来打开一篇博客的HTML文件，并提取其中的`div.entry-content`中的文本内容。`extract_all_text`函数用来对文件`filepaths`中的每一行（一篇洞见文章的本地文件路径）都调用一次`extract_post_content`。而函数`extract_segments`会使用`jieba`来对每篇文章进行分词，并生成一个单词组成给的列表。最后，在函数`keywords_calc`中，通过一个列表推导式来生成语料库。
 
 有了语料库之后，很容易使用`sk-learn`来进行计算：
 
 ```py
-def tfidf_calc():        
+def keywords_calc():        
     corpus = [" ".join(item) for item in map(extract_segments, extract_all_text())]
     
     with open('stopwords-utf8.txt') as f:
@@ -109,35 +110,35 @@ def tfidf_calc():
     content.extend(['来说', '事情', '提供', '带来', '发现'])
     stopwords = [x.strip().decode('utf-8') for x in content]
 
-    vectorizer = TfidfVectorizer(min_df=1, smooth_idf=False, sublinear_tf=True, stop_words=stopwords)
-    vectorizer.fit_transform(corpus)
+    vectorizer = CountVectorizer(stop_words=stopwords)
+    fit = vectorizer.fit_transform(corpus)
 ```
 
 当然，由于处理的是中文，我们需要提供`停止词`来避免对无意义的词的统计（`这个`，`那个`，`然后`等等基本上每篇都会出现多次的词）。在经过`transform`之后，我们就得到了一个稀疏矩阵和词汇表，以及对应的tdidf的值，我们使用`pandas`提供的DataFrame来进行排序和存储即可：
 
 ```py
-def tfidf_calc(): 
+def keywords_calc(): 
 	
-	#...
-
-    data = dict(zip(vectorizer.get_feature_names(), vectorizer.idf_))
-    result = DataFrame(data.items(), columns=['word', 'tfidf']).sort_values(by='tfidf', ascending=True).head(50)
-
-    result.to_csv('top-50-words-in-tw-insight.csv')
+	#...   
+    data = dict(zip(vectorizer.get_feature_names(), fit.toarray().sum(axis=0)))
+    top_100 = DataFrame(data.items(), columns=['word', 'freq'])
+        .sort_values('freq', ascending=False).head(100)
+    top_100.to_csv('top-100-words-most-used-in-tw-insights.csv')
 ```
 
+运行结果如下：
+
 ```
-index,word,tfidf
-15809,分享,1.06875559542
-5228,方式,1.37439147148
-8815,时间,1.39884256735
-5128,工作,1.40380535669
-21799,过程,1.47066830192
-4225,开发,1.48675443967
-12707,项目,1.49217450714
-10527,技术,1.49762411191
-20900,简单,1.49762411191
-18756,团队,1.59512247639
+index,word,freq
+18761,团队,1922
+12479,测试,1851
+4226,开发,1291
+1910,服务,1288
+10531,技术,1248
+7081,用户,1145
+17517,代码,1078
+12712,项目,1062
+4957,需求,1049
 ...
 ```
 
@@ -146,15 +147,15 @@ index,word,tfidf
 #### 单词云
 
 ```js
-d3.csv('top-16-words-in-tw-insight.csv', function(err, data) {
+d3.csv('top-20-words-in-tw-insight.csv', function(err, data) {
     data.forEach(function(d) {
-        d.tfidf = +d.tfidf
+        d.freq = +d.freq
     });
 
     d3.layout.cloud().size([1600, 900])
         .words(data)
         .rotate(0)
-        .fontSize(function(d) { return Math.round(54/(d.tfidf-1)); })
+        .fontSize(function(d) { return Math.round(d.freq/10); })
         .on("end", draw)
         .start();
 
@@ -174,7 +175,7 @@ function draw(words) {
         .selectAll("text")
         .data(words)
         .enter().append("text")
-        .style("font-size", function(d) { return Math.round(54/(d.tfidf-1)) + "px"; })
+        .style("font-size", function(d) { return Math.round(d.freq/10) + "px"; })
         .style("fill", function(d, i) { return color(i); })
         .attr("transform", function(d) {
             return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
@@ -183,7 +184,7 @@ function draw(words) {
 }
 ```
 
-![](/images/2017/03/tw-insights-gray-resized.png)
+![](/images/2017/03/tw-insights-color-18-resized.png)
 
 #### 背景图制作
 
@@ -205,33 +206,37 @@ montage *.png  -geometry +0+0 -resize 128x128^ -gravity center -crop 128x128+0+0
 
 #### 后期处理
 
-![](/images/2017/03/tw-insights-10-resized.png)
+![](/images/2017/03/tw-insights-12-resized.png)
 
-可以看出，ThoughtWorks洞见中最为关键（Top 16）的信息依次是：
+可以看出，ThoughtWorks洞见中最为关键（Top 10）的信息依次是：
 
 ```
-分享
-方式
-时间
-工作
-过程
-开发
-项目
-技术
-简单
 团队
-情况
+测试
+开发
+服务
+技术
+用户
 代码
-设计
-系统
-解决
-功能
+项目
+需求
+工作
 ```
 
-`分享`一词位居榜首还是略显意外，而且前50里竟然没有诸如`敏捷`，`精益`等原本以为会入围的词。
+这个和ThoughtWorks的专业服务公司的属性基本吻合。不过前20里竟然没有诸如`敏捷`，`精益`这些原本以为会入围的词。
+
+#### 完善
+
+基本的图形设计完成之后，再加入一些视觉元素，比如ThoughtWorks的标志性图案（代表开发文化和多样性），以及对应的说明性文字（文字的大小也错落开，和文字云遥相呼应）：
+
+![](/images/2017/03/tw-insights-16-resized.png)
 
 ### 资料
 
+文中使用了比较简单的`CountVectorizer`做统计，`sk-learn`还提供了其他的向量化机制。我使用`TdidfVectorizer`做了一些计算，不过可能由于语料库的尺寸原因，效果比较奇怪，就暂时没有采用这种方式。
+
+不过，使用`TDIDF`来做关键词抽取在文本处理上也算是必备的技能，这里列一些参考资料，有兴趣的可以进行进一步的探索。
+
 1.  [完整的代码](https://github.com/abruzzi/tw-insights-viz)在此。
 1.  阮一峰老师对[TFIDF的解释文章](http://www.ruanyifeng.com/blog/2013/03/tf-idf.html)
-1.  陈皓对[TFIDF的解释文章](http://coolshell.cn/articles/8422.html)
+1.  陈皓（左耳朵耗子）对[TFIDF的解释文章](http://coolshell.cn/articles/8422.html)
