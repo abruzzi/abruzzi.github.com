@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="示例的需求描述 今天我们需要完成的需求是这样的： 对于一个给定的字符串，如果其中元音字母数目在整个字符串中的比例超过了30%，则将该元音字母替换成字符串mommy，额外的，在替换时，如果有连续的元音出现，则仅替换一次。 如果用实例化需求(Specification by Example) &hellip;">
+  <meta name="description" content="Github的主页服务 Github提供了Github Pages的服务来帮助你为自己的项目提供主页。目前，这种主页服务分为两种：用户主页和项目主页。其中用户主页已经称为广大开发者的标配，有很多的开发者已经将自己的博客迁移到了Github上，其中所用到的核心机制就是Github Pages。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,128 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2014/11/publish-your-web-design/">发布你的Web设计</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-21T22:24:00+08:00" pubdate data-updated="true">Nov 21<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Github的<code>主页服务</code></h3>
+
+<p>Github提供了<a href="https://help.github.com/articles/user-organization-and-project-pages/">Github Pages</a>的服务来帮助你为自己的项目提供<code>主页</code>。目前，这种主页服务分为两种：<code>用户主页</code>和<code>项目主页</code>。其中<code>用户主页</code>已经称为广大开发者的标配，有很多的开发者已经将自己的博客迁移到了Github上，其中所用到的核心机制就是<code>Github Pages</code>。</p>
+
+<p>这篇文章主要介绍如何使用<code>项目主页</code>。<code>项目主页</code>，顾名思义，就是你项目的主页，本来设计的初衷是为你的项目编写介绍文档，不过Github只提供对静态内容的托管。如果需要添加评论，可以使用<a href="https://disqus.com/home/">disqus</a>的服务，而和微博，flickr等集成都有现成的JavaScript片段，这里也不做详细讨论。</p>
+
+<p>你现在正在看的我的博客正是托管在Github上，不过我对域名进行了自定义而已，如何做到这一点可以<a href="https://help.github.com/articles/tips-for-configuring-a-cname-record-with-your-dns-provider/">查看此处</a>的文档。</p>
+
+<p>我之前发布的一个<code>我去过的地方</code>就使用了<code>项目主页</code>的服务，该项目的<a href="https://github.com/abruzzi/placesihavebeen">地址在此</a>，<a href="http://icodeit.org/placesihavebeen/">最终的页面</a>在这里。</p>
+
+<p><img src="/images/2014/11/places-i-have-been-resized.png" alt="places I have been" /></p>
+
+<h4>Web设计样板工程</h4>
+
+<p>我在Github上创建了一个<a href="https://github.com/abruzzi/design-boilerplate">设计样板工程</a>，你可以使用这个工程快速的搭建一个完整的样板工程，其中包含了：</p>
+
+<ol>
+<li>一个基本的HTML5的文档</li>
+<li>SCSS环境</li>
+<li>Guard环境，可以与LiveReload集成</li>
+</ol>
+
+
+<p>具体的操作可以<a href="https://github.com/abruzzi/design-boilerplate/blob/master/README.md">参看文档</a>。</p>
+
+<h4>发布你的Web设计</h4>
+
+<p>Github提供的<code>项目主页服务</code>可以帮助你快速将设计发布，你所需要做的就是为项目创建一个名叫<code>gh-pages</code>的分支，然后将<code>HTML/CSS/JS</code>放在这个分支上即可。</p>
+
+<p>假设你在github上的用户名为<code>wumai</code>(一时间想不到好名字，看看窗外，就叫<strong>雾霾</strong>吧)，那么根据惯例，你的Github地址为<code>https://github.com/wumai</code>。这时候，假设你的项目（repo）的名称为<code>design-1</code>，则你的<code>项目主页地址</code>为<code>https://wumai.github.io/design-1</code>。</p>
+
+<p>知道了你的<code>项目主页地址</code>，你就需要为这个页面添加内容了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git clone git@github.com:abruzzi/design-boilerplate.git design-1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>克隆了<code>design-boilerplate</code>之后，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">cd </span>design-1
+</span><span class='line'><span class="nv">$ </span>git remote -v
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>你可以看到当前的项目是和<code>git@github.com:abruzzi/design-boilerplate.git</code>关联的，</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>origin git@github.com:abruzzi/design-boilerplate.git <span class="o">(</span>fetch<span class="o">)</span>
+</span><span class='line'>origin    git@github.com:abruzzi/design-boilerplate.git <span class="o">(</span>push<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>你需要先和这个样板工程解除绑定：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git remote remove origin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后你需要在Github上创建一个新的Repo，假设命名为<code>design-1</code>，这时候，将这个新创建的Repo作为你本地的remote：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git remote add -u origin git@github.com:wumai/design-1.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>与远程连接之后，我们可以开始实际的设计了，不过在这之前，需要先创建一个<code>gh-pages</code>分支：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git checkout -b gh-pages
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这条命令会创建<code>gh-pages</code>分支，并切换到该分支，这样后续的修改都会在该分支进行，这也正是我们想要的。开发调试之后，就可以将这个分支push到Github：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git push -u origin gh-pages
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>好了，现在打开地址<code>http://wumai.github.io/design-1</code>，应该就可以看到你自己的设计了。</p>
+
+<p><img src="/images/2014/11/web-design-resized.png" alt="web design" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2481,350 +2603,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/04/render-geojson-by-using-openlayers/">全球地震信息的可视化（使用OpenLayers）</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-04-15T21:33:00+08:00" pubdate data-updated="true">Apr 15<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h4>OpenLayers</h4>
-
-<p>使用<a href="http://openlayers.org/">OpenLayers</a>可以很容易的搭建基于Web的GIS系统，OpenLayers支持不同的数据源(符合WMS协议的服务器，Google Maps API, Bing Maps，KML以及<a href="http://geojson.org/">GeoJSON</a>等等)。通过将不同的数据源的数据整合，我们可以开发出丰富而用户友好的GIS系统。</p>
-
-<p>OpenLayers可以轻松的处理GeoJSON数据，并将其生成矢量层，我们可以将这个层叠加在其他数据源（比如OSM）提供的地图上，以得到一个完整的小应用。</p>
-
-<p>最后的运行结果是这样的：</p>
-
-<p><img src="/images/2014/04/openlayers-earthquake-resized.png" alt="image" /></p>
-
-<h4>GeoJSON</h4>
-
-<p><a href="http://www.usgs.gov/aboutusgs/">美国地理信息调查局</a>是一个科学组织，他公开了很多地球上的灾难信息，比如对地震的统计，并提供编程接口。它公开的地震统计信息，包含全世界各地报告过的地震，以及全美所有检测到的地震，并以多种周期（小时，天，周，月等），多种格式（GeoJSON，KML，Atom等），以便应用程序的开发者只用这些数据。</p>
-
-<h4>实现</h4>
-
-<h5>设置基本环境</h5>
-
-<p>我们将借助bower来安装所有的代码依赖。首先，我们需要bower将所有的包都安装在<code>components</code>目录下，这个可以通过在当前目录的<code>.bowerrc</code>文件中制定<code>directory</code>：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="nt">&quot;directory&quot;</span><span class="p">:</span> <span class="s2">&quot;components&quot;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后运行bower安装jquery以及openlayers：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>bower install jquery
-</span><span class='line'><span class="nv">$ </span>bower install openlayers
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>通过bower安装OpenLayers之后，可以通过OpenLayers自带的build工具将所有的源码合并压缩为一个文件：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">cd </span>components/openlayers/build
-</span><span class='line'><span class="nv">$ </span>./build.py <span class="c">#将会在当前目录下生成一个OpenLayers.js的文件</span>
-</span><span class='line'><span class="nv">$ </span>mv OpenLayers.js ../
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后，创建一个简单的HTML文件，引用jquery.js和OpenLayers.js，以及我们的入口脚本app.js，本文所有的代码都只是修改这个文件。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="cp">&lt;!DOCTYPE HTML&gt;</span>
-</span><span class='line'><span class="nt">&lt;html&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;head&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;content-type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html; charset=utf-8&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;title&gt;</span>Earthquake distribution<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;style.css&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/head&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;body&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;map&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;components/jquery/jquery.js&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;components/openlayers/OpenLayers.js&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;app.js&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>还可以运行<code>bower init</code>来将生成<code>bower.json</code>，以方便别人使用我们的应用：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span> <span class="nx">bower</span> <span class="nx">init</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h5>基本代码</h5>
-
-<p>一个最简单的OpenLayers应用，只需要7行代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="s2">&quot;map&quot;</span><span class="p">);</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">osm</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Layer</span><span class="p">.</span><span class="nx">OSM</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">addLayers</span><span class="p">([</span><span class="nx">osm</span><span class="p">]);</span>
-</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">zoomToMaxExtent</span><span class="p">();</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这段代码在id为<code>map</code>的HTML元素创建了一个地图，这个地图上有一个叫OSM的层（即<a href="http://www.openstreetmap.org/">OpenStreetMap</a>，一个开源，开放的地图平台），并将地图缩小到边界范围（以获得最大的视野）:</p>
-
-<p><img src="/images/2014/04/openlayers-osm-resized.png" alt="image" /></p>
-
-<h5>生成矢量层</h5>
-
-<p>通过GeoJSON生成矢量图非常容易：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">geo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Layer</span><span class="p">.</span><span class="nx">Vector</span><span class="p">(</span><span class="s2">&quot;EarthQuake&quot;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">strategies</span><span class="o">:</span> <span class="p">[</span><span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Strategy</span><span class="p">.</span><span class="nx">Fixed</span><span class="p">()],</span>
-</span><span class='line'>    <span class="nx">protocol</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Protocol</span><span class="p">.</span><span class="nx">HTTP</span><span class="p">({</span>
-</span><span class='line'>        <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/all_day.geojson&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">format</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Format</span><span class="p">.</span><span class="nx">GeoJSON</span><span class="p">({</span><span class="nx">ignoreExtraDims</span><span class="o">:</span> <span class="kc">true</span><span class="p">})</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意此处的<a href="http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson">all_day.geojson</a>是从USGS网站上下载的，过去一天中世界各地的所有地震统计。</p>
-
-<p>上边的代码创建了一个名称为<code>EarthQuake</code>的矢量层，<code>strategies</code>中的Fixed策略表示仅请求一次资源，然后缓存在前端，不再请求。<code>protocol</code>表明数据来源为<code>all_day.geojson</code>，格式为<code>OpenLayers.Format.GeoJSON</code>。由于USGS返回的地理信息除了经纬度还包含深度，而OpenLayers默认只处理经纬度的，因此需要此处的<code>ignoreExtraDims</code>来忽略那个额外的深度信息。</p>
-
-<p><img src="/images/2014/04/openlayers-geojson-resized.png" alt="image" /></p>
-
-<h5>定制样式</h5>
-
-<p>虽然我们已经加上了新的层，也可以看到很多表示地震的点信息，但是并不能看出哪些地震是严重的，比如里氏3级以下的地震，几乎没有危害，可以标注成一种颜色；而更高震级的可以标记成另外一种颜色。</p>
-
-<p>OpenLayers可以很容易的做到这个定制化:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">style</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Style</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">ruleLow</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Rule</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">filter</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Filter</span><span class="p">.</span><span class="nb">Function</span><span class="p">({</span>
-</span><span class='line'>        <span class="nx">evaluate</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">properties</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">return</span> <span class="nx">properties</span><span class="p">.</span><span class="nx">mag</span> <span class="o">&lt;</span> <span class="mf">3.0</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}),</span>
-</span><span class='line'>  <span class="nx">symbolizer</span><span class="o">:</span> <span class="p">{</span><span class="nx">pointRadius</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span> <span class="nx">fillColor</span><span class="o">:</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
-</span><span class='line'>               <span class="nx">fillOpacity</span><span class="o">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="nx">strokeColor</span><span class="o">:</span> <span class="s2">&quot;black&quot;</span><span class="p">}</span>
-</span><span class='line'><span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">ruleHigh</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Rule</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">filter</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Filter</span><span class="p">.</span><span class="nb">Function</span><span class="p">({</span>
-</span><span class='line'>        <span class="nx">evaluate</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">properties</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>            <span class="k">return</span> <span class="nx">properties</span><span class="p">.</span><span class="nx">mag</span> <span class="o">&gt;=</span> <span class="mf">3.0</span><span class="p">;</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="p">}),</span>
-</span><span class='line'>    <span class="nx">symbolizer</span><span class="o">:</span> <span class="p">{</span><span class="nx">pointRadius</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="nx">fillColor</span><span class="o">:</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span>
-</span><span class='line'>               <span class="nx">fillOpacity</span><span class="o">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="nx">strokeColor</span><span class="o">:</span> <span class="s2">&quot;black&quot;</span><span class="p">}</span>
-</span><span class='line'><span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">style</span><span class="p">.</span><span class="nx">addRules</span><span class="p">([</span><span class="nx">ruleLow</span><span class="p">,</span> <span class="nx">ruleHigh</span><span class="p">]);</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">geo</span><span class="p">.</span><span class="nx">styleMap</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">StyleMap</span><span class="p">(</span><span class="nx">style</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>首先创建一个Style对象，为Style添加两条规则Rule，然后将Style对象包装成StyleMap并赋值给表示地震的矢量层<code>earthquake</code>。</p>
-
-<p>对于规则ruleLow，我们定义了，当一个feature的属性值mag(震级)小于三的时候后，使用绿色的，半径为3px的小圆圈来表示。而ruleHigh则定义了当震级大于等于三的时候，用红色，半径为5px的圆圈来表示。</p>
-
-<p><img src="/images/2014/04/openlayers-geojson-styling-resized.png" alt="image" /></p>
-
-<h5>加上事件处理</h5>
-
-<p>虽然我们已经可以直观的根据震级不同而看到不同颜色的点，但是整个应用仍然没有多少意义：它不具备于用户的交互能力。我们需要添加上事件处理，当用户点击地图上的一个圆点的时候，应该看到一个更详细的窗口。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">selectControl</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Control</span><span class="p">.</span><span class="nx">SelectFeature</span><span class="p">(</span><span class="nx">geo</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">onSelect</span><span class="o">:</span> <span class="nx">onFeatureSelect</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">onUnselect</span><span class="o">:</span> <span class="nx">onFeatureUnselect</span>
-</span><span class='line'><span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">map</span><span class="p">.</span><span class="nx">addControl</span><span class="p">(</span><span class="nx">selectControl</span><span class="p">);</span>
-</span><span class='line'><span class="nx">selectControl</span><span class="p">.</span><span class="nx">activate</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">onFeatureSelect</span><span class="p">(</span><span class="nx">feature</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">html</span> <span class="o">=</span> <span class="s2">&quot;&lt;span&gt;&quot;</span><span class="o">+</span><span class="nx">feature</span><span class="p">.</span><span class="nx">attributes</span><span class="p">.</span><span class="nx">title</span><span class="o">+</span><span class="s2">&quot;&lt;/span&gt;&quot;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">popup</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Popup</span><span class="p">.</span><span class="nx">FramedCloud</span><span class="p">(</span><span class="s2">&quot;popup&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="nx">feature</span><span class="p">.</span><span class="nx">geometry</span><span class="p">.</span><span class="nx">getBounds</span><span class="p">().</span><span class="nx">getCenterLonLat</span><span class="p">(),</span>
-</span><span class='line'>            <span class="kc">null</span><span class="p">,</span>
-</span><span class='line'>            <span class="nx">html</span><span class="p">,</span>
-</span><span class='line'>            <span class="kc">null</span><span class="p">,</span>
-</span><span class='line'>            <span class="kc">true</span>
-</span><span class='line'>        <span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">popup</span><span class="p">.</span><span class="nx">panMapIfOutOfView</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-</span><span class='line'>    <span class="nx">popup</span><span class="p">.</span><span class="nx">autoSize</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">feature</span><span class="p">.</span><span class="nx">popup</span> <span class="o">=</span> <span class="nx">popup</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">addPopup</span><span class="p">(</span><span class="nx">popup</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">onFeatureUnselect</span><span class="p">(</span><span class="nx">feature</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">map</span><span class="p">.</span><span class="nx">removePopup</span><span class="p">(</span><span class="nx">feature</span><span class="p">.</span><span class="nx">popup</span><span class="p">);</span>
-</span><span class='line'>    <span class="nx">feature</span><span class="p">.</span><span class="nx">popup</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
-</span><span class='line'>    <span class="nx">feature</span><span class="p">.</span><span class="nx">popup</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们在地图上添加了一个<code>SelectFeature</code>元素，并注册了回调函数：当矢量层中的矢量被选中之后，函数<code>onFeatureSelect</code>将被执行，我们可以在这个函数中添加对弹出窗口的控制。当<code>onFeatureSelect</code>执行时，OpenLayers会将当前的Feature传递进来，我们可以动态的取得震级，标题，链接等信息，并展现给最终用户。</p>
-
-<p><img src="/images/2014/04/openlayers-geojson-popup-resized.png" alt="[image]" /></p>
-
-<p>如果将数据源扩大到本周的所有地震：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">geo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Layer</span><span class="p">.</span><span class="nx">Vector</span><span class="p">(</span><span class="s2">&quot;EarthQuake&quot;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">strategies</span><span class="o">:</span> <span class="p">[</span><span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Strategy</span><span class="p">.</span><span class="nx">Fixed</span><span class="p">()],</span>
-</span><span class='line'>    <span class="nx">protocol</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Protocol</span><span class="p">.</span><span class="nx">HTTP</span><span class="p">({</span>
-</span><span class='line'>        <span class="nx">url</span><span class="o">:</span> <span class="s1">&#39;/all_week.geojson&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="nx">format</span><span class="o">:</span> <span class="k">new</span> <span class="nx">OpenLayers</span><span class="p">.</span><span class="nx">Format</span><span class="p">.</span><span class="nx">GeoJSON</span><span class="p">({</span><span class="nx">ignoreExtraDims</span><span class="o">:</span> <span class="kc">true</span><span class="p">})</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2014/04/openlayers-geojson-weekly-resized.png" alt="image" /></p>
-
-<p>完整的代码示例<a href="https://github.com/abruzzi/earthquake-viz">可以看这里</a>。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/7/">&larr; Older</a>
@@ -2842,6 +2620,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2017/07/tips-for-newbies/">如何成为“超级”程序员？</a>
+      </li>
+    
+      <li class="post">
         <a href="/2017/03/whats-the-thoughtworks-insight-talking-about/">ThoughtWorks洞见讲什么？</a>
       </li>
     
@@ -2855,10 +2637,6 @@
     
       <li class="post">
         <a href="/2017/02/frontend-page-performance-tuning/">如何提升页面渲染效率</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2017/01/why-top-programmers-hate-gui/">为什么优秀的程序员喜欢命令行</a>
       </li>
     
   </ul>

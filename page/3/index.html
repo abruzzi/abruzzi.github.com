@@ -9,11 +9,9 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="服务器端应用的持续交付 本文将使用一些免费的服务来为你的项目搭建持续交付平台，这些服务包括 持续集成环境
-持续部署环境
-服务端应用托管 以及一些可以用于本地开发使用的开源工具如： 基于Node的构建monitor
-Heroku的命令行工具
-Travis CI的命令行工具 除此之外， &hellip;">
+  <meta name="description" content="客户端程序的的持续交付 上篇文章介绍了如何使用一些免费的服务来实现服务器端API的持续集成、持续交付环境的搭建。有了服务端，自然需要有消费者，在本文中我们将使用另外一个工具来实现纯前端的站点的部署。 其中包括： 持续集成（单元测试，集成测试等）
+持续部署/持续交付
+静态站点托管 除此之外， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +80,350 @@ Travis CI的命令行工具 除此之外， &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2016/01/a-poor-mans-cd-part2/">穷人的持续集成与持续交付（下）</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-10T14:05:00+08:00" pubdate data-updated="true">Jan 10<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>客户端程序的的持续交付</h1>
+
+<p><a href="http://icodeit.org/2016/01/a-poor-mans-cd-part1/">上篇文章</a>介绍了如何使用一些免费的服务来实现服务器端API的持续集成、持续交付环境的搭建。有了服务端，自然需要有消费者，在本文中我们将使用另外一个工具来实现纯前端的站点的部署。</p>
+
+<p>其中包括：</p>
+
+<ul>
+<li>持续集成（单元测试，集成测试等）</li>
+<li>持续部署/持续交付</li>
+<li>静态站点托管</li>
+</ul>
+
+
+<p>除此之外，我们还会涉及到：</p>
+
+<ul>
+<li><a href="https://github.com/natritmeyer/site_prism">自动化UI测试site_prism</a></li>
+<li>静态站点的发布脚本</li>
+<li>aws的<a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">命令行工具</a></li>
+</ul>
+
+
+<p>我们的应用最后看起来是这样子的。</p>
+
+<p><img src="/images/2016/01/bookmarks-app-resized.png" alt="bookmarks app" /></p>
+
+<h2>技术选型</h2>
+
+<p>我们在本文中，将采取另外一套免费服务来完成环境的搭建</p>
+
+<ul>
+<li><a href="http://www.thoughtworks.com/">ThoughtWorks</a>出品的<a href="https://snap-ci.com/">Snap CI</a>作为持续集成/持续交付环境</li>
+<li><a href="https://console.aws.amazon.com/s3/home?region=us-west-2">AWS的S3</a>作为应用发布的地方</li>
+</ul>
+
+
+<p><code>Snap CI</code>是一个非常易于使用的持续交付环境，由于很多关于持续集成，持续交付的概念和实践都跟<code>ThoughtWorks</code>有关，所以这个产品对于构建，流水线，部署等等的支持也都做的非常好。</p>
+
+<p><code>S3</code>是亚马逊的云存储平台，我们可以将静态资源完全托管在其上。<code>S3</code>的另一个好处是它可以将你的文件变成一个Web Site，比如你的目录中有<code>index.html</code>，这个文件就可以作为你的站点首页被其他人访问。这个对于我们这个前后端分离项目来说非常有用，我们的<code>css</code>，<code>js</code>，<code>font</code>文件，还有入口文件<code>index.html</code>都可以托管于其上。</p>
+
+<h2>实例</h2>
+
+<p>在本文的例子中，我们将定义3个<code>stage</code>。<code>Snap CI</code>将一次发布分为若干个<code>stage</code>，每个<code>stage</code>只做一件事情，如果一个<code>stage</code>失败了，后边的就不会接着执行。</p>
+
+<p>我们的3个<code>stage</code>分别为：</p>
+
+<ol>
+<li>单元测试</li>
+<li>集成测试</li>
+<li>部署</li>
+</ol>
+
+
+<h3>准备工作</h3>
+
+<p><code>bookmarks-frontend</code>是一个纯前端的应用，它会消费后端提供的API，但是其实它并不知道（也不应该知道）后端的API部署在什么地方：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">feeds</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">backend</span><span class="o">+</span><span class="s1">&#39;/api/feeds&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">favorite</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">backend</span><span class="o">+</span><span class="s1">&#39;/api/fav-feeds/1&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">favorite</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">favorite</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="c1">//...</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>由于我们在本地开发时，需要<code>backend</code>指向本地的服务器，而发布之后，则希望它指向<a href="http://icodeit.org/2016/01/a-poor-mans-cd-part1/">上一篇文章</a>中提到的服务器，因此我们需要编写一点构建脚本来完成这件事儿：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">backend</span> <span class="o">=</span> <span class="s1">&#39;http://quiet-atoll-8237.herokuapp.com&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;prepareConfig&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">([</span><span class="s1">&#39;assets/templates/config.js&#39;</span><span class="p">])</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/#backend#/g</span><span class="p">,</span> <span class="s1">&#39;http://localhost:8100&#39;</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">gulp</span><span class="p">.</span><span class="nx">dest</span><span class="p">(</span><span class="s1">&#39;assets/script/&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;prepareRelease&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">gulp</span><span class="p">.</span><span class="nx">src</span><span class="p">([</span><span class="s1">&#39;assets/templates/config.js&#39;</span><span class="p">])</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/#backend#/g</span><span class="p">,</span> <span class="nx">backend</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">gulp</span><span class="p">.</span><span class="nx">dest</span><span class="p">(</span><span class="s1">&#39;assets/script/&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们定义了两个<code>gulp</code>的task，本地开发时，使用<code>prepareConfig</code>，要发布时，使用<code>prepareRelease</code>，然后定义一个简单的模板文件<code>config.js</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">backend</span><span class="o">:</span> <span class="s1">&#39;#backend#&#39;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后可以很简单的包装一下，方便本地开发和发布：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;dev&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;prepareConfig&#39;</span><span class="p">,</span> <span class="s1">&#39;browserify&#39;</span><span class="p">,</span> <span class="s1">&#39;concatcss&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;build&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;prepareConfig&#39;</span><span class="p">,</span> <span class="s1">&#39;script&#39;</span><span class="p">,</span> <span class="s1">&#39;css&#39;</span><span class="p">]);</span>
+</span><span class='line'><span class="nx">gulp</span><span class="p">.</span><span class="nx">task</span><span class="p">(</span><span class="s1">&#39;release&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;prepareRelease&#39;</span><span class="p">,</span> <span class="s1">&#39;script&#39;</span><span class="p">,</span> <span class="s1">&#39;css&#39;</span><span class="p">]);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，我们在本地开发时，只需要简单的执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>gulp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>即可。而在发布阶段，只需要执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>gulp release
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>单元测试</h3>
+
+<p>我们在<code>Snap CI</code>上将<code>github</code>上的代码库关联起来，然后添加一个名叫<code>unit-test</code>的<code>stage</code>，指定这个<code>stage</code>对应的命令为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>npm install
+</span><span class='line'>gulp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2016/01/snap-ci-unit-resized.png" alt="Snap CI unit" /></p>
+
+<p>这样，每当我们有新的提交之后，<code>Snap CI</code>都会拿到新代码，并执行上述命令，如果执行成功，则本地构建成功。</p>
+
+<h3>集成测试</h3>
+
+<p>由于采取的是<strong>前后端分离</strong>的策略，我们的应用可以完全独立与后端进行开发，因此我们设置了一个<code>fake server</code>，具体细节可以参考<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">我之前的博客</a>，也可以看源码。不过这里我们要为集成测试编写一个脚本，并在<code>Snap CI</code>上执行。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">export </span><span class="nv">PORT</span><span class="o">=</span>8100
+</span><span class='line'>bundle install
+</span><span class='line'>
+</span><span class='line'><span class="c"># launch the application</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;launch the application&quot;</span>
+</span><span class='line'>ruby app.rb 2&gt;&amp;1 &amp;
+</span><span class='line'><span class="nv">PID</span><span class="o">=</span><span class="nv">$!</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># wait for it to start up</span>
+</span><span class='line'>sleep 3
+</span><span class='line'>
+</span><span class='line'><span class="c"># run the rspec tests and record the status</span>
+</span><span class='line'>rspec
+</span><span class='line'><span class="nv">RES</span><span class="o">=</span><span class="nv">$?</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># terminate after rspec</span>
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;terminate the application&quot;</span>
+</span><span class='line'><span class="nb">kill</span> -9 <span class="nv">$PID</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># now we know whether the rspec success or not</span>
+</span><span class='line'><span class="nb">exit</span> <span class="nv">$RES</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个脚本中，首先安装所有的<code>gems</code>，然后启动<code>fake server</code>并将这个server放置在后台运行，然后执行<code>rspec</code>。当<code>rspec</code>测试执行完成之后，我们终止服务进行，然后返回结果状态码。</p>
+
+<p>这里使用了<code>capybara</code>和<code>poltergeist</code>来做UI测试，<code>capybara</code>会驱动<code>phantomjs</code>来在内存中运行浏览器，并执行定义好的<code>UI</code>测试，比如此处，我们的UI测试：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">describe</span> <span class="s1">&#39;Feeds List Page&#39;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">let</span><span class="p">(</span><span class="ss">:list_page</span><span class="p">)</span> <span class="p">{</span><span class="no">FeedListPage</span><span class="o">.</span><span class="n">new</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">before</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">list_page</span><span class="o">.</span><span class="n">load</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">it</span> <span class="s1">&#39;user can see a banner and some feeds&#39;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">list_page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_banner</span>
+</span><span class='line'>      <span class="n">expect</span><span class="p">(</span><span class="n">list_page</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_feeds</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="c1">##...</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2016/01/snap-ci-it-resized.png" alt="Snap CI logs" /></p>
+
+<h3>部署</h3>
+
+<p>首先需要在<code>S3</code>上创建一个<code>bucket</code>，命名为<code>bookmarks-frontend</code>。然后为其设置<code>static website hosting</code>，这时候<code>AWS</code>会assign一个新的域名给你，比如<code>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/</code>。</p>
+
+<p>然后你需要将这个<code>bucket</code>设置成<code>public</code>，这样其他人才可以访问你的<code>bucket</code>。</p>
+
+<p><img src="/images/2016/01/aws-s3-public-resized.png" alt="AWS S3" /></p>
+
+<p>有了这个之后，我们来编写一个小脚本，这个脚本可以将本地的文件上传至S3。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># install gulp and its dependencies</span>
+</span><span class='line'>npm install
+</span><span class='line'>
+</span><span class='line'><span class="c"># package stuff, and point the server to the right place</span>
+</span><span class='line'>gulp release
+</span><span class='line'>
+</span><span class='line'><span class="c"># upload the whold folder</span>
+</span><span class='line'>aws s3 cp public/ s3://bookmarks-frontend <span class="se">\</span>
+</span><span class='line'>  --recursive <span class="se">\</span>
+</span><span class='line'>  --region us-west-2 <span class="se">\</span>
+</span><span class='line'>  --acl public-read
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>aws</code>命令是<code>aws command line</code>提供的，另外我们需要在环境变量中设置AWS提供给你的token：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span>xxxxxxxxxx
+</span><span class='line'><span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span>xxxxxxxxxx
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后我们就可以将本地的<code>public</code>目录递归的上传到S3的对应目录了！</p>
+
+<p><img src="/images/2016/01/snap-ci-pipeline-resized.png" alt="snap ci pipeline" /></p>
+
+<p>完整的代码可以在<a href="https://github.com/abruzzi/bookmarks-frontend">此处下载</a>。</p>
+
+<h2>总结</h2>
+
+<p>我们前端的持续交付也介绍完了。现在前后端应用完全独立，发布也互不影响。不论是服务器端新增加了API，还是添加了新数据，客户端的发布都不受影响；同样，修改样式，添加新的<code>JavaScript</code>也完全不会影响后端。更重要的是，所有的发布都是一键式的，开发者只需要一个<code>git push</code>就可以享受这些免费服务提供的自动构建，自动化测试以及自动部署的功能。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3570,443 +3912,6 @@ Travis CI的命令行工具 除此之外， &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2015/09/visualize-your-steps/">可视化你的足迹 - 服务器端</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-09-18T13:36:00+08:00" pubdate data-updated="true">Sep 18<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>可视化你的足迹</h3>
-
-<p>数据可视化可以让读者以一种轻松的方式来消费数据，人类大脑在处理图形的速度是处理文本的<code>66,000</code>倍，这也是人们常常说的<code>一图胜千言</code>。在本文中，我们通过将日常中很容易收集到的数据，通过一系列的处理，并最终展现在地图上。这仅仅是GIS的一个很简单场景，但是我们可以看到，当空间数据和地图结合在一起时，可以在可视化上得到很好的效果，读者可以很容易从中获取信息。</p>
-
-<p><img src="/images/2015/09/viz-steps-resized.png" alt="steps" /></p>
-
-<p>我们在本文中会制作一个这样的地图，图中灰色的线是城市中的道路，小六边形表示照片拍摄地。颜色表示当时当地拍摄照片的密度，红色表示密集，黄色为稀疏。可以看到，我的活动区域主要集中在左下角，那是公司所在地和我的住处，:)</p>
-
-<p>要展现数据，首先需要采集数据，不过这些已经在日常生活中被不自觉的被记录下来了：</p>
-
-<h4>数据来源</h4>
-
-<p>如果你开启了iPhone相机中的定位功能，拍照的时候，iPhone会自动把当前的地理信息写入到图片的元数据中，这样我们就可以使用这些数据来做进一步的分析了。</p>
-
-<p>我在去年学习OpenLayers的时候已经玩过一些简单的<a href="http://icodeit.org/placesihavebeen">足迹可视化</a>，另外还有一篇<a href="http://www.infoq.com/cn/articles/visualization-of-the-global-seismic-system">全球地震信息的可视化</a>，但是仅仅是展示矢量信息，并没有深入，而且都是一些前端的JavaScript的代码。最近又在重新整理之前的GIS知识，重新把这个作为例子来练手。当然，这次会涉及一些<strong>地图编辑</strong>，<strong>空间计算</strong>的内容。</p>
-
-<p>我的照片一般都通过Mac自带的Photos管理（前身iPhoto），手机里照片会定期同步上去。老版本的iPhoto用的是XML文件来存储照片的<a href="https://en.wikipedia.org/wiki/Exchangeable_image_file_format">EXIF数据</a>，新的Photos的实现里，数据被存储在了好几个SQLite数据库文件中，不过问题不大，我们只需要写一点Ruby代码就可以将数据转化为标准格式，这里使用GeoJSON，GeoJSON既可以方便人类阅读，也可以很方便的导入到PostGIS或者直接在客户端展现。</p>
-
-<h3>实现步骤</h3>
-
-<p>我们现在要绘制照片拍摄的密度图，大概需要这样一些步骤：</p>
-
-<ol>
-<li>抽取照片的EXIF信息（经度，纬度，创建时间等）</li>
-<li>编写脚本将抽取出来的信息转换成通用格式（GeoJSON）</li>
-<li>使用QGIS将这些点的集合导入为图层</li>
-<li>插入一些由六边形组成的图层（设置合适的大小）</li>
-<li>计算落在各个多边形中的点的个数，并生成新的图层heatmap</li>
-<li>使用MapServer来渲染基本地图</li>
-</ol>
-
-
-<h4>数据抽取</h4>
-
-<p>Mac上的Photos会将照片的元数据存储在一个SQLite3格式的数据库中，文件名为<code>Library.apdb</code>，通常位于这个位置<code>~/Pictures/Photos\ Library.photoslibrary/Database/apdb/Library.apdb</code>。这个文件可以通过<code>SQLite3</code>的客户端直接打开，不过由于可能有其他进程（Mac自己的）打开了该文件，所以会有锁文件，你可能需要先将这个文件拷贝到另外一个位置。</p>
-
-<p>然后将表<code>RKVersion</code>中的部分信息导出即可，SQLite内置了很方便的导出功能，通过它提供的shell客户端<code>sqlite3</code>，将信息导出到csv文件中：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>sqlite&gt; .mode csv
-</span><span class='line'>sqlite&gt; .headers on
-</span><span class='line'>sqlite&gt; .output places-ive-been.csv
-</span><span class='line'>sqlite&gt; <span class="k">select </span>datetime<span class="o">(</span>imageDate+978307200, <span class="s1">&#39;unixepoch&#39;</span>, <span class="s1">&#39;localtime&#39;</span><span class="o">)</span> as imageDate, exifLatitude, exifLongitude from RKVersion where exifLatitude and exiflongitude;
-</span><span class='line'>sqlite&gt; .output stdout
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意这里的日期，苹果的日期偏移和其他公司不同，始于2001年1月1日，所以要在<code>imageDate</code>之后加上这个<code>base</code>值，然后将文件以<code>.csv</code>的格式导出到<code>places-ive-been.csv</code>中，该文件包含3列：时间，纬度，精度。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>imageDate,exifLatitude,exifLongitude
-</span><span class='line'><span class="s2">&quot;2012-10-25 16:34:01&quot;</span>,34.19216667,108.87316667
-</span><span class='line'><span class="s2">&quot;2012-10-28 14:45:53&quot;</span>,35.1795,109.9275
-</span><span class='line'><span class="s2">&quot;2012-10-28 14:45:45&quot;</span>,35.1795,109.9275
-</span><span class='line'><span class="s2">&quot;2012-10-25 16:34:04&quot;</span>,34.19216667,108.87316667
-</span><span class='line'><span class="s2">&quot;2012-10-19 23:01:05&quot;</span>,34.19833333,108.86733333
-</span><span class='line'>...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>转换为GeoJSON</h4>
-
-<p>方便以后的转换起见，我们将这个文件转换成<code>GeoJSON</code>（其实很多客户端工具可以支持CSV的导入，不过<code>GeoJSON</code>更为标准一些）。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;csv&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">lines</span> <span class="o">=</span> <span class="no">CSV</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;places-ive-been.csv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span>
-</span><span class='line'><span class="n">keys</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">delete</span> <span class="n">lines</span><span class="o">.</span><span class="n">first</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">File</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;places-ive-been.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">data</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">row</span><span class="o">|</span>
-</span><span class='line'>        <span class="p">{</span>
-</span><span class='line'>            <span class="ss">:type</span> <span class="o">=&gt;</span> <span class="s2">&quot;Feature&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="ss">:geometry</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>              <span class="ss">:type</span> <span class="o">=&gt;</span> <span class="s2">&quot;Point&quot;</span><span class="p">,</span>
-</span><span class='line'>              <span class="ss">:coordinates</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="n">row</span><span class="o">[</span><span class="mi">2</span><span class="o">].</span><span class="n">to_f</span><span class="p">,</span> <span class="n">row</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">to_f</span><span class="o">]</span>
-</span><span class='line'>            <span class="p">},</span>
-</span><span class='line'>            <span class="ss">:properties</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>              <span class="ss">:created_at</span> <span class="o">=&gt;</span> <span class="n">row</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>        <span class="p">}</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">f</span><span class="o">.</span><span class="n">puts</span> <span class="no">JSON</span><span class="o">.</span><span class="n">pretty_generate</span><span class="p">({</span>
-</span><span class='line'>        <span class="ss">:type</span> <span class="o">=&gt;</span> <span class="s2">&quot;FeatureCollection&quot;</span><span class="p">,</span>
-</span><span class='line'>        <span class="ss">:crs</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>          <span class="ss">:type</span> <span class="o">=&gt;</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="ss">:properties</span> <span class="o">=&gt;</span> <span class="p">{</span>
-</span><span class='line'>            <span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s2">&quot;EPSG:4326&quot;</span>
-</span><span class='line'>          <span class="p">}</span>
-</span><span class='line'>        <span class="p">},</span>
-</span><span class='line'>        <span class="ss">:features</span> <span class="o">=&gt;</span> <span class="n">data</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这段脚本可以将我们的<code>.csv</code>转换成标准的<code>geojson</code>格式，注意此处的空间投影使用的是<code>EPSG:4326</code>。</p>
-
-<h4>导入为QGIS图层</h4>
-
-<p><a href="http://www.qgis.org/en/site/">QGIS</a>是一个开源的GIS套件，包括桌面端的编辑器和服务器端，这里我们只是用器桌面端来进行图层的编辑。</p>
-
-<p>将我们的<code>GeoJSON</code>导入之后，会看到这样的一个可视化的效果！</p>
-
-<p><img src="/images/2015/09/points-resized.png" alt="points" /></p>
-
-<p>我们还可以导入其他的地图图层，这样可以清楚的看到点所在的区域（国家地图图层可以在<a href="http://www.naturalearthdata.com/">此处下载</a>）：</p>
-
-<p><img src="/images/2015/09/points-countries-resized.png" alt="points with countries" /></p>
-
-<p>好了，有了基础数据之后，我们来作进一步的数据分析 &#8211; 即生成密度图。首先使用QGIS的插件<code>MMQGIS</code>的<strong>生成多边形图层</strong>功能(Create -> Create Grid Layer)，为了处理速度，我们可以将地图放大到一定范围（我选择西安市，我在这里活动比较密集）。</p>
-
-<p>选择六边形<code>hexagon</code>，并设置合适的大小（如果是<code>3857</code>参考系，即按照公里数来设置，会比较容易一些，如果是4326，则需要自己计算）。简而言之，需要保证每个格子都包含一些点，不至于太密，也不至于太稀疏。</p>
-
-<p><img src="/images/2015/09/hexagon-resized.png" alt="hexagon" /></p>
-
-<h4>计算密度</h4>
-
-<p>QGIS提供了很多的数据分析功能，我们在这个例子中使用（Vector -> Analysis Tools -> Points in Polygon）工具，这个工具需要两个图层，一个是点集图层，一个是多边形图层。然后会将结果生成到一个新的图层中，我们可以将其命名为<code>places-ive-been-density.shp</code>，同时需要指定一个字段来存储统计出来的值（density）。</p>
-
-<p>这个过程可能会花费一点时间，根据需要计算的点集合多边形的格式（也就是地图上的区域）。</p>
-
-<p>完成之后会得到一个<code>Shapefile</code>（其实是一组，具体可以<a href="https://en.wikipedia.org/wiki/Shapefile">参看这里</a>）。其实在这个过程中，绝大多数多边形是不包含任何数据的，我们需要过滤掉这些多余的多边形，这样可以缩减绘制地图的时间。</p>
-
-<p>我们可以将这个文件导入到PostGIS中进行简化：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>shp2pgsql -I -s 4326 data/places-ive-been/places-ive-been-3857-density.shp places_density |<span class="se">\</span>
-</span><span class='line'><span class="nv">PGUSER</span><span class="o">=</span>gis <span class="nv">PGPASSWORD</span><span class="o">=</span>gis  psql -h localhost -d playground
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里的<code>shp2pgsql</code>命令是<a href="http://">GDAL工具包</a>提供的命令，用以将<code>Shapefile</code>导入到<code>PostGIS</code>中，你可以通过</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>brew install gdal --with-postgresql
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>来安装。</p>
-
-<p>GDAL会提供很多的工具，比如用来转换各种数据格式，投影，查看信息等等。</p>
-
-<p>导入之后，我们可以在PostGIS的客户端查看，编辑这些数据等。比如在过滤之前，</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">select</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">from</span> <span class="n">places_density</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们导入的数据中有<code>103166</code>条记录：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sql'><span class='line'><span class="k">select</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">from</span> <span class="n">places_density</span> <span class="k">where</span> <span class="n">density</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而过滤之后，我们仅剩下<code>749</code>条数据。</p>
-
-<p>通过GDAL提供的另一个工具<code>ogr2ogr</code>可以方便的执行过滤，并生成新的<code>Shapefile</code>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>ogr2ogr -f <span class="s2">&quot;ESRI Shapefile&quot;</span> data/places-ive-been/places_heatmap.shp <span class="se">\</span>
-</span><span class='line'>PG:<span class="s2">&quot;host=localhost user=gis dbname=playground pass</span>
-</span><span class='line'><span class="s2">word=gis&quot;</span> <span class="se">\</span>
-</span><span class='line'>-sql <span class="s2">&quot;SELECT density, geom FROM places_density WHERE density IS NOT NULL;&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这条命令可以得到一个新的文件，这个就是最终的用来绘制地图的文件了。</p>
-
-<h4>绘制地图</h4>
-
-<p>开源世界中有很多的工具可以完成地图的绘制，比如<a href="http://mapserver.org/">MapServer</a>，<a href="http://geoserver.org/">GeoServer</a>，<a href="http://mapnik.org/">Mapnik</a>等等。我们在这篇文章中使用MapServer来完成地图的绘制，MapServer的安装和配置虽然比较容易，但是也需要花费一些时间，所以我将其放到了<a href="https://github.com/abruzzi/mapserver-box">这个repo中</a>，你可以直接clone下来使用。（需要你在虚拟机中安装ansible来完成provision）。</p>
-
-<p>MapServer的配置很简单，类似于一个XML，不过是自定义的格式：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>MAP
-</span><span class='line'>  IMAGETYPE      PNG
-</span><span class='line'>  EXTENT         11859978.732852 3994742.227345 12753503.595559 4580388.268737
-</span><span class='line'>  SIZE           8000 6000
-</span><span class='line'>  SHAPEPATH      <span class="s2">&quot;/data/heatmap&quot;</span>
-</span><span class='line'>  IMAGECOLOR     255 255 255
-</span><span class='line'>
-</span><span class='line'>  PROJECTION
-</span><span class='line'>    <span class="s2">&quot;init=epsg:3857&quot;</span>   <span class="c">##required</span>
-</span><span class='line'>  END
-</span><span class='line'>
-</span><span class='line'>  LAYER <span class="c"># States polygon layer begins here</span>
-</span><span class='line'>    NAME         heatmap
-</span><span class='line'>    DATA         heatmap_3857
-</span><span class='line'>    STATUS       default
-</span><span class='line'>    TYPE         POLYGON
-</span><span class='line'>
-</span><span class='line'>    CLASS
-</span><span class='line'>      NAME <span class="s2">&quot;basic&quot;</span>
-</span><span class='line'>      STYLE
-</span><span class='line'>        COLOR        255 255 178
-</span><span class='line'>        OUTLINECOLOR 255 255 178
-</span><span class='line'>      END
-</span><span class='line'>    END
-</span><span class='line'>  END
-</span><span class='line'>
-</span><span class='line'>END
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这些配置基本上都比较自解释，比如设置图片格式，图片大小，Shapefile的路径，图层的名称等，<strong>MapServer的文档在开源软件中来说，都算比较烂的</strong>，但是对于这些基本概念的解释还比较详尽，大家可以<a href="http://mapserver.org/documentation.html#documentation">去这里参考</a>。</p>
-
-<p>这里我们定义了一个图层，每个Map中可以定义多个图层（我们完成的最终效果图就是西安市的道路图和照片拍摄密度图两个图层的叠加）。</p>
-
-<p>这个配置绘制出来的地图是没有颜色差异的，全部都是<code>255 255 178</code>。不过MapServer的配置提供了很好的样式定义，比如我们可以定义这样的一些规则：</p>
-
-<ol>
-<li>如果密度为1，则设置颜色为淡黄</li>
-<li>如果密度在1-2,则设置为比淡黄红一点的颜色</li>
-<li>以此类推</li>
-</ol>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'>  LAYER
-</span><span class='line'>    NAME         heatmap
-</span><span class='line'>    DATA         heatmap_3857
-</span><span class='line'>    STATUS       default
-</span><span class='line'>    TYPE         POLYGON
-</span><span class='line'>    <span class="c">#CLASSITEM density</span>
-</span><span class='line'>
-</span><span class='line'>    CLASS
-</span><span class='line'>      EXPRESSION <span class="o">([</span>density<span class="o">]</span> <span class="o">=</span> 1<span class="o">)</span>
-</span><span class='line'>      STYLE
-</span><span class='line'>        COLOR        255 255 178
-</span><span class='line'>        OUTLINECOLOR 255 255 178
-</span><span class='line'>      END
-</span><span class='line'>    END
-</span><span class='line'>
-</span><span class='line'>    CLASS
-</span><span class='line'>      EXPRESSION <span class="o">([</span>density<span class="o">]</span> &gt; 1 AND <span class="o">[</span>density<span class="o">]</span> &lt;<span class="o">=</span> 2<span class="o">)</span>
-</span><span class='line'>      STYLE
-</span><span class='line'>        COLOR        254 204 92
-</span><span class='line'>        OUTLINECOLOR 254 204 92
-</span><span class='line'>      END
-</span><span class='line'>    END
-</span><span class='line'>
-</span><span class='line'>    CLASS
-</span><span class='line'>      EXPRESSION <span class="o">([</span>density<span class="o">]</span> &gt; 2 AND <span class="o">[</span>density<span class="o">]</span> &lt;<span class="o">=</span> 3<span class="o">)</span>
-</span><span class='line'>      STYLE
-</span><span class='line'>        COLOR        253 141 60
-</span><span class='line'>        OUTLINECOLOR 253 141 60
-</span><span class='line'>      END
-</span><span class='line'>    END
-</span><span class='line'>
-</span><span class='line'>    CLASS
-</span><span class='line'>      EXPRESSION <span class="o">([</span>density<span class="o">]</span> &gt; 3 AND <span class="o">[</span>density<span class="o">]</span> &lt;<span class="o">=</span> 10<span class="o">)</span>
-</span><span class='line'>      STYLE
-</span><span class='line'>        COLOR        240 59 32
-</span><span class='line'>        OUTLINECOLOR 240 59 32
-</span><span class='line'>      END
-</span><span class='line'>    END
-</span><span class='line'>
-</span><span class='line'>    CLASS
-</span><span class='line'>      EXPRESSION <span class="o">([</span>density<span class="o">]</span> &gt; 10 AND <span class="o">[</span>density<span class="o">]</span> &lt; 3438<span class="o">)</span>
-</span><span class='line'>      STYLE
-</span><span class='line'>        COLOR        189 0 38
-</span><span class='line'>        OUTLINECOLOR 189 0 38
-</span><span class='line'>      END
-</span><span class='line'>    END
-</span><span class='line'>
-</span><span class='line'>  END
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样我们的地图展现出来就会比较有层次感，而且通过颜色的加深，也能体现<code>热图</code>本身的含义。</p>
-
-<p>同样的原理，如果将那些自己创建的多边形替换为行政区域划分的多边形，则可以得到另外一种形式的<code>热图</code>：</p>
-
-<p><img src="/images/2015/09/heatmap-in-shaanxi-resized.png" alt="shaanxi-heatmap" /></p>
-
-<h3>总结</h3>
-
-<p>我们通过使用一些开源工具（MapServer，QGis，PostGIS，GDAL等），构建出一个基于GIS的数据可视化框架。在这个stack上，我们可以很容易的将一些其他数据也通过可视化的方式展现出来（公用自行车站点分布，出租车分布等等）。MapServer可以发布标准的<a href="https://en.wikipedia.org/wiki/Web_Map_Service">WMS</a>服务，因此可以很好的和客户端框架集成，从而带来更加友好的用户体验。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/4/">&larr; Older</a>
@@ -4024,6 +3929,10 @@ Travis CI的命令行工具 除此之外， &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2017/07/tips-for-newbies/">如何成为“超级”程序员？</a>
+      </li>
+    
+      <li class="post">
         <a href="/2017/03/whats-the-thoughtworks-insight-talking-about/">ThoughtWorks洞见讲什么？</a>
       </li>
     
@@ -4037,10 +3946,6 @@ Travis CI的命令行工具 除此之外， &hellip;">
     
       <li class="post">
         <a href="/2017/02/frontend-page-performance-tuning/">如何提升页面渲染效率</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2017/01/why-top-programmers-hate-gui/">为什么优秀的程序员喜欢命令行</a>
       </li>
     
   </ul>
