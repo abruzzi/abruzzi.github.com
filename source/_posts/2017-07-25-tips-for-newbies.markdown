@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "如何成为“超级”程序员？"
+title: "如何成为一名优秀的程序员？"
 date: 2017-07-25 16:05
 comments: true
 categories: 
