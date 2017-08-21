@@ -83,7 +83,7 @@ public class Customer {
 
 在有些场景下，应用层内还可能划分出一个服务层。
 
-![](/images/2017/08/layered-resized.png)
+![](/images/2017/08/layered.png)
 
 ### 前后端分离
 
