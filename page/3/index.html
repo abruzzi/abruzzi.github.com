@@ -9,9 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="客户端程序的的持续交付 上篇文章介绍了如何使用一些免费的服务来实现服务器端API的持续集成、持续交付环境的搭建。有了服务端，自然需要有消费者，在本文中我们将使用另外一个工具来实现纯前端的站点的部署。 其中包括： 持续集成（单元测试，集成测试等）
-持续部署/持续交付
-静态站点托管 除此之外， &hellip;">
+  <meta name="description" content="什么是引导（facilitation） 引导（facilitation）的词根来源与拉丁语“facil”，意思是“让……更容易”。而负责引导的引导师（facilitator）的核心职责是，通过一系列的活动、技巧，保证引导会议顺畅的进行，并解决整个过程中的问题，使得参与者就问题产生一个共识， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +78,160 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2016/01/how-to-facilitate/">当我们谈论引导时，我们谈些什么？</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-23T23:42:00+08:00" pubdate data-updated="true">Jan 23<span>rd</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>什么是引导（facilitation）</h2>
+
+<p>引导（facilitation）的词根来源与拉丁语“facil”，意思是“让……更容易”。而负责引导的<code>引导师</code>（facilitator）的核心职责是，通过一系列的活动、技巧，保证引导会议顺畅的进行，并解决整个过程中的问题，使得参与者就问题产生一个共识，达成一个结论。</p>
+
+<p>其中可能涉及很多具体的问题，比如几乎在每个会议中都可能看到的：</p>
+
+<ul>
+<li>如果有人尝试将会议变成一言堂，如何处理？</li>
+<li>如果参与者不愿意分享自己的观点，如何处理？</li>
+<li>过程中，两个参与者产生了争执，如何处理？</li>
+<li>如何把握节奏，刺激与会者发散？</li>
+<li>如何在收集到足够信息后，进行收敛？</li>
+</ul>
+
+
+<p>显然，这是一个技术活儿。一次好的引导可以将与会者的众多想法，信息聚合起来，形成对团队下一步要做什么有极强指导意义的<code>方案</code>。</p>
+
+<h2>日常的引导活动</h2>
+
+<p>在平时的工作中，我们其实已经在频繁的使用引导活动，但是很少有人将其作为体系来关注，也很少有人能将这个能力应用在其他方面（比如在客户现场咨询，或者参加售前等）。引导是如此的常见，以至于我们对其视而不见。比如在interview完成之后，所有面试官和HR一起做的well/less well的列举；各种社区活动（Open Party，CDConf等）之后的回顾；每个项目在一个迭代结束后的Retro；对于某个问题的头脑风暴等等。</p>
+
+<h3>项目回顾会议</h3>
+
+<p>在开始前，引导师需要保证团队：</p>
+
+<ul>
+<li>每个人都有开发的态度</li>
+<li>整个过程需要在一个足够安全的环境中进行（Safe Check）</li>
+</ul>
+
+
+<p>有时候，有Team Lead在场，新人可能不愿意对某事（比如最近加班有点过分）发表自己的看法等。这时候需要有<code>Safe Check</code>，比如分为1到5档，大家用不记名投票的方式来表述自己是否觉得安全。如果投票结果显示大部分人都觉得不安全，则需要与会的人中，职位最高的那个人离开会议，然后再做一次<code>Safe Check</code>，直到大家都觉得足够安全。不过，对于已经进行过多轮回顾的团队，我们往往会忽略掉这一步。</p>
+
+<p>Retro过程是，团队坐在一起，回顾上一个迭代（通常是两个星期）做过的事情，有哪些做的比较好，哪些有待改进，有哪些疑惑等等。Retro可以有很多的形式，比如简单的<code>Well/Less Well/Questions</code>，更聚焦在产生<code>Action</code>的海星式等等。</p>
+
+<p><img src="/images/2016/01/pens-resized.png" alt="pens" /></p>
+
+<p>通常的顺序是：</p>
+
+<ol>
+<li>引导者请大家用纸笔将想法写在便签（stick）上</li>
+<li>Time box这个过程（通常是5分钟）</li>
+<li>大家将这些stick贴在墙上</li>
+<li>引导者和团队一起过一遍所有的stick</li>
+<li>归类相似的stick</li>
+<li>引导者促进团队交流，讨论stick上的问题，并形成一些改进点（Action）</li>
+</ol>
+
+
+<p>Action一定要足够具体，并且需要一个所有者，<code>所有者</code>负责确保该<code>Action</code>一定会发生。比如团队发现上一个迭代中<code>Code review</code>做的不够好，一个<code>Action</code>就是每天下午5点有人来提醒大家来进行<code>Code review</code>。</p>
+
+<p>如果这时候发现有太多的问题，团队可以用投票的方式选出本次Retro要讨论的数个stick。</p>
+
+<h3>引导会议</h3>
+
+<p>在日常工作中，我们几乎每天都有会议，而且越来越多的团队已经意识到冗长，无聊的会议有多大的杀伤力了。在很多会议上，与会者要么在刷新朋友圈，要么在对着笔记本电脑写代码或者读新闻，即使强制要求不许带电脑和手机的情况下，也无法限制参加者神游太虚。</p>
+
+<p>根据《引导的秘诀》这本书里的定义，引导会议是</p>
+
+<pre><code>引导会议是一个高度结构化的会议，会议中的领导者（引导者）引导参会人通过预先设定好的步骤达成所有参会人产生，理解并接受的结果。
+</code></pre>
+
+<p>引导会议需要充分调用参与者的积极性，每个人都需要足够聚焦，这要求引导者可以有能力使得团队振奋（比如幽默的风格，或者具有挑战性的问题等）。另外，每个人的idea都需要被充分重视（一个细节就是不要随意篡改你听到的内容，这是没有经验的引导者常犯的错误之一）。一旦所有参与者都积极起来，引导者就可以稍微退后一些，将舞台交给团队。</p>
+
+<p>而有时候，情景则相反，大家都不发言，也没有看到明显的发言的趋势，这时候需要一些方法来激励。如果是团队都比较茫然，引导者需要列出一些简单而容易理解的步骤，帮助团队按照预设的节奏来逐步前进。比如，在一开始的时候就将agenda板书在墙上，并通过头脑风暴的方式，鼓励参与者来将自己的idea可视化出来。</p>
+
+<p>一个典型的误区是，引导会议的最后结论是本来就存在与引导者脑海中的想法。如果仅从结果来看，这种情况可能发生，但是只能说是碰巧而已。一个好的引导者需要帮助与会者自己产生，并得出一个可行的，被广泛认可的方案，而不是强加一个自己的给团队。</p>
+
+<p>我们最为专业的引导活动是UX团队在客户现场的<code>inception</code>，<code>inception</code>由一系列相互关联，环环相扣的工作坊组成，这些工作坊基本上都需要采用很多引导的技巧，帮助客户团队将自己的问题描述清楚，并形成一个所有参与者都达成一直的可行方案。</p>
+
+<p><img src="/images/2016/01/sticks-resized.png" alt="sticks" /></p>
+
+<p>如果你不知道如何开始一个引导会议，一个简单而通用的模式是：</p>
+
+<ol>
+<li>我们的现状是</li>
+<li>我们的目标是</li>
+<li>我们如何到达目标</li>
+<li>在行进中，如何度量</li>
+</ol>
+
+
+<p>《引导的秘诀》里还提到了一种<code>5P</code>模式：目的(Purpose)，产出(Product)，与会人(Participant)，可能的问题(Probable issues)以及流程(Process)。</p>
+
+<p>5P提示你在准备会议之前，需要尝试回答这几个问题</p>
+
+<ul>
+<li>为什么要开这次会议？主要目的是什么？</li>
+<li>会议后的产出是什么？</li>
+<li>谁需要参与会议？</li>
+<li>在会议中，我们可能遇到什么问题？</li>
+<li>遇到这些问题是，我们如何解决？</li>
+</ul>
+
+
+<h2>引导中的常用技巧</h2>
+
+<p>在引导活动中，有一些基本的规则，可以保证引导会议的顺畅性，比如</p>
+
+<ul>
+<li>引导师需要有足够的权威（可以打断那些长篇大论，保证过程的流畅）</li>
+<li>如果人数太多，可以使用token（比如一个玩具考拉，或者一个澳式橄榄球，只有持有token的人可以说话）</li>
+<li>保持one conversation（不要交头接耳）</li>
+<li>每张stick上只写一条问题/想法</li>
+</ul>
+
+
+<p>引导师必须有控制会话何时结束的能力，否则引导活动将会变成一发不可收拾的冗长会议。坚持<code>one conversation</code>可以保证参与者足够聚焦，也保证所有人都在同一个频道上。如果发现有交头接耳的，引导者可以直接打断并提醒之。</p>
+
+<p>每张便签上只写一条想法，首先可以保证多样性，便于讨论，也便于后续的分类。另外，简洁的描述在一定程度上可以促进与会者进行讨论，而一个冗长的描述则会让人丧失兴趣。</p>
+
+<p>另外还有一些比较基础的技巧：</p>
+
+<ul>
+<li>所有讨论都应该对事不对人（特别是一些负面的总结）</li>
+<li>如果有人提出与议题并不特别相关，但是又特别重要的点时，可以将这些点记下来（不要轻易打击发言者的积极性）</li>
+<li>不定时的总结，以确保参与者都在同一频道，并且有助于大家对进度的了解（是不是快结束了）</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3695,223 +3847,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2015/09/show-your-map-in-browser/">可视化你的足迹 - Web端</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-09-20T22:44:00+08:00" pubdate data-updated="true">Sep 20<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>可视化你的足迹</h3>
-
-<p><a href="http://icodeit.org/2015/09/visualize-your-steps/">上一篇文章</a>讲述了如何在服务器端通过MapServer来生成地图。虽然MapServer发布出来的地图是标准的<a href="https://en.wikipedia.org/wiki/Web_Map_Service">WMS</a>服务，但是我们还需要一个客户端程序来展现。我们在上一篇中，通过一些小脚本将照片中的地理信息抽取到了一个<code>GeoJSON</code>文件中。<code>GeoJSON</code>是一种向量图层格式，向量数据可以在服务器端绘制成栅格图，也可以直接在客户端canvas上直接绘制出来。当数据量比较大的时候，我们更倾向于在服务器端绘制，这样只需要在网络上传输一张图片（而且可以做缓存）。大数据量的客户端绘制在性能上会比较差（当然现在已经有了一些新的解决方案，我们后续再细谈），特别是有用户交互时，会出现明显的卡顿。</p>
-
-<p>在本文中，我将分别使用客户端和服务端绘制的两种方式来展现两种不同的地图：使用<a href="http://openlayers.org/">OpenLayers</a>直接在客户端绘制矢量图，以及使用<a href="http://leafletjs.com/">Leaflet</a>来展示在服务器端绘制好的栅格图层。</p>
-
-<h4>使用OpenLayers3展示GeoJSON</h4>
-
-<p>展示GeoJSON非常容易，也是一种比较直接的方式，只需要将GeoJSON文件发送到前端，然后直接通过客户端渲染即可。使用<code>OpenLayers3</code>的API，代码会是这样：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">getJSON</span><span class="p">(</span><span class="s1">&#39;data/places-ive-been-3857.json&#39;</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">geojson</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">vectorSource</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">Vector</span><span class="p">({</span>
-</span><span class='line'>      <span class="nx">features</span><span class="o">:</span> <span class="p">(</span><span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">format</span><span class="p">.</span><span class="nx">GeoJSON</span><span class="p">()).</span><span class="nx">readFeatures</span><span class="p">(</span><span class="nx">geojson</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>客户端发送一个<code>ajax</code>请求，得到<code>GeoJSON</code>数据之后，将其转换成一个<code>向量</code>类型。<code>OpenLayers</code>定义了很多中格式读取器，比如KML的，GML的，GeoJSON的等等。然后我们可以定义一个样式函数：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'>  <span class="kd">var</span> <span class="nx">image</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">Circle</span><span class="p">({</span>
-</span><span class='line'>    <span class="nx">radius</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">fill</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">stroke</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">Stroke</span><span class="p">({</span><span class="nx">color</span><span class="o">:</span> <span class="s1">&#39;#f04e98&#39;</span><span class="p">,</span> <span class="nx">width</span><span class="o">:</span> <span class="mi">1</span><span class="p">})</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">styles</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>    <span class="s1">&#39;Point&#39;</span><span class="o">:</span> <span class="p">[</span><span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">Style</span><span class="p">({</span>
-</span><span class='line'>      <span class="nx">image</span><span class="o">:</span> <span class="nx">image</span>
-</span><span class='line'>    <span class="p">})]</span>
-</span><span class='line'>  <span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">styleFunction</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">feature</span><span class="p">,</span> <span class="nx">resolution</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">styles</span><span class="p">[</span><span class="nx">feature</span><span class="p">.</span><span class="nx">getGeometry</span><span class="p">().</span><span class="nx">getType</span><span class="p">()];</span>
-</span><span class='line'>  <span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个函数会应用到向量集的<code>Point</code>类型，将其绘制为一个红色，半径为5像素的圆圈。有了数据和样式，我们再来创建一个新的向量，然后生成一个新的图层：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">vectorLayer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">layer</span><span class="p">.</span><span class="nx">Vector</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">source</span><span class="o">:</span> <span class="nx">vectorSource</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">style</span><span class="o">:</span> <span class="nx">styleFunction</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>创建地图，为了方便对照，我们加入了另外一个<code>ol.source.Stamen</code>图层作为参照。这样当缩放到较小的区域时，我们可以清楚的知道当前的点和地物的对照，比如道路名称，建筑名称等，从而确定目前的位置。这是一种非常常见的GIS应用的场景，但是需要注意的是，不同的图层需要有相同的空间映射方式，OpenLayers默认才用EPSG:3857，所以需要两者都采用该投影：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">Map</span><span class="p">({</span>
-</span><span class='line'>  <span class="nx">layers</span><span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>    <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">layer</span><span class="p">.</span><span class="nx">Tile</span><span class="p">({</span>
-</span><span class='line'>      <span class="nx">source</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">Stamen</span><span class="p">({</span>
-</span><span class='line'>        <span class="nx">layer</span><span class="o">:</span> <span class="s1">&#39;toner&#39;</span>
-</span><span class='line'>      <span class="p">})</span>
-</span><span class='line'>    <span class="p">}),</span>
-</span><span class='line'>    <span class="nx">vectorLayer</span>
-</span><span class='line'>  <span class="p">],</span>
-</span><span class='line'>  <span class="nx">target</span><span class="o">:</span> <span class="s1">&#39;map&#39;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">controls</span><span class="o">:</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">control</span><span class="p">.</span><span class="nx">defaults</span><span class="p">({</span>
-</span><span class='line'>    <span class="nx">attributionOptions</span><span class="o">:</span> <span class="cm">/** @type {olx.control.AttributionOptions} */</span> <span class="p">({</span>
-</span><span class='line'>      <span class="nx">collapsible</span><span class="o">:</span> <span class="kc">false</span>
-</span><span class='line'>    <span class="p">})</span>
-</span><span class='line'>  <span class="p">}),</span>
-</span><span class='line'>  <span class="nx">view</span><span class="o">:</span> <span class="k">new</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">View</span><span class="p">({</span>
-</span><span class='line'>    <span class="nx">center</span><span class="o">:</span> <span class="nx">ol</span><span class="p">.</span><span class="nx">proj</span><span class="p">.</span><span class="nx">transform</span><span class="p">([</span><span class="mf">108.87316667</span><span class="p">,</span> <span class="mf">34.19216667</span><span class="p">],</span> <span class="s1">&#39;EPSG:4326&#39;</span><span class="p">,</span> <span class="s1">&#39;EPSG:3857&#39;</span><span class="p">),</span>
-</span><span class='line'>    <span class="nx">zoom</span><span class="o">:</span> <span class="mi">2</span>
-</span><span class='line'>  <span class="p">})</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>创建地图时，我们可以通过<code>layers</code>来指定多个图层。在OpenLayers中，有很多类型的<code>Tile</code>，<code>Stamen</code>是一个专注于做<a href="http://maps.stamen.com/#watercolor/12/37.7706/-122.3782">非常漂亮的地图的组织</a>。</p>
-
-<p>在view中，我们需要将经纬度（EPSG:4326）转换为墨卡托投影（EPSG:3857）。这样我们就可以得到一个很漂亮的地图了：</p>
-
-<p><img src="/images/2015/09/toner-resized.png" alt="geojson toner" /></p>
-
-<h4>使用Leaflet展示栅格数据</h4>
-
-<p>我们在上一篇中已经生成了MapServer的WMS地图，这里可以用<a href="http://leafletjs.com/">Leaflet</a>来消费该地图（使用OpenLayers也可以消费，不过V3似乎在和WMS集成时有些问题，我此处使用了<a href="http://leafletjs.com/">Leaflet</a>）。</p>
-
-<p>首先创建一个地图：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="nx">L</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">).</span><span class="nx">setView</span><span class="p">([</span><span class="mi">34</span><span class="p">,</span> <span class="mi">108</span><span class="p">],</span> <span class="mi">10</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后就可以直接接入我们在上一篇中生成的地图：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'>  <span class="nx">L</span><span class="p">.</span><span class="nx">tileLayer</span><span class="p">.</span><span class="nx">wms</span><span class="p">(</span><span class="s2">&quot;http://localhost:9999/cgi-bin/mapserv?map=/data/xian.map&quot;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>            <span class="nx">layers</span><span class="o">:</span> <span class="s1">&#39;places&#39;</span><span class="p">,</span>
-</span><span class='line'>            <span class="nx">format</span><span class="o">:</span> <span class="s1">&#39;image/png&#39;</span><span class="p">,</span>
-</span><span class='line'>            <span class="nx">transparent</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span><span class='line'>            <span class="nx">maxZoom</span><span class="o">:</span> <span class="mi">16</span><span class="p">,</span>
-</span><span class='line'>            <span class="nx">minZoom</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
-</span><span class='line'>        <span class="p">}).</span><span class="nx">addTo</span><span class="p">(</span><span class="nx">map</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>便于对照，我们先添加一个底图：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">L</span><span class="p">.</span><span class="nx">tileLayer</span><span class="p">(</span> <span class="s1">&#39;http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">attribution</span><span class="o">:</span> <span class="s1">&#39;&amp;copy; &lt;a href=&quot;http://osm.org/copyright&quot; title=&quot;OpenStreetMap&quot; target=&quot;_blank&quot;&gt;OpenStreetMap&lt;/a&gt; contributors | Tiles Courtesy of &lt;a href=&quot;http://www.mapquest.com/&quot; title=&quot;MapQuest&quot; target=&quot;_blank&quot;&gt;MapQuest&lt;/a&gt; &lt;img src=&quot;http://developer.mapquest.com/content/osm/mq_logo.png&quot; width=&quot;16&quot; height=&quot;16&quot;&gt;&#39;</span><span class="p">,</span>
-</span><span class='line'>      <span class="nx">subdomains</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;otile1&#39;</span><span class="p">,</span><span class="s1">&#39;otile2&#39;</span><span class="p">,</span><span class="s1">&#39;otile3&#39;</span><span class="p">,</span><span class="s1">&#39;otile4&#39;</span><span class="p">],</span>
-</span><span class='line'>      <span class="nx">detectRetina</span><span class="o">:</span> <span class="kc">true</span>
-</span><span class='line'>  <span class="p">}).</span><span class="nx">addTo</span><span class="p">(</span> <span class="nx">map</span> <span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样就可以看到最终的地图：</p>
-
-<p><img src="/images/2015/09/xian-leaflet-resized.png" alt="xian leaflet" /></p>
-
-<p>使用Web界面，我们可以自由的拖拽，移动，并且方便的放大缩小。如果观察浏览器的网络标签，在放大地图时，可以看到很多的WMS请求：</p>
-
-<p><img src="/images/2015/09/wms-requests-resized.png" alt="xian leaflet" /></p>
-
-<h4>其他</h4>
-
-<p>如果你对代码感兴趣，可以参看<a href="https://github.com/abruzzi/places-ive-been">这个repo</a>。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/4/">&larr; Older</a>
@@ -3929,6 +3864,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2017/08/from-sandwich-to-hexagon/">从三明治到六边形</a>
+      </li>
+    
+      <li class="post">
         <a href="/2017/07/tips-for-newbies/">如何成为一名优秀的程序员？</a>
       </li>
     
@@ -3942,10 +3881,6 @@
     
       <li class="post">
         <a href="/2017/02/data-visualization-from-baby/">生活中的数据可视化之 &#8211; 换尿布</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2017/02/frontend-page-performance-tuning/">如何提升页面渲染效率</a>
       </li>
     
   </ul>

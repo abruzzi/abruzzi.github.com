@@ -9,7 +9,8 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="underscore.js中的集合操作 书接前文，我们在上一篇中将一个文本划分成了单词的数组，并统计了每个单词出现的频率。现在我们需要将排行前10的单词找出来。那么第一步就是将所有单词按照频率排序，然后将这个集合的前10个拿出来。 underscore.js为集合提供了丰富的API， &hellip;">
+  <meta name="description" content="一个监控系统 我们今天要使用underscore.js和jQuery来构建一个客户端的应用，这个应用是一个监控系统的前端，设计师已经给出了界面设计： 而对应的服务器端的API也已经就绪了： 1
+$ curl http://localhost:9527/alarms.json -s | jq . &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +79,746 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/02/build-sample-application-by-using-underscore-and-jquery/">使用underscore.js构建前端应用</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-21T21:21:00+08:00" pubdate data-updated="true">Feb 21<span>st</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>一个监控系统</h2>
+
+<p>我们今天要使用<code>underscore.js</code>和<code>jQuery</code>来构建一个客户端的应用，这个应用是一个监控系统的前端，设计师已经给出了界面设计：</p>
+
+<p><img src="/images/2015/02/alarms-design-resized.png" alt="alarms design" /></p>
+
+<p>而对应的服务器端的API也已经就绪了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl http://localhost:9527/alarms.json -s | jq .
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>会看到诸如这样的返回值：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;proiority&quot;</span><span class="p">:</span> <span class="s2">&quot;critical&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;occurrence&quot;</span><span class="p">:</span> <span class="s2">&quot;2/12/2015 01:23 AM&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;summary&quot;</span><span class="p">:</span> <span class="s2">&quot;heartbeat failure&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;node&quot;</span><span class="p">:</span> <span class="s2">&quot;VIQ002&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;proiority&quot;</span><span class="p">:</span> <span class="s2">&quot;major&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;occurrence&quot;</span><span class="p">:</span> <span class="s2">&quot;2/12/2015 01:22 AM&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;summary&quot;</span><span class="p">:</span> <span class="s2">&quot;packages are rejected&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;node&quot;</span><span class="p">:</span> <span class="s2">&quot;VIQ002&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;proiority&quot;</span><span class="p">:</span> <span class="s2">&quot;medium&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;occurrence&quot;</span><span class="p">:</span> <span class="s2">&quot;2/11/2015 01:23 AM&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;summary&quot;</span><span class="p">:</span> <span class="s2">&quot;connection cannot be established&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nt">&quot;node&quot;</span><span class="p">:</span> <span class="s2">&quot;VIQ002&quot;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>每条告警信息都包含：优先级，发生时间，描述信息，以及发生告警的节点名称。</p>
+
+<p>我们要将这些信息整合，并展示在页面上。</p>
+
+<h3>mockup</h3>
+
+<p>我在<a href="juntao.gitbooks.io/3-web-designs-in-3-weeks/">《3周3页面》</a>中讨论过现代前端开发的方式，你也可以参考<a href="http://icodeit.org/2014/11/modern-ui-development-workflow/">这篇文章</a>以及<a href="http://">这篇文章</a>。我们这里还是采用相同的方式来实现这个<code>mockup</code>，也就是静态页面。</p>
+
+<p>首先我们在<code>index.html</code>中编写HTML：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;h1&gt;</span>Active Event List in transmission<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">&quot;events&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;event critical&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;h3&gt;</span>heartbeat failure @ VIQ002<span class="nt">&lt;/h3&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span>2/12/2015 01:23 AM<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;event major&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;h3&gt;</span>packages are rejected<span class="nt">&lt;/h3&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span>2/12/2015 01:23 AM<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;event medium&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;h3&gt;</span>connection cannot be established<span class="nt">&lt;/h3&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;date&quot;</span><span class="nt">&gt;</span>2/12/2015 01:23 AM<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>        <span class="c">&lt;!-- ... --&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">&quot;legend&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;count critical&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;i</span> <span class="na">class=</span><span class="s">&quot;alarm&quot;</span><span class="nt">&gt;&lt;/i&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;span&gt;</span>critical: 20<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;count major&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;i</span> <span class="na">class=</span><span class="s">&quot;alarm&quot;</span><span class="nt">&gt;&lt;/i&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;span&gt;</span>major: 13<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;count medium&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;i</span> <span class="na">class=</span><span class="s">&quot;alarm&quot;</span><span class="nt">&gt;&lt;/i&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;span&gt;</span>medium: 20<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;count warning&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;i</span> <span class="na">class=</span><span class="s">&quot;alarm&quot;</span><span class="nt">&gt;&lt;/i&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;span&gt;</span>warning: 30<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;li&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;count indeterminate&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;i</span> <span class="na">class=</span><span class="s">&quot;alarm&quot;</span><span class="nt">&gt;&lt;/i&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;span&gt;</span>indeterminate: 6<span class="nt">&lt;/span&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/li&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/ul&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>events</code>中包含了所有告警信息，每一条告警根据等级不同显示了不同的颜色：红色表示严重，橘红表示主要，橘色表示一般等。告警信息包含了一个描述信息，并且包含了一个时间戳，表示告警发生的时间。</p>
+
+<p><code>legend</code>部分是一个图例，其中包含了各个颜色的说明，并且包含了不同级别的告警信息的数目，比如截止目前为止，共有<strong>20</strong>个严重的告警，13个主要告警等。</p>
+
+<p>对应的<code>scss</code>内容如下，首先定义了一些通用的CSS类：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='scss'><span class='line'><span class="k">@import</span> <span class="s2">&quot;compass/reset&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">@import</span> <span class="s2">&quot;compass/css3&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">body</span> <span class="p">{</span>
+</span><span class='line'>  <span class="na">font-size</span><span class="o">:</span> <span class="mi">62</span><span class="mf">.5</span><span class="kt">%</span><span class="p">;</span>
+</span><span class='line'>  <span class="na">font-family</span><span class="o">:</span> <span class="s2">&quot;Open Sans&quot;</span><span class="o">,</span> <span class="no">serif</span><span class="p">;</span>
+</span><span class='line'>  <span class="na">text-align</span><span class="o">:</span> <span class="no">center</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.critical</span> <span class="p">{</span>
+</span><span class='line'>  <span class="na">background-color</span><span class="o">:</span> <span class="nb">red</span><span class="p">;</span>
+</span><span class='line'>  <span class="na">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.major</span> <span class="p">{</span>
+</span><span class='line'>  <span class="na">background-color</span><span class="o">:</span> <span class="ni">orangered</span><span class="p">;</span>
+</span><span class='line'>  <span class="na">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.medium</span> <span class="p">{</span>
+</span><span class='line'>  <span class="na">background-color</span><span class="o">:</span> <span class="ni">orange</span><span class="p">;</span>
+</span><span class='line'>  <span class="na">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.warning</span> <span class="p">{</span>
+</span><span class='line'>  <span class="na">background-color</span><span class="o">:</span> <span class="mh">#2C75DB</span><span class="p">;</span>
+</span><span class='line'>  <span class="na">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.indeterminate</span> <span class="p">{</span>
+</span><span class='line'>  <span class="na">background-color</span><span class="o">:</span> <span class="mh">#29D4BA</span><span class="p">;</span>
+</span><span class='line'>  <span class="na">color</span><span class="o">:</span> <span class="nb">white</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后定义<code>container</code>中的各个元素的样式：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class='scss'><span class='line'><span class="nc">.container</span> <span class="p">{</span>
+</span><span class='line'>  <span class="na">padding</span><span class="o">:</span> <span class="mi">1</span><span class="kt">em</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="na">width</span><span class="o">:</span> <span class="mi">800</span><span class="kt">px</span><span class="p">;</span>
+</span><span class='line'>  <span class="na">margin</span><span class="o">:</span> <span class="mi">0</span> <span class="no">auto</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">h1</span> <span class="p">{</span>
+</span><span class='line'>      <span class="na">font-size</span><span class="o">:</span> <span class="mi">3</span><span class="kt">em</span><span class="p">;</span>
+</span><span class='line'>      <span class="na">text-transform</span><span class="o">:</span> <span class="no">uppercase</span><span class="p">;</span>
+</span><span class='line'>      <span class="na">margin</span><span class="o">:</span> <span class="mi">1</span><span class="kt">em</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nc">.event</span> <span class="p">{</span>
+</span><span class='line'>      <span class="na">position</span><span class="o">:</span> <span class="no">relative</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nt">h3</span> <span class="p">{</span>
+</span><span class='line'>          <span class="na">text-align</span><span class="o">:</span> <span class="no">left</span><span class="p">;</span>
+</span><span class='line'>          <span class="na">font-size</span><span class="o">:</span> <span class="mi">1</span><span class="mf">.5</span><span class="kt">em</span><span class="p">;</span>
+</span><span class='line'>          <span class="na">padding</span><span class="o">:</span> <span class="mf">.6</span><span class="kt">em</span> <span class="mf">.5</span><span class="kt">em</span><span class="p">;</span>
+</span><span class='line'>          <span class="na">text-transform</span><span class="o">:</span> <span class="no">capitalize</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nc">.date</span> <span class="p">{</span>
+</span><span class='line'>          <span class="na">position</span><span class="o">:</span> <span class="no">absolute</span><span class="p">;</span>
+</span><span class='line'>          <span class="na">top</span><span class="o">:</span> <span class="mi">50</span><span class="kt">%</span><span class="p">;</span>
+</span><span class='line'>          <span class="na">right</span><span class="o">:</span> <span class="mi">1</span><span class="kt">em</span><span class="p">;</span>
+</span><span class='line'>          <span class="na">font-size</span><span class="o">:</span> <span class="mi">1</span><span class="kt">em</span><span class="p">;</span>
+</span><span class='line'>          <span class="na">font-style</span><span class="o">:</span> <span class="no">italic</span><span class="p">;</span>
+</span><span class='line'>          <span class="na">color</span><span class="o">:</span> <span class="mh">#eeeeee</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nc">.legend</span> <span class="p">{</span>
+</span><span class='line'>      <span class="na">margin</span><span class="o">:</span> <span class="mi">1</span><span class="kt">em</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>      <span class="nt">li</span> <span class="p">{</span>
+</span><span class='line'>          <span class="na">width</span><span class="o">:</span> <span class="mi">20</span><span class="kt">%</span><span class="p">;</span>
+</span><span class='line'>          <span class="na">float</span><span class="o">:</span> <span class="no">left</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="nc">.count</span> <span class="p">{</span>
+</span><span class='line'>              <span class="na">padding</span><span class="o">:</span> <span class="mf">.6</span><span class="kt">em</span><span class="p">;</span>
+</span><span class='line'>              <span class="na">text-transform</span><span class="o">:</span> <span class="no">capitalize</span><span class="p">;</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>应用程序</h3>
+
+<p>首先我们下载<code>underscore.js</code>和<code>jquery.js</code>，并将它们放在当前目录下的<code>scripts/libs</code>下，并在<code>scripts</code>下创建一个<code>app.js</code>文件。</p>
+
+<p>这时候的目录结构如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='scss'><span class='line'><span class="err">├──</span> <span class="nt">index</span><span class="nc">.html</span>
+</span><span class='line'><span class="err">├──</span> <span class="nt">sass</span>
+</span><span class='line'><span class="err">│  </span> <span class="err">└──</span> <span class="nt">style</span><span class="nc">.scss</span>
+</span><span class='line'><span class="err">├──</span> <span class="nt">scripts</span>
+</span><span class='line'><span class="err">│  </span> <span class="err">├──</span> <span class="nt">app</span><span class="nc">.js</span>
+</span><span class='line'><span class="err">│  </span> <span class="err">└──</span> <span class="nt">libs</span>
+</span><span class='line'><span class="err">│  </span>     <span class="err">├──</span> <span class="nt">jquery</span><span class="nc">.min.js</span>
+</span><span class='line'><span class="err">│  </span>     <span class="err">└──</span> <span class="nt">underscore</span><span class="nc">.js</span>
+</span><span class='line'><span class="err">└──</span> <span class="nt">stylesheets</span>
+</span><span class='line'>    <span class="err">└──</span> <span class="nt">style</span><span class="nc">.css</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后我们在<code>index.html</code>中引入上列的文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;scripts/libs/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;scripts/libs/underscore.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;scripts/app.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们的应用程序需要做的事情很简单：</p>
+
+<ol>
+<li>请求服务器获得数据</li>
+<li>处理数据（如果需要的话）</li>
+<li>将加工过的数据与模板结合，渲染在页面上</li>
+</ol>
+
+
+<p><code>underscore.js</code>中有一个用来处理模板的函数，叫做<code>template</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">compiled</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="s2">&quot;&lt;h1&gt;&lt;%= title %&gt;&lt;/h1&gt;&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">compiled</span><span class="p">({</span><span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Heartbeat Failure @ VIQ002&quot;</span><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//&lt;h1&gt;Heartbeat Failure @ VIQ002&lt;/h1&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意上式中的<code>&lt;%= variable %&gt;</code>，这个表达式表示打印<code>variable</code>的值。而如果只是执行JavaScript代码，表达式则为<code>&lt;% expression; %&gt;</code>。</p>
+
+<p>比如我们可以使用<code>for</code>循环：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">template</span> <span class="o">=</span>
+</span><span class='line'>  <span class="s2">&quot;&lt;% _.each(alarms, function(alarm){ %&gt;&quot;</span> <span class="o">+</span>
+</span><span class='line'>      <span class="s2">&quot;&lt;h3&gt;&lt;%= alarm.summary %&gt;&lt;/h3&gt;&quot;</span> <span class="o">+</span>
+</span><span class='line'>  <span class="s2">&quot;&lt;% }); %&gt;&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">compilded</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="nx">template</span><span class="p">);</span>
+</span><span class='line'><span class="nx">compilded</span><span class="p">({</span><span class="s2">&quot;alarms&quot;</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;proiority&quot;</span><span class="o">:</span> <span class="s2">&quot;critical&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;occurrence&quot;</span><span class="o">:</span> <span class="s2">&quot;2/12/2015 01:23 AM&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;summary&quot;</span><span class="o">:</span> <span class="s2">&quot;heartbeat failure&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;node&quot;</span><span class="o">:</span> <span class="s2">&quot;VIQ002&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;proiority&quot;</span><span class="o">:</span> <span class="s2">&quot;major&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;occurrence&quot;</span><span class="o">:</span> <span class="s2">&quot;2/12/2015 01:22 AM&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;summary&quot;</span><span class="o">:</span> <span class="s2">&quot;packages are rejected&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;node&quot;</span><span class="o">:</span> <span class="s2">&quot;VIQ002&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;proiority&quot;</span><span class="o">:</span> <span class="s2">&quot;medium&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;occurrence&quot;</span><span class="o">:</span> <span class="s2">&quot;2/11/2015 01:23 AM&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;summary&quot;</span><span class="o">:</span> <span class="s2">&quot;connection cannot be established&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;node&quot;</span><span class="o">:</span> <span class="s2">&quot;VIQ002&quot;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">]});</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//&lt;h3&gt;heartbeat failure&lt;/h3&gt;&lt;h3&gt;packages are rejected&lt;/h3&gt;&lt;h3&gt;connection cannot be established&lt;/h3&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意上边代码中的<code>_.each</code>语句。</p>
+
+<h3>实现</h3>
+
+<p>首先我们在页面上定义一个模板，定义在id为<code>events</code>的<code>script</code>标签中，注意这个script的type为<code>template</code>，这样既可以避免浏览器解释它，又可以为我们临时保存一段文本。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;template&quot;</span> <span class="na">id=</span><span class="s">&quot;events&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="o">&lt;%</span> <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">alarms</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">alarm</span><span class="p">)</span> <span class="p">{</span> <span class="o">%&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span>
+</span><span class='line'>            <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;event &lt;%= alarm.proiority%&gt;&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>                <span class="o">&lt;</span><span class="nx">h3</span><span class="o">&gt;&lt;%=</span> <span class="nx">alarm</span><span class="p">.</span><span class="nx">summary</span><span class="o">%&gt;</span> <span class="err">@</span> <span class="o">&lt;%=</span> <span class="nx">alarm</span><span class="p">.</span><span class="nx">node</span> <span class="o">%&gt;&lt;</span><span class="err">/h3&gt;</span>
+</span><span class='line'>                <span class="o">&lt;</span><span class="nx">span</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;date&quot;</span><span class="o">&gt;&lt;%=</span> <span class="nx">alarm</span><span class="p">.</span><span class="nx">occurrence</span> <span class="o">%&gt;&lt;</span><span class="err">/span&gt;</span>
+</span><span class='line'>            <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'>    <span class="o">&lt;%</span> <span class="p">});</span> <span class="o">%&gt;</span>
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后在<code>app.js</code>中只需要请求<code>alarms.json</code>，然后编译模板，并绑定数据：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;/alarms.json&quot;</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">alarms</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">compiled</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#events&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">());</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">html</span> <span class="o">=</span> <span class="nx">compiled</span><span class="p">({</span><span class="s2">&quot;alarms&quot;</span><span class="o">:</span> <span class="nx">alarms</span><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.events&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">html</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>刷新页面，就可以看到来自于后台的实际数据了（当然，我们这里使用了一个静态的<code>alarms.json</code>来模拟后台的API）：</p>
+
+<p><img src="/images/2015/02/fetch-data-resized.png" alt="fetch data from server" /></p>
+
+<h4>处理数据</h4>
+
+<p>你可能已经看到了，由于后台数据采集的问题，前端请求到的数据不一定每次都是按照日期排好序的，因此我们需要在拿到数据之后先排序在展示。好在我们之前已经学习了如何做到这一点：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;/alarms.json&quot;</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">alarms</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">eventCompiled</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#events&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">events</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">alarms</span><span class="p">).</span><span class="nx">sortBy</span><span class="p">(</span><span class="s2">&quot;occurrence&quot;</span><span class="p">).</span><span class="nx">reverse</span><span class="p">();</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">eventHTML</span> <span class="o">=</span> <span class="nx">eventCompiled</span><span class="p">({</span><span class="s2">&quot;alarms&quot;</span><span class="o">:</span> <span class="nx">events</span><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.events&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">eventHTML</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>剩下的就是页面最底部的图例部分了，这部分会统计各种类型告警的合计信息，这些信息需要进一步的汇总。首先我们将<code>legend</code>封装成模板：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;template&quot;</span> <span class="na">id=</span><span class="s">&quot;legend&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="o">&lt;%</span> <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">legends</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">legend</span><span class="p">)</span> <span class="p">{</span> <span class="o">%&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">li</span><span class="o">&gt;</span>
+</span><span class='line'>            <span class="o">&lt;</span><span class="nx">div</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;count &lt;%= legend.proiority %&gt;&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>                <span class="o">&lt;</span><span class="nx">i</span> <span class="kr">class</span><span class="o">=</span><span class="s2">&quot;alarm&quot;</span><span class="o">&gt;&lt;</span><span class="err">/i&gt;</span>
+</span><span class='line'>                <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;&lt;%=</span> <span class="nx">legend</span><span class="p">.</span><span class="nx">proiority</span> <span class="o">%&gt;:</span> <span class="o">&lt;%=</span> <span class="nx">legend</span><span class="p">.</span><span class="nx">count</span> <span class="o">%&gt;&lt;</span><span class="err">/span&gt;</span>
+</span><span class='line'>            <span class="o">&lt;</span><span class="err">/div&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'>    <span class="o">&lt;%</span> <span class="p">});</span> <span class="o">%&gt;</span>
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>也即，我们需要这样一个结果集：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;proiority&quot;</span><span class="o">:</span> <span class="s2">&quot;critical&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="mi">3</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;proiority&quot;</span><span class="o">:</span> <span class="s2">&quot;major&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="mi">2</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>不过使用<code>underscore.js</code>，我们可以很容易的得到这个格式的数据：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">legends</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">chain</span><span class="p">(</span><span class="nx">alarms</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">.</span><span class="nx">groupBy</span><span class="p">(</span><span class="s2">&quot;proiority&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="p">{</span><span class="nx">proiority</span><span class="o">:</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">count</span><span class="o">:</span> <span class="nx">value</span><span class="p">.</span><span class="nx">length</span><span class="p">};</span>
+</span><span class='line'>  <span class="p">}).</span><span class="nx">value</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中，<code>groupBy</code>是一个新的API，和<code>SQL</code>中的<code>group by</code>子句一样，它可以将符合条件的项目合并为不同的组：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">contacts</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Juntao&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">29</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Abruzzi&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">30</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Sara&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">29</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">_</span><span class="p">(</span><span class="nx">contacts</span><span class="p">).</span><span class="nx">groupBy</span><span class="p">(</span><span class="s2">&quot;age&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>会得到这样的结果：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="nt">&quot;29&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Juntao&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;age&quot;</span><span class="p">:</span> <span class="mi">29</span>
+</span><span class='line'>        <span class="p">},</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Sara&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;age&quot;</span><span class="p">:</span> <span class="mi">29</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">],</span>
+</span><span class='line'>    <span class="nt">&quot;30&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Abruzzi&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="nt">&quot;age&quot;</span><span class="p">:</span> <span class="mi">30</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因此我们通过上面的计算就可以得到需要的结果了：</p>
+
+<p><img src="/images/2015/02/with-legend-resized.png" alt="with legend" /></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2565,172 +3306,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/11/modern-ui-development-workflow/">现代Web页面开发流程</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-25T14:11:00+08:00" pubdate data-updated="true">Nov 25<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>现代Web页面开发流程</h3>
-
-<p>通常来说，Web页面开发的流程大致是这样的：设计师（设计师不是美工，就像程序员不是码农一样）提供设计稿，通常是图片格式。然后前端的开发人员（在ThoughtWorks我们称之为UI Dev）来手工的将图片转换为对应的HTML+CSS，往往还需要在各个浏览器中调试等。</p>
-
-<p>大多数时候，设计师会提供色卡，或者至少前景色/背景色/高亮色的值给开发人员。如果没有的话，开发人员会用到一些工具如<code>colorpicker</code>, <code>ruler</code>之类来确保最终的效果和设计稿是一致的。</p>
-
-<p>如果你观察过UI Dev的工作流程的话，你会发现基本的上是这样的：使用编辑器（或者IDE）编写HTML代码，CSS代码，保存修改内容，切换到浏览器窗口，按<code>F5</code>或者<code>Ctrl-R</code>刷新，然后对比设计稿和实现，如果发现不一致的地方，再切换到编辑器中修改代码，如是往复。</p>
-
-<h4>避免手工劳动</h4>
-
-<p>纯手工的方式来编辑HTML/CSS会非常耗时，特别是作为标记语言的HTML，开发者需要时刻关注关闭已经打开的标签。比如一个标题元素，你需要：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;h1&gt;</span>This is the page title<span class="nt">&lt;/h1&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>几乎从一开始，人们就想到了各种办法来避免自己重复的键入，比如Vim的<a href="https://github.com/ervandew/supertab">SuperTab</a>以及<a href="https://github.com/garbas/vim-snipmate">Snipmate</a>插件，可以通过输入<code>标签名</code>+<code>Tab</code>来补全所有的标签等，又或者DreamWaver提供的<code>代码生成</code>的方式来简化这一流程。</p>
-
-<p>Sublime的编辑器上的著名插件<a href="https://sublime.wbond.net/packages/Emmet">Emmet</a>可以帮助开发人员飞速的开发HTML/CSS，这里有一个小例子。假设我们需要实现的页面是这样的：</p>
-
-<p><img src="/images/2014/11/web-design-resized.png" alt="web design" /></p>
-
-<p>那么对应的HTML结构可能会是：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;ul&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;li&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;feature&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">&quot;number&quot;</span><span class="nt">&gt;&lt;/span&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;i&gt;&lt;/i&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;h4&gt;&lt;/h4&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;p&gt;&lt;/p&gt;</span>
-</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>    ...
-</span><span class='line'><span class="nt">&lt;/ul&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用Emmet，则只需要给出表达式，然后按一下<code>Tab</code>键就可以补全为上述的结构了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>ul&gt;li*3&gt;.feature&gt;span.number+i+h4+p
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上边的这条命令可以读作：&#8221;创建一个UL，该UL下有3个LI，每个LI下有一个class为feature的DIV（不指定元素名称的话，默认生成div），每个DIV内，有一个类为.number的SPAN，一个i元素，一个H4元素和一个P元素&#8221;</p>
-
-<p>完整的技巧可以参看<a href="http://docs.emmet.io/cheat-sheet/">官方文档</a>。</p>
-
-<h4>避免重复劳动</h4>
-
-<p>上边提到的频繁的F5刷新，可以通过<code>LiveReload+Guard</code>两个工具的组合来解决。<a href="https://chrome.google.com/webstore/detail/livereload/jnihajbhpnppcggbcgedagnkighmdlei">LiveReload</a>是一个浏览器的插件，通过协议与后台的服务器进行通信。当后台文件发生变化时，LiveReload会自动刷新页面。</p>
-
-<p><a href="https://github.com/guard/guard">Guard</a>会使用操作系统的API来感知本地文件的变化，当文件变化后，它可以通知LiveReload进行刷新，当然Guard可以做其他一些事情，比如等SCSS发生变化时，自动编译CSS等。</p>
-
-<p>两者结合之后，就可以节省我们大量的时间，而把精力主要投放在开发这件事情本身上。</p>
-
-<h4>样板工程</h4>
-
-<p>我在Github上公开了一个样板工程，这是一个开箱即用的工程，其中提供了这样一些配置：</p>
-
-<ol>
-<li>SCSS的编译环境（使用compass）</li>
-<li>Guard配置（当你的SCSS文件或者HTML文件修改之后，自动通知LiveReload来刷新浏览器）</li>
-<li>一个标准的HTML5样板文档</li>
-<li>一个基本的style.scss</li>
-</ol>
-
-
-<p>Guardfile的配置中，如果<code>index.html</code>发生变化，或者<code>stylesheets</code>中的css文件发生变化，或者<code>scripts</code>目录中的js文件发生变化，都会触发<code>livereload</code>任务（通知浏览器）。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">guard</span> <span class="s1">&#39;livereload&#39;</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">watch</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{stylesheets/.+\.(css)}</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{scripts/.+\.(js)}</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">guard</span> <span class="ss">:compass</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>你只需要简单的将这个工程克隆到本地：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>git clone git@github.com:abruzzi/design-boilerplate.git mydesign
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后在该目录中执行<code>bundle install</code>即可：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span><span class="nb">cd </span>mydesign
-</span><span class='line'><span class="nv">$ </span>bundle install
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里有两点假设：
-1.  你已经安装了<a href="http://rvm.io/">rvm</a>
-2.  你已经使用rvm安装了某个版本的ruby，即<code>bundler</code>这个gem</p>
-
-<h4>开发流程</h4>
-
-<p>我通常会启动两个终端，一个用来运行<code>Guard</code>，另一个用来运行<code>HTTP Server</code>，然后是一个浏览器：</p>
-
-<p><img src="/images/2014/11/workflow-resized.png" alt="workflow" /></p>
-
-<p>当在编辑器中进行编辑之后，保存文件，浏览器会自动刷新，这样的快速反馈可以告诉我下一步应该如何修改：将背景色调整的再淡一点，还是把会h2的字体变得更大，或者图片和文字的上边缘没有对齐等等。</p>
-
-<p>这种开发流程和后台开发人员进行TDD的方式非常类似：<code>实时反馈，小步前进</code>！如果你的桌子上有两个显示器的话，那就更好了，你可以在一台显示器上显示设计稿，另一台上分屏显示编辑器和浏览器，这样就可以非常舒服的进行UI开发了：</p>
-
-<p><img src="/images/2014/11/two-displays-resized.png" alt="two displays" /></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/6/">&larr; Older</a>
@@ -2748,6 +3323,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2017/08/from-sandwich-to-hexagon/">从三明治到六边形</a>
+      </li>
+    
+      <li class="post">
         <a href="/2017/07/tips-for-newbies/">如何成为一名优秀的程序员？</a>
       </li>
     
@@ -2761,10 +3340,6 @@
     
       <li class="post">
         <a href="/2017/02/data-visualization-from-baby/">生活中的数据可视化之 &#8211; 换尿布</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2017/02/frontend-page-performance-tuning/">如何提升页面渲染效率</a>
       </li>
     
   </ul>

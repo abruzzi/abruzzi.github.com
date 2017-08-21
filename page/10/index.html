@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="jQuery mobile jQuery Mobile是一个基于jQuery/jQuery-ui的UI库，用于构建基于HTML5的应用程序，当然它主要针对移动设备平台，开发者使用它可以很容易的开发出运行在ios/android/windows phone上的应用，这些应用（尽管运行在不同的硬件/ &hellip;">
+  <meta name="description" content="Powerline powerline会将vim的status line变的非常漂亮，看起来像一个“主流”的编辑器那样，而又不会引入额外的“重量”。基本原理是使用字体将特殊字符展现成特殊形状（如三角形），额外的有一些漂亮的配色。 效果 安装 有几个额外的点需要确保： &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,98 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/02/install-powerline-fancy-status-line-for-vim-in-mac-os/">Install Powerline (Fancy Status Line) for Vim in Mac OS</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-19T10:53:00+08:00" pubdate data-updated="true">Feb 19<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>Powerline</h3>
+
+<p><a href="https://github.com/Lokaltog/powerline">powerline</a>会将vim的status line变的非常漂亮，看起来像一个“主流”的编辑器那样，而又不会引入额外的“重量”。基本原理是使用字体将特殊字符展现成特殊形状（如三角形），额外的有一些漂亮的配色。</p>
+
+<h4>效果</h4>
+
+<p><img src="http://abruzzi.github.com/images/2013/02/vim-power-line-resized.png" alt="image" /></p>
+
+<h4>安装</h4>
+
+<p>有几个额外的点需要确保：</p>
+
+<h5>保证你的vim包含了对python的支持</h5>
+
+<p><code>vim --version | grep python</code>的结果应该包含<code>+python</code>，如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>+path_extra -perl +persistent_undo +postscript +printer -profile +python/dyn </span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果没有的话，需要将vim重新编译，比如在Mac OS下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>brew install macvim --env-std --override-system-vim</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>安装powerline</h5>
+
+<p>最简单的方式是直接clone到本地，比如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git clone git://github.com/Lokaltog/powerline.git ~/PowerLine/</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>配置.vimrc</h5>
+
+<p>为你的vimrc添加下面的配置：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>set rtp+={path_to_powerline}/powerline/bindings/vim
+</span><span class='line'>set laststatus=2
+</span><span class='line'>set noshowmode</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这时，如果你启动vim，应该已经可以看到powerline了，但是有可能有“乱码”的问题，幸运的是，已经有很多的预定义字体。</p>
+
+<h3>Fonts</h3>
+
+<p><a href="https://github.com/Lokaltog/powerline-fonts">这里</a>有许多额外的预定义fonts。选中需要的字体，安装到本地即可（双击字体文件或者拷贝到<code>~/Library/Fonts</code>下）。然后在.vimrc中使用这个字体，比如：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>set encoding=utf-8
+</span><span class='line'>set guifont=Menlo\ for\ Powerline:h14</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1170,132 +1262,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/11/git-squash-localcommits/">Git Squash Localcommits</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-11-07T10:54:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>There is a common scenario: we have lots of local commits related with a certain feature or a big
-bug, after all the works done, we want to combine them together. The git provides a handy way to do
-this job: <em>git rebase</em></p>
-
-<p>I&#8217;ll take the following case as an example, say, I&#8217;ve got 3 commits locally and they are all about
-a restyling of some page.</p>
-
-<p><code>$ git st</code></p>
-
-<pre><code># On branch master
-# Your branch is ahead of 'origin/master' by 3 commits.
-#
-nothing to commit (working directory clean)
-</code></pre>
-
-<p>Details:</p>
-
-<p><code>$ git log</code></p>
-
-<pre><code>commit 4e7e1ac7e7e77ae4404843ed96b9f881f969b836
-Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
-Date:   Tue Nov 6 16:49:59 2012 +0800
-
-    RCA-410 new search form style only apply to search result page.
-
-commit 385cec1f22f432c03ea96b5c927f89b3747e82fb
-Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
-Date:   Tue Nov 6 14:21:50 2012 +0800
-
-    RCA-410 re-style search form area.
-
-commit b9694db0b0fb100bfa5f967480188bf05ad538b4
-Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
-Date:   Tue Nov 6 10:33:07 2012 +0800
-
-    RCA-410 restyling search form.
-
-commit 866375c7d805e19f963319fb558f1b16f7daf15b
-Author: John abruzzi &lt;juntao.qiu@gmail.com&gt;
-Date:   Mon Nov 5 14:06:16 2012 +0800
-
-    RCA-625. Add the embeded video feature toggle into casa feature-config file.
-</code></pre>
-
-<p>I have 3 commits after the very commit <em>866375c7d805e19f963319fb558f1b16f7daf15b</em>, and then I&#8217;ll use
-rebase in interactive mode, by the option <em>-i</em> appended.</p>
-
-<p><code>$ git rebase -i HEAD~3</code></p>
-
-<pre><code>pick b9694db0b RCA-410 restyling search form. Pair: Yameng &amp; Juntao
-pick 385cec1f2 RCA-410 re-style search form area. pair:juntao
-pick 4e7e1ac7e RCA-410 new search form style only apply to search result page. pair:Juntao
-</code></pre>
-
-<p>There are a few command provided, I&#8217;ll use <em>squash</em> by now, since I want to squash the following 2 commits
-into the first one, so simply change the <em>pick</em> into <em>squash</em></p>
-
-<pre><code>pick b9694db0b RCA-410 restyling search form. Pair: Yameng &amp; Juntao
-squash 385cec1f2 RCA-410 re-style search form area. pair:juntao
-squash 4e7e1ac7e RCA-410 new search form style only apply to search result page. pair:Juntao
-</code></pre>
-
-<p>After that, save the popuped editor(vi in my local machinel), and change the generated comments message into</p>
-
-<pre><code>RCA-410 restyling search form, applied to search results and pdp. Pair: Yameng &amp; Juntao
-</code></pre>
-
-<p>and then save and quit the editor, we&#8217;ll see the following message:</p>
-
-<p><code>$ git st</code></p>
-
-<pre><code># On branch master
-# Your branch is ahead of 'origin/master' by 1 commit.
-#
-nothing to commit (working directory clean)
-</code></pre>
-
-<p>And the history is more clear like this:
-<code>$ git log</code></p>
-
-<pre><code>commit 8ff8a0e015b6ebe7bcd5434f25ed789dee2d5f1e
-Author: Qiu Juntao &lt;juntao.qiu@gmail.com&gt;
-Date:   Tue Nov 6 10:33:07 2012 +0800
-
-    RCA-410 restyling search form, applied to search results and pdp.
-
-commit 866375c7d805e19f963319fb558f1b16f7daf15b
-Author: John abruzzi &lt;juntao.qiu@gmail.com&gt;
-Date:   Mon Nov 5 14:06:16 2012 +0800
-    RCA-625. Add the embeded video feature toggle into casa feature-config file.
-</code></pre>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/11/">&larr; Older</a>
@@ -1313,6 +1279,10 @@ Date:   Mon Nov 5 14:06:16 2012 +0800
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2017/08/from-sandwich-to-hexagon/">从三明治到六边形</a>
+      </li>
+    
+      <li class="post">
         <a href="/2017/07/tips-for-newbies/">如何成为一名优秀的程序员？</a>
       </li>
     
@@ -1326,10 +1296,6 @@ Date:   Mon Nov 5 14:06:16 2012 +0800
     
       <li class="post">
         <a href="/2017/02/data-visualization-from-baby/">生活中的数据可视化之 &#8211; 换尿布</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2017/02/frontend-page-performance-tuning/">如何提升页面渲染效率</a>
       </li>
     
   </ul>
