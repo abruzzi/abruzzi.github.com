@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Methodology | I code it]]></title>
   <link href="http://abruzzi.github.com/category/methodology/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-08-21T22:24:58+08:00</updated>
+  <updated>2017-08-21T22:29:08+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -104,7 +104,7 @@ public class Customer {</p>
 
 <p>在有些场景下，应用层内还可能划分出一个服务层。</p>
 
-<p><img src="/images/2017/08/layered-resized.png" alt="" /></p>
+<p><img src="/images/2017/08/layered.png" alt="" /></p>
 
 <h3>前后端分离</h3>
 
