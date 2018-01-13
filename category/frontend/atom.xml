@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: frontend | I code it]]></title>
+  <title><![CDATA[Category: Frontend | I code it]]></title>
   <link href="http://abruzzi.github.com/category/frontend/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-08-21T22:29:08+08:00</updated>
+  <updated>2018-01-13T16:15:54+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,617 +14,142 @@
 
   
   <entry>
-    <title type="html"><![CDATA[前后端分离了，然后呢？]]></title>
-    <link href="http://abruzzi.github.com/2015/06/whats-next-after-separate-frontend-and-backend/"/>
-    <updated>2015-06-22T21:29:00+08:00</updated>
-    <id>http://abruzzi.github.com/2015/06/whats-next-after-separate-frontend-and-backend</id>
-    <content type="html"><![CDATA[<h3>前言</h3>
+    <title type="html"><![CDATA[如何提升页面渲染效率]]></title>
+    <link href="http://abruzzi.github.com/2017/02/frontend-page-performance-tuning/"/>
+    <updated>2017-02-08T18:16:00+08:00</updated>
+    <id>http://abruzzi.github.com/2017/02/frontend-page-performance-tuning</id>
+    <content type="html"><![CDATA[<h2>Web页面的性能</h2>
 
-<p>前后端分离已经是业界所共识的一种开发/部署模式了。所谓的前后端分离，并<strong>不是</strong>传统行业中的按部门划分，一部分人纯做前端（HTML/CSS/JavaScript/Flex），另一部分人纯做后端，因为这种方式是<strong>不工作</strong>的：比如很多团队采取了后端的模板技术（JSP, FreeMarker, ERB等等），前端的开发和调试需要一个后台Web容器的支持，从而无法做到真正的分离（更不用提在部署的时候，由于动态内容和静态内容混在一起，当设计动态静态分流的时候，处理起来非常麻烦）。关于前后端开发的另一个讨论可以<a href="http://icodeit.org/2015/06/do-we-really-short-for-front-end-developer/">参考这里</a>。</p>
+<p>我们每天都会浏览很多的Web页面，使用很多基于Web的应用。这些站点看起来既不一样，用途也都各有不同，有在线视频，<code>Social Media</code>，新闻，邮件客户端，在线存储，甚至图形编辑，地理信息系统等等。虽然有着各种各样的不同，但是相同的是，他们背后的工作原理都是一样的：</p>
 
-<p>即使通过API来解耦前端和后端开发过程，前后端通过<code>RESTFul</code>的接口来通信，前端的静态内容和后端的动态计算分别开发，分别部署，<strong>集成</strong>仍然是一个绕不开的问题 --- 前端/后端的应用都可以独立的运行，但是集成起来却不工作。我们需要花费大量的精力来调试，直到上线前仍然没有人有信心所有的接口都是工作的。</p>
+<ul>
+<li>用户输入网址</li>
+<li>浏览器加载<code>HTML/CSS/JS</code>，图片资源等</li>
+<li>浏览器将结果绘制成图形</li>
+<li>用户通过鼠标，键盘等与页面交互</li>
+</ul>
 
-<h3>一点背景</h3>
 
-<p>一个典型的Web应用的布局看起来是这样的：</p>
+<p><img src="/images/2017/02/internet-resized.png" alt="" /></p>
 
-<p><img src="/images/2015/06/single-backend-resized.png" alt="typical web application" /></p>
+<p>这些种类繁多的页面，在用户体验方面也有很大差异：有的响应很快，用户很容易就可以完成自己想要做的事情；有的则慢慢吞吞，让焦躁的用户在受挫之后拂袖而去。毫无疑问，性能是影响用户体验的一个非常重要的因素，而影响性能的因素非常非常多，从用户输入网址，到用户最终看到结果，需要有很多的参与方共同努力。这些参与方中任何一个环节的性能都会影响到用户体验。</p>
 
-<p>前后端都各自有自己的开发流程，构建工具，测试集合等等。前后端仅仅通过接口来编程，这个接口可能是JSON格式的RESTFul的接口，也可能是XML的，重点是后台只负责数据的提供和计算，而完全不处理展现。而前端则负责拿到数据，组织数据并展现的工作。这样结构清晰，关注点分离，前后端会变得相对独立并松耦合。</p>
+<ul>
+<li>宽带网速</li>
+<li>DNS服务器的响应速度</li>
+<li>服务器的处理能力</li>
+<li>数据库性能</li>
+<li>路由转发</li>
+<li>浏览器处理能力</li>
+</ul>
 
-<p>上述的场景还是比较理想，我们事实上在实际环境中会有非常复杂的场景，比如异构的网络，异构的操作系统等等:</p>
 
-<p><img src="/images/2015/06/multiple-backend-resized.png" alt="real word application" /></p>
+<p>早在2006年，雅虎就发布了提升站点性能的<a href="https://developer.yahoo.com/performance/rules.html">指南</a>，Google也发布了类似的<a href="https://developers.google.com/speed/docs/insights/rules">指南</a>。而且有很多工具可以和浏览器一起工作，对你的Web页面的加载速度进行评估：分析页面中资源的数量，传输是否采用了压缩，JS、CSS是否进行了精简，有没有合理的使用缓存等等。</p>
 
-<p>在实际的场景中，后端可能还会更复杂，比如用C语言做数据采集，然后通过Java整合到一个数据仓库，然后该数据仓库又有一层Web Service，最后若干个这样的Web Service又被一个Ruby的聚合Service整合在一起返回给前端。在这样一个复杂的系统中，后台任意端点的失败都可能阻塞前端的开发流程，因此我们会采用mock的方式来解决这个问题：</p>
+<p>如果你需要将这个过程与CI集成在一起，来对应用的性能进行监控，我去年写过一篇<a href="http://icodeit.org/2016/02/performance-testing-in-ci/">相关的博客</a>。</p>
 
-<p><img src="/images/2015/06/mock-server-resized.png" alt="mock application" /></p>
+<p>本文打算从另一个角度来尝试加速页面的渲染：浏览器是如何工作的，要将一个页面渲染成用户可以看到的图形，浏览器都需要做什么，哪些过程比较耗时，以及如何避免这些过程（或者至少以更高效的方式）。</p>
 
-<p>这个<code>mock</code>服务器可以启动一个简单的HTTP服务器，然后将一些静态的内容serve出来，以供前端代码使用。这样的好处很多:</p>
+<h2>页面是如何被渲染的</h2>
+
+<p>说到性能优化，<strong>规则一</strong>就是：</p>
+
+<blockquote><p>If you can't measure it, you can't improve it. - Peter Drucker</p></blockquote>
+
+<p>根据浏览器的工作原理，我们可以分别对各个阶段进行度量。</p>
+
+<p><img src="/images/2017/02/how-browser-works-frame-resized.png" alt="" /></p>
+
+<p><em>图片来源：http://dietjs.com/tutorials/host#backend</em></p>
+
+<h3>像素渲染流水线</h3>
 
 <ol>
-<li>前后端开发相对独立</li>
-<li>后端的进度不会影响前端开发</li>
-<li>启动速度更快</li>
-<li>前后端都可以使用自己熟悉的技术栈（让前端的学maven，让后端的用gulp都会很不顺手）</li>
+<li>下载HTML文档</li>
+<li>解析HTML文档，生成<code>DOM</code></li>
+<li>下载文档中引用的CSS、JS</li>
+<li>解析CSS样式表，生成<code>CSSOM</code></li>
+<li>将JS代码交给JS引擎执行</li>
+<li>合并DOM和CSSOM，生成<code>Render Tree</code></li>
+<li>根据<code>Render Tree</code>进行布局<code>layout</code>（为每个元素计算尺寸和位置信息）</li>
+<li>绘制（Paint）每个层中的元素（绘制每个瓦片，瓦片这个词与GIS中的瓦片含义相同）</li>
+<li>执行图层合并（Composite Layers）</li>
 </ol>
 
 
-<p>但是当<strong>集成</strong>依然是一个令人头疼的难题。我们往往在集成的时候才发现，本来协商的数据结构变了：<code>deliveryAddress</code>字段本来是一个字符串，现在变成数组了（业务发生了变更，系统现在可以支持多个快递地址）；<code>price</code>字段变成字符串，协商的时候是<code>number</code>；用户邮箱地址多了一个层级等等。这些变动在所难免，而且时有发生，这会花费大量的调试时间和集成时间，更别提修改之后的回归测试了。</p>
+<p>使用Chrome的DevTools - Timing，可以很容易的获取一个页面的渲染情况，比如在<code>Event Log</code>页签上，我们可以看到每个阶段的耗时细节（清晰起见，我没有显示<code>Loading</code>和<code>Scripting</code>的耗时）：</p>
 
-<p>所以仅仅使用一个静态服务器，然后提供<code>mock</code>数据是远远不够的。我们需要的<code>mock</code>应该还能做到：</p>
+<p><img src="/images/2017/02/timeline-resized.png" alt="Timeline" /></p>
 
-<ol>
-<li>前端依赖指定格式的mock数据来进行UI开发</li>
-<li>前端的开发和<strong>测试</strong>都基于这些mock数据</li>
-<li>后端产生指定格式的mock数据</li>
-<li>后端需要测试来确保生成的mock数据正是前端需要的</li>
-</ol>
+<p>上图中的Activity中，<code>Recalculate Style</code>就是上面的构建<code>CSSOM</code>的过程，其余Activity都分别于上述的过程匹配。</p>
 
+<p>应该注意的是，浏览器可能会将Render Tree分成好几个层来分别绘制，最后再合并起来形成最终的结果，这个过程一般发生在<code>GPU</code>中。</p>
 
-<p>简而言之，我们需要商定一些契约，并将这些契约作为<strong>可以被测试</strong>的中间格式。然后前后端都需要有测试来使用这些契约。一旦契约发生变化，则另一方的测试会失败，这样就会驱动双方协商，并降低集成时的浪费。</p>
+<p>Devtools中有一个选项：<code>Rendering - Layers Borders</code>，打开这个选项之后，你可以看到每个层，每个瓦片的边界。浏览器可能会启动多个线程来绘制不同的层/瓦片。</p>
 
-<p>一个实际的场景是：前端发现已有的某个契约中，缺少了一个<code>address</code>的字段，于是就在契约中添加了该字段。然后在UI上将这个字段正确的展现了（当然还设置了字体，字号，颜色等等）。但是后台生成该契约的服务并没有感知到这一变化，当运行生成契约部分测试（后台）时，测试会失败了 --- 因为它并没有生成这个字段。于是后端工程师就找前端来商量，了解业务逻辑之后，他会修改代码，并保证测试通过。这样，当集成的时候，就不会出现UI上少了一个字段，但是谁也不知道是前端问题，后端问题，还是数据库问题等。</p>
+<p><img src="/images/2017/02/layer-and-tile-resized.png" alt="Layers and Tiles" /></p>
 
-<p>而且实际的项目中，往往都是多个页面，多个API，多个版本，多个团队同时进行开发，这样的契约会降低非常多的调试时间，使得集成相对平滑。</p>
+<p>Chrome还提供一个<code>Paint Profiler</code>的高级功能，在<code>Event Log</code>中选择一个<code>Paint</code>，然后点击右侧的<code>Paint Profiler</code>就可以看到其中绘制的全过程：</p>
 
-<p>在实践中，契约可以定义为一个JSON文件，或者一个XML的payload。只需要保证前后端<strong>共享同一个契约集合</strong>来做测试，那么集成工作就会从中受益。一个最简单的形式是：提供一些静态的<code>mock</code>文件，而前端所有发往后台的请求都被某种机制拦截，并转换成对该静态资源的请求。</p>
+<p><img src="/images/2017/02/paint-in-detial-resized.png" alt="Paint in detail" /></p>
 
-<ol>
-<li><a href="https://github.com/dreamhead/moco">moco</a>，基于Java</li>
-<li><a href="http://wiremock.org/index.html">wiremock</a>，基于Java</li>
-<li><a href="http://www.sinatrarb.com/">sinatra</a>，基于Ruby</li>
-</ol>
+<p>你可以拖动滑块来看到随着时间的前进，页面上元素被逐步绘制出来了。我录制了一个我的知乎活动页面的视频，不过需要翻墙。</p>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/gley7VZFx_I" frameborder="0" allowfullscreen></iframe>
 
 
-<p>看到<code>sinatra</code>被列在这里，可能熟悉<code>Ruby</code>的人会反对：它可是一个<code>后端</code>全功能的的程序库啊。之所以列它在这里，是因为<code>sinatra</code>提供了一套简洁优美的<code>DSL</code>，这个<code>DSL</code>非常契合<code>Web</code>语言，我找不到更漂亮的方式来使得这个<code>mock server</code>更加易读，所以就采用了它。</p>
+<h3>常规策略</h3>
 
-<h3>一个例子</h3>
+<p>为了尽快的让用户看到页面内容，我们需要快速的完成<code>DOM+CSSOM - Layout - Paint - Composite Layers</code>的整个过程。一切会阻塞DOM生成，阻塞CSSOM生成的动作都应该尽可能消除，或者延迟。</p>
 
-<p>我们以这个应用为示例，来说明如何在前后端分离之后，保证代码的质量，并降低集成的成本。这个应用场景很简单：所有人都可以看到一个条目列表，每个登陆用户都可以选择自己喜欢的条目，并为之加星。加星之后的条目会保存到用户自己的<code>个人中心</code>中。用户界面看起来是这样的：</p>
+<p>在这个前提下，常见的做法有两种：</p>
 
-<p><img src="/images/2015/06/bookmarks-resized.png" alt="bookmarks" /></p>
+<h4>分割CSS</h4>
 
-<p>不过为了专注在我们的中心上，我去掉了诸如登陆，个人中心之类的页面，假设你是一个已登录用户，然后我们来看看如何编写测试。</p>
+<p>对于不同的浏览终端，同一终端的不同模式，我们可能会提供不同的规则集：</p>
 
-<h4>前端开发</h4>
+<p>```css
+@media print {</p>
 
-<p>根据通常的做法，前后端分离之后，我们很容易<code>mock</code>一些数据来自己测试：</p>
-
-<p>```json
-[</p>
-
-<pre><code>{
-    "id": 1,
-    "url": "http://abruzzi.github.com/2015/03/list-comprehension-in-python/",
-    "title": "Python中的 list comprehension 以及 generator",
-    "publicDate": "2015年3月20日"
-},
-{
-    "id": 2,
-    "url": "http://abruzzi.github.com/2015/03/build-monitor-script-based-on-inotify/",
-    "title": "使用inotify/fswatch构建自动监控脚本",
-    "publicDate": "2015年2月1日"
-},
-{
-    "id": 3,
-    "url": "http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery/",
-    "title": "使用underscore.js构建前端应用",
-    "publicDate": "2015年1月20日"
+<pre><code>html {
+    font-family: 'Open Sans';
+    font-size: 12px;
 }
 </code></pre>
 
-<p>]
-```</p>
+<p>}</p>
 
-<p>然后，一个可能的方式是通过请求这个json来测试前台：</p>
+<p>@media orientation:landscape {</p>
 
-<p>```js
-$(function() {</p>
-
-<pre><code>$.get('/mocks/feeds.json').then(function(feeds) {
-    var feedList = new Backbone.Collection(extended);
-    var feedListView = new FeedListView(feedList);
-
-    $('.container').append(feedListView.render());
-});
-</code></pre>
-
-<p>});
-```</p>
-
-<p>这样当然是可以工作的，但是这里发送请求的<code>url</code>并不是最终的，当集成的时候我们又需要修改为真实的<code>url</code>。一个简单的做法是使用<code>Sinatra</code>来做一次url的转换：</p>
-
-<p>```rb
-get '/api/feeds' do</p>
-
-<pre><code>content_type 'application/json'
-File.open('mocks/feeds.json').read
-</code></pre>
-
-<p>end
-```</p>
-
-<p>这样，当我们和实际的服务进行集成时，只需要连接到那个服务器就可以了。</p>
-
-<p>注意，我们现在的核心是<code>mocks/feeds.json</code>这个文件。这个文件现在的角色就是一个契约，至少对于前端来说是这样的。紧接着，我们的应用需要渲染<code>加星</code>的功能，这就需要另外一个契约：找出当前用户加星过的所有条目，因此我们加入了一个新的契约：</p>
-
-<p>```json
-[</p>
-
-<pre><code>{
-    "id": 3,
-    "url": "http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery/",
-    "title": "使用underscore.js构建前端应用",
-    "publicDate": "2015年1月20日"
-}
-</code></pre>
-
-<p>]
-```</p>
-
-<p>然后在<code>sinatra</code>中加入一个新的映射：</p>
-
-<p>```rb
-get '/api/fav-feeds/:id' do</p>
-
-<pre><code>content_type 'application/json'
-File.open('mocks/fav-feeds.json').read
-</code></pre>
-
-<p>end
-```</p>
-
-<p>通过这两个请求，我们会得到两个列表，然后根据这两个列表的交集来绘制出所有的星号的状态（有的是空心，有的是实心）：</p>
-
-<p>```js
-$.when(feeds, favorite).then(function(feeds, favorite) {</p>
-
-<pre><code>var ids = _.pluck(favorite[0], 'id');
-var extended = _.map(feeds[0], function(feed) {
-    return _.extend(feed, {status: _.includes(ids, feed.id)});
-});
-
-var feedList = new Backbone.Collection(extended);
-var feedListView = new FeedListView(feedList);
-
-$('.container').append(feedListView.render());
-</code></pre>
-
-<p>});
-```</p>
-
-<p>剩下的一个问题是当点击红心时，我们需要发请求给后端，然后更新红心的状态：</p>
-
-<p>```js
-toggleFavorite: function(event) {</p>
-
-<pre><code>event.preventDefault();
-var that = this;
-$.post('/api/feeds/'+this.model.get('id')).done(function(){
-    var status = that.model.get('status');
-    that.model.set('status', !status);
-});
+<pre><code>//
 </code></pre>
 
 <p>}
 ```</p>
 
-<p>这里又多出来一个请求，不过使用Sinatra我们还是可以很容易的支持它：</p>
+<p>如果将这些内容写到统一个文件中，浏览器需要下载并解析这些内容（虽然不会实际应用这些规则）。更好的做法是，将这些内容通过对<code>link</code>元素的<code>media</code>属性来指定：</p>
 
-<p><code>rb
-post '/api/feeds/:id' do
-end
+<p><code>html
+&lt;link href="print.css" rel="stylesheet" media="print"&gt;
+&lt;link href="landscape.css" rel="stylesheet" media="orientation:landscape"&gt;
 </code></p>
 
-<p>可以看到，在没有后端的情况下，我们一切都进展顺利 --- 后端甚至还没有开始做，或者正在由一个进度比我们慢的团队在开发，不过无所谓，他们不会影响我们的。</p>
+<p>这样，<code>print.css</code>和<code>landscape.css</code>的内容不会阻塞Render Tree的建立，用户可以更快的看到页面，从而获得更好的体验。</p>
 
-<p>不仅如此，当我们写完前端的代码之后，可以做一个<code>End2End</code>的测试。由于使用了mock数据，免去了数据库和网络的耗时，这个<code>End2End</code>的测试会运行的非常快，并且它确实起到了端到端的作用。这些测试在最后的集成时，还可以用来当UI测试来运行。所谓一举多得。</p>
+<h4>高效的CSS规则</h4>
 
-<p>```rb</p>
+<h5>CSS规则的优先级</h5>
 
-<h1>encoding: utf-8</h1>
+<p>很多使用<code>SASS/LESS</code>的开发人员，太过分的喜爱嵌套规则的特性，这可能会导致复杂的、无必要深层次的规则，比如：</p>
 
-<p>require 'spec_helper'</p>
+<p>```css</p>
 
-<p>describe 'Feeds List Page' do</p>
+<h1>container {</h1>
 
-<pre><code>let(:list_page) {FeedListPage.new}
-
-before do
-    list_page.load
-end
-
-it 'user can see a banner and some feeds' do
-    expect(list_page).to have_banner
-    expect(list_page).to have_feeds
-end
-
-it 'user can see 3 feeds in the list' do
-    expect(list_page.all_feeds).to have_feed_items count: 3
-end
-
-it 'feed has some detail information' do
-    first = list_page.all_feeds.feed_items.first
-    expect(first.title).to eql("Python中的 list comprehension 以及 generator")
-end
-</code></pre>
-
-<p>end
-```</p>
-
-<p><img src="/images/2015/06/e2e-resized.png" alt="end 2 end" /></p>
-
-<p>关于如何编写这样的测试，可以参考之前写的<a href="http://icodeit.org/2015/01/page-object-with-site-prism/">这篇文章</a>。</p>
-
-<h4>后端开发</h4>
-
-<p>我在这个示例中，后端采用了<code>spring-boot</code>作为示例，你应该可以很容易将类似的思路应用到Ruby或者其他语言上。</p>
-
-<p>首先是请求的入口，<code>FeedsController</code>会负责解析请求路径，查数据库，最后返回JSON格式的数据。</p>
-
-<p>```java
-@Controller
-@RequestMapping("/api")
-public class FeedsController {</p>
-
-<pre><code>@Autowired
-private FeedsService feedsService;
-
-@Autowired
-private UserService userService;
-
-public void setFeedsService(FeedsService feedsService) {
-    this.feedsService = feedsService;
-}
-
-public void setUserService(UserService userService) {
-    this.userService = userService;
-}
-
-@RequestMapping(value="/feeds", method = RequestMethod.GET)
-@ResponseBody
-public Iterable&lt;Feed&gt; allFeeds() {
-    return feedsService.allFeeds();
-}
-
-
-@RequestMapping(value="/fav-feeds/{userId}", method = RequestMethod.GET)
-@ResponseBody
-public Iterable&lt;Feed&gt; favFeeds(@PathVariable("userId") Long userId) {
-    return userService.favoriteFeeds(userId);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>具体查询的细节我们就不做讨论了，感兴趣的可以在文章结尾处找到代码库的链接。那么有了这个Controller之后，我们如何测试它呢？或者说，如何让契约变得实际可用呢？</p>
-
-<p><code>spring-test</code>提供了非常优美的DSL来编写测试，我们仅需要一点代码就可以将契约用起来，并实际的<strong>监督</strong>接口的修改：</p>
-
-<p>```java
-private MockMvc mockMvc;
-private FeedsService feedsService;
-private UserService userService;</p>
-
-<p>@Before
-public void setup() {</p>
-
-<pre><code>feedsService = mock(FeedsService.class);
-userService = mock(UserService.class);
-
-FeedsController feedsController = new FeedsController();
-feedsController.setFeedsService(feedsService);
-feedsController.setUserService(userService);
-
-mockMvc = standaloneSetup(feedsController).build();
-</code></pre>
-
-<p>}
-```</p>
-
-<p>建立了mockmvc之后，我们就可以编写Controller的单元测试了：</p>
-
-<p>```java
-@Test
-public void shouldResponseWithAllFeeds() throws Exception {</p>
-
-<pre><code>when(feedsService.allFeeds()).thenReturn(Arrays.asList(prepareFeeds()));
-
-mockMvc.perform(get("/api/feeds"))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType("application/json;charset=UTF-8"))
-        .andExpect(jsonPath("$", hasSize(3)))
-        .andExpect(jsonPath("$[0].publishDate", is(notNullValue())));
-</code></pre>
-
-<p>}
-```</p>
-
-<p>当发送<code>GET</code>请求到<code>/api/feeds</code>上之后，我们期望返回状态是200，然后内容是<code>application/json</code>。然后我们预期返回的结果是一个长度为3的数组，然后数组中的第一个元素的<code>publishDate</code>字段不为空。</p>
-
-<p>注意此处的<code>prepareFeeds</code>方法，事实上它会去加载<code>mocks/feeds.json</code>文件 --- 也就是前端用来测试的mock文件：</p>
-
-<p>```java
-private Feed[] prepareFeeds() throws IOException {</p>
-
-<pre><code>URL resource = getClass().getResource("/mocks/feeds.json");
-ObjectMapper mapper = new ObjectMapper();
-return mapper.readValue(resource, Feed[].class);
-</code></pre>
-
-<p>}
-```</p>
-
-<p>这样，当后端修改<code>Feed</code>定义（添加/删除/修改字段），或者修改了mock数据等，都会导致测试失败；而前端修改mock之后，也会导致测试失败 --- 不要惧怕失败 --- 这样的失败会促进一次协商，并驱动出最终的service的契约。</p>
-
-<p>对应的，测试<code>/api/fav-feeds/{userId}</code>的方式类似：</p>
-
-<p>```java</p>
-
-<p>@Test
-public void shouldResponseWithUsersFavoriteFeeds() throws Exception {</p>
-
-<pre><code>when(userService.favoriteFeeds(any(Long.class)))
-    .thenReturn(Arrays.asList(prepareFavoriteFeeds()));
-
-mockMvc.perform(get("/api/fav-feeds/1"))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType("application/json;charset=UTF-8"))
-        .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].title", is("使用underscore.js构建前端应用")))
-        .andExpect(jsonPath("$[0].publishDate", is(notNullValue())));
-</code></pre>
-
-<p>}
-```</p>
-
-<h3>总结</h3>
-
-<p>前后端分离是一件容易的事情，而且团队可能在短期可以看到很多好处，但是如果不认真处理集成的问题，分离反而可能会带来更长的集成时间。通过面向契约的方式来组织各自的测试，可以带来很多的好处：更快速的<code>End2End</code>测试，更平滑的集成，更安全的分离开发等等。</p>
-
-<h3>代码</h3>
-
-<p>前后端的代码我都放到了Gitbub上，感兴趣的可以clone下来自行研究：</p>
-
-<ol>
-<li><a href="https://github.com/abruzzi/bookmarks-frontend">bookmarks-frontend</a></li>
-<li><a href="https://github.com/abruzzi/bookmarks-server">bookmarks-server</a></li>
-</ol>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用underscore.js构建前端应用]]></title>
-    <link href="http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery/"/>
-    <updated>2015-02-21T21:21:00+08:00</updated>
-    <id>http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery</id>
-    <content type="html"><![CDATA[<h2>一个监控系统</h2>
-
-<p>我们今天要使用<code>underscore.js</code>和<code>jQuery</code>来构建一个客户端的应用，这个应用是一个监控系统的前端，设计师已经给出了界面设计：</p>
-
-<p><img src="/images/2015/02/alarms-design-resized.png" alt="alarms design" /></p>
-
-<p>而对应的服务器端的API也已经就绪了：</p>
-
-<p><code>sh
-$ curl http://localhost:9527/alarms.json -s | jq .
-</code></p>
-
-<p>会看到诸如这样的返回值：</p>
-
-<p>```json
-[
-  {</p>
-
-<pre><code>"proiority": "critical",
-"occurrence": "2/12/2015 01:23 AM",
-"summary": "heartbeat failure",
-"node": "VIQ002"
-</code></pre>
-
-<p>  },
-  {</p>
-
-<pre><code>"proiority": "major",
-"occurrence": "2/12/2015 01:22 AM",
-"summary": "packages are rejected",
-"node": "VIQ002"
-</code></pre>
-
-<p>  },
-  {</p>
-
-<pre><code>"proiority": "medium",
-"occurrence": "2/11/2015 01:23 AM",
-"summary": "connection cannot be established",
-"node": "VIQ002"
-</code></pre>
-
-<p>  }
-]</p>
-
-<p>```</p>
-
-<p>每条告警信息都包含：优先级，发生时间，描述信息，以及发生告警的节点名称。</p>
-
-<p>我们要将这些信息整合，并展示在页面上。</p>
-
-<h3>mockup</h3>
-
-<p>我在<a href="juntao.gitbooks.io/3-web-designs-in-3-weeks/">《3周3页面》</a>中讨论过现代前端开发的方式，你也可以参考<a href="http://icodeit.org/2014/11/modern-ui-development-workflow/">这篇文章</a>以及<a href="http://">这篇文章</a>。我们这里还是采用相同的方式来实现这个<code>mockup</code>，也就是静态页面。</p>
-
-<p>首先我们在<code>index.html</code>中编写HTML：</p>
-
-<p>```html</p>
-
-<div class="container">
-    <h1>Active Event List in transmission</h1>
-    <ul class="events">
-        <li>
-            <div class="event critical">
-                <h3>heartbeat failure @ VIQ002</h3>
-                <span class="date">2/12/2015 01:23 AM</span>
-            </div>
-        </li>
-        <li>
-            <div class="event major">
-                <h3>packages are rejected</h3>
-                <span class="date">2/12/2015 01:23 AM</span>
-            </div>
-        </li>
-        <li>
-            <div class="event medium">
-                <h3>connection cannot be established</h3>
-                <span class="date">2/12/2015 01:23 AM</span>
-            </div>
-        </li>
-        <!-- ... -->
-    </ul>
-
-    <ul class="legend">
-        <li>
-            <div class="count critical">
-                <i class="alarm"></i>
-                <span>critical: 20</span>
-            </div>
-        </li>
-        <li>
-            <div class="count major">
-                <i class="alarm"></i>
-                <span>major: 13</span>
-            </div>
-        </li>
-        <li>
-            <div class="count medium">
-                <i class="alarm"></i>
-                <span>medium: 20</span>
-            </div>
-        </li>
-        <li>
-            <div class="count warning">
-                <i class="alarm"></i>
-                <span>warning: 30</span>
-            </div>
-        </li>
-        <li>
-            <div class="count indeterminate">
-                <i class="alarm"></i>
-                <span>indeterminate: 6</span>
-            </div>
-        </li>
-    </ul>
-</div>
-
-
-<p>```</p>
-
-<p><code>events</code>中包含了所有告警信息，每一条告警根据等级不同显示了不同的颜色：红色表示严重，橘红表示主要，橘色表示一般等。告警信息包含了一个描述信息，并且包含了一个时间戳，表示告警发生的时间。</p>
-
-<p><code>legend</code>部分是一个图例，其中包含了各个颜色的说明，并且包含了不同级别的告警信息的数目，比如截止目前为止，共有<strong>20</strong>个严重的告警，13个主要告警等。</p>
-
-<p>对应的<code>scss</code>内容如下，首先定义了一些通用的CSS类：</p>
-
-<p>```scss
-@import "compass/reset";
-@import "compass/css3";</p>
-
-<p>body {</p>
-
-<pre><code>font-size: 62.5%;
-font-family: "Open Sans", serif;
-text-align: center;
-</code></pre>
-
-<p>}</p>
-
-<p>.critical {</p>
-
-<pre><code>background-color: red;
-color: white;
-</code></pre>
-
-<p>}</p>
-
-<p>.major {</p>
-
-<pre><code>background-color: orangered;
-color: white;
-</code></pre>
-
-<p>}</p>
-
-<p>.medium {</p>
-
-<pre><code>background-color: orange;
-color: white;
-</code></pre>
-
-<p>}</p>
-
-<p>.warning {</p>
-
-<pre><code>background-color: #2C75DB;
-color: white;
-</code></pre>
-
-<p>}</p>
-
-<p>.indeterminate {</p>
-
-<pre><code>background-color: #29D4BA;
-color: white;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>然后定义<code>container</code>中的各个元素的样式：</p>
-
-<p>```scss
-.container {</p>
-
-<pre><code>padding: 1em 0;
-width: 800px;
-margin: 0 auto;
-
-h1 {
-    font-size: 3em;
-    text-transform: uppercase;
-    margin: 1em 0;
-}
-
-.event {
-    position: relative;
-
-    h3 {
-        text-align: left;
-        font-size: 1.5em;
-        padding: .6em .5em;
-        text-transform: capitalize;
-    }
-
-    .date {
-        position: absolute;
-        top: 50%;
-        right: 1em;
-        font-size: 1em;
-        font-style: italic;
-        color: #eeeeee;
-    }
-}
-
-.legend {
-    margin: 1em 0;
-    li {
-        width: 20%;
-        float: left;
-
-        .count {
-            padding: .6em;
-            text-transform: capitalize;
+<pre><code>p {
+    .title {
+        span {
+            color: #f3f3f3;
         }
     }
 }
@@ -633,278 +158,1052 @@ h1 {
 <p>}
 ```</p>
 
-<h3>应用程序</h3>
+<p>在生成的CSS中，可以看到：</p>
 
-<p>首先我们下载<code>underscore.js</code>和<code>jquery.js</code>，并将它们放在当前目录下的<code>scripts/libs</code>下，并在<code>scripts</code>下创建一个<code>app.js</code>文件。</p>
+<p>```css</p>
 
-<p>这时候的目录结构如下：</p>
+<h1>container p .title span {</h1>
 
-<p>```
-├── index.html
-├── sass
-│   └── style.scss
-├── scripts
-│   ├── app.js
-│   └── libs
-│       ├── jquery.min.js
-│       └── underscore.js
-└── stylesheets</p>
-
-<pre><code>└── style.css
-</code></pre>
-
-<p>```</p>
-
-<p>然后我们在<code>index.html</code>中引入上列的文件：</p>
-
-<p>```html</p>
-
-<script src="scripts/libs/jquery.min.js"></script>
-
-
-<script src="scripts/libs/underscore.js"></script>
-
-
-<script src="scripts/app.js"></script>
-
-
-<p>```</p>
-
-<p>我们的应用程序需要做的事情很简单：</p>
-
-<ol>
-<li>请求服务器获得数据</li>
-<li>处理数据（如果需要的话）</li>
-<li>将加工过的数据与模板结合，渲染在页面上</li>
-</ol>
-
-
-<p><code>underscore.js</code>中有一个用来处理模板的函数，叫做<code>template</code>：</p>
-
-<p>```js
-var compiled = _.template("<h1>&lt;%= title %></h1>");
-compiled({"title": "Heartbeat Failure @ VIQ002"});</p>
-
-<p>//<h1>Heartbeat Failure @ VIQ002</h1>
-```</p>
-
-<p>注意上式中的<code>&lt;%= variable %&gt;</code>，这个表达式表示打印<code>variable</code>的值。而如果只是执行JavaScript代码，表达式则为<code>&lt;% expression; %&gt;</code>。</p>
-
-<p>比如我们可以使用<code>for</code>循环：</p>
-
-<p>```js
-var template =</p>
-
-<pre><code>"&lt;% _.each(alarms, function(alarm){ %&gt;" +
-    "&lt;h3&gt;&lt;%= alarm.summary %&gt;&lt;/h3&gt;" +
-"&lt;% }); %&gt;";
-</code></pre>
-
-<p>var compilded = _.template(template);
-compilded({"alarms": [
-  {</p>
-
-<pre><code>"proiority": "critical",
-"occurrence": "2/12/2015 01:23 AM",
-"summary": "heartbeat failure",
-"node": "VIQ002"
-</code></pre>
-
-<p>  },
-  {</p>
-
-<pre><code>"proiority": "major",
-"occurrence": "2/12/2015 01:22 AM",
-"summary": "packages are rejected",
-"node": "VIQ002"
-</code></pre>
-
-<p>  },
-  {</p>
-
-<pre><code>"proiority": "medium",
-"occurrence": "2/11/2015 01:23 AM",
-"summary": "connection cannot be established",
-"node": "VIQ002"
-</code></pre>
-
-<p>  }
-]});</p>
-
-<p>//<h3>heartbeat failure</h3><h3>packages are rejected</h3><h3>connection cannot be established</h3>
-```</p>
-
-<p>注意上边代码中的<code>_.each</code>语句。</p>
-
-<h3>实现</h3>
-
-<p>首先我们在页面上定义一个模板，定义在id为<code>events</code>的<code>script</code>标签中，注意这个script的type为<code>template</code>，这样既可以避免浏览器解释它，又可以为我们临时保存一段文本。</p>
-
-<p>```html</p>
-
-<script type="template" id="events">
-    <% _.each(alarms, function(alarm) { %>
-        <li>
-            <div class="event <%= alarm.proiority%>">
-                <h3><%= alarm.summary%> @ <%= alarm.node %></h3>
-                <span class="date"><%= alarm.occurrence %></span>
-            </div>
-        </li>
-    <% }); %>
-</script>
-
-
-<p>```</p>
-
-<p>然后在<code>app.js</code>中只需要请求<code>alarms.json</code>，然后编译模板，并绑定数据：</p>
-
-<p>```js
-$(function() {</p>
-
-<pre><code>$.get("/alarms.json").done(function(alarms) {
-    var compiled = _.template($("#events").html());
-    var html = compiled({"alarms": alarms});
-
-    $(".events").html(html);
-});
-</code></pre>
-
-<p>});
-```</p>
-
-<p>刷新页面，就可以看到来自于后台的实际数据了（当然，我们这里使用了一个静态的<code>alarms.json</code>来模拟后台的API）：</p>
-
-<p><img src="/images/2015/02/fetch-data-resized.png" alt="fetch data from server" /></p>
-
-<h4>处理数据</h4>
-
-<p>你可能已经看到了，由于后台数据采集的问题，前端请求到的数据不一定每次都是按照日期排好序的，因此我们需要在拿到数据之后先排序在展示。好在我们之前已经学习了如何做到这一点：</p>
-
-<p>```js
-$(function() {</p>
-
-<pre><code>$.get("/alarms.json").done(function(alarms) {
-    var eventCompiled = _.template($("#events").html());
-
-    var events = _(alarms).sortBy("occurrence").reverse();
-    var eventHTML = eventCompiled({"alarms": events});
-
-    $(".events").html(eventHTML);
-});
-</code></pre>
-
-<p>});
-```</p>
-
-<p>剩下的就是页面最底部的图例部分了，这部分会统计各种类型告警的合计信息，这些信息需要进一步的汇总。首先我们将<code>legend</code>封装成模板：</p>
-
-<p>```html</p>
-
-<script type="template" id="legend">
-    <% _.each(legends, function(legend) { %>
-        <li>
-            <div class="count <%= legend.proiority %>">
-                <i class="alarm"></i>
-                <span><%= legend.proiority %>: <%= legend.count %></span>
-            </div>
-        </li>
-    <% }); %>
-</script>
-
-
-<p>```</p>
-
-<p>也即，我们需要这样一个结果集：</p>
-
-<p>```js</p>
-
-<p>[</p>
-
-<pre><code>{
-    "proiority": "critical",
-    "count": 3
-},
-{
-    "proiority": "major",
-    "count": 2
+<p>  color: #f3f3f3;
 }
-</code></pre>
-
-<p>]
 ```</p>
 
-<p>不过使用<code>underscore.js</code>，我们可以很容易的得到这个格式的数据：</p>
+<p>而这个层次可能并非必要。CSS规则越复杂，在构建Render Tree时，浏览器花费的时间越长。CSS规则有自己的优先级，不同的写法对效率也会有影响，特别是当规则很多的时候。这里有一篇关于<a href="https://css-tricks.com/specifics-on-css-specificity/">CSS规则优先级</a>的文章可供参考。</p>
 
-<p>```js
-var legends = _.chain(alarms)</p>
+<h5>使用GPU加速</h5>
 
-<pre><code>.groupBy("proiority")
-.map(function(value, key) {
-    return {proiority: key, count: value.length};
-}).value();
-</code></pre>
+<p>很多动画都会定时执行，每次执行都可能会导致浏览器的重新布局，比如：</p>
 
-<p>```</p>
+<p>```css
+@keyframes my {</p>
 
-<p>其中，<code>groupBy</code>是一个新的API，和<code>SQL</code>中的<code>group by</code>子句一样，它可以将符合条件的项目合并为不同的组：</p>
+<pre><code>20% {
+    top: 10px;
+}
 
-<p>```js
-var contacts = [
-  {</p>
+50% {
+    top: 120px;
+}
 
-<pre><code>  "name": "Juntao",
-  "age": 29
-</code></pre>
-
-<p>  },
-  {</p>
-
-<pre><code>  "name": "Abruzzi",
-  "age": 30
-</code></pre>
-
-<p>  },
-  {</p>
-
-<pre><code>  "name": "Sara",
-  "age": 29
-</code></pre>
-
-<p>  }
-];</p>
-
-<p>var result = _(contacts).groupBy("age");
-```</p>
-
-<p>会得到这样的结果：</p>
-
-<p>```json
-{</p>
-
-<pre><code>"29": [
-    {
-        "name": "Juntao",
-        "age": 29
-    },
-    {
-        "name": "Sara",
-        "age": 29
-    }
-],
-"30": [
-    {
-        "name": "Abruzzi",
-        "age": 30
-    }
-]
+80% {
+    top: 10px;
+}
 </code></pre>
 
 <p>}
 ```</p>
 
-<p>因此我们通过上面的计算就可以得到需要的结果了：</p>
+<p>这些内容可以放到GPU加速执行（GPU是专门设计来进行图形处理的，在图形处理上，比CPU要高效很多）。可以通过使用<code>transform</code>来启动这一特性：</p>
 
-<p><img src="/images/2015/02/with-legend-resized.png" alt="with legend" /></p>
+<p>```css
+@keyframes my {</p>
+
+<pre><code>20% {
+    transform: translateY(10px);
+}
+
+50% {
+    transform: translateY(120px);
+}
+
+80% {
+    transform: translateY(10px);
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<h4>异步JavaScript</h4>
+
+<p>我们知道，JavaScript的执行会阻塞DOM的构建过程，这是因为JavaScript中可能会有DOM操作：</p>
+
+<p>```js
+var element = document.createElement('div');
+element.style.width = '200px';
+element.style.color = 'blue';</p>
+
+<p>body.appendChild(element);
+```</p>
+
+<p>因此浏览器会等等待JS引擎的执行，执行结束之后，再恢复DOM的构建。但是并不是所有的JavaScript都会设计DOM操作，比如审计信息，WebWorker等，对于这些脚本，我们可以显式地指定该脚本是<strong>不阻塞DOM渲染</strong>的。</p>
+
+<p>```html</p>
+
+<script src="worker.js" async></script>
+
+
+<p>```</p>
+
+<p>带有<code>async</code>标记的脚本，浏览器仍然会下载它，并在合适的时机执行，但是不会影响DOM树的构建过程。</p>
+
+<h3>首次渲染之后</h3>
+
+<p>在首次渲染之后，页面上的元素还可能被不断的重新布局，重新绘制。如果处理不当，这些动作可能会产生性能问题，产生不好的用户体验。</p>
+
+<ul>
+<li>访问元素的某些属性</li>
+<li>通过JavaScript修改元素的CSS属性</li>
+<li>在<code>onScroll</code>中做耗时任务</li>
+<li>图片的预处理（事先裁剪图片，而不是依赖浏览器在布局时的缩放）</li>
+<li>在其他Event Handler中做耗时任务</li>
+<li>过多的动画</li>
+<li>过多的数据处理（可以考虑放入<code>WebWorker</code>内执行）</li>
+</ul>
+
+
+<h4>强制同步布局/回流</h4>
+
+<p>元素的一些属性和方法，当在被访问或者被调用的时候，会触发浏览器的布局动作（以及后续的Paint动作），而布局基本上都会波及页面上的所有元素。当页面元素比较多的时候，布局和绘制都会花费比较大。</p>
+
+<p>通过Timeline，有时候你会看到这样的警告：</p>
+
+<p><img src="/images/2017/02/forced-reflow-resized.png" alt="" /></p>
+
+<p>比如访问一个元素的<code>offsetWidth</code>（布局宽度）属性时，浏览器需要重新计算（重新布局），然后才能返回最新的值。如果这个动作发生在一个很大的循环中，那么浏览器就不得不进行多次的重新布局，这可能会产生严重的性能问题：</p>
+
+<p>```js
+for(var i = 0; i &lt; list.length; i++) {</p>
+
+<pre><code>list[i].style.width = parent.offsetWidth + 'px';
+</code></pre>
+
+<p>}
+```</p>
+
+<p>正确的做法是，先将这个值读出来，然后缓存在一个变量上（触发一次重新布局），以便后续使用：</p>
+
+<p>```js
+var parentWidth = parent.offsetWidth;
+for(var i = 0; i &lt; list.length; i++) {</p>
+
+<pre><code>list[i].style.width = parentWidth + 'px';
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这里有一个完整的列表<a href="https://gist.github.com/paulirish/5d52fb081b3570c81e3a">触发布局</a>。</p>
+
+<h4>CSS样式修改</h4>
+
+<h5>布局相关属性修改</h5>
+
+<p>修改布局相关属性，会触发<code>Layout - Paint - Composite Layers</code>，比如对位置，尺寸信息的修改：</p>
+
+<p>```js
+var element = document.querySelector('#id');
+element.style.width = '100px';
+element.style.height = '100px';</p>
+
+<p>element.style.top = '20px';
+element.style.left = '20px';
+```</p>
+
+<h5>绘制相关属性修改</h5>
+
+<p>修改绘制相关属性，不会触发<code>Layout</code>，但是会触发后续的<code>Paint - Composite Layers</code>，比如对背景色，前景色的修改：</p>
+
+<p><code>js
+var element = document.querySelector('#id');
+element.style.backgroundColor = 'red';
+</code></p>
+
+<h5>其他属性</h5>
+
+<p>除了上边的两种之外，有一些特别的属性可以在不同的层中单独绘制，然后再合并图层。对这种属性的访问（如果正确使用了CSS）不会触发<code>Layout - Paint</code>，而是直接进行<code>Compsite Layers</code>:</p>
+
+<ul>
+<li>transform</li>
+<li>opacity</li>
+</ul>
+
+
+<p><code>transform</code>展开的话又分为: <code>translate</code>, <code>scale</code>, <code>rotate</code>等，这些层应该放入单独的渲染层中，为了对这个元素创建一个独立的渲染层，你必须提升该元素。</p>
+
+<p>可以通过这样的方式来提升该元素：</p>
+
+<p><code>css
+.element {
+  will-change: transform;
+}
+</code></p>
+
+<blockquote><p>CSS 属性 will-change 为web开发者提供了一种告知浏览器该元素会有哪些变化的方法，这样浏览器可以在元素属性真正发生变化之前提前做好对应的优化准备工作。</p></blockquote>
+
+<p>当然，额外的层次并不是没有代价的。太多的独立渲染层，虽然缩减了<code>Paint</code>的时间，但是增加了<code>Composite Layers</code>的时间，因此需要仔细权衡。在作调整之前，需要<code>Timeline</code>的运行结果来做支持。</p>
+
+<p>还记得性能优化的规则一吗？</p>
+
+<blockquote><p>If you can't measure it, you can't improve it. - Peter Drucker</p></blockquote>
+
+<p>下面这个视频里可以看到，当鼠标挪动到特定元素时，由于CSS样式的变化，元素会被重新绘制：</p>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/c6wKfDpbwu8" frameborder="0" allowfullscreen></iframe>
+
+
+<p><a href="https://csstriggers.com/">CSS Triggers</a>是一个完整的CSS属性列表，其中包含了会影响布局或者绘制的CSS属性，以及在不同的浏览器上的不同表现。</p>
+
+<h3>总结</h3>
+
+<p>了解浏览器的工作方式，对我们做前端页面渲染性能的分析和优化都非常有帮助。为了高效而智能的完成渲染，浏览器也在不断的进行优化，比如资源的预加载，更好的利用GPU（启用更多的线程来渲染）等等。</p>
+
+<p>另一方面，我们在编写前端的HTML、JS、CSS时，也需要考虑浏览器的现状：如何减少DOM、CSSOM的构建时间，如何将耗时任务放在单独的线程中（通过<code>WebWorker</code>）。</p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li>Google出品的<a href="https://developers.google.com/web/fundamentals/performance/?hl=zh-cn">Web基础</a></li>
+<li>一篇关于如何<a href="https://varvy.com/pagespeed/optimize-css-delivery.html">优化CSS的文章</a></li>
+<li><a href="https://varvy.com/performance/cssom.html">CSSOM</a>的介绍</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[你为什么应该试一试Reflux？]]></title>
+    <link href="http://abruzzi.github.com/2015/11/get-started-with-reflux/"/>
+    <updated>2015-11-09T23:03:00+08:00</updated>
+    <id>http://abruzzi.github.com/2015/11/get-started-with-reflux</id>
+    <content type="html"><![CDATA[<h3>一点背景</h3>
+
+<p>React在设计之初就只关注在View本身上，其余部分如<code>数据的获取</code>，<code>事件处理</code>等，全然不在考虑之内。不过构建大型的Web前端应用，这些点又实在不可避免。所以Facebook的工程师提出了前端的<code>Flux</code>架构，这个架构的最大特点是<code>单向数据流</code>（后面详述）。但是<code>Flux</code>本身的实现有很多不合理的地方，比如单例的Dispatcher会在系统中有多种事件时导致臃肿的<code>switch-cases</code>等。</p>
+
+<p>这里是Facebook官方提供的提供<a href="https://github.com/facebook/flux/tree/master/examples/flux-todomvc#structure-and-data-flow">Flux的结构图</a>。</p>
+
+<p><img src="/images/2015/11/flux-diagram-resized.png" alt="Flux Diagram" /></p>
+
+<p>其实整个Flux背后的思想也<a href="http://bitquabit.com/post/the-more-things-change/">不是什么新东西</a>。在很久之前，Win32的消息机制（以及很多的GUI系统）就在使用这个模型，而且这也是一种被证实可以用来构建大型软件的模型。</p>
+
+<p>鉴于Flux本身只是一个架构，而且Facebook提供的参考实现又有一些问题，所以社区有了很多版本的Flux实现。比如我们这里会用到的<a href="http://spoike.ghost.io/deconstructing-reactjss-flux/">Reflux</a>。</p>
+
+<h3>Reflux简介</h3>
+
+<p>简而言之，<a href="https://github.com/reflux/refluxjs">Reflux</a>里有两个组件：Store和Action。Store负责和数据相关的内容：从服务器上获取数据，并更新与其绑定的React组件（view controller）;Action是一个事件的集合。Action和Store通过convention来连接起来。</p>
+
+<p>具体来说，一个典型的过程是：</p>
+
+<ol>
+<li>用户的动作(或者定时器)在组件上触发一个Action</li>
+<li>Reflux会调用对应的Store上的callback（自动触发）</li>
+<li>这个callback在执行结束之后，会显式的触发（trigger）一个数据</li>
+<li>对应的组件（可能是多个）的state会被更新</li>
+<li>React组件检测到state的变化后，会自动重绘自身</li>
+</ol>
+
+
+<p><img src="/images/2015/11/reflux-data-flow.png" alt="reflux data flow" /></p>
+
+<h3>一个例子</h3>
+
+<p>我们这里将使用React/Reflux开发一个实际的例子，从最简单的功能开始，逐步将其构建为一个较为复杂的应用。</p>
+
+<p>这个应用是一个书签展示应用（数据来源于我的Google Bookmarks）。第一个版本的界面是这样的：</p>
+
+<p><img src="/images/2015/11/bookmarks-list-resized.png" alt="bookmarks list" /></p>
+
+<p>要构建这样一个列表应用，我们需要这样几个部分：</p>
+
+<ol>
+<li>一个用来<code>fetch</code>数据，存储数据的store （BookmarkStore）</li>
+<li>一个用来表达事件的<code>Action</code>（BookmarkActions）</li>
+<li>一个列表组件（BookmarkList）</li>
+<li>一个组件条目组件（Bookmark）</li>
+</ol>
+
+
+<h4>定义Actions</h4>
+
+<p>```js
+var Reflux = require('reflux');
+var BookmarkActions = Reflux.createActions([</p>
+
+<pre><code>'fetch'
+</code></pre>
+
+<p>]);</p>
+
+<p>module.exports = BookmarkActions;
+```</p>
+
+<p>第一个版本，我们只需要定义一个<code>fetch</code>事件即可。然后在<code>Store</code>中编写这个Action的回调：</p>
+
+<h4>定义Store</h4>
+
+<p>```js
+var $ = require('jquery');
+var Reflux = require('reflux');
+var BookmarkActions = require('../actions/bookmark-actions');</p>
+
+<p>var Utils = require('../utils/fetch-client');</p>
+
+<p>var BookmarkStore = Reflux.createStore({</p>
+
+<pre><code>listenables: [BookmarkActions],
+
+init: function() {
+    this.onFetch();
+},
+
+onFetch: function() {
+    var self = this;
+    Utils.fetch('/bookmarks').then(function(bookmarks) {
+        self.trigger({
+            data: bookmarks,
+            match: ''
+        });
+    });
+}
+</code></pre>
+
+<p>});</p>
+
+<p>module.exports = BookmarkStore;
+```</p>
+
+<p>此处，我们使用<code>listenables: [BookmarkActions]</code>来将Store和Action关联起来，根据<code>convention</code>，<code>on</code>+事件名称就是回调函数的名称。这样当<code>Action</code>被触发的时候，<code>onFetch</code>会被调用。当获取到数据之后，这里会显式的<code>trigger</code>一个数据。</p>
+
+<h4>List组件</h4>
+
+<p>```js
+var React = require('react');
+var Reflux = require('reflux');</p>
+
+<p>var BookmarkStore = require('../stores/bookmark-store.js');
+var Bookmark = require('./bookmark.js');</p>
+
+<p>var BookmarkList = React.createClass({</p>
+
+<pre><code>mixins: [Reflux.connect(BookmarkStore, 'bookmarks')],
+
+getInitialState: function() {
+    return {
+        bookmarks: {data: []}
+    }
+},
+
+render: function() {
+    var list = [];
+    this.state.bookmarks.data.forEach(function(item) {
+      list.push(&lt;Bookmark title={item.title} created={item.created}/&gt;)
+    });
+
+    return &lt;ul&gt;
+        {list}
+    &lt;/ul&gt;
+}
+</code></pre>
+
+<p>});</p>
+
+<p>module.exports = BookmarkList;
+```</p>
+
+<p>在组件中，我们通过<code>mixins: [Reflux.connect(BookmarkStore, 'bookmarks')]</code>将Store和组件关联起来，这样List组件<code>state</code>上的<code>bookmarks</code>就和<code>BookmarkStore</code>连接起来了。当<code>state.bookmarks</code>变化之后，<code>render</code>方法就会被自动调用。</p>
+
+<p>对于每一个书签，就只是简单的展示内容即可：</p>
+
+<h4>Bookmark组件</h4>
+
+<p>```js
+var React = require('react');
+var Reflux = require('reflux');
+var moment = require('moment');</p>
+
+<p>var Bookmark = React.createClass({</p>
+
+<pre><code>render: function() {
+    var created = new Date(this.props.created * 1000);
+    var date = moment(created).format('YYYY-MM-DD');
+
+    return &lt;li&gt;
+        &lt;div className='bookmark'&gt;
+            &lt;h5 className='title'&gt;{this.props.title}&lt;/h5&gt;
+            &lt;span className='date'&gt;Created @ {date}&lt;/span&gt;
+        &lt;/div&gt;
+    &lt;/li&gt;;
+}
+</code></pre>
+
+<p>});</p>
+
+<p>module.exports = Bookmark;
+```</p>
+
+<p>这里我使用了<code>moment</code>库将<code>unix timestamp</code>转换为日期字符串，然后写在页面上。</p>
+
+<p>最后，<code>Utils</code>只是一个对<code>jQuery</code>的包装：</p>
+
+<p>```js
+var $ = require('jquery');
+var Promise = require('promise');</p>
+
+<p>module.exports = {</p>
+
+<pre><code>fetch: function(url) {
+    var promise = new Promise(function (resolve, reject) {
+        $.get(url).done(resolve).fail(reject);
+    });
+
+    return promise;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>我们再来总结一下，<code>BookmarkStore</code>在初始化的时候，显式地调用了<code>onFetch</code>，这个动作会导致<code>BookmarkList</code>组件的<code>state</code>的更新，这个更新会导致<code>BookmarkList</code>的重绘，<code>BookmarkList</code>会依次迭代所有的<code>Bookmark</code>。</p>
+
+<h3>更复杂一些</h3>
+
+<p>当然，Reflux的好处不仅仅是上面描述的这种单向数据流。当<code>Store</code>，<code>Actions</code>以及具体的<code>组件</code>被解耦之后，构建大型的应用才能成为可能。我们来对上面的应用做一下扩展：我们为列表添加一个搜索功能。</p>
+
+<p>随着用户的键入，我们发送请求到服务器，将过滤后的数据渲染为新的列表。我们需要这样几个东西</p>
+
+<ol>
+<li>一个SearchBox组件</li>
+<li>一个新的<code>Action</code>：<code>search</code></li>
+<li><code>BookmarkStore</code>上的一个新方法<code>onSearch</code></li>
+<li>组件<code>SearchBox</code>需要和<code>BookmarkActions</code>关联起来</li>
+</ol>
+
+
+<p>为了让用户看到匹配的效果，我们需要将匹配到的关键字高亮起来，这样我们需要在<code>Bookmark</code>组件中监听<code>BookmarkStore</code>，当<code>BookmarkStore</code>发生变化之后，我们就可以即时修改书签的<code>title</code>了。</p>
+
+<h4>搜索框组件</h4>
+
+<p>```js
+var React = require('react');
+var BookmarkActions = require('../actions/bookmark-actions');</p>
+
+<p>var SearchBox = React.createClass({</p>
+
+<pre><code>performSearch: function() {
+    var keyword = this.refs.keyword.value;
+    BookmarkActions.search(keyword);
+},
+
+render: function() {
+    return &lt;div className="search"&gt;
+        &lt;input type='text' 
+            placeholder='type to search...' 
+            ref="keyword"
+            onChange={this.performSearch} /&gt;    
+    &lt;/div&gt;
+}
+</code></pre>
+
+<p>});</p>
+
+<p>module.exports = SearchBox;
+```</p>
+
+<h4>BookmarkStore</h4>
+
+<p>```js
+var $ = require('jquery');
+var Reflux = require('reflux');
+var BookmarkActions = require('../actions/bookmark-actions');</p>
+
+<p>var Utils = require('../utils/fetch-client');</p>
+
+<p>var BookmarkStore = Reflux.createStore({</p>
+
+<pre><code>listenables: [BookmarkActions],
+
+init: function() {
+    this.onFetch();
+},
+
+onFetch: function() {
+    var self = this;
+    Utils.fetch('/bookmarks').then(function(bookmarks) {
+        self.trigger({
+            data: bookmarks,
+            match: ''
+        });
+    });
+},
+
+onSearch: function(keyword) {
+    var self = this;
+
+    Utils.fetch('/bookmarks?keyword='+keyword).then(function(bookmarks) {
+        self.trigger({
+            data: bookmarks,
+            match: keyword
+        });
+    });
+}
+</code></pre>
+
+<p>});</p>
+
+<p>module.exports = BookmarkStore;
+```</p>
+
+<p>我们在<code>BookmarkStore</code>中添加了<code>onSearch</code>方法，它会根据关键字来调用后台API进行搜索，并将结果<code>trigger</code>出去。由于数据本身的结构并没有变化（只是数量会由于过滤而变少），因此<code>BookmarkList</code>是无需修改的。</p>
+
+<h4>书签高亮</h4>
+
+<p>当搜索匹配之后，我们可以将对应的关键字高亮起来，这时候我们需要修改<code>Bookmark</code>组件：</p>
+
+<p>```js
+var React = require('react');
+var Reflux = require('reflux');
+var moment = require('moment');</p>
+
+<p>var BookmarkStore = require('../stores/bookmark-store.js');</p>
+
+<p>var Bookmark = React.createClass({</p>
+
+<pre><code>mixins: [Reflux.listenTo(BookmarkStore, 'onMatch')],
+
+onMatch: function(data) {
+    this.setState({
+        match: data.match
+    });
+},
+
+getInitialState: function() {
+    return {
+        match: ''
+    }
+},
+
+render: function() {
+    var created = new Date(this.props.created * 1000);
+    var date = moment(created).format('YYYY-MM-DD');
+
+    var title = this.props.title;
+    if(this.state.match.length &gt; 0) {
+        title = &lt;span
+            dangerouslySetInnerHTML={{
+              __html : this.props.title.replace(new RegExp('('+this.state.match+')', "gi"), '&lt;span class="highlight"&gt;$1&lt;/span&gt;')
+            }} /&gt;
+    }
+
+    return &lt;li&gt;
+        &lt;div className='bookmark'&gt;
+            &lt;h5 className='title'&gt;{title}&lt;/h5&gt;
+            &lt;span className='date'&gt;Created @ {date}&lt;/span&gt;
+        &lt;/div&gt;
+    &lt;/li&gt;;
+}
+</code></pre>
+
+<p>});</p>
+
+<p>module.exports = Bookmark;
+```</p>
+
+<p><code>mixins: [Reflux.listenTo(BookmarkStore, 'onMatch')]</code>表示，我们需要监听<code>BookmarkStore</code>的变化，当变化发生时，调用<code>OnMatch</code>方法。<code>OnMatch</code>会修改组件的<code>match</code>属性，从而触发<code>render</code>。</p>
+
+<p>在<code>render</code>中，我们替换关键字为<code>&lt;span class="highlight"&gt;$keyword&lt;/span&gt;</code>，这样就可以达到预期的效果了：</p>
+
+<p><img src="/images/2015/11/bookmark-search-resized.png" alt="bookmark search" /></p>
+
+<h3>结论</h3>
+
+<p>从上面的例子可以看到，我们从一开始就引入了Reflux。虽然第一个版本和React原生的写法差异并不是很大，但是当加入<code>SearchBox</code>功能之后，需要修改的地方非常清晰：添加<code>Actions</code>，在对应的<code>Store</code>中添加callback，然后在组件中使用。这种方法不仅可以最大程度的使用<code>React</code>的长处（diff render），而且使得代码逻辑变得较为清晰。</p>
+
+<p>随着业务代码的不断增加，Reflux提供的方式确实可以在一定程度上控制代码的复杂性和可读性。</p>
+
+<p>完整的<a href="https://github.com/abruzzi/react-reflux-demo">代码地址在这里</a>。</p>
+
+<h3>其他参考</h3>
+
+<ul>
+<li><a href="http://www.bunniesandbeatings.com/RefluxManifesto/">Reflux“宣言”</a></li>
+<li><a href="https://news.ycombinator.com/item?id=10381015">Flux is the new WndProc</a></li>
+<li><a href="https://ochronus.com/react-reflux-example/">React Reflux Example</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[我们真的缺前端工程师吗？]]></title>
+    <link href="http://abruzzi.github.com/2015/06/do-we-really-short-for-front-end-developer/"/>
+    <updated>2015-06-14T23:33:00+08:00</updated>
+    <id>http://abruzzi.github.com/2015/06/do-we-really-short-for-front-end-developer</id>
+    <content type="html"><![CDATA[<h3>前言</h3>
+
+<p>这两天在好几个地方都看到了一篇关于<a href="http://chuansong.me/n/1369941">为什么整个互联网行业都缺前端工程师？</a>的文章，文章本身是去年的，中心思想是：其实我们并不缺前端工程师，我们缺的是优秀的前端工程师。我还是比较同意作者观点的，不过略有意犹未尽的感觉。于是我结合自己的经验，也来聊一下这个话题：<strong>我们真的缺前端工程师吗？</strong></p>
+
+<p><code>
+These walls are kind of funny like that. First you hate them, then you get used to them.Enough time passed, get so you depend on them. That’s institutionalising.
+</code></p>
+
+<p>传统软件公司划分开发者的方式下，在前端部门的程序员永远不会去读缓存数据部分的代码，设计师也不太可能去和开发坐在一起，开发也不知道软件最终软件会以何种方式部署在服务器上。</p>
+
+<h3>什么是“前端”工程师</h3>
+
+<p>我在招聘广告和办公室的一些对话中，听到了一个新的角色：UI Dev，事实上我在知乎上还回答过一个<a href="http://www.zhihu.com/question/30170650">关于ThoughtWorks的UI Dev的问题</a>。简而言之，UI Dev可以快速的把设计师的作品实现为HTML/CSS/JavaScript代码。</p>
+
+<p><img src="/images/2015/06/website-development-resized.png" alt="front-end development" /></p>
+
+<p>如果按照这个标准，我觉得UI Dev对自己的要求太低了。毕竟要学会HTML/CSS实现mockup并不困难，但是成为一名前端工程师则需要掌握更多的知识：</p>
+
+<ul>
+<li>会用PS来进行图片的处理（比如切图，微调等）</li>
+<li>用HTML/CSS实现mockup（可能还有<a href="http://sass-lang.com/">SASS</a>/<a href="http://lesscss.org/">LESS</a>等工具）</li>
+<li>熟悉JavaScript（比如前端的MVVM框架，客户端模板）</li>
+<li>前端开发的工作流程（代码检查，精简化，模块化CSS，LiveReload，调试）</li>
+<li>编写测试（静态检查，单元测试）</li>
+<li>跨浏览器、跨设备的解决方法（不同分辨率，不同厂商）</li>
+<li>会根据项目的特点选择不同的前端技术栈（移动端，Web站点，响应式设计等）</li>
+</ul>
+
+
+<p>在有了基础的HTML/CSS/JS技能之后，你会尝试做的更好：</p>
+
+<ul>
+<li>如何更高效的操作DOM</li>
+<li>如何将CSS写的更加清晰易懂</li>
+<li>如何编写更加易于维护的代码（更有意义的单元测试）</li>
+<li>如何组织大型的项目结构，模块化，组件化等等</li>
+</ul>
+
+
+<p>这些要求事实上已经不那么容易做到了。它可能会花费你2到3年时间来完全掌握。但是2到3年之后，即便你已经成为了一个“合格的”前端工程师，这也还远远不够。在现实世界中，一个软件产品除了前端，还有非常广阔的空间，还有很多有趣的东西值得学习：</p>
+
+<ul>
+<li>HTTP协议本身（缓存，鉴权）</li>
+<li>Web容器/HTTP服务器如何工作</li>
+<li>无状态的Web应用的工作原理（如何让网站正确地运行在集群上）</li>
+<li>动态，静态内容如何分离部署（反向代理配置）</li>
+<li>安全机制如何配置</li>
+<li>监控机制如何配置</li>
+</ul>
+
+
+<p>有了这些，也算是有点端到端的意思了。这时你也已经不是一个“纯前端”工程师了，系统中的大部分问题你都可以搞定，不过日常工作中可能更多的职责还是做前端的开发。但是这些还不够，软件除了交付之外，还有一些非功能性的需求：</p>
+
+<ul>
+<li>端到端测试（UI测试，比如<a href="http://www.seleniumhq.org/">selenium server</a>/web driver）</li>
+<li>devops（比如数据库环境，测试服务器，CI服务器的自动化provision）</li>
+<li>基本的UI设计原则（在某些页面确实的情况下，根据系统的已有UI做设计）</li>
+<li>数据库性能优化</li>
+<li>性能测试</li>
+</ul>
+
+
+<p><del>不过这些还只是我对于Web开发这个领域的总结。其他领域，比如大数据，机器学习，GIS，图像/视频处理等等。</del></p>
+
+<p>这时候，你才能算是一个严格意义上的“前端”工程师。不从系统的角度来思考，不真正做一些后端开发/配置，并不能算是前端工程师，或者可以被称为<em>偏前端</em>工程师（partial frontend developer）。但是即使称为上边这样的“前端工程师”，我想这离一个优秀的工程师还是有<strong>很大差距</strong>的。</p>
+
+<p>我跟一位<a href="http://www.caicaiwan.com/">设计师同事</a>聊过这个问题：</p>
+
+<p><code>
+Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找到一些卡片（story卡或者需求文档说明书），然后撸袖子开干，干的过程中有很多自以为是的理解，同样有一些自以为是的牛逼实践（TDD啊，自动化啊），最后功能做完，大功告成，然后接着做下一个卡片。传统的Dev，或者苦逼屌丝程序员的世界就是这样的：需求从哪儿来，不知道；做完之后谁来负责质量，不知道；最终上线的时候怎么发布，不知道；线上有问题了怎么办，不知道。
+</code></p>
+
+<p>以及</p>
+
+<p><code>
+在ThoughtWorks，Dev的工作有了很大的变化，一个最明显的变化是边界的模糊。比如很多项目都不设QA角色，所有人都对质量负责，都做测试，也有OPs角色，但是大部分非生产环境都是Dev自己发布。也就是说，软件/项目生命周期中的大部分实践我们都能涉足，而且可以带来改进，提升效率。但是这只是往下游（从开发，到测试，到部署，到运维），反过来看上游，比如需求从哪儿来，Dev还是不知道。这毫无疑问是一个令人沮丧的事实，因为这需求的产生才是核心，也就是我昨天跟你聊的：一个idea如何变成一个可视化的原型，然后进一步演进为项目原型？
+</code></p>
+
+<p>开发工作不应该仅仅局限在编码上，作为开发者/工程师，应该尽可能的多了解一些上下文：比如我们的项目最终是给谁用的，需求从何而来，项目是如何部署在线上的等等。</p>
+
+<p><img src="/images/2015/06/software-life-cycle-resized.png" alt="software life cycle" /></p>
+
+<p>简而言之，开发者视野应该放开开阔一些。不要将自己局限在某种角色上，不但不要局限在前端/后端开发上，压根就不要局限在开发这种角色本身上，你在系统中，可以是设计师，还可以是业务分析师。虽然不一定最终要你去转行做BA，或者UX，但是更广阔的视野可以使你更加高效的发挥自己的作用，也可以在和别的角色互动式，快速的了解上下文。</p>
+
+<p>我所理解的，前端不一定要熟知所有这些知识和技能，但是<strong>一定不要认为自己做好了前端的一亩三分地就足够了</strong>，不要给自己设限。跨界会给你带来难以估量的好处，一个角色做久了，难免会产生一些盲点。这时候，换个视角，从其他角色的角度来看待你的工作，又会有很多新的发现。而且不仅如此，很可能你会发现之前很麻烦，很难搞定的事情，在新的方法/视角下变得很容易。</p>
+
+<h3>我的故事</h3>
+
+<h4>其实，我是一名后端开发</h4>
+
+<p>工作之后，我在很长一段时间是专注于“非前端”的领域。和很多刚入行的新人一样，我对计算机能触及的几乎一切领域都感兴趣：语言解释器，人工智能（遗传算法，隐式马尔科夫模型，自动纠错，模式识别），嵌入式开发，图形处理，操作系统的进程调度，进程间通信，多线程模型，各种脚本语言（python，ruby，JavaScript等等），另外，日常开发流程中的一些工具的定制化也会花去我很多的时间，比如如何配置vim，写几个小脚本来和编辑器做集成等等。更别说那些令人一听就觉得激动的编程范式：面向对象，基于消息总线，函数式编程等等。如果你感兴趣，可以看看我<a href="http://abruzzi.iteye.com/">几年前的博客</a>。</p>
+
+<p>我的上一家公司的产品是一个省级电网的收费/计费系统（电其实和我们在超市里购买的其他生活用品一样，也是一种商品）。我在那里工作了差不多两年，日常的开发方式就是ssh登陆到RHEL（Redhat Enterprise Linux）服务器上，用vim（当然有一堆的vim插件）开发C代码，调试器是gdb（对，就是那个很牛逼，但是对新手特别不友好的gdb）。</p>
+
+<p>我们用C语言给Apache的httpd写了一个扩展module，大约相当于现在rack里的中间件，这个module要和后端的一个要复杂的多的模块通信，其中不但涉及网络通信，还有*nix管道，缓冲，并发等等考虑。在这两年里，我几乎没有碰过任何的Web界面上的东西（除了用php写了一两百行的页面之外）。</p>
+
+<p>在加入这家公司之前，我在一家用Java做报表的公司工作，技术栈为J2EE。其中有一些前端的工作，但是并不很多，而且说实话，我当时有些看不太上这些技术。HTML/CSS在我心目中的地位比线程池，语言解析等差远了，所以我也没有认真地去系统学习。</p>
+
+<p>在加入ThoughtWorks之前，在“前端”方面，唯一算是比较擅长的也不过是写JavaScript，而且对于前端的MVVM框架，双向绑定，模块化等高级货都没听过。且不能论HTML/CSS的最佳实践，连根据设计稿做出一个静态页面的的能力也不具备。我之前有一点JSP/HTML经验，而CSS经验也并没有超出如何画一个细线表格的范畴。换句话说，我的前端（特别是HTML/CSS）是最近才学会的。</p>
+
+<h4>ThoughtWorks的开发</h4>
+
+<p>在ThoughtWorks，很多团队是按照feature团队来组建的。相对于传统的component团队（按部门划分，比如研发组，测试组，设计组等，每个组还有可能会再细分成如用户调研，流程设计，视觉设计等等），feature团队里配备了软件开发过程中需要的几乎所有角色：业务分析，测试工程师，开发工程师，设计师（设计师一般不会常驻），有的团队还有项目经理的角色。</p>
+
+<p>在feature团队里，你可以很容易看到不同的角色是如何工作的，很多时候，开发会和设计师一起来调整颜色，排版，布局，也可能和测试一起编写自动化测试用例，showcase等。也就是说，角色之间的藩篱在淡化，而就开发这一种角色而言，对于前端/后端的区分也会显得非常模糊，因为需求划分之后的story（敏捷开发中的一个术语，其实就是需求的一种展现方式）是端到端的，比如一个商品列表展示的story，会包括</p>
+
+<ul>
+<li>数据库的表结构</li>
+<li>访问数据库的<a href="https://en.wikipedia.org/wiki/Object-relational_mapping">ORM</a>部分，</li>
+<li>使用ORM的业务逻辑service</li>
+<li>响应客户端的controller（消费JSON或者XML的HTTP接口）</li>
+<li>发送请求，处理响应的JavaScript代码</li>
+<li>和设计稿一致的CSS样式</li>
+</ul>
+
+
+<p>而且在这个过程中还会涉及到一些外围的工具</p>
+
+<ul>
+<li>虚拟机环境准备</li>
+<li>数据库连接</li>
+<li>自动化测试（单元测试，集成测试，可能还有UI测试）</li>
+<li>数据库迁移脚本</li>
+</ul>
+
+
+<p>在这个过程中，开发者需要掌握和开发过程相关的一切实践中的一切工具.</p>
+
+<p>在我的<a href="http://www.thoughtworks.com/">ThoughtWorks</a>的第一个项目中，我是以Java开发工程师角色加入的，下项目的时候，我学会了自动化provision，<a href="https://cucumber.io/">cucumber</a>测试工具，Rails，<a href="https://gradle.org/">gradle</a>（没错，我之前用Java都是用IDE构建的，在Linux世界我用make），<a href="http://jasmine.github.io/2.0/introduction.html">jasmine</a>测试工具，<a href="http://backbonejs.org/">Backbone.js</a>，haml.js。</p>
+
+<p>第二个项目的时候，我是以前端工程师角色加入，下项目的时候，我学会了nginx配置缓存、负载均衡服务器，<a href="http://gatling.io/">gatling</a>测试工具，Hadoop/Spark等的集群配置，还有一些和项目相关的<a href="http://icodeit.org/2014/04/intro-map-gis/">GIS（地理信息系统）</a>的技术栈，前后端分离策略等。</p>
+
+<p>第三个项目我是以Java开发工程师角色加入的，下项目的时候，我学会了如何做性能测试，如何建立<a href="http://dashing.io/#setup">一个漂亮的Dashboard</a>（可以用来展现CI等），而且在业余时间系统的学习了CSS3和HTML5，将之前零敲碎打的那些知识串起来，这些总结做了几次内部培训后，还整理成了<a href="https://selfstore.io/products/348">一本电子书</a>。</p>
+
+<p>第四个项目我又变成了一个前端工程师，但是这个项目有意思的地方是跟mobile相关，于是页面性能，体验又变成了一个重点，下项目的时候，我对无状态的Web应用，session的持久化，<a href="https://www.gitbook.com/book/juntao/3-web-designs-in-3-weeks/details">CSS3的动画</a>，用Backbone.js组织多页面的方式等等又有了新的理解。</p>
+
+<p>如果这些经历造成了你觉得我很牛的错觉，那我应该道歉。我觉得自己勉强可以算是个合格的程序员：对学习保持着热情，对解决问题保持着热情，仅此而已。在项目上，如果我发现了问题，我就想办法解决，如果属于知识欠缺，那我就会去学习。我还远远没有到达精通这些技术的地步，但是在工程实践领域，根据<a href="https://en.wikipedia.org/wiki/Pareto_principle">80/20原则</a>，这些粗浅的知识足以解决80%的问题，而另外的20%，我们才真正需要一个专家来帮忙。也就是说，团队里需要有一个能解决20%的问题的前端工程师，而其他的80%的前端工作，应该可以被其他所有的开发完成，对于后端开发也是一样。</p>
+
+<p><del>尝试从系统级别去解决一个问题，而不是将问题抛给另外一个角色（后端工程师，UX或者QA）</del></p>
+
+<p>我是一个Dev，但是花了一些时间来学习界面设计，这里是我从设计到实现的两个小页面：</p>
+
+<p><img src="/images/2015/06/ilearn-resized.png" alt="ilearn" /></p>
+
+<p><img src="/images/2015/06/lightweight-resized.png" alt="lightweight" /></p>
+
+<h3>总结</h3>
+
+<p>我们缺的从来都不是前端/后端工程师，而是<strong>工程师</strong>(或者那些会系统思考，并总是想着解决问题的人)。角色划分在大的机构内可能是有意义的，就像历史上工厂里，工人被分为车工，钳工，木工，电工。但是这种模式在软件开发中未必好用，<strong>具体而微</strong>的小团队可能更具竞争力。而在一个个的小团队中，再细分前端后端就显得比较滑稽了。团队中的每个成员都应该具备基本的端到端能力（不仅仅是开发，更应该是具有业务上下文，即每个人都清楚我们要交付的最终产品是什么，以及这个产品是如何帮助最终用户的），每个成员也都需要为最终的交付物负责，而不是为自己的职责负责。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[现代Web页面开发流程]]></title>
+    <link href="http://abruzzi.github.com/2014/11/modern-ui-development-workflow/"/>
+    <updated>2014-11-25T14:11:00+08:00</updated>
+    <id>http://abruzzi.github.com/2014/11/modern-ui-development-workflow</id>
+    <content type="html"><![CDATA[<h3>现代Web页面开发流程</h3>
+
+<p>通常来说，Web页面开发的流程大致是这样的：设计师（设计师不是美工，就像程序员不是码农一样）提供设计稿，通常是图片格式。然后前端的开发人员（在ThoughtWorks我们称之为UI Dev）来手工的将图片转换为对应的HTML+CSS，往往还需要在各个浏览器中调试等。</p>
+
+<p>大多数时候，设计师会提供色卡，或者至少前景色/背景色/高亮色的值给开发人员。如果没有的话，开发人员会用到一些工具如<code>colorpicker</code>, <code>ruler</code>之类来确保最终的效果和设计稿是一致的。</p>
+
+<p>如果你观察过UI Dev的工作流程的话，你会发现基本的上是这样的：使用编辑器（或者IDE）编写HTML代码，CSS代码，保存修改内容，切换到浏览器窗口，按<code>F5</code>或者<code>Ctrl-R</code>刷新，然后对比设计稿和实现，如果发现不一致的地方，再切换到编辑器中修改代码，如是往复。</p>
+
+<h4>避免手工劳动</h4>
+
+<p>纯手工的方式来编辑HTML/CSS会非常耗时，特别是作为标记语言的HTML，开发者需要时刻关注关闭已经打开的标签。比如一个标题元素，你需要：</p>
+
+<p>```html</p>
+
+<h1>This is the page title</h1>
+
+
+<p>```</p>
+
+<p>几乎从一开始，人们就想到了各种办法来避免自己重复的键入，比如Vim的<a href="https://github.com/ervandew/supertab">SuperTab</a>以及<a href="https://github.com/garbas/vim-snipmate">Snipmate</a>插件，可以通过输入<code>标签名</code>+<code>Tab</code>来补全所有的标签等，又或者DreamWaver提供的<code>代码生成</code>的方式来简化这一流程。</p>
+
+<p>Sublime的编辑器上的著名插件<a href="https://sublime.wbond.net/packages/Emmet">Emmet</a>可以帮助开发人员飞速的开发HTML/CSS，这里有一个小例子。假设我们需要实现的页面是这样的：</p>
+
+<p><img src="/images/2014/11/web-design-resized.png" alt="web design" /></p>
+
+<p>那么对应的HTML结构可能会是：</p>
+
+<p>```html</p>
+
+<ul>
+    <li>
+        <div class="feature">
+            <span class="number"></span>
+            <i></i>
+            <h4></h4>
+            <p></p>
+        </div>
+    </li>
+    ...
+</ul>
+
+
+<p>```</p>
+
+<p>使用Emmet，则只需要给出表达式，然后按一下<code>Tab</code>键就可以补全为上述的结构了：</p>
+
+<p><code>
+ul&gt;li*3&gt;.feature&gt;span.number+i+h4+p
+</code></p>
+
+<p>上边的这条命令可以读作："创建一个UL，该UL下有3个LI，每个LI下有一个class为feature的DIV（不指定元素名称的话，默认生成div），每个DIV内，有一个类为.number的SPAN，一个i元素，一个H4元素和一个P元素"</p>
+
+<p>完整的技巧可以参看<a href="http://docs.emmet.io/cheat-sheet/">官方文档</a>。</p>
+
+<h4>避免重复劳动</h4>
+
+<p>上边提到的频繁的F5刷新，可以通过<code>LiveReload+Guard</code>两个工具的组合来解决。<a href="https://chrome.google.com/webstore/detail/livereload/jnihajbhpnppcggbcgedagnkighmdlei">LiveReload</a>是一个浏览器的插件，通过协议与后台的服务器进行通信。当后台文件发生变化时，LiveReload会自动刷新页面。</p>
+
+<p><a href="https://github.com/guard/guard">Guard</a>会使用操作系统的API来感知本地文件的变化，当文件变化后，它可以通知LiveReload进行刷新，当然Guard可以做其他一些事情，比如等SCSS发生变化时，自动编译CSS等。</p>
+
+<p>两者结合之后，就可以节省我们大量的时间，而把精力主要投放在开发这件事情本身上。</p>
+
+<h4>样板工程</h4>
+
+<p>我在Github上公开了一个样板工程，这是一个开箱即用的工程，其中提供了这样一些配置：</p>
+
+<ol>
+<li>SCSS的编译环境（使用compass）</li>
+<li>Guard配置（当你的SCSS文件或者HTML文件修改之后，自动通知LiveReload来刷新浏览器）</li>
+<li>一个标准的HTML5样板文档</li>
+<li>一个基本的style.scss</li>
+</ol>
+
+
+<p>Guardfile的配置中，如果<code>index.html</code>发生变化，或者<code>stylesheets</code>中的css文件发生变化，或者<code>scripts</code>目录中的js文件发生变化，都会触发<code>livereload</code>任务（通知浏览器）。</p>
+
+<p>```rb
+guard 'livereload' do
+  watch('index.html')
+  watch(%r{stylesheets/.+.(css)})
+  watch(%r{scripts/.+.(js)})
+end</p>
+
+<p>guard :compass
+```</p>
+
+<p>你只需要简单的将这个工程克隆到本地：</p>
+
+<p><code>sh
+$ git clone git@github.com:abruzzi/design-boilerplate.git mydesign
+</code></p>
+
+<p>然后在该目录中执行<code>bundle install</code>即可：</p>
+
+<p><code>sh
+$ cd mydesign
+$ bundle install
+</code></p>
+
+<p>这里有两点假设：
+1.  你已经安装了<a href="http://rvm.io/">rvm</a>
+2.  你已经使用rvm安装了某个版本的ruby，即<code>bundler</code>这个gem</p>
+
+<h4>开发流程</h4>
+
+<p>我通常会启动两个终端，一个用来运行<code>Guard</code>，另一个用来运行<code>HTTP Server</code>，然后是一个浏览器：</p>
+
+<p><img src="/images/2014/11/workflow-resized.png" alt="workflow" /></p>
+
+<p>当在编辑器中进行编辑之后，保存文件，浏览器会自动刷新，这样的快速反馈可以告诉我下一步应该如何修改：将背景色调整的再淡一点，还是把会h2的字体变得更大，或者图片和文字的上边缘没有对齐等等。</p>
+
+<p>这种开发流程和后台开发人员进行TDD的方式非常类似：<code>实时反馈，小步前进</code>！如果你的桌子上有两个显示器的话，那就更好了，你可以在一台显示器上显示设计稿，另一台上分屏显示编辑器和浏览器，这样就可以非常舒服的进行UI开发了：</p>
+
+<p><img src="/images/2014/11/two-displays-resized.png" alt="two displays" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[逐步编写一个jQuery插件(todoify)]]></title>
+    <link href="http://abruzzi.github.com/2013/07/write-a-jquery-plugin-step-by-step/"/>
+    <updated>2013-07-20T13:04:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/07/write-a-jquery-plugin-step-by-step</id>
+    <content type="html"><![CDATA[<h3>最终结果</h3>
+
+<p>这篇文章将讨论如何编写一个简单的jQuery插件的基本步骤和实践，最后完成的时候，我们会得到一个管理todo的插件（而且还是一个比较灵活，易于定制的todo插件）。事实上，这个插件可以工作在所有与管理todo类似的应用场景中，比如gmail的搜索框中的token等，豆瓣读书里的tags管理等等。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/07/todo-origin.resized.png" alt="默认设置" /></p>
+
+<p>上例中HTML结构如下：</p>
+
+<p>```</p>
+
+<div id="container">
+    <input type="text" id="input" />
+    <div id="todos" />
+</div>
+```
+
+下面的JavaScript代码将会找到id为*input*的输入框，并将它**变为**一个todolist的控制器，并将新加入的内容添加到id为*todos*的容器中：
+
+```
+$("#input").todoify({
+    container: "#todos"
+});
+```
+
+如果需要定制item的外观，可以定义模板并自定义渲染函数：
+
+```
+$("#thing-input").todoify({
+    container: "#thing-todos",
+    template: "<section class='todoItem'><header><%= todo %></header><a>remove</a></section>",
+    renderItem: function(item) {
+        var cont = this.renderTemplate(item);
+
+        cont.find("a").click(function(event){
+            cont.remove();
+        });
+
+        return cont;
+    }
+});
+```
+
+![Item定制](http://abruzzi.github.com/images/2013/07/todo-customized.resized.png)
+
+### jQuery插件基础知识
+
+#### 简单流程
+通常使用jQuery的流程是这样的：通过选择器选择出一个jQuery对象（集合），然后为这个对象应用一些预定义的函数，如：
+
+```
+$(".artile .title").mouseover(function(){
+    $(this).css({
+        "background-color": "red",
+        "color": "white"
+    });
+});
+```
+
+我们如果要定义自己的插件，预期其被调用的方式和此处的*mouseover*并无二致。这需要将我们定义的函数attach到jQuery对象的fn属性上：
+
+```
+$.fn.hltitle = function() {
+    this.mouseover(function(){
+        $(this).css({
+            "background-color": "red",
+            "color": "white"
+        })
+    })
+}
+
+$('.article .title').hltitle();
+```
+
+jQuery的一个很明显的特点是其链式操作，即每次调用完成一个函数/插件之后仍然会返回jQuery对象本身，这个需要我们在插件函数的最后一行返回*this*。这样插件的使用者会像使用其他函数/插件一样很方便的将调用连起来。
+
+另外一个问题是注意命名冲突（$是一个合法的标示符，而且被众多的JavaScript库在使用），所以可以通过匿名执行函数来避免：
+
+```
+(function($){
+    $.fn.hltitle = function() {
+        //...
+    }
+}(jQuery));
+```
+
+#### 需要注意的问题
+
+上面是一个最简单的插件定义，为了插件更加灵活，我们需要尽可能多的将配置项暴露给插件的用户，比如提供一些默认选项，如果用户不提供配置，则插件按照默认配置来工作，但是用户可以通过修改配置来定制插件的行为：
+
+```
+(function($){
+    $.fn.hltitle = function(options) {
+        var defaults = {
+            "background-color": "red",
+            "color": "white"                
+        };
+        
+        var settings = $.extend(defaults, options);
+        
+        return this.mouseover(...);
+    }
+}(jQuery));
+
+```
+
+### Todoify
+
+我们的插件是一个遵循上述原则的简单插件，基本的步骤如下：
+
+-   将给定的input包装成一个jQuery对象
+-   需要一个默认的放置todolist的容器元素
+-   为input注册keypress事件（如果用户按Enter，则触发add事件，添加一个新条目到容器）
+
+```
+(function($){
+    $.fn.todoify = function(options) {
+        var settings = $.extend({
+            container: "body",
+            template: "<span class='todo-item'><%= todo %></span>",
+            renderItem: function(item) {
+                return $(_.template(this.template, {todo: item}));
+            }
+        }, options);
+
+        $(this).keypress(function(event){
+            if(event.keyCode == 13) {
+                var item = $(this).val();
+                $(settings.container).append(settings.renderItem(item));
+                $(this).val("").focus();
+            }
+        });
+
+        return this;
+    }
+}(jQuery));
+```
+
+此处为了防止创建众多的DOM元素，然后依次插入到正确地节点上，我使用了underscore.js的template，不过此处并非重点，略微一提。
+
+如果用户想要更好地定制性，比如用户想要apply自己的class，定义自己的模板，或者注册新的事件（删除一条todo），显然我们需要更多的options：
+
+```
+var settings = $.extend({
+    data: [],
+    template: "<div class='todo'><h3><%= todo %></h3><span>X</span></div>",
+    container: "body",
+    renderTemplate: function(item) {
+        return $(_.template(this.template, {todo: item}));
+    },
+    renderItem: function(item) {
+        var cont = this.renderTemplate(item);
+        cont.find("span").click(function(event) {
+            cont.remove();
+        });
+        return cont;
+    }
+}, options);
+```
+
+这里定义了默认的close事件需要attach到span（定义在模板中）上，如果插件的用户需要自己绘制模板，并且注册事件，那么会像文章开头的那个实例一样：
+
+```
+$("#thing-input").todoify({
+    container: "#thing-todos",
+    template: "<section class='todoItem'><header><%= todo %></header><a>remove</a></section>",
+    renderItem: function(item) {
+        var cont = this.renderTemplate(item);
+
+        cont.find("a").click(function(event){
+            cont.remove();
+        });
+
+        return cont;
+    }
+});
+```
+
+###进一步改进
+
+目前，todoify还没有与后台进行任何的通信，如果可以和后台的RESTFul的API集成的话，这个插件将会有更多的使用场景。
+
+简单来讲，只需要为插件提供更多选项，并提供回调函数即可，比如：
+
+```
+$("#input").todoify({
+    restful: 'http://app/todos',
+    onadd: function(item){
+        //...
+    },
+    ondelete: function(item){
+        //...
+    }
+})
+```
+
+然后加入一些ajax的调用即可。
+
 ]]></content>
   </entry>
   

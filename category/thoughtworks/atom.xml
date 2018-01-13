@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: ThoughtWorks | I code it]]></title>
+  <title><![CDATA[Category: thoughtworks | I code it]]></title>
   <link href="http://abruzzi.github.com/category/thoughtworks/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-08-21T22:29:08+08:00</updated>
+  <updated>2018-01-13T16:15:54+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,1019 +14,305 @@
 
   
   <entry>
-    <title type="html"><![CDATA[如何成为一名优秀的程序员？]]></title>
-    <link href="http://abruzzi.github.com/2017/07/tips-for-newbies/"/>
-    <updated>2017-07-25T16:05:00+08:00</updated>
-    <id>http://abruzzi.github.com/2017/07/tips-for-newbies</id>
-    <content type="html"><![CDATA[<p>作为一个从业快10年的程序员，我想给新入行的程序员们一些建议。这些建议是我希望自己可以在毕业的时候就读到的，也希望它们可以帮助你成为一个更好的程序员。</p>
+    <title type="html"><![CDATA[图书封面故事]]></title>
+    <link href="http://abruzzi.github.com/2013/04/book-cover-story/"/>
+    <updated>2013-04-13T15:57:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/04/book-cover-story</id>
+    <content type="html"><![CDATA[<h2>虎符</h2>
 
-<p>简单归纳一下，总共有7条：</p>
+<p>虎符本是春秋战国时期，用以中央政权和地方军事力量之间的一种凭证，信物。一般分剖为两半，一半留在京师（右半边，古代以右为尊），另一半留在军队驻地。对方上要有军事行动，必须向中央申请，中央同意后，会派遣专人前往，为了防止有人冒充中央，假传圣旨，需要有一种凭证。</p>
+
+<p>当然，仅仅虎符本身并不足以调动军队，同虎符一起的，还要有诏书，及中央排除的特使。虎符作为凭证，而诏书中有详细的其他信息，比如官员的任命，军队部署之类。</p>
+
+<h3>杜虎符</h3>
+
+<p>杜虎符为1973年在西安南郊出土的，年代大约为战国时期，但是应在秦朝统一六国之前。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/04/jscp-conver.jpg" alt="image" /></p>
+
+<p>铭文为：</p>
+
+<p><code>
+兵甲之符，右在君，左在杜，凡兴兵披甲，用五十人以上，必会君符，乃敢行之。燔燧之事，虽毋会符，行。
+</code></p>
+
+<p>虎符本身为铜铸，铭文的制作非常特殊：先刻以阴文，然后将金丝嵌入文字，再打磨光滑，因此虽历时久远，但是仍金光熠熠。</p>
+
+<h3>阳陵虎符</h3>
+
+<p>阳陵虎符相传在山东临城出土，由于铭文中有“皇帝”字样，时代当为秦统一六国之后。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/04/yangling-tiger-seal.resized.jpg" alt="image" /></p>
+
+<p>铭文为：</p>
+
+<p><code>
+甲兵之符，右在皇帝，左在阳陵
+</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Turning to a designer]]></title>
+    <link href="http://abruzzi.github.com/2013/03/turning-to-a-designer/"/>
+    <updated>2013-03-26T22:46:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/03/turning-to-a-designer</id>
+    <content type="html"><![CDATA[<h4>Hack design的建议</h4>
+
+<p>首先，design无处不在，它的目的是提高产品使用者的效率和易用性的。它不是一个“运用之妙，存乎一心”的东西，它是一个实实在在可以通过学习来获得的能力（正如编程或者写作或者厨艺一样，当然，如果一个人把精力和心血放在编程上，同样可以将编程做成一个“运用之妙，存乎一心”的东西。）</p>
+
+<p>什么是一个好的设计？下面是设计师Dieter Rams给出的10条原则：</p>
 
 <ol>
-<li>保持健康</li>
-<li>编程之外的爱好</li>
-<li>持续学习</li>
-<li>正确应对犯错</li>
-<li>不要囿于角色</li>
-<li>展示你的创意</li>
-<li>刻意练习手速</li>
+<li>创新性</li>
+<li>使产品有用</li>
+<li>美学</li>
+<li>使产品可以被理解</li>
+<li>不那么引人注目</li>
+<li>诚实的设计</li>
+<li>可持久的</li>
+<li>彻底，纯粹</li>
+<li>尽量做小的设计</li>
+<li>环境友好</li>
 </ol>
 
 
-<p>下面我来详细说说每一点。</p>
+<p><img src="http://abruzzi.github.com/images/2013/03/design-10-commandments.resized.png" alt="image" /></p>
 
-<h2>保持健康</h2>
+<p>这里有<a href="http://startupsthisishowdesignworks.com/">原文的链接</a>，总而言之，设计不仅仅是一个web页面，一个海报，所有的产品都会有不同程度的设计包含在其中。</p>
 
-<blockquote><p>三寸气在千般用，一旦无常万事休</p>
+<h4>Alex的建议</h4>
 
-<p>--《金瓶梅》</p></blockquote>
+<p>想想你觉得“好看”的页面为什么好看，是字体，配色，背景色，布局还是其他？把这些记录下来，并在自己后续的设计中尝试使用。</p>
 
-<p>首先要说的当然是健康，脱离的这个本钱，一切都无从谈起。久坐、不运动、睡眠不足、不注意及时补充水分、长期的伏案工作会对健康造成很大的影响，而不幸的是程序员这几样全都占了。很多程序员往往很年轻就已经有了各种各样的疾病：颈椎病、腰椎间盘突出、高血脂/高血压、胆结石、腱鞘炎等等，关于程序员过劳死的新闻更是隔一段时间就来刺激一下我们的神经。</p>
+<p>多看一些优秀的设计，比如web页面，如果你发现上边有一些很感兴趣的特性，或者细节，比如这个菜单看着很漂亮，后者标签功能很炫，你可以用chrome的inspect来查看别人使用了什么样的HTML，又apply了那些CSS，做出了这样的效果。</p>
 
-<p>研究表明，长期保持同一姿势（不论坐着还是站着）对身体都有不同程度的害处，而且这种害处是无法事后弥补的。也就是说，如果白天上班坐8个小时，那么就算你下班后去健身房练一个小时也于事无补。这几年很流行的<em>站立式办公</em>也是一样，如果你白天站立时间过久，会对膝关节造成较大的压力，同样会损害健康。比较推荐的方式是，写30-40分钟代码就起来走一走，喝杯水，远眺一会，跟同事聊聊天。</p>
+<p>如果在这个过程中，遇到一些没有见过的标签，或者标签的属性，那么去<a href="http://www.w3schools.com/">w3school</a>上查看一下这些标签/属性的含义，尽量使用这些Tag原始的意义（设计时的初衷）。</p>
 
-<p>我知道，作为程序员我也常遇到那种写代码写High了连厕所也不想去的时候。不过为了长远的健康，还是要养成良好的习惯。</p>
+<p>比如div，它是divider的缩写，本来是用来分割块的，那么就用它来做分割，比如p(paragraph)标签，用来分段，可以将文字放入其中。这些都是HTML标签的设计初衷，我们应该尽量遵循，在实现的时候，如果使用原始的标签很难实现，那么可以尝试一些比较trick的方式来绕过，但是毕竟并非正途。</p>
 
-<h3>戒除不良习惯</h3>
+<p>最后，design和编程类似，你需要不断的练习，自己动手多尝试，在研究了别人的实现之后，自己最好做一个示例出来。</p>
 
-<p>除了长时间保持同一姿势之外，有很多程序员还有各种不良习惯。比如：</p>
+<h4>其他人的建议</h4>
 
-<ul>
-<li>吸烟</li>
-<li>喝酒</li>
-<li>嗜糖（碳酸饮料，其他高糖饮料）</li>
-</ul>
+<p>最近读到的一篇写的<a href="http://somerandomdude.com/2012/01/10/transition-from-development-to-design/">非常好的文章</a>，作者也是一个有开发背景的设计师，因此有很多地方可以借鉴：</p>
 
-
-<p>这些习惯一般都会美其名曰<strong>提神</strong>，大家都知道，程序员加班在业界算是比较常见的，萎靡不振是常态。然而这些号称提神的方法，其实没有一个是真正管用的。这些不良习惯说到底都是一种<em>毒瘾</em>，跟吸食大麻在本质上并无二致。不过好消息是你完全可以戒除这些不良习惯，只需要坚持一段时间，让<em>毒瘾</em>过去就好了（和真正的毒瘾一样，它们更多的是精神依赖，一旦你战胜了自己对它的精神依赖，就可以获得自由）。</p>
-
-<p>我在大学和刚开始工作的前几年，也有烟瘾。写代码写累了就回去办公室外边冒一根，那种一氧化碳中毒带来的短暂的微醺感确实令人有放松的错觉，但是抽完烟回来写代码会感觉更累。而且口中老感觉有异味，咽喉不适，最主要的是精神萎靡，终于有一天我受不了了，决定戒烟（事实上和很多人一样，之前也有过无数次的戒烟）。当烟瘾发作的时候，我就去喝杯水，晚上则站站桩（站完之后口齿生津，神清气爽）。刚开始的3天是最难的，一周之后我就基本可以控制住去抽烟的欲望，然后就越来越轻松，完全感觉不到烟瘾对我的影响了。</p>
-
-<p>碳酸饮料，高糖饮料也是一样。在饮食本来就不充裕的自然界，我们的祖先遇到了富含可以为身体提供能量的糖（比如蜂蜜）自然会大量摄入。这种嗜糖的基因在今天还在不断的产生作用，但是不同的是，我们现在可以很轻松的在食物、饮料中摄入比身体所需<strong>多得多</strong>的糖。这些糖会给健康带来很多问题，比如肥胖，高血糖，冠心病等等。</p>
-
-<p><img src="/images/2017/07/sugar-resized.png" alt="" /></p>
-
-<p>更多时候，我们想要喝饮料更多的是精神上的依赖，也就是上面说到的<em>毒瘾</em>。戒除对糖的依赖比烟和酒要困难一些，因为生活中有很多陷阱，比如酸奶，面包，饼干，水果等等。</p>
-
-<h3>零度可乐的陷阱</h3>
-
-<p>现在香烟的包装上印有焦油含量，有10mg的，有15mg的。焦油含量是影响一支烟口感的重要因素，通常说的“绵”其实是说焦油含量角度，这会让你感觉比较健康。然而陷阱是，一支烟抽完觉得不过瘾，神经感受到的刺激不够强烈，这会驱动你抽第二支，结果吸入的焦油反而更多。本来15mg焦油的一支烟就可以让你过瘾，现在两支10mg的才能达到同样的效果，相当于摄入了20mg。</p>
-
-<p>零度可乐也是一样，那种无糖的有着甜味的添加剂会刺激你对糖的渴求，你需要摄入更多的糖来抵消这种虚幻的渴求 -- 然后变得更不健康。</p>
-
-<p>有人可能会说，没有这些嗜好，那活着有什么意思呢？相信我，当你戒除了这些毒瘾，有了一个健康的体魄，才真正能体会到活着的乐趣。当你为这些嗜好所控制，产生的那种病态的舒适感其实是虚无缥缈的。</p>
-
-<h3>一些建议</h3>
-
-<p>有规律的做一些运动，可以缓解颈椎，腰椎的不适，可以加快新陈代谢的速度，消耗多余的会沉积下来的能量。比如比较容易接触到，也容易上手的运动：</p>
-
-<ul>
-<li>瑜伽/普拉提</li>
-<li>乒乓球</li>
-<li>跳绳</li>
-</ul>
-
-
-<p>选择一个适合自己的运动方式，然后将其培养成一个习惯（比如坚持每周两次瑜伽，或者每天中午打30分钟的乒乓球）。如果这些和工作有冲突的话，比如公司要求长期晚上加班，那你可以考虑换一家公司。</p>
-
-<h2>培养一个编程之外的爱好</h2>
-
-<p>如果让不同的人对程序员打标签并排序，<strong>宅</strong>一定会排在前三。在任何的聚会上，程序员总是很容易被识别出来的：聪明，戴眼镜，话不多，略显闷骚，聊天容易冷场等等。也难怪，长期钻研技术，沉浸在非黑即白的二进制世界，爱刨根问底，这样很容易把天聊死。</p>
-
-<p>我建议新手程序员可以找一个编程之外的爱好，一来可以拓展自己的社交圈，周末可以有个不一样的过法（而不是宅在家里写代码）；二来可以帮助你成为更好的程序员。</p>
-
-<p>你肯定有过这样的经历：一个编程问题一直困扰着你，试了很久都找不到解决方法，结果出去散了会步，或者和别人唠家常，突然脑海里灵光一闪，想到了问题的答案。事实上，我们大脑的工作方式就是如此奇妙，换一个完全不同的上下文就可以让大脑得到很好的休息，而且往往可以产生<code>1+1&gt;2</code>的效果。写代码写累了去听听音乐，或者打一会乒乓球就可以很好的缓解疲劳，甚至可以打开思路，产生新的灵感。</p>
-
-<h3>一些建议</h3>
-
-<p>学习一项与编程无关的技能，比如：</p>
-
-<ul>
-<li>乐器（比如吉他，架子鼓）</li>
-<li>绘画（素描，水粉，水彩等）或者书法</li>
-<li>制作美食</li>
-<li>某一项武术（拳击，泰拳，空手道等）</li>
-</ul>
-
-
-<p>这些看似毫不相干的爱好可以帮助大脑休息。另外需要注意的是，你无需真正成为某一项爱好的专家，不要有额外的压力：担心演奏不好、没有绘画天赋等等。没关系，它只是一个爱好而已。</p>
-
-<p><img src="/images/2017/07/drawing-resized.png" alt="" /></p>
-
-<p>我自己就尝试过很多不同的爱好，比如素描、书法等。</p>
-
-<h2>持续学习</h2>
-
-<p>软件开发是一个需要终身学习的行业（其实如果你不想做那种混吃等死的人的话，基本上每个行业都是这样）。我毕业的时候，<code>SSH</code>（Spring Struts Hibernate）是Web开发的主流，<code>jQuery</code>则是前端的新锐。有一些企业开始尝试<code>Adobe</code>的<code>ActionScript</code>，不过这个语言很快就消逝在了人们的视野。基于<code>jQUery</code>，但是融入了<code>MVC</code>理念的<code>Backbone.js</code>提供更高级的抽象能力，成为了开发“大型”前端应用的首选；紧随其后的，大而全的<code>Angular.js</code>则通过内置的双向绑定，依赖注入，完善的测试支持等让前端开发变得和后端开发一样健全；再后来<code>虚拟DOM</code>，<code>Reactive范式</code>的<code>React</code>栈则又一次颠覆了前端的开发方式。虽然现在还不知道下一次的颠覆会在哪里发生，但是可以肯定的是它<strong>一定会发生</strong>。</p>
-
-<p>除了基础框架之外，各种构建工具也是层出不穷，从最早和后端放在一起的<code>maven</code>，<code>rake</code>，到基于<code>NodeJS</code>的<code>grunt</code>，再到<code>gulp</code>，到<code>webpack</code>，最后又回归到<code>npm script</code>。</p>
-
-<p>程序员被裹挟在技术演进的洪流中，不能自已。作为程序员，你不但要非常扎实的掌握基础知识（操作系统原理，计算机网络，数据结构，算法等），还需要有非常强的快速学习能力，以及愿意不断去学习的态度，而后者可能更重要。</p>
-
-<p><img src="/images/2016/02/knowledge-framework.png" alt="" /></p>
-
-<h3>一些建议</h3>
-
-<ul>
-<li>读书</li>
-<li>通过视频/文本教程等学习新技术</li>
-</ul>
-
-
-<p>建议新手可以每天抽出一个小时来读书，周末可以多读一些。ThoughtWorks有个<a href="http://insights.thoughtworkers.org/reading-radar-2016/">读书雷达</a>，是一个很不错的书单，包括了很多的经典书籍。读书之外，还可以在线学习一些教程，比如<a href="https://tutsplus.com/">Tutorialplus</a>和<a href="https://egghead.io/">Egghead</a>等，都非常值得经常去看看，如果有比较新鲜有趣的技术，不妨自己亲自动手试一试。</p>
-
-<h3>关于英文能力</h3>
-
-<p>毫不夸张的说，英文能力是优秀程序员和普通程序员的华丽分割线。有了好的英文能力，可供你学习的资料库会立刻扩大数百甚至数千倍：海量的优质免费教程，视频。很优秀的中文教程一样，它们都深入浅出，通俗易懂，风趣幽默，只不过中文的会比较少，而且一般总是会滞后于英文版本而已。</p>
-
-<p>英文能力不但可以帮你熟悉各种前端库，CSS框架等的介绍。还可以让你学习世界各国程序员对各种库的测评、框架的使用心得、踩过的坑等等。</p>
-
-<p>我在2012年加入ThoughtWorks的时候，面试时磕磕绊绊的说不出话来。等到6个月试用期结束的时候，已经可以出差去澳洲和客户的OPs谈笑风生了。2013年的8月，在印度普内，我已经可以用英文给来自世界各国的学生讲课。</p>
-
-<p><img src="/images/2017/07/twu33-resized.png" alt="" /></p>
-
-<p>除了更顺畅的和不同文化的人交流，讨论问题之外，可以明显感觉到学习的速度变得更快，更有效率。</p>
-
-<p>我自己实践过的一个比较有效的方法。我每天会花两个小时（早晚各一个小时）看<a href="http://www.australiaplus.com/international/learn-english/">澳洲之音</a>上的视频，我会听写出视频中的每一句话，如果听不清就重复，有的句子可能会重复十遍。听到最后，视频中的每句话我都能听懂，而且能一边听一边写出来。这样坚持了差不多3个月，我基本上就可以听懂客户的需求澄清，开会的时候也可以比较完整的听明白每个人讨论的点。</p>
-
-<p>其实诀窍就是坚持，这3个月中，每天两个小时，我没有一天间断。过了这一关之后，就很容易了，尽量多听多说就好。</p>
-
-<p>另一个提高的方法是翻译书，我更建议你可以更另外一个有经验的同事一起翻译，大家互相监督，也有个照应，比较不容易半途而废。</p>
-
-<h2>正确应对犯错</h2>
-
-<p>斯坦福大学的<a href="https://en.wikipedia.org/wiki/Carol_Dweck">Carol Dweck</a>教授通过一些实验和后续的研究提出了很有名的心智模型（Mindset）理论，简而言之，她发现不同的人们对待失败这件事有着完全不同的态度：有一类人害怕失败，当失败后会变得不能接受，而且容易否定自身并影响进一步的尝试，Dweck教授称这类人为固定型思维模式（Fixed Mindset）；而另一类人则“喜欢”失败，视失败/犯错为学习的一种方式，他们更关注过程而不是结果，Dweck教授称其为成长型思维模式（Growth Mindset）。</p>
-
-<p><img src="/images/2017/07/Growth-v-Fixed-resized.png" alt="" /></p>
-
-<p>Dweck在演讲中提到，通过像成长型思维模式的转变，关注从失败/犯错中学习，人们的潜力可以得到很好的发挥，也更容易获得理想的结果。</p>
-
-<p>很多新人不敢尝试，又不愿意让同事知道自己的不足，这样的态度会导致他更倾向于选择更容易的工作，这样就可以避免暴露自己的不足，久而久之就会形成恶性循环。其实企业对于新人的期望一般都不会很高，对于新人犯错也是有容忍度的，新人要勇于承认自己的不足，勇于尝试新的事物，勇于犯错并从中学习。</p>
-
-<p>承认自己的不足在刚开始是一件很困难的事情，不过再尝试过几次之后，你就会发现其实也没有那么恐怖。你慢慢会喜欢那种不带任何包袱的、全身心聚焦在学习本身上的快乐。</p>
-
-<h2>不要被角色限制</h2>
-
-<p>都梁在《血色浪漫》里有段描述陕北农民的文字：</p>
-
-<blockquote><p>钟跃民惊讶地发现，在如此贫困恶劣的生存状态下，村民们却很少愁眉苦脸，
-他们始终很乐观，他们最喜欢谈论的话题是饮食男女。在饮食方面，由于他们没见
-过更好的食品，所以坚持认为酸汤饺子和油泼辣子是天下最美味的食品，如果有人
-提出世上还有很多更好吃的东西，那大家会一致认为此人太没见过世面，这驴日的
-八成是没吃过酸汤饺子，才在这儿胡咧咧.</p></blockquote>
-
-<p>就像酸汤饺子并非天下最美味的食品一样，开发也不是世界上最牛逼的工作。任何一个良好的，健康的产品、项目需要不同的角色共同配合，共同努力。如果仅仅将自己局限在程序员这一角色，时间久了未免会有坐井观天的狭隘。</p>
-
-<p><img src="/images/2015/01/group-resized.png" alt="坐井观天" /></p>
-
-<p>作为程序员，既可以往上游去探索需求的梳理，用户痛点的分析，业务价值的挖掘，又可以向下游如测试的编写，产品的发布，运维监控。视野开拓了，才有可能对产品有整体的了解，也更容易在程序员这个角色上做的更好。</p>
-
-<p>作为新人，能在自己擅长的方面发挥长处当然很好，但是如果仅仅局限在自己擅长的方面则未免太过单薄。如果你在前端非常有经验，那么除了将这些经验和知识分享给别人之外，你还可以向别的角色学习他们擅长的技能，比如向测试学习自动化，SBE等；向后端学习高性能，高可用服务器的技术，数据库设计及优化，API设计等；向DevOps学习运维技能，自动化<code>provision</code>技能等等。</p>
-
-<p>这些不同的技术不但可以让你的视野更加开阔，也可以为自己以后尝试不同的角色和机会打好基础。以我自己为例，我刚工作的时候是一个Java开发，后来开始做产品的前端开发。换了工作后又跑到Linux下用C写服务，再后来加入ThoughtWorks后，正经职位是开发，不过在项目上还兼职过一段时间QA，在有些项目上当UX不在场的时候还可以做些简单的设计，在技术社区当讲师，还在一些客户现场做过咨询顾问。我自己觉得在不同的角色上切换非常有意思，我自己也很享受整个过程。</p>
-
-<h2>展示你的创意</h2>
-
-<p>将一个创意、复杂概念或者想法简洁而准确的描述出来是一个非常重要的能力。我见过太多的程序员都是沉默寡言，讲东西声音又小，又紧张，即使有很好的想法也难以完整的表述出来。</p>
-
-<p>不过这个能力是可以锻炼的，只需要借助原型的制作就可以了：</p>
-
-<ul>
-<li>画图</li>
-<li>静态原型</li>
-<li>纸上原型</li>
-</ul>
-
-
-<p>俗话说，一图胜千言。你只需要学习一些简单的绘画技巧就可以大大提高自己的表述能力。</p>
-
-<p><img src="/images/2017/07/sketch-resized.png" alt="" /></p>
-
-<p>通过用静态页面（HTML/CSS/JS），mock数据等方式，快速的将创意表达出来是程序员的一个优势，你可以用静态数据，数据文件等方式，通过一些简单的代码快速的作出可以做交互的原型，然后通过和用户不断确认的方式来渐进增强，这种做法可以避免太大的浪费，尽早的将客户价值交付。</p>
-
-<p>原型并不局限在草图，可以工作的静态页面，还可以是一个清晰简洁的演讲。基于PPT的原型还可以用来分析目前产品痛点，对比方案的优劣，展示自己的看法等等。</p>
-
-<p>纸上原型是另一种低成本，可供快速交流沟通的原型方式（图片来自我在ThoughtWorks的同事刘海生）：</p>
-
-<p><img src="/images/2016/09/prototype-resized.png" alt="" /></p>
-
-<h2>手速</h2>
-
-<p>关于程序员是否要求很快的手速是一个颇具争议的话题。支持者认为这属于基本功，每个程序员都应该打字都很快；反对者则认为程序员的价值在于思考并解决问题，追求速度快，那还不如招个打字员。我个人的观点是，好的程序员应该有很快的手速（包括打字的速度，但不局限于此）。</p>
-
-<p>我在ThoughtWorks西安办公室组织过很多次提升手速的工作坊，比如<a href="http://icodeit.org/3-pages-in-3-weeks/">三周三页面</a>，<a href="http://icodeit.org/2016/05/practise-in-programming/">闪电计划</a>等。基本原则就是对一个具体的“作业”，不断的重复练习。</p>
-
-<p>最近带两个新人，我给他们布置了一个简单的作业：</p>
-
-<p><img src="/images/2017/07/dribbble-invitation-resized.png" alt="" /></p>
-
-<p>图片来源：<a href="https://dribbble.com/shots/2154223-Day-021-Dribbble-Invitation-Modal">dirbbble.com</a></p>
-
-<p>基本要求是以最快的速度实现这个页面，并有一点微小的交互（比如选择联系人之后的checkbox会显示选中状态，剩余invites的数量减少等）。第一次做他们用了5个多小时（连同搭建环境，安装Node.js，npm包等），第二次用时2个半小时，第三次用时1个半小时，第四次用时50分钟。</p>
-
-<p>对同一个页面的不断练习听起来是在做重复工作，其实可以联系到很多的内容：</p>
-
-<ul>
-<li>命令行的熟悉程度</li>
-<li>快捷键的使用</li>
-<li>搜索引擎的使用</li>
-<li>Stackoverflow使用</li>
-</ul>
-
-
-<p>当你真的可以熟极而流的时候，你才有时间来考虑如何优化，比如如何抽取模板工程（这样下次做同样的事情就回快很多），如何精简DOM结构，如何用命令行工具来帮助自己提速等。手速是大前提，没有速度，一切优化都是脑海中的意淫，无法真实落地。</p>
-
-<h2>总结</h2>
-
-<p>要成为一个厉害的程序员，首先当然是要有一个好的身体。此外需要培养一个编程之外的爱好，这样可以让你活的像一个正常人（而不是传统的工科书呆子）。程序员是一个需要不断学习，不断充实的职业，在学习的过程中，英文能力可以帮助你学的更快，更有效，另外正确的应对学习过程中必然会犯的错误，并将每次错误都当成学习的机会。</p>
-
-<p>开发只是软件开发流程中的一环，程序员需要拓展自己的视野，和其他角色一起配合才能保证产品的交付。在日常的开发中，程序员还需要快速、准确的将自己的想法和创意表达出来。最后，更快速的完成手头的工作可以让你有更多的时间来思考，来改进那些低效的工作方式。</p>
-
-<h2>扩展阅读</h2>
-
-<ul>
-<li>Carol Dweck教授的演讲<a href="http://open.163.com/movie/2015/3/5/B/MAIP2A8KC_MAIPJJK5B.html">《请相信，你可以进步》</a></li>
-<li>Paul Graham的<a href="https://book.douban.com/subject/6021440/">黑客与画家</a></li>
-<li><a href="https://medium.com/design-story/if-you-can-draw-these-three-shapes-you-can-draw-the-internet-84d601fa9454">如果你能画这三种基础性状，你就可以画一切</a></li>
-<li><a href="http://icodeit.org/2017/01/why-top-programmers-hate-gui/">为什么优秀的程序员喜欢命令行</a></li>
-<li><a href="http://icodeit.org/2016/05/practise-in-programming/">刻意练习</a></li>
-<li><a href="http://icodeit.org/2016/01/for-those-dev-who-doesnt-want-to-be-a-ux-cannot-be-a-good-consulant/">不想当UX的开发不是好咨询师</a></li>
-</ul>
+<ol>
+<li>在转向designer的同时，不要丢掉编程</li>
+<li>按照一定的顺序来学习design（可用优先，性能优先）</li>
+<li>设计一切见得到的东西</li>
+<li>和其他人一起讨论设计，并聆听别人</li>
+<li>尝试分享，尝试将自己的设计讲给别人</li>
+</ol>
 
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[ThoughtWorks洞见讲什么？]]></title>
-    <link href="http://abruzzi.github.com/2017/03/whats-the-thoughtworks-insight-talking-about/"/>
-    <updated>2017-03-12T22:03:00+08:00</updated>
-    <id>http://abruzzi.github.com/2017/03/whats-the-thoughtworks-insight-talking-about</id>
-    <content type="html"><![CDATA[<h2>ThoughtWorks洞见</h2>
+    <title type="html"><![CDATA[关于Hack day]]></title>
+    <link href="http://abruzzi.github.com/2013/03/guan-yu-hack-day/"/>
+    <updated>2013-03-22T20:55:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/03/guan-yu-hack-day</id>
+    <content type="html"><![CDATA[<h4>关于Hackday</h4>
 
-<p><a href="http://insights.thoughtworkers.org/">ThoughtWorks洞见</a>是ThoughtWorks的一个媒体渠道，汇集了来自ThoughtWorks最优秀的经验和思考，并分享给真正对软件有意愿思考和不断改进的人（修改自官方版本）。</p>
+<p>Hackday是一个技术活动，每三个月举行一次，每次正式时间为两天，每次的hackday都有一个主题，比如对某个业务模块的数据挖掘，关于某个模块的功能/执行效率的改进。</p>
 
-<p>截至目前为止，ThoughtWorks洞见已经汇集了50余位作者的300+篇文章（就在刚才，又有一篇更新）。那么这些文章中都在讨论什么样的话题呢？这篇文章将通过一些技术手段，提取出洞见中的关键字，然后采用可视化的方式呈现出来。</p>
+<p>Hackday中的idea多是工作中接触到的痛点，但是又有一些挑战，很难在工作的时候将其完成，或者是一些有意思的主题，平时想做又不太合适（比如一些没有经过确认创新的点子）。</p>
 
-<h3>数据获取</h3>
+<h4>Hackday 1st</h4>
 
-<p>本来我打算从<code>RSS</code>上读feed，解析出文章的<code>link</code>，再将所有文章爬一遍，最后保存到本地。不过写了几行代码后发现<code>Wordpress</code>(ThoughtWorks洞见目前托管在一个Wordpress上)默认地只输出最新的<code>feed</code>，这对于关键字提取来说数量远远不够。众所周知，语料库越大，效果越好。</p>
+<p>第一次Hackday是跟<a href="http://adams.co.tt/blog">Adam</a>一起做一个数据展现的idea，Adam是墨尔本Office里一个相当senior的咨询师，我们当时做的idea是根据系统中已有的数据信息，来做一些简单的数据分析，如：</p>
 
-<p>既然是洞见本质上来说就是一个静态站点，那么最简单、最暴力的方式就是直接把站点克隆到本地。这一步通过使用<code>wget</code>可以很容易做到：</p>
+<ol>
+<li>找出一个地区内的所有中介，看看哪些中介持有最多的房产资料</li>
+<li>找出一个地区中，可以最快卖掉手中房产的中介</li>
+</ol>
 
-<p><code>sh
-wget --mirror -p --html-extension --convert-links -e robots=off -P . \
-http://insights.thoughtworkers.org/
-</code></p>
 
-<p>默认地，<code>wget</code>会以站点的完整域名为目录名，然后保存整个站点到本地。我大概看了一下，其实不需要所有的目录，只需要一个层次即可，所以这里用<code>find</code>来做一个过滤，然后将文件名写到一个本地文件<code>filepaths</code>中。</p>
+<p><img src="http://abruzzi.github.com/images/2013/03/hackday-agent-info.resized.png" alt="image" /></p>
 
-<p><code>sh
-find insights.thoughtworkers.org/ -name index.html -depth 2 &gt; filepaths
-</code></p>
+<p>我们的应用使用sinatra作为服务器；由于数据库系统已经存在，所以ORM需要做的是将对象和已存在的数据表关联，因此功能强大且可以独立使用的ActiveRecord就成了首选；模板使用haml；UI框架风格使用了BootStrap。</p>
 
-<p>这个文件的内容是这样的：</p>
+<p>搭建环境大概只用了1到1.5个小时，在整个开发过程中，我学习到了一个专业的敏捷开发的流程：</p>
+
+<ol>
+<li>划分大的目标，使之称为小的task</li>
+<li>小步前进，做完一个功能之后，进行快速的review（首先有一个可以工作的版本）</li>
+<li>如果发现有潜在的问题，进行重构，以方便下一个小的task</li>
+</ol>
+
+
+<p>两天之后，当一个可以工作，并且很容易扩展的应用程序真实的放在我们面前的时候，我觉得十分有意思，这当然不是因为build something本身的乐趣，而是我看到一种理论在实际的生活中可以工作（而且是以一种非常有意思的方式），这个过程让我对这种开发方式产生了很多新的认识。</p>
+
+<h4>Hackday 2nd</h4>
+
+<p>第二次的idea是一个基于google map的应用，比如某人的公司在A地，老婆的公司在B地，他们最喜欢的超市在C地，然后他们想找一个离这三个地方距离都很近的房子。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/03/hackday-neighborhood.resized.png" alt="image" /></p>
+
+<p>同样也使用了Sinatra+haml+javascript。由于idea本身就是西安团队想出来的，所以这次的参与者都是西安office的，这样可以省去交流的成本，做起来肯快，但是问题也很严重，就是没有人做演示，别的团队也不清楚我们在干什么。</p>
+
+<h4>Hackday 3rd</h4>
+
+<p>经历了前两次，第三次的就非常official了，有story wall，有producer，有站会，有showcase，正好这段时间我们的一个客户designer在西安office出差，所以还设计了一些海报。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/03/hackday-rango-stories.resized.png" alt="image" /></p>
+
+<p>有了专业的designer参与，应用程序的外观立马得到了改善，看起来非常有产品的感觉：</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/03/hackday-rango-homepage.resized.png" alt="image" /></p>
+
+<p>这次本来计划开发离线版本，使用浏览器的localStorage，但是静态网页在iPad上无法工作。team快速的做出了调整，使用sinatra（又一次）搭建了服务器，然后将应用部署在cloud上。</p>
+
+<h4>总结</h4>
+
+<p>虽然每次的“成果”都不大，但是整个hack的过程都非常有意思，每次都可以使用前几次活动中好的工作方式，而前几次中做的不好的则可以进行改进，技术仅仅是其中的一个方面，与团队成员的协作，对自己信心的加强，通过创新来给客户带来价值，这一系列的，不那么明显的“成果”才是更重要的。</p>
+
+<p>另一个“成果”是，我对轻量级的框架如<a href="http://www.sinatrarb.com/">sinatra</a>，引擎<a href="http://haml.info/">haml</a>等有了非常浓厚的兴趣，用这些工具可以快速的搭建用于showcase的应用程序，而且非常容易改进，非常适合小步迭代的开发方式。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[k-nearest-neighbour算法简介及示例]]></title>
+    <link href="http://abruzzi.github.com/2013/01/k-nearest-neighbour/"/>
+    <updated>2013-01-03T15:46:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/01/k-nearest-neighbour</id>
+    <content type="html"><![CDATA[<h3>background</h3>
+
+<p>元旦放假前，team的同事们想要一起学习一些技术，然后一起做些小东西，有人提到将物理墙上的卡，通过手机拍照，识别出其中的卡号，然后与电子墙同步状态。这是一个非常有意思的主题，会涉及到很多方面的知识，其实有好几个topic，只不过我对人工智能/机器学习等比较有兴趣而已，所以就先自己研究下。</p>
+
+<p>几天下来，关于数字识别的基本的流程已经清晰了，关于图片的预处理及边界标定等都差不多就绪了，剩下比较重要的是<strong>识别</strong>本身了。在这个过程中，遇到了一些很有意思的算法，我自己也花费了好几天才弄明白，所以整理了一下，这一篇先介绍下第一个，也是最简单最好用的KNN算法。</p>
+
+<h3>K-nearest-neighbour简介</h3>
+
+<p>KNN是机器学习中<strong>最简单</strong>的一种无值守的学习方法，但是在实际场景中，效果却经常<strong>非常好</strong>。一般来说，在样本较多，分布均匀的空间中，KNN会收到很好的效果。但是由于KNN会计算空间中的每个点与需要标定的点的距离(甚至需要计算额外的权重信息)，所以计算量会较大。</p>
 
 <p><code>
-insights.thoughtworkers.org/10-common-questions-of-ba/index.html
-insights.thoughtworkers.org/10-tips-for-good-offshore-ba/index.html
-insights.thoughtworkers.org/10-ways-improve-your-pairing-experience/index.html
-insights.thoughtworkers.org/100-years-computer-science/index.html
-insights.thoughtworkers.org/1000-cars-improve-beijing-transportation/index.html
-insights.thoughtworkers.org/3d-printing/index.html
-insights.thoughtworkers.org/4-advices-for-aid/index.html
-insights.thoughtworkers.org/5-appointments-with-agile-team/index.html
-insights.thoughtworkers.org/5-ways-exercise-visual-design/index.html
-insights.thoughtworkers.org/7-step-agenda-effective-retrospective/index.html
-insights.thoughtworkers.org/a-decade/index.html
-insights.thoughtworkers.org/about-team-culture/index.html
-insights.thoughtworkers.org/about-tw-insights/index.html
-insights.thoughtworkers.org/agile-coach/index.html
-insights.thoughtworkers.org/agile-communication/index.html
-insights.thoughtworkers.org/agile-craftman/index.html
-...
+假设所有的点都均匀的分布在一个平面内，此时的平面密度(单位范围内的点的个数)非常大，而每个子平面内的点的分布与所有点在整个平面内的分布相当。在子平面S中，有一个点Y，则离点X(to be classified)最近的Y很可能与Y同在子平面S中。
 </code></p>
 
-<h3>数据处理</h3>
+<p>比如取出空间中与X距离最近的有5个点(K=5)，其中3个属于C1类，2个属于C2类，则根据少数服从多数原则，X点被归类为C1.这样的一个缺点就是如果空间内的点分布不均匀，那么会有一些误差，如果上面这个场景经常出现，那么分类会越来越偏离(有一个偏心的硬币，投掷100,000次，有90,000次正面)。这样就有引入了对KNN的另一个扩展方式，加入权重的KNN：</p>
 
-<p>这样我就可以很容易在python脚本中读取各个文件并做处理了。有了文件之后，需要做这样一些事情：</p>
+<p><code>
+当然这种形式的KNN不是很精确，由此引申出了带权重的KNN：可以为每个点都赋予一个权值，每个权值与新的点X的距离有关，通常会取距离的倒数，这样与X最近的点有较高的权重，而较远的点具有较低的权重，这样在投票(voting)阶段可以相对的提高精确度
+</code></p>
 
-<ol>
-<li>抽取HTML中的文本信息</li>
-<li>将文本分词成列表</li>
-<li><del>计算列表中所有词的<a href="https://zh.wikipedia.org/wiki/Tf-idf">TFIDF</a>值</del></li>
-<li>计算每个词出现的频率</li>
-<li>将结果持久化到本地</li>
-</ol>
+<h3>KNN的一个python版本示例</h3>
 
+<h4>背景(高斯分布)</h4>
 
-<p>这里需要用到这样一些pyhton库：</p>
+<p>```
+import random</p>
 
-<ol>
-<li>BeautifulSoap 解析HTML文档并抽取文本</li>
-<li>jieba 分词</li>
-<li>sk-learn 计算单词出现频率</li>
-<li>pandas 其他数据处理</li>
-</ol>
+<p>def gauss_list(mu, sigma, count=100):</p>
 
-
-<p>```py
-def extract_post_content(file):</p>
-
-<pre><code>soup = BeautifulSoup(open(file).read(), "html.parser")
-return soup.find('div', attrs={'class': 'entry-content'}).text
-</code></pre>
-
-<p>def extract_all_text():</p>
-
-<pre><code>with open('filepaths') as f:
-    content = f.readlines()
-
-file_list = [x.strip() for x in content]
-return map(extract_post_content, file_list)
-</code></pre>
-
-<p>def extract_segments(data):</p>
-
-<pre><code>seg_list = jieba.cut(data, cut_all=False)
-return [seg.strip() for seg in seg_list if len(seg) &gt; 1]
-</code></pre>
-
-<p>def keywords_calc():</p>
-
-<pre><code>corpus = [" ".join(item) for item in map(extract_segments, extract_all_text())]
-</code></pre>
-
-<p>keywords_calc()
-```</p>
-
-<p><code>extract_post_content</code>函数用来打开一篇博客的HTML文件，并提取其中的<code>div.entry-content</code>中的文本内容。<code>extract_all_text</code>函数用来对文件<code>filepaths</code>中的每一行（一篇洞见文章的本地文件路径）都调用一次<code>extract_post_content</code>。而函数<code>extract_segments</code>会使用<code>jieba</code>来对每篇文章进行分词，并生成一个单词组成给的列表。最后，在函数<code>keywords_calc</code>中，通过一个列表推导式来生成语料库。</p>
-
-<p>有了语料库之后，很容易使用<code>sk-learn</code>来进行计算：</p>
-
-<p>```py
-def keywords_calc():</p>
-
-<pre><code>corpus = [" ".join(item) for item in map(extract_segments, extract_all_text())]
-
-with open('stopwords-utf8.txt') as f:
-    content = f.readlines()
-
-content.extend(['来说', '事情', '提供', '带来', '发现'])
-stopwords = [x.strip().decode('utf-8') for x in content]
-
-vectorizer = CountVectorizer(stop_words=stopwords)
-fit = vectorizer.fit_transform(corpus)
+<pre><code>return [random.gauss(mu, sigma) for _ in range(count)]
 </code></pre>
 
 <p>```</p>
 
-<p>当然，由于处理的是中文，我们需要提供<code>停止词</code>来避免对无意义的词的统计（<code>这个</code>，<code>那个</code>，<code>然后</code>等等基本上每篇都会出现多次的词）。在经过<code>transform</code>之后，我们就得到了一个稀疏矩阵和词汇表，以及对应的tdidf的值，我们使用<code>pandas</code>提供的DataFrame来进行排序和存储即可：</p>
+<p>生成一个随机数数组，数组中的元素符合高斯分布，如</p>
 
-<p>```py
-def keywords_calc():</p>
-
-<pre><code>#...   
-data = dict(zip(vectorizer.get_feature_names(), fit.toarray().sum(axis=0)))
-top_100 = DataFrame(data.items(), columns=['word', 'freq'])
-    .sort_values('freq', ascending=False).head(100)
-top_100.to_csv('top-100-words-most-used-in-tw-insights.csv')
-</code></pre>
-
-<p>```</p>
+<p><code>
+ran = gauss_list(-2, 1, 10)
+print ran
+</code></p>
 
 <p>运行结果如下：</p>
 
 <p><code>
-index,word,freq
-18761,团队,1922
-12479,测试,1851
-4226,开发,1291
-1910,服务,1288
-10531,技术,1248
-7081,用户,1145
-17517,代码,1078
-12712,项目,1062
-4957,需求,1049
-...
+[-1.3277188634970218, -2.1034487392146817, -0.5924407591392826, -0.30376289085064045, -2.191337071105794, -1.9781081550478732, -3.7937155472105673, -2.538102349796847, -1.3728510997834549, -2.766669661625006]
 </code></p>
 
-<h3>可视化</h3>
+<p>更进一步，我们可以用这种方式生成平面中的一些点，这些点可以根据分布情况分为两组，一组是以(-4,0)为重心的500个点，另一组是以(4,0)为重心的500个点：</p>
 
-<h4>单词云</h4>
+<p>```
+def gauss_cluster(center, stdDev, count=500):</p>
 
-<p>```js
-d3.csv('top-20-words-in-tw-insight.csv', function(err, data) {</p>
-
-<pre><code>data.forEach(function(d) {
-    d.freq = +d.freq
-});
-
-d3.layout.cloud().size([1600, 900])
-    .words(data)
-    .rotate(0)
-    .fontSize(function(d) { return Math.round(d.freq/10); })
-    .on("end", draw)
-    .start();
+<pre><code>return [(random.gauss(center[0], stdDev),
+         random.gauss(center[1], stdDev)) for _ in range(count)]
 </code></pre>
 
-<p>});
-```</p>
+<p>def make_random_data():</p>
 
-<p>这里我直接使用了一个第三方的单词云插件<code>d3.layout.cloud</code>，提供一个callback函数<code>draw</code>，当布局结束之后，插件会调用这个回调：</p>
-
-<p>```js
-function draw(words) {</p>
-
-<pre><code>d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("class", "wordcloud")
-    .append("g")
-    .attr("transform", "translate(" + width/2 + "," + height/2 +")")
-    .selectAll("text")
-    .data(words)
-    .enter().append("text")
-    .style("font-size", function(d) { return Math.round(d.freq/10) + "px"; })
-    .style("fill", function(d, i) { return color(i); })
-    .attr("transform", function(d) {
-        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-    })
-    .text(function(d) { return d.word; });
+<pre><code>return gauss_cluster((-4, 0), 1) + gauss_cluster((4, 0), 1)
 </code></pre>
 
-<p>}
-```</p>
+<p>data = make_random_data()</p>
 
-<p><img src="/images/2017/03/tw-insights-color-18-resized.png" alt="" /></p>
+<p>```</p>
 
-<h4>背景图制作</h4>
+<h4>绘制高斯分布</h4>
 
-<p><code>sh
-mkdir -p authors/ &amp;&amp; cp wp-content/authors/* authors/
-cd authors
-mogrify -format png *.jpg
-rm *.jpg
-</code></p>
+<p>```
+data = make_random_data()</p>
 
-<p>将作者的头像制作成一张9x6的大<code>蒙太奇</code>图：</p>
+<p>x = map(lambda x: x[0], data)
+y = map(lambda x: x[1], data)</p>
 
-<p>```sh
-montage *.png  -geometry +0+0 -resize 128x128^ -gravity center -crop 128x128+0+0 -tile 9x6 \</p>
+<p>plt.clf()</p>
 
-<pre><code>tw-insight-authors.png
+<p>plt.scatter(x, y, c=x, vmin=0, vmax=20, s=35, alpha=0.75)
+plt.colorbar()
+plt.grid(True)</p>
+
+<p>plt.show()
+```
+通过使用matplotlib的绘图功能，将make_random_data生成的点通过图形的方式展现，效果更加直观，图中的两个点集分别表示两个不同的类别。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/01/gauss-distribution-resized.png" alt="image" /></p>
+
+<h4>KNN</h4>
+
+<p>我们定义KNN分类器，其中两点间的距离按照欧氏公式来求，先计算点集中离x点最近的k个点，然后取得对应的k个label，再按照label个数球max。</p>
+
+<p>比如k=5时，求的的label集合为['O', 'O', 'A', 'A', 'A']，则我们认为这个点应该被分类为A(少数服从多数)。</p>
+
+<p>```
+def euclidean_distance(x, y):</p>
+
+<pre><code>return math.sqrt(sum([(a-b)**2 for (a,b) in zip(x,y)]))
+</code></pre>
+
+<p>def makeKNNClassifier(data, labels, k, distance):</p>
+
+<pre><code>def classify(x):
+    closestPoints = heapq.nsmallest(k, enumerate(data),
+                                    key=lambda y: distance(x, y[1]))
+    closestLabels = [labels[i] for (i, pt) in closestPoints]
+    return max(set(closestLabels), key=closestLabels.count)
+
+return classify
 </code></pre>
 
 <p>```</p>
 
-<p><img src="/images/2017/03/tw-insight-authors-resized.png" alt="" /></p>
+<h4>测试一下</h4>
 
-<h4>后期处理</h4>
+<p>创建1000个随机点，前500个分类为A(Apple)，后500个分类为O(Orange)，k值为3。</p>
 
-<p><img src="/images/2017/03/tw-insights-12-resized.png" alt="" /></p>
+<p>```
+data = make_random_data()
+labels = ['A'] * 500 + ['O'] * 500</p>
 
-<p>可以看出，ThoughtWorks洞见中最为关键（Top 10）的信息依次是：</p>
+<p>fitter = makeKNNClassifier(data, labels, 3, euclidean_distance)</p>
 
-<p><code>
-团队
-测试
-开发
-服务
-技术
-用户
-代码
-项目
-需求
-工作
-</code></p>
+<p>print fitter((-3, 1))
+print fitter((4, 2))
+```</p>
 
-<p>这个和ThoughtWorks的专业服务公司的属性基本吻合。不过前20里竟然没有诸如<code>敏捷</code>，<code>精益</code>这些原本以为会入围的词。</p>
+<p>图中的两个红色的点分别为P1(-3, 1)和P2(4, 2)。它们都已经被正确的分类。</p>
 
-<h4>完善</h4>
-
-<p>基本的图形设计完成之后，再加入一些视觉元素，比如ThoughtWorks的标志性图案（代表开发文化和多样性），以及对应的说明性文字（文字的大小也错落开，和文字云遥相呼应）：</p>
-
-<p><img src="/images/2017/03/tw-insights-16-resized.png" alt="" /></p>
-
-<h3>资料</h3>
-
-<p>文中使用了比较简单的<code>CountVectorizer</code>做统计，<code>sk-learn</code>还提供了其他的向量化机制。我使用<code>TdidfVectorizer</code>做了一些计算，不过可能由于语料库的尺寸原因，效果比较奇怪，就暂时没有采用这种方式。</p>
-
-<p>不过，使用<code>TDIDF</code>来做关键词抽取在文本处理上也算是必备的技能，这里列一些参考资料，有兴趣的可以进行进一步的探索。</p>
-
-<ol>
-<li><a href="https://github.com/abruzzi/tw-insights-viz">完整的代码</a>在此。</li>
-<li>阮一峰老师对<a href="http://www.ruanyifeng.com/blog/2013/03/tf-idf.html">TFIDF的解释文章</a></li>
-<li>陈皓（左耳朵耗子）对<a href="http://coolshell.cn/articles/8422.html">TFIDF的解释文章</a></li>
-</ol>
-
+<p><img src="http://abruzzi.github.com/images/2013/01/knn-plant-resized.png" alt="image" /></p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[测试自动化后，我们还需要QA吗？]]></title>
-    <link href="http://abruzzi.github.com/2016/09/what-should-qa-do-in-a-agile-team/"/>
-    <updated>2016-09-24T23:43:00+08:00</updated>
-    <id>http://abruzzi.github.com/2016/09/what-should-qa-do-in-a-agile-team</id>
-    <content type="html"><![CDATA[<h2>QA的职责</h2>
-
-<p>我们先讨论一下传统的瀑布模型下QA是如何工作的，其中最主要的问题是什么；然后作为对比，我们来看看在敏捷团队里QA又是如何工作的，工作重点又是什么；最后，我们详细看一看在新的职责下，QA应该如何做。</p>
-
-<h3>瀑布开发模型</h3>
-
-<p>即使在今天，在很多企业中，瀑布模型仍然是主流。每一个需求都需要经过分析，设计，开发，测试，上线部署，运维等阶段。虽然一些企业已经在实施<code>敏捷开发</code>，比如项目/产品以迭代的方式运作，也有诸如每日站会，代码检视等敏捷实践，但是如果仔细审视，你会发现其实<em>开发模式</em>骨子里还是瀑布：按照软件组件划分的部门结构（详见<a href="https://en.wikipedia.org/wiki/Conway%27s_law">康威定律</a>），按照职能划分的团队（开发和测试分属不同部门），过长的反馈周期，永远无法摆脱的集成难题等等。</p>
-
-<p>随着软件变得越来越复杂，团队里没有任何一个人可以说出系统是如何运作的，也不知道最终用户是谁，以及最终用户会以何种方式来使用最终的软件。</p>
-
-<p>更糟糕的是，按照职能划分的团队在物理上都是隔离的，比如独立的测试部门，独立的运维部门，整日忙碌而难以预约到档期的业务人员，当然还有经常疲于交付，无处吐槽的<em>苦逼</em>开发。由于这些隔离，信息的反馈周期会非常长，一个本来很容易修复的缺陷可能在4周之后才可能被另一个部门的测试发现，然后通过复杂的工作流（比如某种形式的缺陷追踪系统）流到开发那里，而开发可能还在拼命的完成早就应该交付的功能，从而形成恶性循环。</p>
-
-<h3>瀑布模式中的QA</h3>
-
-<p>在这样的环境中，QA们能做的事情非常有限。在需求开始时会他们参加需求澄清的会议，制定一些<code>测试计划</code>，然后进行测试用例的设计。有的企业会用诸如Excel之类的工具来记录这些用例。这些写在Excel里的，<code>死</code>的用例用处非常有限。而最大的问题在于：它们无法<code>自动化执行</code>。另外，在实际软件开发中，需求总是会经常发生变化，需求的优先级也会有调整，然后这些记录在Excel中的<code>死</code>的用例会很快过期，变得无人问津。</p>
-
-<p>除此之外，QA中的有些成员会使用工具来录制一些UI测试的场景，然后在每个新版本出来之后进行回放即可。然而，当UI发生一点变化之后，这些自动化的用例就会失效：比如<code>HTML</code>片段中元素位置的调整，<code>JavaScript</code>的异步调用超时等等。</p>
-
-<p>显然，这种单纯以黑盒的形式来<strong>检查功能点</strong>的测试方式是不工作的，要真正有效的提升软件质量，仅仅通过<strong>事后检查</strong>是远远不够的，软件的质量也应该内建于软件之中。QA的工作也应该是一个贯穿软件生命周期的活动，从商业想法，到真实上线，这其中的所有环节，都应该有QA的参与。</p>
-
-<h3>系统思考</h3>
-
-<p>如果不从一个系统的角度来思考软件质量，就无法真正构建出健壮的、让业务和团队都有信心的软件系统。<strong><em>质量从来都不只是QA的职责，而是整个团队的职责。</em></strong></p>
-
-<p>关于软件质量，一个根深蒂固的误解是：缺陷在开发过程中被引入，然后在测试阶段被发现，最后在QA和开发的来来回回的撕扯中被解决（或者数量被大规模降低），最后在生产环境中，就只会有很少的，优先级很低的缺陷。</p>
-
-<p>然而事实上，很多需求就没有仔细分析，业务价值不很确定，验收条件模糊，流入开发后又会引入一些代码级别的错误，以及业务规则上的缺陷，测试阶段会漏掉一些功能点，上线之后更是问题百出（网络故障，缓存失效，黑客攻击，操作系统补丁，甚至内存溢出，log文件将磁盘写满等等）。</p>
-
-<p>在一个敏捷团队中，<strong>每个个人都应该对质量负责</strong>，而QA则以自己的丰富经验和独特视角来发掘系统中可能的质量隐患，并帮助团队将这些隐患消除。</p>
-
-<p><img src="/images/2016/09/circle-resized.png" alt="测试职责" /></p>
-
-<p>我在ThoughtWorks的同事<code>Anand Bagmar</code>在他的演讲<a href="http://www.slideshare.net/abagmar/what-is-agile-testing-how-does-automation-help">What is Agile testing- How does automation help?</a>中详细讨论过这部分内容。</p>
-
-<h3>QA到底应该干什么？</h3>
-
-<p>本质上来说，任何软件项目的目标都应该是：<strong>更快地将<code>高质量</code>的软件从想法变成产品</strong>。</p>
-
-<p>将这个大目标细分一下，会得到这样几个子项，即企业需要：</p>
-
-<ul>
-<li>更多的商业回报（发掘业务价值）</li>
-<li>更快的上线时间（做最简单，直接的版本）</li>
-<li>更好的软件质量（质量内嵌）</li>
-<li>更少的资源投入（减少浪费）</li>
-</ul>
-
-
-<p>其实就是传说中的<strong>多、快、好、省</strong>。如果说这是每一个软件项目的目标的话，那么团队里的每一个个人都应该向着这个目标而努力，任何其他形式的工作都可以归类为<code>浪费</code>。用Excel记录那些经常会失效，而且无法自动执行的测试用例是浪费，会因为页面布局变化而大面积失效的UI测试也是浪费，一个容易修复的缺陷要等到数周之后才被发现也是浪费。</p>
-
-<p>在这个大前提下，我们再来思考QA在团队里应该做什么以及怎么做。</p>
-
-<h3>QA的职责</h3>
-
-<p>Lisa Crispin在<a href="https://book.douban.com/subject/5338399/">《敏捷软件测试》</a>中提到过一个很著名的模型：敏捷测试四象限。这个模型是QA制定测试策略时的一个重要参考：</p>
-
-<p><img src="/images/2016/09/agile-testing-quadrants.png" alt="敏捷软件测试" /></p>
-
-<p>如果按照纵向划分的话，图中的活动，越向上越面向业务；越向下越面向技术。横向划分的话，往左是支撑团队；往右是评价产品。</p>
-
-<p>其实简化一下，QA在团队里的工作，可以分为两大类：</p>
-
-<ul>
-<li>确保我们在<code>正确的</code>交付产品</li>
-<li>确保我们交付了<code>正确的</code>产品</li>
-</ul>
-
-
-<p>根据这个四象限的划分，大部分团队可能都会从Q2起步：QA会和BA，甚至UX一起，从需求分析入手，进行需求分析，业务场景梳理，这时候没有具体的可以被测试的软件代码。不过这并不妨碍<strong>测试</strong>活动，比如一些纸上原型的设计（感谢刘海生供图）：</p>
-
-<p><img src="/images/2016/09/prototype-resized.png" alt="" /></p>
-
-<p>通过这一阶段之后，我们已经有了用户故事，这时候QA需要和开发一起编写用户故事的自动化验收测试。当开发交付一部分功能之后，QA就可以做常规的用户故事测试，几个迭代之后，QA开始进行跨功能需求测试和探索性测试等。根据探索性测试的结果，QA可能会调整测试策略，调整测试优先级，完善测试用例等等。</p>
-
-<p>根据项目的不同，团队可以从不同的象限开始测试策略的制定。事实上，Q1-Q4仅仅是一个编号，与时间、阶段并无关系，Lisa Crispin还专门<a href="http://lisacrispin.com/2011/11/08/using-the-agile-testing-quadrants/">撰文解释</a>过。</p>
-
-<p>关于QA如何在软件分析的上游就介入，然后通过BDD的方式与业务分析师一起产出软件的各种规格描述，并通过实例的方式来帮助整个团队对需求的理解，ThoughtWorks的林冰玉有一篇文章很好的介绍了<a href="http://insights.thoughtworkers.org/when-we-talk-about-bdd/">BDD的正确做法</a>。如果将QA的外延扩展到在线的生产环境，制定合理的测量指标，调整测试策略，强烈推荐林冰玉写的另一篇文章<a href="http://www.jianshu.com/p/20b454a88bdb">产品环境中的QA</a>。</p>
-
-<h4>其他职责</h4>
-
-<p>事实上，软件生命周期中有很多的活动，有很多处于<code>灰色</code>地段。既可以说是应该开发做，又可以说应该QA做，甚至可以推给其他角色（比如OPs）。不过我们知道，一旦涉及角色，人们就再也不会按照<code>全局优化</code>的思路来应对问题了。这种<code>灰色</code>的活动包括：</p>
-
-<ul>
-<li>持续集成的搭建</li>
-<li>测试环境的创建于维护</li>
-<li>UAT上的数据准备</li>
-<li>代码中的测试代码的维护</li>
-<li>测试代码的重构</li>
-</ul>
-
-
-<p>在团队实践中，这些活动我们通常会让QA和开发或者OPs同事一起结对来完成。一方面避免知识孤岛的形成，另一方面在跨角色的工作中，也可以激发出更多不同的思路。</p>
-
-<h3>万能的QA？</h3>
-
-<p>虽然在这些活动中，QA都会参与，但是并不是说团队里只要有一个QA就可以了。QA在参与这些活动时，侧重点还是有很大不同的。</p>
-
-<p>比如需求分析阶段，如果有QA的加入，一些从QA角度可以发现的有明显缺陷的场景，则可以在分析阶段就得到很好的处理。另一方面，尽早介入可以设计出更合理的测试计划（比如哪些功能的优先级比较高，用户更会频繁使用，那么对应的测试比重也会更高）。在Story分析与书写阶段，QA可以帮助写出更加合理的验收条件，既满足业务需求，又可以很好的指导开发。</p>
-
-<p>在和开发一起编写澄清需求时，主要是编写自动化验收测试，而不是实际编写业务逻辑的实现（虽然QA应该参与<code>Code Reivew</code>环节，学习并分享自己的观点）；甚至在上线运维阶段，QA还需要和OPs一起来设计用户数据的采集指标（比如用户访问的关键路径，浏览器版本，地区的区分等），从而制定出新的测试策略。</p>
-
-<h3>扩展阅读</h3>
-
-<ul>
-<li><a href="http://www.slideshare.net/abagmar/what-is-agile-testing-how-does-automation-help">What is Agile testing - How does automation help?</a></li>
-<li><a href="http://insights.thoughtworkers.org/agile-showcase-se7en/">敏捷实践Showcase的七宗罪</a></li>
-<li><a href="http://www.jianshu.com/p/20b454a88bdb">产品环境下的QA</a></li>
-<li><a href="https://book.douban.com/subject/5338399/">《敏捷软件测试》</a></li>
-</ul>
-
-
-<p>P.S. 感谢林冰玉对本文的<code>Review</code>和指导。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[如何设计一次培训]]></title>
-    <link href="http://abruzzi.github.com/2016/09/how-to-design-a-training/"/>
-    <updated>2016-09-10T13:35:00+08:00</updated>
-    <id>http://abruzzi.github.com/2016/09/how-to-design-a-training</id>
-    <content type="html"><![CDATA[<h2>培训元模式</h2>
-
-<p>最近在帮客户设计一个<code>微服务进阶版培训</code>的材料，整理的过程中我意识到这类事情我已经做过好多次了。比如在ThoughtWorks的<code>P2能力建设</code>项目，<a href="http://icodeit.org/3p3w/">3周3页面</a>工作坊等等，我觉得应该将<code>设计课程/设计培训</code>中的模式、原则和实践都提取一下，形成一个元模式（即关于培训的培训）。</p>
-
-<p>一个培训中的活动，按照时间顺序可以分为三个步骤：</p>
-
-<ol>
-<li>设计培训内容</li>
-<li>培训前期准备</li>
-<li>培训中的一些实践</li>
-</ol>
-
-
-<h3>设计培训内容</h3>
-
-<p>根据经验，只有那些正好处于瓶颈阶段，需要别人给予一些具体指导的人，培训是最有效的。比如我最近在学习iOS开发，那么<code>用Swift开发一个Todo List应用</code>就特别合适，而另一个<code>基于Objective-C的自动化测试</code>则对我来说一点用也没有（即使这个可能更高级，讲师更牛）。</p>
-
-<p>在任何一个培训可能的设计之前，首先需要回答几个问题：</p>
-
-<ol>
-<li>培训目的是什么？</li>
-<li>参与者对主题的了解程度如何？</li>
-<li>参与者的组成比例（比如junior占比，senior占比等）</li>
-<li>结果如何检验？</li>
-</ol>
-
-
-<h4>一个例子</h4>
-
-<p>例子是人类的好朋友，这里我们来看一个例子：</p>
-
-<blockquote><p>客户要为负责开发的同事做一次培训，培训的目的是要帮助他们建立<code>微服务架构</code>下的常见实践的知识框架。从结果的长期效果来看，这次培训要能指导实际的开发工作。参与者对<code>微服务</code>的一些概念有初步了解，也做过小的练习，但是诸如如何划分服务边界，如何拆分微服务等，都不了解，也比较迫切的想要了解。</p></blockquote>
-
-<p>根据这个上下文，客户希望在培训中可以传递这样一些内容：</p>
-
-<ul>
-<li>如何拆分微服务</li>
-<li>常见的微服务设计原则</li>
-<li>拆分微服务的时机</li>
-<li>如何做微服务的测试</li>
-</ul>
-
-
-<p>为了确保信息传递的准确性，我问了一遍上边都提到的列表，并且得到了答案：</p>
-
-<ul>
-<li>听众是开发经验相对丰富的开发（3-5年）</li>
-<li>学习拆分为了将大的应用拆分，以方便维护</li>
-<li>自动化测试能力和意识都较为薄弱</li>
-<li>听众自己的期望是可以有一些切实可以指导实际开发的收获</li>
-</ul>
-
-
-<p>在有了这些输入的情况下，我做出了这样一些调整：</p>
-
-<ul>
-<li>不专门讲拆分微服务</li>
-<li>主要精力讲<a href="https://github.com/abruzzi/jigsaw-ddd">DDD</a>（Domain Driven Design）</li>
-<li>设计迭代式的，逐步变得复杂的场景来练习DDD</li>
-<li>讲解和练习<a href="https://github.com/abruzzi/cdc-demo">自动化测试</a>（Consumer Driven Contract）</li>
-<li>Session+Workshop+讨论的形式</li>
-</ul>
-
-
-<p>看了这个计划之后，客户开始觉得挺困惑，说这个怎么跟我们梳理的课程诉求不一致？对于这个疑惑，我的建议是这样的：</p>
-
-<ul>
-<li>之前的例子不能落地（找不到足够复杂的，又适合在培训中拆分的场景）</li>
-<li>微服务的核心不是基础设施，而是设计原则，或者说如何在开发中找出边界</li>
-<li>有了DDD的指导，划分本身并非难事儿</li>
-<li>自动化测试（集成测试和契约测试）的能力和认识必须建立</li>
-</ul>
-
-
-<p>然后我把整理好的课件，实例分解，课程安排给客户讲了一遍之后，他觉得很满意。客户自己也是懂技术的，在分析了现状之后，后来又专门要求给部门内做一些<code>DDD</code>培训（而不是微服务本身）。</p>
-
-<h3>培训方式</h3>
-
-<p>同样，方式上也需要一些问题的解答才能有效进行：</p>
-
-<ol>
-<li>培训总时长</li>
-<li>更偏重练习还是偏重讲解（工作坊还是Session，以及各自的占比）</li>
-<li>参与者如何投入（比如是工作时间，还是晚上等）</li>
-</ol>
-
-
-<p>根据经验来看，不论是TWU还是对<code>客户</code>的培训，工作坊和Session结合的方式效果最好。
-Workshop至少需要包含这样几部分：</p>
-
-<ul>
-<li>明确要做的练习（多长时间，达到什么目的等）</li>
-<li>Showcase（参与感，如果有多轮的话，要保证每个人都有Show的机会，而不是每次同一个人）</li>
-<li>讨论环节（点评，这个时机可以做一些小结，将要传递的信息润物细无声的传递出去）</li>
-</ul>
-
-
-<p><img src="/images/2016/09/workshop-resized.png" alt="workshop" /></p>
-
-<p>应该避免的做法是:</p>
-
-<ul>
-<li>一个无法完成的任务</li>
-<li>过长的时间</li>
-<li>没有讨论，没有点评（特别是在中国文化中，Trainer有指出对错的<code>义务</code>）</li>
-</ul>
-
-
-<p>而<code>Session</code>则简单一些，交互比较少，需要讲师之前做足功课</p>
-
-<ul>
-<li>有清晰的Agenda（时长，要传递的大致内容）</li>
-<li>如果是讲方法论（DDD，BDD等等），最好结合实践</li>
-<li>不要讲代码（没有人能看清你的编辑器，也没有人有耐心看超过1行的代码）</li>
-<li>一次不要传递太多信息（只讲三点）</li>
-</ul>
-
-
-<p>两者穿插起来，可以收到很好的效果，既不至于让人觉得没有内容，也不会感觉只说不练。</p>
-
-<h4>预演（Dry Run）</h4>
-
-<p>在进行实际的实施之前，可以从参与者中找出一些典型的人进行交流，<code>dry run</code>一两次。不过交流也需要平衡一些事实：</p>
-
-<ol>
-<li>侧重点（做对的事情），比如从设计的层面来讲，DDD，重构等方法的掌握比服务的可用性要重要很多</li>
-<li>参与者想要听的和主题的相关性（比如培训目的是Story拆分，那么测试驱动开发的需求就要果断放弃）</li>
-</ol>
-
-
-<p>持续建立关注点，引导发散，归纳问题，归类并给出见解和可能的方案。</p>
-
-<h4>如何回答问题</h4>
-
-<p>有两种教学方式：苏格拉底式和填鸭式。苏格拉底式讲究只问不答，通过讲师不断提问的方式让学员自己思考，琢磨，并期望领悟；填鸭式则恰恰相反，假设学员没有任何能动性，讲师纯粹将自己知道的全部告诉学员。</p>
-
-<p>这其实两者在时间中都不合适。有一个度可以把握的是：</p>
-
-<blockquote><p>善待问者如撞钟，叩之以小者则小鸣，叩之以大者则大鸣，待其从容，然后尽其声。</p></blockquote>
-
-<p>即根据提问的深度来反馈，比如<code>JavaScript</code>培训，学生问如何声明一个数组，讲师讲词法作用域，则费劲而没有效果。经过一段时间的练习和积累之后，学生会问出更深入的问题，这时候再逐步提高答案的深度。</p>
-
-<h3>实践</h3>
-
-<h4>Energize</h4>
-
-<p>如果培训在白天的话，在午饭后，人们自然会感到困倦，这时候需要一些<code>提神</code>的小游戏帮助人们清醒。适度的紧张（比如简单的7Up游戏）或者肢体动作（做几个广播体操的动作）都会帮助人们振奋精神。</p>
-
-<ul>
-<li>围成一个圈的丢球自我介绍</li>
-<li>A和B向对方互相介绍自己，然后A反过来向整个Group介绍B，B向整个Group介绍A</li>
-<li>7Up</li>
-<li>丢空气球</li>
-</ul>
-
-
-<h4>工作坊基本准则</h4>
-
-<ol>
-<li>按时参加</li>
-<li>保持One convensition</li>
-<li>手机静音</li>
-</ol>
-
-
-<h4>分组进行</h4>
-
-<p>分组讨论是一个很好的实践，既可以避免<code>只说不练</code>的现象，又可以让参与者有充分的参与感，还可以让培训的时间长度更灵活，更容易控制。</p>
-
-<p>分组可以用报数的方法，通常人们习惯和自己熟悉的人坐在一起。这会促进他们交头接耳的几率，分组时可以通过报数的方式，比如目标是分为3组，就依次报数1、2、3，然后所有报1的人为1组，报2的人为2组，以此类推。</p>
-
-<p>一个我自己常用的伎俩是自由调整时间。比如在一个练习开始前，你告诉参与者他们有10分钟来完成一个Task，然后在5分钟后，你发现大家都基本已经做完了，这时候可以直接说：时间到！（相信我，没有人真正看表的，他们通常会被手头的任务搞得焦头烂额）。反过来，你可以说：再延长5分钟！以督促那些比较慢的小组动作更快一些，而事实上他们还没有用完限定的10分钟。</p>
-
-<p><img src="/images/2016/09/grouping-resized.png" alt="grouping" /></p>
-
-<h4>Parking lot</h4>
-
-<p>培训当然需要参与者和trainer的积极互动，但是有时候参与者提出的问题不太适合在课堂上展开：</p>
-
-<ul>
-<li>与培训主题关联并不太大</li>
-<li>比较个例的问题</li>
-<li>争议较大，难以在短时间内讨论清楚的</li>
-</ul>
-
-
-<p>这些问题可以记录下来，在正式课程时间结束后单点讨论，或者作为下一次备课的关键点，加入到课件中。</p>
-
-<h4>Retro</h4>
-
-<p>和我们倡导的一切活动一样，培训也需要有始有终。我们需要收集参与者的反馈，包括positive的和constructive的，这样经过几轮迭代之后，培训会成熟而具有一定的可复制性。</p>
-
-<p>可以分成三类：<code>做得好的/有待提高的/一些疑问/建议</code></p>
-
-<p>将问题分组讨论之后，分为三组，然后讨论出一些解决方法。</p>
-
-<p><img src="/images/2016/09/retro-resized.png" alt="retro" /></p>
-
-<h4>其他</h4>
-
-<ul>
-<li>二维码+金数据表单</li>
-<li>白板+白板笔</li>
-<li>Flipchart</li>
-</ul>
-
-
-<h3>总结</h3>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[无他，但手熟尔]]></title>
-    <link href="http://abruzzi.github.com/2016/05/practise-in-programming/"/>
-    <updated>2016-05-26T22:56:00+08:00</updated>
-    <id>http://abruzzi.github.com/2016/05/practise-in-programming</id>
-    <content type="html"><![CDATA[<h2>高效幻象</h2>
-
-<p>通过对自己的行为观察，我发现在很多时候，我以为我掌握了的知识和技能其实并不牢靠。我引以为豪的<code>高效</code>其实犹如一个彩色的肥皂泡，轻轻一碰就会破碎，散落一地。</p>
-
-<h3>你可能只是精通搜索</h3>
-
-<p>我们现在所处的时代，信息爆炸，每个人每天都会接触，阅读很多的信息，快速消费，快速遗忘。那种每天早上起来如同皇帝批阅奏折的、虚假的误以为掌握知识的错觉，驱动我们进入一个恶性循环。</p>
-
-<p>即使在我们真的打算解决问题，进行主动学习时，更多的也只是在熟练使用搜索引擎而已（在一个领域待久了，你所使用的关键字准确度自然要比新人高一些，仅此而已）。精通了高效率搜索之后，你会产生一种你<code>精通搜索到的知识本身</code>的<strong>错觉</strong>。</p>
-
-<p><img src="/images/2016/05/stackoverflow-oreilly.png" alt="stack overflow" /></p>
-
-<h4>如何写一个Shell脚本</h4>
-
-<p>在写博客的时候，我通常会在文章中配图。图片一般会放在一个有固定格式的目录中，比如现在是2016年5月，我本地就会有一个名为<code>$BLOG_HOME/images/2016/05</code>的目录。由于使用的是<code>markdown</code>，在插入图片时我就不得不输入完整的图片路径，如：<code>/images/2016/05/stack-overflow.png</code>。但是我又不太记得路径中的<code>images</code>是单数(<code>image</code>)还是复数(<code>images</code>)，而且图片格式又可能是<code>jpg</code>,<code>jpeg</code>,<code>gif</code>或者<code>png</code>，我也经常会搞错，这会导致图片无法正确显示。另外，放入该目录的原始文件尺寸有可能比较大，我通常需要将其缩放成800像素宽（长度无所谓，因为文章总是要从上往下阅读）。</p>
-
-<p>为了自动化这个步骤，我写了一个小的Shell脚本。当你输入一个文件名如：<code>stack-overflow.png</code>后，它会缩放这个文件到800像素宽，结果是一个新的图片文件，命名为<code>stack-overflow-resized.png</code>，另外它将符合<code>markdown</code>语法的文件路径拷贝到剪贴板里：<code>/images/2016/05/stack-overflow-resized.png</code>，这样我在文章正文中只需要用<code>Command+V</code>粘贴就可以了。</p>
-
-<p>有了思路，写起来就很容易了。缩放图片的命令我是知道的：</p>
-
-<p><code>sh
-$ convert -resize 800 stack-overflow.png stack-overflow-resized.png
-</code></p>
-
-<p>但是要在文件明上加入<code>-resized</code>，需要分割文件名和文件扩展名，在<code>Bash</code>里如何做到这一点呢？Google一下：</p>
-
-<p>```sh
-FULLFILE=$1</p>
-
-<p>FILENAME=$(basename "$FULLFILE")
-EXTENSION="${FILENAME##<em>.}"
-FILENAME="${FILENAME%.</em>}"</p>
-
-<p>convert -resize 800 $FULLFILE $FILENAME-resized.EXTENSION
-```</p>
-
-<p>难看是有点难看，不过还是可以工作的。接下来是按照当前日期生成完整路径，<code>date</code>命令我是知道的，而且我知道它的<code>format</code>格式很复杂，而且跟<code>JavaScript</code>里Date对象的<code>format</code>又不太一样（事实上，世界上有多少种日期工具，基本上就有多少种格式）。再Google一下：</p>
-
-<p><code>sh
-$ date +"/images/%Y/%m/"
-</code></p>
-
-<p>最后一步将路径拷贝到剪贴板也容易，Mac下的<code>pbcopy</code>我也会用：<code>echo</code>一下字符串变量，再管道到<code>pbcopy</code>即可：</p>
-
-<p><code>sh
-PREFIX=`date +"/images/%Y/%m/"`
-echo "$PREFIX$FILENAME-resized.EXTENSION" | pbcopy
-</code></p>
-
-<p>但是将内容粘贴到<code>markdown</code>里之后，我发现这个脚本多了一个换行。我想这个应该是<code>echo</code>自己的行为吧，会给字符串自动加上一个换行符。Google一下，发现加上<code>-n</code>参数就可以解决这个问题。</p>
-
-<p>好了，完整的脚本写好了：</p>
-
-<p>```sh</p>
-
-<h1>!/bin/bash</h1>
-
-<p>FULLFILE=$1</p>
-
-<p>FILENAME=$(basename "$FULLFILE")
-EXTENSION="${FILENAME##<em>.}"
-FILENAME="${FILENAME%.</em>}"</p>
-
-<p>convert -resize 800 $FULLFILE $FILENAME-resized.EXTENSION</p>
-
-<p>PREFIX=<code>date +"/images/%Y/%m/"</code>
-echo -n "$PREFIX$FILENAME-resized.EXTENSION" | pbcopy
-```</p>
-
-<p>嗯，还不错，整个过程中就用了我十几分钟时间而已，以后我在写博客时插入图片就方便多了！</p>
-
-<p>不过等等，好像有点不对劲儿，我回过头来看了看这段脚本：7行代码只有1行是我独立写的！没有<code>Google</code>的话，查看<code>man date</code>和<code>man echo</code>也可以解决其中一部分问题，不过文件扩展名部分估计又得花较长时间。</p>
-
-<p>仔细分析一下，之前的成就感荡然无存。</p>
-
-<h4>更多的例子</h4>
-
-<p>我相信，过几周我再来写这样一个简单的脚本时，上面那一幕还是会出现。开发者的IDE的外延已经将<code>Google</code>和<code>Stack Overflow</code>集成了。很难想象没有这两个IDE的<code>插件</code>我要怎样工作。</p>
-
-<p>其实除此之外，日常工作中这样的事情每时每刻都在发生：</p>
-
-<ol>
-<li>Ansible里如何创建一个给用户<code>robot</code>读写权限的目录？</li>
-<li>Python 3中启动简单HTTPServer的命令是？</li>
-<li>Spring Boot的Gradle String是？</li>
-<li>Mongodb中如何为用户<code>robot</code>授权？</li>
-<li>Gulp里一个Task依赖另一个Task怎么写？</li>
-</ol>
-
-
-<p>等等等等，这个列表可以根据你的技术栈，偏向前端/后端的不同而不同，但是相同的是在<code>Google</code>和<code>Stack Overflow</code>上搜索，阅读会浪费很多时间，而这些本来都是可以避免的。</p>
-
-<h3>肌肉记忆</h3>
-
-<p>大脑在对信息存储上有很高级的设计，如果某件事情不值得记忆，大脑会自动过滤掉（比如我们很容易获得的搜索结果）。而对于那些频繁发生，计算结果又不会变化的信息，大脑会将其下放到“更低级别”的神经去记忆。比如各种运动中的肌肉记忆，习武之人梦寐以求的“拳拳服膺”，“不期然而然，莫知之而至”。</p>
-
-<p>这里也有两个小例子：</p>
-
-<h4>一个C语言的小程序</h4>
-
-<p>上周末我买了一个茶轴的机械键盘，打开包装之后我很兴奋，赶紧插在我的笔记本上，打开一个编辑器，心说敲一些代码体验一下。几秒钟后，我发现敲出来的是：</p>
-
-<p>```c</p>
-
-<h1>include &lt;stdio.h></h1>
-
-<h1>include &lt;stdlib.h></h1>
-
-<p>int main(int argc, char *argv[]) {</p>
-
-<pre><code>if(argc != 3) {
-    fprintf(stderr, "Usage: %s ip port\n", argv[0]);
-    return -1;
-}
-
-fprintf(stdout, "Connecting to %s %d\n", argv[1], atoi(argv[2]));
-
-return 0;
-</code></pre>
-
-<p>}
-```</p>
-
-<p>然后在命令行里</p>
-
-<p>```sh
-$ gcc -o hello hello.c
-$ ./hello
-Usage: ./hello ip port</p>
-
-<p>$ ./hello 10.180.1.1 9999
-Connecting to 10.180.1.1 9999
-```</p>
-
-<p>整个过程极为流畅，上一次开发C代码已经是4年多前了。也就是说，我的手指已经记下了所有的这些命令：</p>
-
-<ol>
-<li>Linux下<code>main</code>函数的convention</li>
-<li><code>fprintf</code>的签名</li>
-<li><code>stderr/stdout</code>用法的区分</li>
-<li><code>main</code>函数不同场景的返回值</li>
-<li><code>gcc</code>命令的用法</li>
-</ol>
-
-
-<p>另外一个小例子是<code>vim</code>编辑器。我使用<code>vim</code>已经有很多年了，现在在任何一个Linux服务器上，编辑那些<code>/etc/nginx/nginx.conf</code>之类的配置文件时，手指就会<code>自动</code>的找到快捷键，<code>自动</code>的完成搜索，替换，跳转等等操作。</p>
-
-<h3>刻意练习</h3>
-
-<p>对比这两个例子，一方面我惊讶于自己目前对搜索引擎、<code>Stack Overflow</code>的依赖；一方面惊讶于<code>肌肉记忆力</code>的深远和神奇。结合一下两者，我发现自己的开发效率有望得到很大的提升。</p>
-
-<p>比如上面列出的那些略显尴尬的问题，如果我的手指可以<code>自动</code>的敲出这些答案，那么节省下的搜索、等待、阅读的时间就可以用来干别的事情，比如跑步啊，骑车啊，去驾校学车被教练骂啊等等，总之，去过自己的生活。</p>
-
-<p>这方面的书籍，博客都已经有很多，比如我们在ThoughtWorks University里实践的<code>Code Kata</code>，<code>JavaScript Dojo</code>，<code>TDD Dojo</code>之类，都已经证明其有效性。</p>
-
-<p>如果你打算做一些相关的练习，从<code>Kata</code>开始是一个不错的选择。每个<code>Kata</code>都包含一个简单的编程问题，你需要不断的去练习它（同一个题目做20遍，50遍等）。前几次你是在解决问题本身，慢慢就会变成在审视自己的编程习惯，发现并改进（比如快捷键的使用，语法的熟悉程度等等），这样在实际工作中你会以外的发现自己的速度变快了，而且对于重构的信心会变大很多。其实道理也很简单：如果你总是赶着deadline来完成任务，怎么会有时间来做优化呢？</p>
-
-<p>这里有一些参考资料和<code>Kata</code>的题目，可供参考：</p>
-
-<ul>
-<li><a href="https://sites.google.com/site/steveyegge2/practicing-programming">Practicing Programming</a></li>
-<li><a href="https://blog.codinghorror.com/the-ultimate-code-kata/">The Ultimate Code Kata</a></li>
-<li><a href="http://codekata.com/">一些Kata的题目</a></li>
-</ul>
+    <title type="html"><![CDATA[Thoughtworks Immersion Day 3]]></title>
+    <link href="http://abruzzi.github.com/2012/08/thoughtworks-immersion-day-3/"/>
+    <updated>2012-08-02T00:00:00+08:00</updated>
+    <id>http://abruzzi.github.com/2012/08/thoughtworks-immersion-day-3</id>
+    <content type="html"><![CDATA[<p><p>早上的热身活动中，我们玩了这样一个游戏：6个人一组坐成一个环，每个人在卡片上写下一句话(或者诗词等)，然后交给下一个人A，A将这句话用图像表达出来，然后传递给下下一个人B，B又根据图像把文字还原出来，交给自己的下一个，依次循环，到最后，你会拿到你自己写的卡，和你的后续们翻译的结果，整个过程中不许讨论。</p> <p><a href="http://abruzzi.github.com/images/2012/08/2012-07-27-09.42.10.jpg"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="2012-07-27 09.42.10" border="0" alt="2012-07-27 09.42.10" src="http://abruzzi.github.com/images/2012/08/2012-07-27-09.42.10_thumb.jpg" width="644" height="484" /></a></p> <p>可以看出，仅仅基于“内容”的交流，很难让对方明白你要表达的意思。日常的沟通中，除了最基本的“内容”之外，我们还采用大量的诸如肢体语言，眼神，语调等等，而我们用以表意内容的仅占信息量的7%。事实上，经常有这样的体验，面对面的交流会非常的容易，即使是外语交流也是这样。另一个体验就是我们通过IM聊天的时候，总是会使用表情，标点符号等来使得意思更好的传递。</p> <p>最后一个环节是如何Feedback，<a href="http://www.thoughtworks.com/">Thoughtworks</a>长期以来形成了这样一种机制：你可以给公司的任何同事回馈，比如你的pair在和你结对的时候不注意措辞，某些同事的某些行为令你不舒服等等。这种机制鼓励大家互相促进，增加交流。很多时候，我们很难发现自己身上的问题，但是很容易发现别人的问题，这种feedback机制就可以快速使得自己发现自己的不足，并快速的消除隔阂，更加愉快的投入学习工作中。</p> <p>这里有一些应该注意的地方：</p> <ol> <li>提出Feedback时，要尽量的具体，笼统的描述对当事人没有任何的好处</li> <li>不要对别人的信仰，价值观等方面提出开发，而应局限在行为上</li> <li>Feedback也要注意方式</li></ol> <p>通常可以使用这样的模式：</p> <ol> <li>Ask for permission (Do you have any free time?)</li> <li>One to one</li> <li>I see/hear/smell(<img style="border-bottom-style: none; border-left-style: none; border-top-style: none; border-right-style: none" class="wlEmoticon wlEmoticon-smile" alt="Smile" src="http://abruzzi.github.com/images/2012/08/wlEmoticon-smile.png" />) something</li> <li>And I think/feel it's ……</li> <li>What do you think?</li></ol> <p>不论怎么说，feedback帮助我们快速发现问题，如果有人给feedback，请以开放的态度来对待，并感谢他/她。</p> <p>三天时间很短，但是确实学到了很多的东西。回来后跟<a href="http://www.iamhukai.com/">胡凯</a>聊的时候，他告诉我global的TWI已经取消了，虽然在工作日做这样的培训会有较大的开销，但是公司还是愿意负担这样的成本，因为公司觉得很有必要让我们新入职的社招人员进行一下不同的文化上的冲击。</p></p>
 
 ]]></content>
   </entry>

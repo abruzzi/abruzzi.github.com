@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: testing | I code it]]></title>
+  <title><![CDATA[Category: Testing | I code it]]></title>
   <link href="http://abruzzi.github.com/category/testing/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-08-21T22:29:08+08:00</updated>
+  <updated>2018-01-13T16:15:54+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,385 +14,587 @@
 
   
   <entry>
-    <title type="html"><![CDATA[前后端分离了，然后呢？]]></title>
-    <link href="http://abruzzi.github.com/2015/06/whats-next-after-separate-frontend-and-backend/"/>
-    <updated>2015-06-22T21:29:00+08:00</updated>
-    <id>http://abruzzi.github.com/2015/06/whats-next-after-separate-frontend-and-backend</id>
-    <content type="html"><![CDATA[<h3>前言</h3>
+    <title type="html"><![CDATA[微服务场景下的自动化测试]]></title>
+    <link href="http://abruzzi.github.com/2016/10/testing-in-microservice-context/"/>
+    <updated>2016-10-01T18:49:00+08:00</updated>
+    <id>http://abruzzi.github.com/2016/10/testing-in-microservice-context</id>
+    <content type="html"><![CDATA[<h2>新的挑战</h2>
 
-<p>前后端分离已经是业界所共识的一种开发/部署模式了。所谓的前后端分离，并<strong>不是</strong>传统行业中的按部门划分，一部分人纯做前端（HTML/CSS/JavaScript/Flex），另一部分人纯做后端，因为这种方式是<strong>不工作</strong>的：比如很多团队采取了后端的模板技术（JSP, FreeMarker, ERB等等），前端的开发和调试需要一个后台Web容器的支持，从而无法做到真正的分离（更不用提在部署的时候，由于动态内容和静态内容混在一起，当设计动态静态分流的时候，处理起来非常麻烦）。关于前后端开发的另一个讨论可以<a href="http://icodeit.org/2015/06/do-we-really-short-for-front-end-developer/">参考这里</a>。</p>
+<p>微服务和传统的单块应用相比，在测试策略上，会有一些不太一样的地方。简单来说，在微服务架构中，测试的层次变得更多，而且对环境的搭建要求更高。比如对单块应用，在一个机器上就可以setup出所有的依赖，但是在微服务场景下，由于依赖的服务往往很多，要搭建一个完整的环境非常困难，这对团队的<code>DevOps</code>的能力也有比较高的要求。</p>
 
-<p>即使通过API来解耦前端和后端开发过程，前后端通过<code>RESTFul</code>的接口来通信，前端的静态内容和后端的动态计算分别开发，分别部署，<strong>集成</strong>仍然是一个绕不开的问题 --- 前端/后端的应用都可以独立的运行，但是集成起来却不工作。我们需要花费大量的精力来调试，直到上线前仍然没有人有信心所有的接口都是工作的。</p>
+<p>相对于单块来说，微服务架构具有以下特点：</p>
 
-<h3>一点背景</h3>
+<ul>
+<li>每个微服务在物理上分属不同进程</li>
+<li>服务间往往通过<code>RESTful</code>来集成</li>
+<li>多语言，多数据库，多运行时</li>
+<li>网络的不可靠特性</li>
+<li>不同的团队和交付周期</li>
+</ul>
 
-<p>一个典型的Web应用的布局看起来是这样的：</p>
 
-<p><img src="/images/2015/06/single-backend-resized.png" alt="typical web application" /></p>
+<p>上述的这些微服务环境的特点，决定了在微服务场景中进行测试自然会面临的一些挑战：</p>
 
-<p>前后端都各自有自己的开发流程，构建工具，测试集合等等。前后端仅仅通过接口来编程，这个接口可能是JSON格式的RESTFul的接口，也可能是XML的，重点是后台只负责数据的提供和计算，而完全不处理展现。而前端则负责拿到数据，组织数据并展现的工作。这样结构清晰，关注点分离，前后端会变得相对独立并松耦合。</p>
+<ul>
+<li>服务间依赖关系复杂</li>
+<li>需要为每个不同语言，不同数据库的服务搭建各自的环境</li>
+<li>端到端测试时，环境准备复杂</li>
+<li>网络的不可靠会导致测试套件的不稳定</li>
+<li>团队之间的<code>沟通成本</code></li>
+</ul>
 
-<p>上述的场景还是比较理想，我们事实上在实际环境中会有非常复杂的场景，比如异构的网络，异构的操作系统等等:</p>
 
-<p><img src="/images/2015/06/multiple-backend-resized.png" alt="real word application" /></p>
+<h3>测试的分层</h3>
 
-<p>在实际的场景中，后端可能还会更复杂，比如用C语言做数据采集，然后通过Java整合到一个数据仓库，然后该数据仓库又有一层Web Service，最后若干个这样的Web Service又被一个Ruby的聚合Service整合在一起返回给前端。在这样一个复杂的系统中，后台任意端点的失败都可能阻塞前端的开发流程，因此我们会采用mock的方式来解决这个问题：</p>
+<p>相比于常见的<a href="https://www.mountaingoatsoftware.com/blog/the-forgotten-layer-of-the-test-automation-pyramid">三层测试金字塔</a>，在微服务场景下，这个层次可以被扩展为5层（如果将UI测试单独抽取出来，可以分为六层）。</p>
 
-<p><img src="/images/2015/06/mock-server-resized.png" alt="mock application" /></p>
+<ul>
+<li>单元测试</li>
+<li>集成测试</li>
+<li>组件测试</li>
+<li>契约测试</li>
+<li>端到端测试</li>
+</ul>
 
-<p>这个<code>mock</code>服务器可以启动一个简单的HTTP服务器，然后将一些静态的内容serve出来，以供前端代码使用。这样的好处很多:</p>
+
+<p><img src="/images/2016/10/microservice-testing-zhcn-resized.png" alt="Test layers" /></p>
+
+<p>和测试金字塔的基本原则相同：</p>
 
 <ol>
-<li>前后端开发相对独立</li>
-<li>后端的进度不会影响前端开发</li>
-<li>启动速度更快</li>
-<li>前后端都可以使用自己熟悉的技术栈（让前端的学maven，让后端的用gulp都会很不顺手）</li>
+<li>越往上，越接近业务/最终用户；越往下，越接近开发</li>
+<li>越往上，测试用例越少</li>
+<li>越往上，测试成本越高（越耗时，失败时的信息越模糊，越难跟踪）</li>
 </ol>
 
 
-<p>但是当<strong>集成</strong>依然是一个令人头疼的难题。我们往往在集成的时候才发现，本来协商的数据结构变了：<code>deliveryAddress</code>字段本来是一个字符串，现在变成数组了（业务发生了变更，系统现在可以支持多个快递地址）；<code>price</code>字段变成字符串，协商的时候是<code>number</code>；用户邮箱地址多了一个层级等等。这些变动在所难免，而且时有发生，这会花费大量的调试时间和集成时间，更别提修改之后的回归测试了。</p>
+<h4>单元测试</h4>
 
-<p>所以仅仅使用一个静态服务器，然后提供<code>mock</code>数据是远远不够的。我们需要的<code>mock</code>应该还能做到：</p>
+<p>单元测试，即每个微服务内部，对于领域对象，领域逻辑的测试。它的隔离性比较高，无需其他依赖，执行速度较快。</p>
 
-<ol>
-<li>前端依赖指定格式的mock数据来进行UI开发</li>
-<li>前端的开发和<strong>测试</strong>都基于这些mock数据</li>
-<li>后端产生指定格式的mock数据</li>
-<li>后端需要测试来确保生成的mock数据正是前端需要的</li>
-</ol>
-
-
-<p>简而言之，我们需要商定一些契约，并将这些契约作为<strong>可以被测试</strong>的中间格式。然后前后端都需要有测试来使用这些契约。一旦契约发生变化，则另一方的测试会失败，这样就会驱动双方协商，并降低集成时的浪费。</p>
-
-<p>一个实际的场景是：前端发现已有的某个契约中，缺少了一个<code>address</code>的字段，于是就在契约中添加了该字段。然后在UI上将这个字段正确的展现了（当然还设置了字体，字号，颜色等等）。但是后台生成该契约的服务并没有感知到这一变化，当运行生成契约部分测试（后台）时，测试会失败了 --- 因为它并没有生成这个字段。于是后端工程师就找前端来商量，了解业务逻辑之后，他会修改代码，并保证测试通过。这样，当集成的时候，就不会出现UI上少了一个字段，但是谁也不知道是前端问题，后端问题，还是数据库问题等。</p>
-
-<p>而且实际的项目中，往往都是多个页面，多个API，多个版本，多个团队同时进行开发，这样的契约会降低非常多的调试时间，使得集成相对平滑。</p>
-
-<p>在实践中，契约可以定义为一个JSON文件，或者一个XML的payload。只需要保证前后端<strong>共享同一个契约集合</strong>来做测试，那么集成工作就会从中受益。一个最简单的形式是：提供一些静态的<code>mock</code>文件，而前端所有发往后台的请求都被某种机制拦截，并转换成对该静态资源的请求。</p>
+<p>对于业务规则：</p>
 
 <ol>
-<li><a href="https://github.com/dreamhead/moco">moco</a>，基于Java</li>
-<li><a href="http://wiremock.org/index.html">wiremock</a>，基于Java</li>
-<li><a href="http://www.sinatrarb.com/">sinatra</a>，基于Ruby</li>
+<li>商用软件需要License才可以使用，License有时间限制</li>
+<li>需要License的软件在到期之前，系统需要发出告警</li>
 </ol>
 
-
-<p>看到<code>sinatra</code>被列在这里，可能熟悉<code>Ruby</code>的人会反对：它可是一个<code>后端</code>全功能的的程序库啊。之所以列它在这里，是因为<code>sinatra</code>提供了一套简洁优美的<code>DSL</code>，这个<code>DSL</code>非常契合<code>Web</code>语言，我找不到更漂亮的方式来使得这个<code>mock server</code>更加易读，所以就采用了它。</p>
-
-<h3>一个例子</h3>
-
-<p>我们以这个应用为示例，来说明如何在前后端分离之后，保证代码的质量，并降低集成的成本。这个应用场景很简单：所有人都可以看到一个条目列表，每个登陆用户都可以选择自己喜欢的条目，并为之加星。加星之后的条目会保存到用户自己的<code>个人中心</code>中。用户界面看起来是这样的：</p>
-
-<p><img src="/images/2015/06/bookmarks-resized.png" alt="bookmarks" /></p>
-
-<p>不过为了专注在我们的中心上，我去掉了诸如登陆，个人中心之类的页面，假设你是一个已登录用户，然后我们来看看如何编写测试。</p>
-
-<h4>前端开发</h4>
-
-<p>根据通常的做法，前后端分离之后，我们很容易<code>mock</code>一些数据来自己测试：</p>
-
-<p>```json
-[</p>
-
-<pre><code>{
-    "id": 1,
-    "url": "http://abruzzi.github.com/2015/03/list-comprehension-in-python/",
-    "title": "Python中的 list comprehension 以及 generator",
-    "publicDate": "2015年3月20日"
-},
-{
-    "id": 2,
-    "url": "http://abruzzi.github.com/2015/03/build-monitor-script-based-on-inotify/",
-    "title": "使用inotify/fswatch构建自动监控脚本",
-    "publicDate": "2015年2月1日"
-},
-{
-    "id": 3,
-    "url": "http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery/",
-    "title": "使用underscore.js构建前端应用",
-    "publicDate": "2015年1月20日"
-}
-</code></pre>
-
-<p>]
-```</p>
-
-<p>然后，一个可能的方式是通过请求这个json来测试前台：</p>
-
-<p>```js
-$(function() {</p>
-
-<pre><code>$.get('/mocks/feeds.json').then(function(feeds) {
-    var feedList = new Backbone.Collection(extended);
-    var feedListView = new FeedListView(feedList);
-
-    $('.container').append(feedListView.render());
-});
-</code></pre>
-
-<p>});
-```</p>
-
-<p>这样当然是可以工作的，但是这里发送请求的<code>url</code>并不是最终的，当集成的时候我们又需要修改为真实的<code>url</code>。一个简单的做法是使用<code>Sinatra</code>来做一次url的转换：</p>
-
-<p>```rb
-get '/api/feeds' do</p>
-
-<pre><code>content_type 'application/json'
-File.open('mocks/feeds.json').read
-</code></pre>
-
-<p>end
-```</p>
-
-<p>这样，当我们和实际的服务进行集成时，只需要连接到那个服务器就可以了。</p>
-
-<p>注意，我们现在的核心是<code>mocks/feeds.json</code>这个文件。这个文件现在的角色就是一个契约，至少对于前端来说是这样的。紧接着，我们的应用需要渲染<code>加星</code>的功能，这就需要另外一个契约：找出当前用户加星过的所有条目，因此我们加入了一个新的契约：</p>
-
-<p>```json
-[</p>
-
-<pre><code>{
-    "id": 3,
-    "url": "http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery/",
-    "title": "使用underscore.js构建前端应用",
-    "publicDate": "2015年1月20日"
-}
-</code></pre>
-
-<p>]
-```</p>
-
-<p>然后在<code>sinatra</code>中加入一个新的映射：</p>
-
-<p>```rb
-get '/api/fav-feeds/:id' do</p>
-
-<pre><code>content_type 'application/json'
-File.open('mocks/fav-feeds.json').read
-</code></pre>
-
-<p>end
-```</p>
-
-<p>通过这两个请求，我们会得到两个列表，然后根据这两个列表的交集来绘制出所有的星号的状态（有的是空心，有的是实心）：</p>
-
-<p>```js
-$.when(feeds, favorite).then(function(feeds, favorite) {</p>
-
-<pre><code>var ids = _.pluck(favorite[0], 'id');
-var extended = _.map(feeds[0], function(feed) {
-    return _.extend(feed, {status: _.includes(ids, feed.id)});
-});
-
-var feedList = new Backbone.Collection(extended);
-var feedListView = new FeedListView(feedList);
-
-$('.container').append(feedListView.render());
-</code></pre>
-
-<p>});
-```</p>
-
-<p>剩下的一个问题是当点击红心时，我们需要发请求给后端，然后更新红心的状态：</p>
-
-<p>```js
-toggleFavorite: function(event) {</p>
-
-<pre><code>event.preventDefault();
-var that = this;
-$.post('/api/feeds/'+this.model.get('id')).done(function(){
-    var status = that.model.get('status');
-    that.model.set('status', !status);
-});
-</code></pre>
-
-<p>}
-```</p>
-
-<p>这里又多出来一个请求，不过使用Sinatra我们还是可以很容易的支持它：</p>
-
-<p><code>rb
-post '/api/feeds/:id' do
-end
-</code></p>
-
-<p>可以看到，在没有后端的情况下，我们一切都进展顺利 --- 后端甚至还没有开始做，或者正在由一个进度比我们慢的团队在开发，不过无所谓，他们不会影响我们的。</p>
-
-<p>不仅如此，当我们写完前端的代码之后，可以做一个<code>End2End</code>的测试。由于使用了mock数据，免去了数据库和网络的耗时，这个<code>End2End</code>的测试会运行的非常快，并且它确实起到了端到端的作用。这些测试在最后的集成时，还可以用来当UI测试来运行。所谓一举多得。</p>
-
-<p>```rb</p>
-
-<h1>encoding: utf-8</h1>
-
-<p>require 'spec_helper'</p>
-
-<p>describe 'Feeds List Page' do</p>
-
-<pre><code>let(:list_page) {FeedListPage.new}
-
-before do
-    list_page.load
-end
-
-it 'user can see a banner and some feeds' do
-    expect(list_page).to have_banner
-    expect(list_page).to have_feeds
-end
-
-it 'user can see 3 feeds in the list' do
-    expect(list_page.all_feeds).to have_feed_items count: 3
-end
-
-it 'feed has some detail information' do
-    first = list_page.all_feeds.feed_items.first
-    expect(first.title).to eql("Python中的 list comprehension 以及 generator")
-end
-</code></pre>
-
-<p>end
-```</p>
-
-<p><img src="/images/2015/06/e2e-resized.png" alt="end 2 end" /></p>
-
-<p>关于如何编写这样的测试，可以参考之前写的<a href="http://icodeit.org/2015/01/page-object-with-site-prism/">这篇文章</a>。</p>
-
-<h4>后端开发</h4>
-
-<p>我在这个示例中，后端采用了<code>spring-boot</code>作为示例，你应该可以很容易将类似的思路应用到Ruby或者其他语言上。</p>
-
-<p>首先是请求的入口，<code>FeedsController</code>会负责解析请求路径，查数据库，最后返回JSON格式的数据。</p>
-
-<p>```java
-@Controller
-@RequestMapping("/api")
-public class FeedsController {</p>
-
-<pre><code>@Autowired
-private FeedsService feedsService;
-
-@Autowired
-private UserService userService;
-
-public void setFeedsService(FeedsService feedsService) {
-    this.feedsService = feedsService;
-}
-
-public void setUserService(UserService userService) {
-    this.userService = userService;
-}
-
-@RequestMapping(value="/feeds", method = RequestMethod.GET)
-@ResponseBody
-public Iterable&lt;Feed&gt; allFeeds() {
-    return feedsService.allFeeds();
-}
-
-
-@RequestMapping(value="/fav-feeds/{userId}", method = RequestMethod.GET)
-@ResponseBody
-public Iterable&lt;Feed&gt; favFeeds(@PathVariable("userId") Long userId) {
-    return userService.favoriteFeeds(userId);
-}
-</code></pre>
-
-<p>}
-```</p>
-
-<p>具体查询的细节我们就不做讨论了，感兴趣的可以在文章结尾处找到代码库的链接。那么有了这个Controller之后，我们如何测试它呢？或者说，如何让契约变得实际可用呢？</p>
-
-<p><code>spring-test</code>提供了非常优美的DSL来编写测试，我们仅需要一点代码就可以将契约用起来，并实际的<strong>监督</strong>接口的修改：</p>
-
-<p>```java
-private MockMvc mockMvc;
-private FeedsService feedsService;
-private UserService userService;</p>
-
-<p>@Before
-public void setup() {</p>
-
-<pre><code>feedsService = mock(FeedsService.class);
-userService = mock(UserService.class);
-
-FeedsController feedsController = new FeedsController();
-feedsController.setFeedsService(feedsService);
-feedsController.setUserService(userService);
-
-mockMvc = standaloneSetup(feedsController).build();
-</code></pre>
-
-<p>}
-```</p>
-
-<p>建立了mockmvc之后，我们就可以编写Controller的单元测试了：</p>
 
 <p>```java
 @Test
-public void shouldResponseWithAllFeeds() throws Exception {</p>
+public void license_should_expire_after_the_evaluation_period() {</p>
 
-<pre><code>when(feedsService.allFeeds()).thenReturn(Arrays.asList(prepareFeeds()));
+<pre><code>LocalDate fixed = getDateFrom("2015-09-03");
+License license = new License(fixed.toDate(), 1);
 
-mockMvc.perform(get("/api/feeds"))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType("application/json;charset=UTF-8"))
-        .andExpect(jsonPath("$", hasSize(3)))
-        .andExpect(jsonPath("$[0].publishDate", is(notNullValue())));
+boolean isExpiredOn = license.isExpiredOn(fixed.plusYears(1).plusDays(1).toDate());
+assertTrue(isExpiredOn);
 </code></pre>
 
-<p>}
-```</p>
-
-<p>当发送<code>GET</code>请求到<code>/api/feeds</code>上之后，我们期望返回状态是200，然后内容是<code>application/json</code>。然后我们预期返回的结果是一个长度为3的数组，然后数组中的第一个元素的<code>publishDate</code>字段不为空。</p>
-
-<p>注意此处的<code>prepareFeeds</code>方法，事实上它会去加载<code>mocks/feeds.json</code>文件 --- 也就是前端用来测试的mock文件：</p>
-
-<p>```java
-private Feed[] prepareFeeds() throws IOException {</p>
-
-<pre><code>URL resource = getClass().getResource("/mocks/feeds.json");
-ObjectMapper mapper = new ObjectMapper();
-return mapper.readValue(resource, Feed[].class);
-</code></pre>
-
-<p>}
-```</p>
-
-<p>这样，当后端修改<code>Feed</code>定义（添加/删除/修改字段），或者修改了mock数据等，都会导致测试失败；而前端修改mock之后，也会导致测试失败 --- 不要惧怕失败 --- 这样的失败会促进一次协商，并驱动出最终的service的契约。</p>
-
-<p>对应的，测试<code>/api/fav-feeds/{userId}</code>的方式类似：</p>
-
-<p>```java</p>
+<p>}</p>
 
 <p>@Test
-public void shouldResponseWithUsersFavoriteFeeds() throws Exception {</p>
+public void license_should_not_expire_before_the_evaluation_period() {</p>
 
-<pre><code>when(userService.favoriteFeeds(any(Long.class)))
-    .thenReturn(Arrays.asList(prepareFavoriteFeeds()));
+<pre><code>LocalDate fixed = getDateFrom("2015-09-05");
+License license = new License(fixed.toDate(), 1);
 
-mockMvc.perform(get("/api/fav-feeds/1"))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType("application/json;charset=UTF-8"))
-        .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].title", is("使用underscore.js构建前端应用")))
-        .andExpect(jsonPath("$[0].publishDate", is(notNullValue())));
+boolean isExpiredOn = license.isExpiredOn(fixed.plusYears(1).minusDays(1).toDate());
+assertFalse(isExpiredOn);
 </code></pre>
 
 <p>}
 ```</p>
 
-<h3>总结</h3>
+<p>上面这个例子就是一个非常典型的单元测试，它和其他组件基本上没有依赖。即使要测试的对象对其他类有依赖，我们会Stub/Mock的手段来将这些依赖消除，比如使用<a href="http://mockito.org/">mockito</a>/<a href="https://github.com/jayway/powermock">PowerMock</a>。</p>
 
-<p>前后端分离是一件容易的事情，而且团队可能在短期可以看到很多好处，但是如果不认真处理集成的问题，分离反而可能会带来更长的集成时间。通过面向契约的方式来组织各自的测试，可以带来很多的好处：更快速的<code>End2End</code>测试，更平滑的集成，更安全的分离开发等等。</p>
+<h4>集成测试</h4>
 
-<h3>代码</h3>
+<p>系统内模块（一个模块对其周边的依赖项）间的集成，系统间的集成都可以归类为集成测试。比如</p>
 
-<p>前后端的代码我都放到了Gitbub上，感兴趣的可以clone下来自行研究：</p>
+<ul>
+<li>数据库访问模块与数据库的集成</li>
+<li>对外部<code>service</code>依赖的测试，比如对第三方支付，通知等服务的集成</li>
+</ul>
+
+
+<p>集成测试强调模块和外部的交互的验证，在集成测试时，通常会涉及到外部的组件，比如数据库，第三方服务。这时候需要尽可能真实的去与外部组件进行交互，比如使用和真实环境相同类型的数据库，采用独立模式（Standalone）的<a href="http://wiremock.org/">WireMock</a>来启动外部依赖的RESTful系统。</p>
+
+<p>通常会用来做模拟外部依赖工具包括：</p>
+
+<ul>
+<li><a href="http://wiremock.org/">WireMock</a></li>
+<li><a href="http://www.mbtest.org/">mountebank</a></li>
+</ul>
+
+
+<p>其中，mountbank还支持Socket级别的Mock，可以在非HTTP协议的场景中使用。</p>
+
+<p><img src="/images/2016/10/1905-funcional-teamwork.jpg" alt="Integration Test" /></p>
+
+<h4>组件测试</h4>
+
+<p>贯穿应用层和领域层的测试。不过通常来说，这部分的测试不会访问真实的外部数据源，而是使用同<code>schema</code>的内存数据库，而且对外部service的访问也会使用Stub的方式：</p>
+
+<ul>
+<li>内存数据库</li>
+<li>Stub外部服务（<a href="http://wiremock.org/">WireMock</a>）</li>
+<li><a href="https://github.com/rest-assured/rest-assured">RestAssured</a></li>
+</ul>
+
+
+<p>比如使用<a href="http://www.h2database.com/html/main.html">h2</a>来做内存数据库，并且自动生成schema。使用WireMock来Stub外部的服务等。</p>
+
+<p>```java
+@Test
+public void should_create_user() {</p>
+
+<pre><code>given().contentType(ContentType.JSON).body(prepareUser()).
+        when().post("/users").
+        then().statusCode(201).
+        body("id", notNullValue()).
+        body("name", is("Juntao Qiu")).
+        body("email", is("juntao.qiu@gmail.com"));
+</code></pre>
+
+<p>}</p>
+
+<p>private User prepareUser() {</p>
+
+<pre><code>User user = new User();
+user.setName("Juntao Qiu");
+user.setEmail("juntao.qiu@gmail.com");
+user.setPassword("password");
+return user;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>如果使用Spring，还可以通过<code>profile</code>来切换不同的数据库。比如下面这个例子中，默认的profile会连接数据库<code>jigsaw</code>，而<code>integration</code>的profile会连接<code>jigsaw_test</code>数据库：</p>
+
+<p>```
+spring:
+  datasource:</p>
+
+<pre><code>url: jdbc:mysql://localhost:3306/jigsaw
+driver-class-title: com.mysql.jdbc.Driver
+username: root
+password: password
+</code></pre>
+
+<hr />
+
+<p>spring:
+  profiles: integration</p>
+
+<p>  datasource:</p>
+
+<pre><code>url: jdbc:mysql://localhost:3306/jigsaw_test
+driver-class-title: com.mysql.jdbc.Driver
+username: root
+password: password
+</code></pre>
+
+<p>```</p>
+
+<p>组件测试会涉及到的组件包括：</p>
+
+<ul>
+<li>URL路由</li>
+<li>序列化与反序列化</li>
+<li>应用对领域层的访问</li>
+<li>领域层对数据的访问</li>
+<li>数据库访问层</li>
+</ul>
+
+
+<h5>前后端分离</h5>
+
+<p>除了后端的测试之外，在目前的前后端分离场景下，前端的应用越来越复杂，在这种情况下，前端的组件测试也是一个测试的重点。</p>
+
+<p>一个前端应用至少包括了这样一些组件：</p>
+
+<ul>
+<li>前端路由</li>
+<li>模板</li>
+<li>前端的MVVM</li>
+<li>拦截器</li>
+<li>事件的响应</li>
+</ul>
+
+
+<p>要确保这些组件组合起来还能如预期的执行，相关测试必不可少。<a href="http://icodeit.org/2015/06/whats-next-after-separate-frontend-and-backend/">这篇文章</a>详细讨论了前后端分离之后的测试及开发实践。</p>
+
+<h4>契约测试</h4>
+
+<p>在微服务场景中，服务之间会有很多依赖关系。根据<code>消费者驱动契约</code>，我们可以将服务分为消费者端和生产者端，通常消费者自己会定义需要的数据格式以及交互细节，并生成一个契约文件。然后生产者根据自己的契约来实现自己的逻辑，并在持续集成环境中持续验证。</p>
+
+<p><a href="https://github.com/realestate-com-au/pact">Pact</a>已经基本上是<code>消费者驱动契约</code>（Consumer Driven Contract）的事实标准了。它已经有多种语言的实现，Java平台的可以使用<code>pact-jvm</code>及相应的<code>maven</code>/<code>gradle</code>插件进行开发。</p>
+
+<ul>
+<li><a href="https://github.com/realestate-com-au/pact">pact</a>/<a href="https://github.com/DiUS/pact-jvm">pact-jvm</a></li>
+<li><a href="https://github.com/bethesque/pact_broker">pact-broker</a></li>
+</ul>
+
+
+<p><img src="/images/2016/10/pactExample-resized.png" alt="pact example" /></p>
+
+<p>(图片来源：<a href="http://techblog.newsweaver.com/why-should-you-use-consumer-driven-contracts-for-microservices-integration-tests/">Why you should use Consumer-Driven Contracts for Microservice integration tests</a>)</p>
+
+<p>通常在工程实践上，当消费者根据需要生成了契约之后，我们会将契约上传至一个公共可访问的地址，然后生产者在执行时会访问这个地址，并获得最新版本的契约，然后对着这些契约来执行相应的验证过程。</p>
+
+<p>一个典型的契约的片段是这样的（使用pact）：</p>
+
+<p>```json
+"interactions": [</p>
+
+<pre><code>{
+    "description": "Project Service",
+    "request": {
+        "method": "GET",
+        "path": "/projects/11046"
+    },
+    "response": {
+        "status": 200,
+        "headers": {
+            "Content-Type": "application/json; charset=UTF-8"
+        },
+        "body": {
+            "project-id": "004c97"
+        },
+        "matchingRules": {
+            "$.body.project-id": {
+                "match": "type"
+            }
+        }
+    },
+    "providerState": "project service"
+}
+</code></pre>
+
+<p>]
+```</p>
+
+<h4>端到端测试</h4>
+
+<p>端到端测试是整个微服务测试中最困难的，一个完整的环境的创建于维护可能需要花费很大的经历，特别是当有多个不同的团队在独立开发的场景下。</p>
+
+<p>另一方面，从传统的测试金字塔来看，端到端测试应该覆盖那些业务价值最高的Happy Path。也就是说，端到端测试并不关注异常场景，甚至大部分的业务场景都不考虑。要做到这一点，需要在设计测试时，从最终用户的角度来考虑，通过<code>用户画像</code>和<code>User Journey</code>来确定测试场景。</p>
+
+<p>在端到端测试中，最重要的反而不是测试本身，而是环境的自动化能力。比如可以通过一键就可以将整个环境<code>provision</code>出来：</p>
+
+<ul>
+<li>安装和配置相关依赖</li>
+<li>自动将测试数据Feed到数据库</li>
+<li>自动部署</li>
+<li>服务的自动重启</li>
+</ul>
+
+
+<p>随着容器技术和容器的编排技术的成熟，这部分工作已经可以比较好的自动化，依赖的工具包括：</p>
+
+<ul>
+<li><a href="https://www.docker.com/">Docker</a></li>
+<li><a href="http://rancher.com/">Rancher</a></li>
+</ul>
+
+
+<p>一个典型的流程是：</p>
 
 <ol>
-<li><a href="https://github.com/abruzzi/bookmarks-frontend">bookmarks-frontend</a></li>
-<li><a href="https://github.com/abruzzi/bookmarks-server">bookmarks-server</a></li>
+<li>搭建持续发布流水线</li>
+<li>应用代码的每一次提交都可以构建出docker镜像</li>
+<li>将docker镜像发布在内部的docker-hub上</li>
+<li>触发部署任务，通过rancher的upgrade命令将新的镜像发布</li>
+<li>执行端到端测试套件</li>
 </ol>
 
+
+<p>端到端测试还可以细分为两个不同的场景：</p>
+
+<ul>
+<li>没有用户交互的场景，如一系列的微服务组成了一个业务API</li>
+<li>有用户交互的场景</li>
+</ul>
+
+
+<h5>UI测试</h5>
+
+<p>最顶层的UI测试跟传统方式的UI测试并无二致。我们可以使用BDD与实例化需求（<a href="https://books.gojko.net/specification-by-example/">Specification By Example</a>）的概念，从用户使用的角度来描述需求，以及相关的验收条件。这里我们会使用WebDriver来驱动浏览器，并通过诸如<a href="https://github.com/jnicklas/capybara">Capybara</a>等工具来模拟用户的操作。</p>
+
+<ul>
+<li>BDD工具：<a href="https://cucumber.io/">Cucumber</a></li>
+<li>Web应用验收测试工具：<a href="https://github.com/jnicklas/capybara">Capybara</a></li>
+<li>Page Object的DSL工具：<a href="https://github.com/natritmeyer/site_prism">Site_prism</a></li>
+</ul>
+
+
+<h3>扩展阅读</h3>
+
+<ul>
+<li><a href="http://www.infoq.com/cn/articles/QA-in-Production-practice">产品环境下的QA</a></li>
+<li><a href="http://insights.thoughtworkers.org/bdd/">醒醒吧少年，只用Cucumber不能帮助你BDD</a></li>
+<li><a href="http://martinfowler.com/articles/microservice-testing/">Testing Strategies in a Microservice Architecture</a></li>
+<li><a href="http://icodeit.org/2015/01/page-object-with-site-prism/">编写体面的UI测试</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[测试自动化后，我们还需要QA吗？]]></title>
+    <link href="http://abruzzi.github.com/2016/09/what-should-qa-do-in-a-agile-team/"/>
+    <updated>2016-09-24T23:43:00+08:00</updated>
+    <id>http://abruzzi.github.com/2016/09/what-should-qa-do-in-a-agile-team</id>
+    <content type="html"><![CDATA[<h2>QA的职责</h2>
+
+<p>我们先讨论一下传统的瀑布模型下QA是如何工作的，其中最主要的问题是什么；然后作为对比，我们来看看在敏捷团队里QA又是如何工作的，工作重点又是什么；最后，我们详细看一看在新的职责下，QA应该如何做。</p>
+
+<h3>瀑布开发模型</h3>
+
+<p>即使在今天，在很多企业中，瀑布模型仍然是主流。每一个需求都需要经过分析，设计，开发，测试，上线部署，运维等阶段。虽然一些企业已经在实施<code>敏捷开发</code>，比如项目/产品以迭代的方式运作，也有诸如每日站会，代码检视等敏捷实践，但是如果仔细审视，你会发现其实<em>开发模式</em>骨子里还是瀑布：按照软件组件划分的部门结构（详见<a href="https://en.wikipedia.org/wiki/Conway%27s_law">康威定律</a>），按照职能划分的团队（开发和测试分属不同部门），过长的反馈周期，永远无法摆脱的集成难题等等。</p>
+
+<p>随着软件变得越来越复杂，团队里没有任何一个人可以说出系统是如何运作的，也不知道最终用户是谁，以及最终用户会以何种方式来使用最终的软件。</p>
+
+<p>更糟糕的是，按照职能划分的团队在物理上都是隔离的，比如独立的测试部门，独立的运维部门，整日忙碌而难以预约到档期的业务人员，当然还有经常疲于交付，无处吐槽的<em>苦逼</em>开发。由于这些隔离，信息的反馈周期会非常长，一个本来很容易修复的缺陷可能在4周之后才可能被另一个部门的测试发现，然后通过复杂的工作流（比如某种形式的缺陷追踪系统）流到开发那里，而开发可能还在拼命的完成早就应该交付的功能，从而形成恶性循环。</p>
+
+<h3>瀑布模式中的QA</h3>
+
+<p>在这样的环境中，QA们能做的事情非常有限。在需求开始时会他们参加需求澄清的会议，制定一些<code>测试计划</code>，然后进行测试用例的设计。有的企业会用诸如Excel之类的工具来记录这些用例。这些写在Excel里的，<code>死</code>的用例用处非常有限。而最大的问题在于：它们无法<code>自动化执行</code>。另外，在实际软件开发中，需求总是会经常发生变化，需求的优先级也会有调整，然后这些记录在Excel中的<code>死</code>的用例会很快过期，变得无人问津。</p>
+
+<p>除此之外，QA中的有些成员会使用工具来录制一些UI测试的场景，然后在每个新版本出来之后进行回放即可。然而，当UI发生一点变化之后，这些自动化的用例就会失效：比如<code>HTML</code>片段中元素位置的调整，<code>JavaScript</code>的异步调用超时等等。</p>
+
+<p>显然，这种单纯以黑盒的形式来<strong>检查功能点</strong>的测试方式是不工作的，要真正有效的提升软件质量，仅仅通过<strong>事后检查</strong>是远远不够的，软件的质量也应该内建于软件之中。QA的工作也应该是一个贯穿软件生命周期的活动，从商业想法，到真实上线，这其中的所有环节，都应该有QA的参与。</p>
+
+<h3>系统思考</h3>
+
+<p>如果不从一个系统的角度来思考软件质量，就无法真正构建出健壮的、让业务和团队都有信心的软件系统。<strong><em>质量从来都不只是QA的职责，而是整个团队的职责。</em></strong></p>
+
+<p>关于软件质量，一个根深蒂固的误解是：缺陷在开发过程中被引入，然后在测试阶段被发现，最后在QA和开发的来来回回的撕扯中被解决（或者数量被大规模降低），最后在生产环境中，就只会有很少的，优先级很低的缺陷。</p>
+
+<p>然而事实上，很多需求就没有仔细分析，业务价值不很确定，验收条件模糊，流入开发后又会引入一些代码级别的错误，以及业务规则上的缺陷，测试阶段会漏掉一些功能点，上线之后更是问题百出（网络故障，缓存失效，黑客攻击，操作系统补丁，甚至内存溢出，log文件将磁盘写满等等）。</p>
+
+<p>在一个敏捷团队中，<strong>每个个人都应该对质量负责</strong>，而QA则以自己的丰富经验和独特视角来发掘系统中可能的质量隐患，并帮助团队将这些隐患消除。</p>
+
+<p><img src="/images/2016/09/circle-resized.png" alt="测试职责" /></p>
+
+<p>我在ThoughtWorks的同事<code>Anand Bagmar</code>在他的演讲<a href="http://www.slideshare.net/abagmar/what-is-agile-testing-how-does-automation-help">What is Agile testing- How does automation help?</a>中详细讨论过这部分内容。</p>
+
+<h3>QA到底应该干什么？</h3>
+
+<p>本质上来说，任何软件项目的目标都应该是：<strong>更快地将<code>高质量</code>的软件从想法变成产品</strong>。</p>
+
+<p>将这个大目标细分一下，会得到这样几个子项，即企业需要：</p>
+
+<ul>
+<li>更多的商业回报（发掘业务价值）</li>
+<li>更快的上线时间（做最简单，直接的版本）</li>
+<li>更好的软件质量（质量内嵌）</li>
+<li>更少的资源投入（减少浪费）</li>
+</ul>
+
+
+<p>其实就是传说中的<strong>多、快、好、省</strong>。如果说这是每一个软件项目的目标的话，那么团队里的每一个个人都应该向着这个目标而努力，任何其他形式的工作都可以归类为<code>浪费</code>。用Excel记录那些经常会失效，而且无法自动执行的测试用例是浪费，会因为页面布局变化而大面积失效的UI测试也是浪费，一个容易修复的缺陷要等到数周之后才被发现也是浪费。</p>
+
+<p>在这个大前提下，我们再来思考QA在团队里应该做什么以及怎么做。</p>
+
+<h3>QA的职责</h3>
+
+<p>Lisa Crispin在<a href="https://book.douban.com/subject/5338399/">《敏捷软件测试》</a>中提到过一个很著名的模型：敏捷测试四象限。这个模型是QA制定测试策略时的一个重要参考：</p>
+
+<p><img src="/images/2016/09/agile-testing-quadrants.png" alt="敏捷软件测试" /></p>
+
+<p>如果按照纵向划分的话，图中的活动，越向上越面向业务；越向下越面向技术。横向划分的话，往左是支撑团队；往右是评价产品。</p>
+
+<p>其实简化一下，QA在团队里的工作，可以分为两大类：</p>
+
+<ul>
+<li>确保我们在<code>正确的</code>交付产品</li>
+<li>确保我们交付了<code>正确的</code>产品</li>
+</ul>
+
+
+<p>根据这个四象限的划分，大部分团队可能都会从Q2起步：QA会和BA，甚至UX一起，从需求分析入手，进行需求分析，业务场景梳理，这时候没有具体的可以被测试的软件代码。不过这并不妨碍<strong>测试</strong>活动，比如一些纸上原型的设计（感谢刘海生供图）：</p>
+
+<p><img src="/images/2016/09/prototype-resized.png" alt="" /></p>
+
+<p>通过这一阶段之后，我们已经有了用户故事，这时候QA需要和开发一起编写用户故事的自动化验收测试。当开发交付一部分功能之后，QA就可以做常规的用户故事测试，几个迭代之后，QA开始进行跨功能需求测试和探索性测试等。根据探索性测试的结果，QA可能会调整测试策略，调整测试优先级，完善测试用例等等。</p>
+
+<p>根据项目的不同，团队可以从不同的象限开始测试策略的制定。事实上，Q1-Q4仅仅是一个编号，与时间、阶段并无关系，Lisa Crispin还专门<a href="http://lisacrispin.com/2011/11/08/using-the-agile-testing-quadrants/">撰文解释</a>过。</p>
+
+<p>关于QA如何在软件分析的上游就介入，然后通过BDD的方式与业务分析师一起产出软件的各种规格描述，并通过实例的方式来帮助整个团队对需求的理解，ThoughtWorks的林冰玉有一篇文章很好的介绍了<a href="http://insights.thoughtworkers.org/when-we-talk-about-bdd/">BDD的正确做法</a>。如果将QA的外延扩展到在线的生产环境，制定合理的测量指标，调整测试策略，强烈推荐林冰玉写的另一篇文章<a href="http://www.jianshu.com/p/20b454a88bdb">产品环境中的QA</a>。</p>
+
+<h4>其他职责</h4>
+
+<p>事实上，软件生命周期中有很多的活动，有很多处于<code>灰色</code>地段。既可以说是应该开发做，又可以说应该QA做，甚至可以推给其他角色（比如OPs）。不过我们知道，一旦涉及角色，人们就再也不会按照<code>全局优化</code>的思路来应对问题了。这种<code>灰色</code>的活动包括：</p>
+
+<ul>
+<li>持续集成的搭建</li>
+<li>测试环境的创建于维护</li>
+<li>UAT上的数据准备</li>
+<li>代码中的测试代码的维护</li>
+<li>测试代码的重构</li>
+</ul>
+
+
+<p>在团队实践中，这些活动我们通常会让QA和开发或者OPs同事一起结对来完成。一方面避免知识孤岛的形成，另一方面在跨角色的工作中，也可以激发出更多不同的思路。</p>
+
+<h3>万能的QA？</h3>
+
+<p>虽然在这些活动中，QA都会参与，但是并不是说团队里只要有一个QA就可以了。QA在参与这些活动时，侧重点还是有很大不同的。</p>
+
+<p>比如需求分析阶段，如果有QA的加入，一些从QA角度可以发现的有明显缺陷的场景，则可以在分析阶段就得到很好的处理。另一方面，尽早介入可以设计出更合理的测试计划（比如哪些功能的优先级比较高，用户更会频繁使用，那么对应的测试比重也会更高）。在Story分析与书写阶段，QA可以帮助写出更加合理的验收条件，既满足业务需求，又可以很好的指导开发。</p>
+
+<p>在和开发一起编写澄清需求时，主要是编写自动化验收测试，而不是实际编写业务逻辑的实现（虽然QA应该参与<code>Code Reivew</code>环节，学习并分享自己的观点）；甚至在上线运维阶段，QA还需要和OPs一起来设计用户数据的采集指标（比如用户访问的关键路径，浏览器版本，地区的区分等），从而制定出新的测试策略。</p>
+
+<h3>扩展阅读</h3>
+
+<ul>
+<li><a href="http://www.slideshare.net/abagmar/what-is-agile-testing-how-does-automation-help">What is Agile testing - How does automation help?</a></li>
+<li><a href="http://insights.thoughtworkers.org/agile-showcase-se7en/">敏捷实践Showcase的七宗罪</a></li>
+<li><a href="http://www.jianshu.com/p/20b454a88bdb">产品环境下的QA</a></li>
+<li><a href="https://book.douban.com/subject/5338399/">《敏捷软件测试》</a></li>
+</ul>
+
+
+<p>P.S. 感谢林冰玉对本文的<code>Review</code>和指导。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[使用Karma运行JavaScript测试]]></title>
+    <link href="http://abruzzi.github.com/2013/10/using-karma-as-the-javascript-test-runner/"/>
+    <updated>2013-10-08T10:36:00+08:00</updated>
+    <id>http://abruzzi.github.com/2013/10/using-karma-as-the-javascript-test-runner</id>
+    <content type="html"><![CDATA[<h3>Karma 简介</h3>
+
+<p>Karma是一个JavaScript的测试运行器。事实上，Karma更是一个测试环境，使用Karma可以很方便的的运行测试(方便到你感觉不到它的实际存在)。</p>
+
+<p>一般的TDD的开发流程为：</p>
+
+<ol>
+<li>编写测试(一个会失败的case)</li>
+<li>运行测试，并看到这个测试失败</li>
+<li>编写代码(足够让测试通过的代码)</li>
+<li>运行测试，并看到测试通过</li>
+<li>重构</li>
+<li>运行测试，并看到测试通过</li>
+</ol>
+
+
+<p>然后<strong>如此循环</strong>，而在前端开发中，很长一段时间，这个流程受限于开发环境，比如添加了一个新的JavaScript源文件，开发者需要在HTML中引入相应地文件，以及响应的测试文件，然后刷新页面(有时候还需要清空浏览器缓存)。</p>
+
+<p>在这个过程中，开发者真正关注的就是编写测试，运行测试，编写实现，重构等等，需要不断的重复这个过程。而不是关注如刷新页面，清空缓存，修改HTML对脚本的引用等武馆的工作。</p>
+
+<p>Karma就是这样一个开发环境，开发者指定需要测试的脚本/测试文件，需要运行的浏览器等信息，Karma会在后台自动监控文件的修改，并启动一个浏览器与Karma的服务器连接，这样当源代码或者测试发生修改后，Karma会自动运行测试。</p>
+
+<p>开发者可以指定不同的浏览器，甚至可以跨设备。由于Karma只是一个运行器，你可以使用项目中正在使用的测试框架如Jasmine，QUnit等，甚至可以自定义适配器来支持你自己的测试框架。</p>
+
+<h3>运行Karma</h3>
+
+<p>Karma需要一个配置文件来知道哪些文件需要被加载，需要被监控(当文件内容发生变化时，尝试运行测试)，这个配置文件可以通过Karma自带的参数来生成。</p>
+
+<h4>基本使用</h4>
+
+<p>Karma被实现为一个npm的包，所以可以通过</p>
+
+<p><code>
+$ npm install -g karma
+</code></p>
+
+<p>安装之后，可以生成karma需要的配置文件：</p>
+
+<p><code>
+$ karma init my.conf.js
+</code></p>
+
+<p>karma会让你回答一些问题，比如是哪种测试框架，哪些文件需要被测试，哪些浏览器需要被考虑等。生成的配置文件的一个片段是：</p>
+
+<p>```
+// base path, that will be used to resolve files and exclude
+basePath = '';</p>
+
+<p>// list of files / patterns to load in the browser
+files = [
+  JASMINE,
+  JASMINE_ADAPTER,
+  'src/<strong>/*.js',
+  'test/</strong>/*spec.js'
+];</p>
+
+<p>// web server port
+port = 9876;</p>
+
+<p>// browsers
+browsers = ['Chrome'];</p>
+
+<p>```</p>
+
+<hr />
+
+<p><strong>更新</strong>
+新的配置文件生成脚本会生成更加<strong>模块化</strong>的配置：</p>
+
+<p>```
+module.exports = function(config) {
+  config.set({</p>
+
+<pre><code>frameworks: ['jasmine'],
+
+files: [
+  'src/**/*.js',
+  'test/**/*spec.js'
+],
+
+port: 9876,
+
+browsers: ['Chrome'],
+
+singleRun: true
+</code></pre>
+
+<p>  });
+};</p>
+
+<p>```</p>
+
+<hr />
+
+<p>生成配置文件之后，可以通过命令来启动Karma服务器，同时指定使用<code>my.conf.js</code>文件作为配置：</p>
+
+<p><code>
+$ karma start my.conf.js
+</code></p>
+
+<p><img src="http://abruzzi.github.com/images/2013/10/karma-run-resized.png" alt="image" /></p>
+
+<h4>调试及其他</h4>
+
+<p>很多时候，我们只想要运行某一个suite中的所有测试用例，而不是整个工程，比如在Jasmine中：</p>
+
+<p>```
+describe("Controller User", function() {</p>
+
+<pre><code>it("add user", function() {});
+it("search users", function() {});
+it("delete user", function() {});
+</code></pre>
+
+<p>})
+```</p>
+
+<p>只需要将<code>describe</code>修改为<code>ddescribe</code>即可，类似的，如果只需要运行某一个测试用例，只需要将<code>it</code>修改为<code>iit</code>即可。</p>
+
+<p>这在运行调试某个测试或者某段特定代码时非常好用。另外，Karma还提供了debugger功能，在测试用例中加入：</p>
+
+<p><code>
+debugger;
+</code></p>
+
+<p>即可。由于在运行时，karma实际上会启动一个真实地浏览器，所以可以在浏览器的developer-tool中进行实际的调试。需要注意的是，当进入调试模式时，需要启动developer-tool(在Karma启动的那个浏览器窗口中)。</p>
+
+<p><img src="http://abruzzi.github.com/images/2013/10/karma-debug-resized.png" alt="image" /></p>
 ]]></content>
   </entry>
   

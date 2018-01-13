@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: GIS | I code it]]></title>
+  <title><![CDATA[Category: gis | I code it]]></title>
   <link href="http://abruzzi.github.com/category/gis/atom.xml" rel="self"/>
   <link href="http://abruzzi.github.com/"/>
-  <updated>2017-08-21T22:29:08+08:00</updated>
+  <updated>2018-01-13T16:15:54+08:00</updated>
   <id>http://abruzzi.github.com/</id>
   <author>
     <name><![CDATA[Qiu Juntao]]></name>
@@ -14,685 +14,388 @@
 
   
   <entry>
-    <title type="html"><![CDATA[可视化你的足迹 - Web端]]></title>
-    <link href="http://abruzzi.github.com/2015/09/show-your-map-in-browser/"/>
-    <updated>2015-09-20T22:44:00+08:00</updated>
-    <id>http://abruzzi.github.com/2015/09/show-your-map-in-browser</id>
-    <content type="html"><![CDATA[<h3>可视化你的足迹</h3>
+    <title type="html"><![CDATA[全球地震信息的可视化（使用OpenLayers）]]></title>
+    <link href="http://abruzzi.github.com/2014/04/render-geojson-by-using-openlayers/"/>
+    <updated>2014-04-15T21:33:00+08:00</updated>
+    <id>http://abruzzi.github.com/2014/04/render-geojson-by-using-openlayers</id>
+    <content type="html"><![CDATA[<h4>OpenLayers</h4>
 
-<p><a href="http://icodeit.org/2015/09/visualize-your-steps/">上一篇文章</a>讲述了如何在服务器端通过MapServer来生成地图。虽然MapServer发布出来的地图是标准的<a href="https://en.wikipedia.org/wiki/Web_Map_Service">WMS</a>服务，但是我们还需要一个客户端程序来展现。我们在上一篇中，通过一些小脚本将照片中的地理信息抽取到了一个<code>GeoJSON</code>文件中。<code>GeoJSON</code>是一种向量图层格式，向量数据可以在服务器端绘制成栅格图，也可以直接在客户端canvas上直接绘制出来。当数据量比较大的时候，我们更倾向于在服务器端绘制，这样只需要在网络上传输一张图片（而且可以做缓存）。大数据量的客户端绘制在性能上会比较差（当然现在已经有了一些新的解决方案，我们后续再细谈），特别是有用户交互时，会出现明显的卡顿。</p>
+<p>使用<a href="http://openlayers.org/">OpenLayers</a>可以很容易的搭建基于Web的GIS系统，OpenLayers支持不同的数据源(符合WMS协议的服务器，Google Maps API, Bing Maps，KML以及<a href="http://geojson.org/">GeoJSON</a>等等)。通过将不同的数据源的数据整合，我们可以开发出丰富而用户友好的GIS系统。</p>
 
-<p>在本文中，我将分别使用客户端和服务端绘制的两种方式来展现两种不同的地图：使用<a href="http://openlayers.org/">OpenLayers</a>直接在客户端绘制矢量图，以及使用<a href="http://leafletjs.com/">Leaflet</a>来展示在服务器端绘制好的栅格图层。</p>
+<p>OpenLayers可以轻松的处理GeoJSON数据，并将其生成矢量层，我们可以将这个层叠加在其他数据源（比如OSM）提供的地图上，以得到一个完整的小应用。</p>
 
-<h4>使用OpenLayers3展示GeoJSON</h4>
+<p>最后的运行结果是这样的：</p>
 
-<p>展示GeoJSON非常容易，也是一种比较直接的方式，只需要将GeoJSON文件发送到前端，然后直接通过客户端渲染即可。使用<code>OpenLayers3</code>的API，代码会是这样：</p>
+<p><img src="/images/2014/04/openlayers-earthquake-resized.png" alt="image" /></p>
 
-<p>```js
-  $.getJSON('data/places-ive-been-3857.json').done(function(geojson) {</p>
+<h4>GeoJSON</h4>
 
-<pre><code>var vectorSource = new ol.source.Vector({
-  features: (new ol.format.GeoJSON()).readFeatures(geojson)
-});
+<p><a href="http://www.usgs.gov/aboutusgs/">美国地理信息调查局</a>是一个科学组织，他公开了很多地球上的灾难信息，比如对地震的统计，并提供编程接口。它公开的地震统计信息，包含全世界各地报告过的地震，以及全美所有检测到的地震，并以多种周期（小时，天，周，月等），多种格式（GeoJSON，KML，Atom等），以便应用程序的开发者只用这些数据。</p>
+
+<h4>实现</h4>
+
+<h5>设置基本环境</h5>
+
+<p>我们将借助bower来安装所有的代码依赖。首先，我们需要bower将所有的包都安装在<code>components</code>目录下，这个可以通过在当前目录的<code>.bowerrc</code>文件中制定<code>directory</code>：</p>
+
+<p>```json
+{</p>
+
+<pre><code>"directory": "components"
 </code></pre>
 
-<p>  });
+<p>}
 ```</p>
 
-<p>客户端发送一个<code>ajax</code>请求，得到<code>GeoJSON</code>数据之后，将其转换成一个<code>向量</code>类型。<code>OpenLayers</code>定义了很多中格式读取器，比如KML的，GML的，GeoJSON的等等。然后我们可以定义一个样式函数：</p>
+<p>然后运行bower安装jquery以及openlayers：</p>
 
-<p>```js
-  var image = new ol.style.Circle({</p>
+<p><code>sh
+$ bower install jquery
+$ bower install openlayers
+</code></p>
 
-<pre><code>radius: 5,
-fill: null,
-stroke: new ol.style.Stroke({color: '#f04e98', width: 1})
+<p>通过bower安装OpenLayers之后，可以通过OpenLayers自带的build工具将所有的源码合并压缩为一个文件：</p>
+
+<p><code>sh
+$ cd components/openlayers/build
+$ ./build.py #将会在当前目录下生成一个OpenLayers.js的文件
+$ mv OpenLayers.js ../
+</code></p>
+
+<p>然后，创建一个简单的HTML文件，引用jquery.js和OpenLayers.js，以及我们的入口脚本app.js，本文所有的代码都只是修改这个文件。</p>
+
+<p>```html
+&lt;!DOCTYPE HTML>
+<html></p>
+
+<pre><code>&lt;head&gt;
+    &lt;meta http-equiv="content-type" content="text/html; charset=utf-8" /&gt;
+    &lt;title&gt;Earthquake distribution&lt;/title&gt;
+    &lt;link rel="stylesheet" href="style.css" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="container"&gt;
+        &lt;div id="map"&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;script src="components/jquery/jquery.js" type="text/javascript"&gt;&lt;/script&gt;        
+    &lt;script src="components/openlayers/OpenLayers.js" type="text/javascript"&gt;&lt;/script&gt;        
+    &lt;script src="app.js" type="text/javascript"&gt;&lt;/script&gt;        
+&lt;/body&gt;
 </code></pre>
 
-<p>  });</p>
-
-<p>  var styles = {</p>
-
-<pre><code>'Point': [new ol.style.Style({
-  image: image
-})]
-</code></pre>
-
-<p>  };</p>
-
-<p>  var styleFunction = function(feature, resolution) {</p>
-
-<pre><code>return styles[feature.getGeometry().getType()];
-</code></pre>
-
-<p>  };
+<p></html>
 ```</p>
 
-<p>这个函数会应用到向量集的<code>Point</code>类型，将其绘制为一个红色，半径为5像素的圆圈。有了数据和样式，我们再来创建一个新的向量，然后生成一个新的图层：</p>
-
-<p>```js</p>
-
-<pre><code>var vectorLayer = new ol.layer.Vector({
-  source: vectorSource,
-  style: styleFunction
-});
-</code></pre>
-
-<p>```</p>
-
-<p>创建地图，为了方便对照，我们加入了另外一个<code>ol.source.Stamen</code>图层作为参照。这样当缩放到较小的区域时，我们可以清楚的知道当前的点和地物的对照，比如道路名称，建筑名称等，从而确定目前的位置。这是一种非常常见的GIS应用的场景，但是需要注意的是，不同的图层需要有相同的空间映射方式，OpenLayers默认才用EPSG:3857，所以需要两者都采用该投影：</p>
-
-<p>```js</p>
-
-<pre><code>var map = new ol.Map({
-  layers: [
-    new ol.layer.Tile({
-      source: new ol.source.Stamen({
-        layer: 'toner'
-      })
-    }),
-    vectorLayer
-  ],
-  target: 'map',
-  controls: ol.control.defaults({
-    attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-      collapsible: false
-    })
-  }),
-  view: new ol.View({
-    center: ol.proj.transform([108.87316667, 34.19216667], 'EPSG:4326', 'EPSG:3857'),
-    zoom: 2
-  })
-});
-</code></pre>
-
-<p>```</p>
-
-<p>创建地图时，我们可以通过<code>layers</code>来指定多个图层。在OpenLayers中，有很多类型的<code>Tile</code>，<code>Stamen</code>是一个专注于做<a href="http://maps.stamen.com/#watercolor/12/37.7706/-122.3782">非常漂亮的地图的组织</a>。</p>
-
-<p>在view中，我们需要将经纬度（EPSG:4326）转换为墨卡托投影（EPSG:3857）。这样我们就可以得到一个很漂亮的地图了：</p>
-
-<p><img src="/images/2015/09/toner-resized.png" alt="geojson toner" /></p>
-
-<h4>使用Leaflet展示栅格数据</h4>
-
-<p>我们在上一篇中已经生成了MapServer的WMS地图，这里可以用<a href="http://leafletjs.com/">Leaflet</a>来消费该地图（使用OpenLayers也可以消费，不过V3似乎在和WMS集成时有些问题，我此处使用了<a href="http://leafletjs.com/">Leaflet</a>）。</p>
-
-<p>首先创建一个地图：</p>
+<p>还可以运行<code>bower init</code>来将生成<code>bower.json</code>，以方便别人使用我们的应用：</p>
 
 <p><code>js
-var map = L.map('map').setView([34, 108], 10);
+$ bower init
 </code></p>
 
-<p>然后就可以直接接入我们在上一篇中生成的地图：</p>
+<h5>基本代码</h5>
+
+<p>一个最简单的OpenLayers应用，只需要7行代码：</p>
 
 <p>```js
-  L.tileLayer.wms("http://localhost:9999/cgi-bin/mapserv?map=/data/xian.map", {</p>
-
-<pre><code>        layers: 'places',
-        format: 'image/png',
-        transparent: true,
-        maxZoom: 16,
-        minZoom: 2,
-    }).addTo(map);
-</code></pre>
-
-<p>```</p>
-
-<p>便于对照，我们先添加一个底图：</p>
-
-<p>```js
-L.tileLayer( 'http://{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {</p>
-
-<pre><code>  attribution: '&amp;copy; &lt;a href="http://osm.org/copyright" title="OpenStreetMap" target="_blank"&gt;OpenStreetMap&lt;/a&gt; contributors | Tiles Courtesy of &lt;a href="http://www.mapquest.com/" title="MapQuest" target="_blank"&gt;MapQuest&lt;/a&gt; &lt;img src="http://developer.mapquest.com/content/osm/mq_logo.png" width="16" height="16"&gt;',
-  subdomains: ['otile1','otile2','otile3','otile4'],
-  detectRetina: true
-</code></pre>
-
-<p>  }).addTo( map );
-```</p>
-
-<p>这样就可以看到最终的地图：</p>
-
-<p><img src="/images/2015/09/xian-leaflet-resized.png" alt="xian leaflet" /></p>
-
-<p>使用Web界面，我们可以自由的拖拽，移动，并且方便的放大缩小。如果观察浏览器的网络标签，在放大地图时，可以看到很多的WMS请求：</p>
-
-<p><img src="/images/2015/09/wms-requests-resized.png" alt="xian leaflet" /></p>
-
-<h4>其他</h4>
-
-<p>如果你对代码感兴趣，可以参看<a href="https://github.com/abruzzi/places-ive-been">这个repo</a>。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[可视化你的足迹 - 服务器端]]></title>
-    <link href="http://abruzzi.github.com/2015/09/visualize-your-steps/"/>
-    <updated>2015-09-18T13:36:00+08:00</updated>
-    <id>http://abruzzi.github.com/2015/09/visualize-your-steps</id>
-    <content type="html"><![CDATA[<h3>可视化你的足迹</h3>
-
-<p>数据可视化可以让读者以一种轻松的方式来消费数据，人类大脑在处理图形的速度是处理文本的<code>66,000</code>倍，这也是人们常常说的<code>一图胜千言</code>。在本文中，我们通过将日常中很容易收集到的数据，通过一系列的处理，并最终展现在地图上。这仅仅是GIS的一个很简单场景，但是我们可以看到，当空间数据和地图结合在一起时，可以在可视化上得到很好的效果，读者可以很容易从中获取信息。</p>
-
-<p><img src="/images/2015/09/viz-steps-resized.png" alt="steps" /></p>
-
-<p>我们在本文中会制作一个这样的地图，图中灰色的线是城市中的道路，小六边形表示照片拍摄地。颜色表示当时当地拍摄照片的密度，红色表示密集，黄色为稀疏。可以看到，我的活动区域主要集中在左下角，那是公司所在地和我的住处，:)</p>
-
-<p>要展现数据，首先需要采集数据，不过这些已经在日常生活中被不自觉的被记录下来了：</p>
-
-<h4>数据来源</h4>
-
-<p>如果你开启了iPhone相机中的定位功能，拍照的时候，iPhone会自动把当前的地理信息写入到图片的元数据中，这样我们就可以使用这些数据来做进一步的分析了。</p>
-
-<p>我在去年学习OpenLayers的时候已经玩过一些简单的<a href="http://icodeit.org/placesihavebeen">足迹可视化</a>，另外还有一篇<a href="http://www.infoq.com/cn/articles/visualization-of-the-global-seismic-system">全球地震信息的可视化</a>，但是仅仅是展示矢量信息，并没有深入，而且都是一些前端的JavaScript的代码。最近又在重新整理之前的GIS知识，重新把这个作为例子来练手。当然，这次会涉及一些<strong>地图编辑</strong>，<strong>空间计算</strong>的内容。</p>
-
-<p>我的照片一般都通过Mac自带的Photos管理（前身iPhoto），手机里照片会定期同步上去。老版本的iPhoto用的是XML文件来存储照片的<a href="https://en.wikipedia.org/wiki/Exchangeable_image_file_format">EXIF数据</a>，新的Photos的实现里，数据被存储在了好几个SQLite数据库文件中，不过问题不大，我们只需要写一点Ruby代码就可以将数据转化为标准格式，这里使用GeoJSON，GeoJSON既可以方便人类阅读，也可以很方便的导入到PostGIS或者直接在客户端展现。</p>
-
-<h3>实现步骤</h3>
-
-<p>我们现在要绘制照片拍摄的密度图，大概需要这样一些步骤：</p>
-
-<ol>
-<li>抽取照片的EXIF信息（经度，纬度，创建时间等）</li>
-<li>编写脚本将抽取出来的信息转换成通用格式（GeoJSON）</li>
-<li>使用QGIS将这些点的集合导入为图层</li>
-<li>插入一些由六边形组成的图层（设置合适的大小）</li>
-<li>计算落在各个多边形中的点的个数，并生成新的图层heatmap</li>
-<li>使用MapServer来渲染基本地图</li>
-</ol>
-
-
-<h4>数据抽取</h4>
-
-<p>Mac上的Photos会将照片的元数据存储在一个SQLite3格式的数据库中，文件名为<code>Library.apdb</code>，通常位于这个位置<code>~/Pictures/Photos\ Library.photoslibrary/Database/apdb/Library.apdb</code>。这个文件可以通过<code>SQLite3</code>的客户端直接打开，不过由于可能有其他进程（Mac自己的）打开了该文件，所以会有锁文件，你可能需要先将这个文件拷贝到另外一个位置。</p>
-
-<p>然后将表<code>RKVersion</code>中的部分信息导出即可，SQLite内置了很方便的导出功能，通过它提供的shell客户端<code>sqlite3</code>，将信息导出到csv文件中：</p>
-
-<p><code>sh
-sqlite&gt; .mode csv
-sqlite&gt; .headers on
-sqlite&gt; .output places-ive-been.csv
-sqlite&gt; select datetime(imageDate+978307200, 'unixepoch', 'localtime') as imageDate, exifLatitude, exifLongitude from RKVersion where exifLatitude and exiflongitude;
-sqlite&gt; .output stdout
-</code></p>
-
-<p>注意这里的日期，苹果的日期偏移和其他公司不同，始于2001年1月1日，所以要在<code>imageDate</code>之后加上这个<code>base</code>值，然后将文件以<code>.csv</code>的格式导出到<code>places-ive-been.csv</code>中，该文件包含3列：时间，纬度，精度。</p>
-
-<p><code>sh
-imageDate,exifLatitude,exifLongitude
-"2012-10-25 16:34:01",34.19216667,108.87316667
-"2012-10-28 14:45:53",35.1795,109.9275
-"2012-10-28 14:45:45",35.1795,109.9275
-"2012-10-25 16:34:04",34.19216667,108.87316667
-"2012-10-19 23:01:05",34.19833333,108.86733333
-...
-</code></p>
-
-<h4>转换为GeoJSON</h4>
-
-<p>方便以后的转换起见，我们将这个文件转换成<code>GeoJSON</code>（其实很多客户端工具可以支持CSV的导入，不过<code>GeoJSON</code>更为标准一些）。</p>
-
-<p>```ruby
-require 'csv'
-require 'json'</p>
-
-<p>lines = CSV.open("places-ive-been.csv").readlines
-keys = lines.delete lines.first</p>
-
-<p>File.open("places-ive-been.json", 'w') do |f|</p>
-
-<pre><code>data = lines.map do |row|
-    {
-        :type =&gt; "Feature",
-        :geometry =&gt; {
-          :type =&gt; "Point",
-          :coordinates =&gt; [row[2].to_f, row[1].to_f]
-        },
-        :properties =&gt; {
-          :created_at =&gt; row[0]
-        }
-    }
-end
-
-f.puts JSON.pretty_generate({
-    :type =&gt; "FeatureCollection",
-    :crs =&gt; {
-      :type =&gt; "name",
-      :properties =&gt; {
-        :name =&gt; "EPSG:4326"
-      }
-    },
-    :features =&gt; data
-})
-</code></pre>
-
-<p>end
-```</p>
-
-<p>这段脚本可以将我们的<code>.csv</code>转换成标准的<code>geojson</code>格式，注意此处的空间投影使用的是<code>EPSG:4326</code>。</p>
-
-<h4>导入为QGIS图层</h4>
-
-<p><a href="http://www.qgis.org/en/site/">QGIS</a>是一个开源的GIS套件，包括桌面端的编辑器和服务器端，这里我们只是用器桌面端来进行图层的编辑。</p>
-
-<p>将我们的<code>GeoJSON</code>导入之后，会看到这样的一个可视化的效果！</p>
-
-<p><img src="/images/2015/09/points-resized.png" alt="points" /></p>
-
-<p>我们还可以导入其他的地图图层，这样可以清楚的看到点所在的区域（国家地图图层可以在<a href="http://www.naturalearthdata.com/">此处下载</a>）：</p>
-
-<p><img src="/images/2015/09/points-countries-resized.png" alt="points with countries" /></p>
-
-<p>好了，有了基础数据之后，我们来作进一步的数据分析 -- 即生成密度图。首先使用QGIS的插件<code>MMQGIS</code>的<strong>生成多边形图层</strong>功能(Create -> Create Grid Layer)，为了处理速度，我们可以将地图放大到一定范围（我选择西安市，我在这里活动比较密集）。</p>
-
-<p>选择六边形<code>hexagon</code>，并设置合适的大小（如果是<code>3857</code>参考系，即按照公里数来设置，会比较容易一些，如果是4326，则需要自己计算）。简而言之，需要保证每个格子都包含一些点，不至于太密，也不至于太稀疏。</p>
-
-<p><img src="/images/2015/09/hexagon-resized.png" alt="hexagon" /></p>
-
-<h4>计算密度</h4>
-
-<p>QGIS提供了很多的数据分析功能，我们在这个例子中使用（Vector -> Analysis Tools -> Points in Polygon）工具，这个工具需要两个图层，一个是点集图层，一个是多边形图层。然后会将结果生成到一个新的图层中，我们可以将其命名为<code>places-ive-been-density.shp</code>，同时需要指定一个字段来存储统计出来的值（density）。</p>
-
-<p>这个过程可能会花费一点时间，根据需要计算的点集合多边形的格式（也就是地图上的区域）。</p>
-
-<p>完成之后会得到一个<code>Shapefile</code>（其实是一组，具体可以<a href="https://en.wikipedia.org/wiki/Shapefile">参看这里</a>）。其实在这个过程中，绝大多数多边形是不包含任何数据的，我们需要过滤掉这些多余的多边形，这样可以缩减绘制地图的时间。</p>
-
-<p>我们可以将这个文件导入到PostGIS中进行简化：</p>
-
-<p><code>sh
-shp2pgsql -I -s 4326 data/places-ive-been/places-ive-been-3857-density.shp places_density |\
-PGUSER=gis PGPASSWORD=gis  psql -h localhost -d playground
-</code></p>
-
-<p>这里的<code>shp2pgsql</code>命令是<a href="http://">GDAL工具包</a>提供的命令，用以将<code>Shapefile</code>导入到<code>PostGIS</code>中，你可以通过</p>
-
-<p><code>sh
-$ brew install gdal --with-postgresql
-</code></p>
-
-<p>来安装。</p>
-
-<p>GDAL会提供很多的工具，比如用来转换各种数据格式，投影，查看信息等等。</p>
-
-<p>导入之后，我们可以在PostGIS的客户端查看，编辑这些数据等。比如在过滤之前，</p>
-
-<p><code>sql
-select count(*) from places_density;
-</code></p>
-
-<p>我们导入的数据中有<code>103166</code>条记录：</p>
-
-<p><code>sql
-select count(*) from places_density where density IS NOT NULL;
-</code></p>
-
-<p>而过滤之后，我们仅剩下<code>749</code>条数据。</p>
-
-<p>通过GDAL提供的另一个工具<code>ogr2ogr</code>可以方便的执行过滤，并生成新的<code>Shapefile</code>:</p>
-
-<p><code>sh
-$ ogr2ogr -f "ESRI Shapefile" data/places-ive-been/places_heatmap.shp \
-PG:"host=localhost user=gis dbname=playground pass
-word=gis" \
--sql "SELECT density, geom FROM places_density WHERE density IS NOT NULL;"
-</code></p>
-
-<p>这条命令可以得到一个新的文件，这个就是最终的用来绘制地图的文件了。</p>
-
-<h4>绘制地图</h4>
-
-<p>开源世界中有很多的工具可以完成地图的绘制，比如<a href="http://mapserver.org/">MapServer</a>，<a href="http://geoserver.org/">GeoServer</a>，<a href="http://mapnik.org/">Mapnik</a>等等。我们在这篇文章中使用MapServer来完成地图的绘制，MapServer的安装和配置虽然比较容易，但是也需要花费一些时间，所以我将其放到了<a href="https://github.com/abruzzi/mapserver-box">这个repo中</a>，你可以直接clone下来使用。（需要你在虚拟机中安装ansible来完成provision）。</p>
-
-<p>MapServer的配置很简单，类似于一个XML，不过是自定义的格式：</p>
-
-<p>```
-MAP
-  IMAGETYPE      PNG
-  EXTENT         11859978.732852 3994742.227345 12753503.595559 4580388.268737
-  SIZE           8000 6000
-  SHAPEPATH      "/data/heatmap"
-  IMAGECOLOR     255 255 255</p>
-
-<p>  PROJECTION</p>
-
-<pre><code>"init=epsg:3857"   ##required
-</code></pre>
-
-<p>  END</p>
-
-<p>  LAYER # States polygon layer begins here</p>
-
-<pre><code>NAME         heatmap
-DATA         heatmap_3857
-STATUS       default
-TYPE         POLYGON
-
-CLASS
-  NAME "basic"
-  STYLE
-    COLOR        255 255 178
-    OUTLINECOLOR 255 255 178
-  END
-END
-</code></pre>
-
-<p>  END</p>
-
-<p>END
-```</p>
-
-<p>这些配置基本上都比较自解释，比如设置图片格式，图片大小，Shapefile的路径，图层的名称等，<strong>MapServer的文档在开源软件中来说，都算比较烂的</strong>，但是对于这些基本概念的解释还比较详尽，大家可以<a href="http://mapserver.org/documentation.html#documentation">去这里参考</a>。</p>
-
-<p>这里我们定义了一个图层，每个Map中可以定义多个图层（我们完成的最终效果图就是西安市的道路图和照片拍摄密度图两个图层的叠加）。</p>
-
-<p>这个配置绘制出来的地图是没有颜色差异的，全部都是<code>255 255 178</code>。不过MapServer的配置提供了很好的样式定义，比如我们可以定义这样的一些规则：</p>
-
-<ol>
-<li>如果密度为1，则设置颜色为淡黄</li>
-<li>如果密度在1-2,则设置为比淡黄红一点的颜色</li>
-<li>以此类推</li>
-</ol>
-
-
-<p>```
-  LAYER</p>
-
-<pre><code>NAME         heatmap
-DATA         heatmap_3857
-STATUS       default
-TYPE         POLYGON
-#CLASSITEM density
-
-CLASS
-  EXPRESSION ([density] = 1)
-  STYLE
-    COLOR        255 255 178
-    OUTLINECOLOR 255 255 178
-  END
-END
-
-CLASS
-  EXPRESSION ([density] &gt; 1 AND [density] &lt;= 2)
-  STYLE
-    COLOR        254 204 92
-    OUTLINECOLOR 254 204 92
-  END
-END
-
-CLASS
-  EXPRESSION ([density] &gt; 2 AND [density] &lt;= 3)
-  STYLE
-    COLOR        253 141 60
-    OUTLINECOLOR 253 141 60
-  END
-END
-
-CLASS
-  EXPRESSION ([density] &gt; 3 AND [density] &lt;= 10)
-  STYLE
-    COLOR        240 59 32
-    OUTLINECOLOR 240 59 32
-  END
-END
-
-CLASS
-  EXPRESSION ([density] &gt; 10 AND [density] &lt; 3438)
-  STYLE
-    COLOR        189 0 38
-    OUTLINECOLOR 189 0 38
-  END
-END
-</code></pre>
-
-<p>  END
-```</p>
-
-<p>这样我们的地图展现出来就会比较有层次感，而且通过颜色的加深，也能体现<code>热图</code>本身的含义。</p>
-
-<p>同样的原理，如果将那些自己创建的多边形替换为行政区域划分的多边形，则可以得到另外一种形式的<code>热图</code>：</p>
-
-<p><img src="/images/2015/09/heatmap-in-shaanxi-resized.png" alt="shaanxi-heatmap" /></p>
-
-<h3>总结</h3>
-
-<p>我们通过使用一些开源工具（MapServer，QGis，PostGIS，GDAL等），构建出一个基于GIS的数据可视化框架。在这个stack上，我们可以很容易的将一些其他数据也通过可视化的方式展现出来（公用自行车站点分布，出租车分布等等）。MapServer可以发布标准的<a href="https://en.wikipedia.org/wiki/Web_Map_Service">WMS</a>服务，因此可以很好的和客户端框架集成，从而带来更加友好的用户体验。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[搭建地图服务器（使用Mapnik）]]></title>
-    <link href="http://abruzzi.github.com/2014/04/setup-map-server-by-mapnik/"/>
-    <updated>2014-04-12T14:07:00+08:00</updated>
-    <id>http://abruzzi.github.com/2014/04/setup-map-server-by-mapnik</id>
-    <content type="html"><![CDATA[<h4>渲染引擎Mapnik</h4>
-
-<p><a href="http://icodeit.org/2014/04/intro-map-gis/">上一篇文章</a>中大概介绍了<a href="https://github.com/mapnik">Mapnik</a>，它是一个渲染引擎，一般开发中都会使用他的python的bind做开发。</p>
-
-<p>Mapnik的文档写的比较详细，我们这里只是做一些必要的介绍，详细的细节可以参看Mapnik在<a href="https://github.com/mapnik/mapnik/wiki">Github上的文档</a>。</p>
-
-<p>在Mac下，安装Mapnik十分容易，使用brew即可，注意我们在此处带上<code>--with-postgresql</code>选项，使得Mapnik可以通过PostGIS来访问数据库：</p>
-
-<p><code>sh
-brew install mapnik --with-postgresql
-</code></p>
-
-<p>安装完成之后，可以通过一个小的python脚本来测试：</p>
-
-<p>```python
-import mapnik</p>
-
-<p>map = mapnik.Map(256, 256)
-map.background = mapnik.Color('red')
-map.zoom_all()</p>
-
-<p>mapnik.render_to_file(map, 'red.png', 'png')
-```</p>
-
-<p>这段脚本可以在当前目录下生成一个红色的256x256的小图片。好了，有了渲染引擎，我们需要一些数据来进行渲染了。</p>
-
-<h4>数据源</h4>
-
-<p>最通用的数据格式为Shapefiles，目前有很多的免费地理信息供公共下载，我们可以从<a href="http://metro.teczno.com/">Metro的站点</a>上下载一些小的数据文件。</p>
-
-<p><code>sh
-$ wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm2pgsql-shapefiles.zip
-$ mkdir chengdu
-$ cd chengdu
-$ unzip chengdu.osm2pgsql-shapefiles.zip
-</code>
-这样就得到了一组文件：</p>
-
-<p><code>
-$ find . -name "*.shp"
-./chengdu.osm-line.shp
-./chengdu.osm-point.shp
-./chengdu.osm-polygon.shp
-</code></p>
-
-<p>每一个shp文件都会对应几个其他类型的文件，比如投影信息，属性表等。仅仅查看shp的话，有表示所有点的文件chengdu.osm-line.shp，又表示所有线的chengdu.osm-line.shp，以及表示所有面（区域）的chengdu.osm-polygon.shp文件。</p>
-
-<p>有了这些文件，我们就可以做一些测试了，比如我们首先加载所有的线条，并根据这些线条生成一个图层：</p>
-
-<p>```python
-import mapnik</p>
-
-<p>map = mapnik.Map(800, 800)
-map.background = mapnik.Color('#ffffff')</p>
-
-<p>style = mapnik.Style()
-rule = mapnik.Rule()</p>
-
-<p>point_symbolizer = mapnik.PointSymbolizer()
-rule.symbols.append(point_symbolizer)</p>
-
-<p>style.rules.append(rule)</p>
-
-<p>map.append_style('default', style)</p>
-
-<p>ds_point = mapnik.Shapefile(file='chengdu.osm-point.shp')
-point = mapnik.Layer('point')
-point.datasource = ds_point
-point.styles.append('default')</p>
-
-<p>map.layers.append(point)
-map.zoom_all()</p>
-
-<p>mapnik.render_to_file(map, 'chengdu.png', 'png')
-```</p>
-
-<p>可以得到：</p>
-
-<p><img src="/images/2014/04/chengdu-point.png" alt="points" /></p>
-
-<p>这里介绍一下Mapnik中的一些概念：一个Map可以包含若干个层（Layer），每个层可以独立着色，即可以为每个层定制样式（Style），每个样式由若干个规则组成（Rule）。每个规则由是由若干个符号定制。</p>
-
-<p><img src="/images/2014/04/chengdu-line.png" alt="lines" /></p>
-
-<p>如果将两者重叠，则可以得到：</p>
-
-<p><img src="/images/2014/04/chengdu-point-and-line.png" alt="lines" /></p>
-
-<p>```python
-polygon_symbolizer = mapnik.PolygonSymbolizer(mapnik.Color('#c8102e'))
-polygon_rule.symbols.append(polygon_symbolizer)</p>
-
-<p>ds_polygon = mapnik.Shapefile(file='chengdu.osm-polygon.shp')
-polygon = mapnik.Layer('polygon')
-polygon.datasource = ds_polygon
-polygon.styles.append('polygon')</p>
-
-<p>map.layers.append(polygon)
-```</p>
-
-<p><img src="/images/2014/04/chengdu-polygon.png" alt="image" /></p>
-
-<p>将这三个层叠加在一起，会得到最终的结果：</p>
-
-<p><img src="/images/2014/04/chengdu-point-and-line-and-polygon.png" alt="lines" /></p>
-
-<h4>数据转化</h4>
-
-<p>在进一步之前，我们需要将数据存储在数据库中。我们可以将shapefile通过转化存入到数据库中。PostGIS本身自带了一个用于此作用的工具：<code>shp2pgsql</code>。可以通过这个工具来先将shapefile导入到数据库中。也可以直接导入别的开放数据，比如很多OSM格式的数据源，我们此处仅仅简单的从别的数据源将OSM格式的数据下载并导入到PostGIS中。</p>
-
-<p>创建数据库<code>chengdu</code>:</p>
-
-<p>```sh
-$ createdb chengdu -O gis -E UTF8 -e
-CREATE DATABASE chengdu OWNER gis ENCODING 'UTF8';</p>
-
-<p>$ psql -U gis -d chengdu
-```</p>
-
-<p>登陆PostGres，然后为数据库<code>chengdu</code>启动PostGIS扩展：</p>
-
-<p><code>sql
--- Enable PostGIS (includes raster)
-CREATE EXTENSION postgis;
--- Enable Topology
-CREATE EXTENSION postgis_topology;
--- fuzzy matching needed for Tiger
-CREATE EXTENSION fuzzystrmatch;
--- Enable US Tiger Geocoder
-CREATE EXTENSION postgis_tiger_geocoder;
-</code></p>
-
-<p><code>sh
-$ wget http://osm-extracted-metros.s3.amazonaws.com/chengdu.osm.bz2
-$ bunzip2 -d chengdu.osm.bz2
-$ osm2pgsql -U gis -d chengdu -s -S ./default.style chengdu.osm
-</code></p>
-
-<p>这个命令将chengdu.osm导入到了名称为<code>chengdu</code>的数据库中。</p>
-
-<p>可以通过SQL命令查看其中的数据：</p>
-
-<p><code>sql
-select ST_Extent(ST_Transform(way,4326)) from planet_osm_roads;
-</code></p>
-
-<p>结果如下：</p>
-
-<p>```</p>
-
-<pre><code>                            st_extent                                 
-</code></pre>
-
-<hr />
-
-<p> BOX(103.564165069794 30.3634139134986,104.554549945024 30.9869936005376)
-(1 row)
-```</p>
-
-<h4>WMS服务器</h4>
-
-<p>生成图片之后，我们还需要将这些图片切成瓦片，然后公开给外部以便使用。Mapnik提供了切图的功能，并且还提供一个实现了<a href="https://github.com/mapnik/OGCServer">WMS协议的服务器</a>，以便使用。</p>
-
-<p>安装这个OGCServer服务器非常容易：</p>
-
-<p><code>sh
-$ git clone git@github.com:mapnik/OGCServer.git
-$ cd OGCServer
-$ sudo python setup.py install
-</code></p>
-
-<p>但是OGCServer的启动，需要一个配置XML配置文件，这个配置文件可以由Mapnik提供的工具集生成：</p>
-
-<p><code>sh
-$ svn co http://svn.openstreetmap.org/applications/rendering/mapnik/
-</code></p>
-
-<p>这个svn仓库中包含了众多的小工具，generate_xml.py用于生成Mapnik的样式文件，generate_image.py用于生成图片，generate_tiles.py用于生成众多的瓦片。</p>
-
-<p>此处我们将使用<code>generate_xml.py</code>来创建一个地图样式文件，</p>
-
-<p><code>sh
-$ cd svn.openstreetmap.org/applications/rendering/mapnik/
-$ ./generate_xml.py osm.xml chengdu.xml --dbname chengdu --user gis --accept-none
-</code></p>
-
-<p>generate_xml.py根据osm.xml作为模板，生成<code>chengdu.xml</code>。这个文件即可用于测试OGCServer：</p>
-
-<p><code>sh
-$ OGCServer chengdu.xml
-Listening at 0.0.0.0:8000....
-</code></p>
-
-<p>然后在浏览器中查看：</p>
-
-<p><img src="/images/2014/04/ogcserver-localhost-resized.png" alt="ogcserver" /></p>
-
-<h4>使用OpenLayers测试</h4>
-
-<p>有了一张图片，那么我们就需要有更多的图片组成的瓦片，这就需要使用引入GIS的前端利器OpenLayers了：</p>
-
-<p>```
 $(function() {</p>
 
-<pre><code>var map, layer;
-map = new OpenLayers.Map('map', {});
+<pre><code>var map = new OpenLayers.Map("map");
+var osm = new OpenLayers.Layer.OSM();
 
-layer = new OpenLayers.Layer.WMS('Tile Cache', 
-    'http://localhost:8000/?', {
-        layers: '__all__',
-        format: 'image/png'
-    });
-
-map.addLayer(layer);
-
-if (!map.getCenter()) {
-    map.zoomToMaxExtent();
-}
+map.addLayers([osm]);
+map.zoomToMaxExtent();
 </code></pre>
 
 <p>});
 ```</p>
 
-<p><img src="/images/2014/04/openlayers-chengdu-resized.png" alt="openlayers" /></p>
+<p>这段代码在id为<code>map</code>的HTML元素创建了一个地图，这个地图上有一个叫OSM的层（即<a href="http://www.openstreetmap.org/">OpenStreetMap</a>，一个开源，开放的地图平台），并将地图缩小到边界范围（以获得最大的视野）:</p>
 
-<p><img src="/images/2014/04/openlayers-chengdu-detail-resized.png" alt="openlayers" /></p>
+<p><img src="/images/2014/04/openlayers-osm-resized.png" alt="image" /></p>
 
-<p>应该注意的是，此处在OpenLayers中使用了来自与OSM导入的数据，而并非Shapefile中的数据（Shapefile中仅有三个层次，point, line, polygon）。而OSM的数据则丰富的多。</p>
+<h5>生成矢量层</h5>
+
+<p>通过GeoJSON生成矢量图非常容易：</p>
+
+<p>```js
+var geo = new OpenLayers.Layer.Vector("EarthQuake", {</p>
+
+<pre><code>strategies: [new OpenLayers.Strategy.Fixed()],
+protocol: new OpenLayers.Protocol.HTTP({
+    url: '/all_day.geojson',
+    format: new OpenLayers.Format.GeoJSON({ignoreExtraDims: true})
+})
+</code></pre>
+
+<p>});
+```</p>
+
+<p>注意此处的<a href="http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson">all_day.geojson</a>是从USGS网站上下载的，过去一天中世界各地的所有地震统计。</p>
+
+<p>上边的代码创建了一个名称为<code>EarthQuake</code>的矢量层，<code>strategies</code>中的Fixed策略表示仅请求一次资源，然后缓存在前端，不再请求。<code>protocol</code>表明数据来源为<code>all_day.geojson</code>，格式为<code>OpenLayers.Format.GeoJSON</code>。由于USGS返回的地理信息除了经纬度还包含深度，而OpenLayers默认只处理经纬度的，因此需要此处的<code>ignoreExtraDims</code>来忽略那个额外的深度信息。</p>
+
+<p><img src="/images/2014/04/openlayers-geojson-resized.png" alt="image" /></p>
+
+<h5>定制样式</h5>
+
+<p>虽然我们已经加上了新的层，也可以看到很多表示地震的点信息，但是并不能看出哪些地震是严重的，比如里氏3级以下的地震，几乎没有危害，可以标注成一种颜色；而更高震级的可以标记成另外一种颜色。</p>
+
+<p>OpenLayers可以很容易的做到这个定制化:</p>
+
+<p>```js</p>
+
+<pre><code>var style = new OpenLayers.Style();
+
+var ruleLow = new OpenLayers.Rule({
+  filter: new OpenLayers.Filter.Function({
+        evaluate: function(properties) {
+            return properties.mag &lt; 3.0;
+        }
+    }),
+  symbolizer: {pointRadius: 3, fillColor: "green",
+               fillOpacity: 0.5, strokeColor: "black"}
+});
+
+var ruleHigh = new OpenLayers.Rule({
+  filter: new OpenLayers.Filter.Function({
+        evaluate: function(properties) {
+            return properties.mag &gt;= 3.0;
+        }
+    }),
+    symbolizer: {pointRadius: 5, fillColor: "red",
+               fillOpacity: 0.7, strokeColor: "black"}
+});
+
+style.addRules([ruleLow, ruleHigh]);
+
+geo.styleMap = new OpenLayers.StyleMap(style);
+</code></pre>
+
+<p>```</p>
+
+<p>首先创建一个Style对象，为Style添加两条规则Rule，然后将Style对象包装成StyleMap并赋值给表示地震的矢量层<code>earthquake</code>。</p>
+
+<p>对于规则ruleLow，我们定义了，当一个feature的属性值mag(震级)小于三的时候后，使用绿色的，半径为3px的小圆圈来表示。而ruleHigh则定义了当震级大于等于三的时候，用红色，半径为5px的圆圈来表示。</p>
+
+<p><img src="/images/2014/04/openlayers-geojson-styling-resized.png" alt="image" /></p>
+
+<h5>加上事件处理</h5>
+
+<p>虽然我们已经可以直观的根据震级不同而看到不同颜色的点，但是整个应用仍然没有多少意义：它不具备于用户的交互能力。我们需要添加上事件处理，当用户点击地图上的一个圆点的时候，应该看到一个更详细的窗口。</p>
+
+<p>```js
+var selectControl = new OpenLayers.Control.SelectFeature(geo, {</p>
+
+<pre><code>onSelect: onFeatureSelect,
+onUnselect: onFeatureUnselect 
+</code></pre>
+
+<p>});</p>
+
+<p>map.addControl(selectControl);
+selectControl.activate();</p>
+
+<p>function onFeatureSelect(feature) {</p>
+
+<pre><code>var html = "&lt;span&gt;"+feature.attributes.title+"&lt;/span&gt;";
+
+var popup = new OpenLayers.Popup.FramedCloud("popup",
+        feature.geometry.getBounds().getCenterLonLat(),
+        null,
+        html,
+        null,
+        true
+    );
+
+popup.panMapIfOutOfView = true;
+popup.autoSize = true;
+
+feature.popup = popup;
+
+map.addPopup(popup);
+</code></pre>
+
+<p>}</p>
+
+<p>function onFeatureUnselect(feature) {</p>
+
+<pre><code>map.removePopup(feature.popup);
+feature.popup.destroy();
+feature.popup = null;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>我们在地图上添加了一个<code>SelectFeature</code>元素，并注册了回调函数：当矢量层中的矢量被选中之后，函数<code>onFeatureSelect</code>将被执行，我们可以在这个函数中添加对弹出窗口的控制。当<code>onFeatureSelect</code>执行时，OpenLayers会将当前的Feature传递进来，我们可以动态的取得震级，标题，链接等信息，并展现给最终用户。</p>
+
+<p><img src="/images/2014/04/openlayers-geojson-popup-resized.png" alt="[image]" /></p>
+
+<p>如果将数据源扩大到本周的所有地震：</p>
+
+<p>```js
+var geo = new OpenLayers.Layer.Vector("EarthQuake", {</p>
+
+<pre><code>strategies: [new OpenLayers.Strategy.Fixed()],
+protocol: new OpenLayers.Protocol.HTTP({
+    url: '/all_week.geojson',
+    format: new OpenLayers.Format.GeoJSON({ignoreExtraDims: true})
+})
+</code></pre>
+
+<p>});
+```</p>
+
+<p><img src="/images/2014/04/openlayers-geojson-weekly-resized.png" alt="image" /></p>
+
+<p>完整的代码示例<a href="https://github.com/abruzzi/earthquake-viz">可以看这里</a>。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[GIS系统如何工作]]></title>
+    <link href="http://abruzzi.github.com/2014/04/intro-map-gis/"/>
+    <updated>2014-04-10T23:45:00+08:00</updated>
+    <id>http://abruzzi.github.com/2014/04/intro-map-gis</id>
+    <content type="html"><![CDATA[<h4>GIS系统如何工作</h4>
+
+<p>去年十二月中旬从RCA项目上下来之后，就一直在一个<a href="http://en.wikipedia.org/wiki/Geographic_information_system">GIS</a>项目上做咨询。在新的项目上，日常工作的重点主要是放在前端开发上（比如AngularJS，Grunt，Jamsine之类），对于业务（与GIS相关）方面，则完全没有涉及。</p>
+
+<p>虽说之前也接触过<a href="http://icodeit.org/2013/03/guan-yu-hack-day/">一点GIS相关的开发</a>，比如Google Maps API，<a href="http://openlayers.org/">OpenLayers</a>之类，但是仅仅停留在使用别人的API搭建个小应用的层次。</p>
+
+<p><img src="/images/2014/04/roads-resized.png" alt="image" /></p>
+
+<p>直到最近，在GIS专家芦康平的指导下，才真正开始接触GIS，很快我就发现这是另一个十分好玩的新天地。简而言之，这个新的天地里，所有的东西都有一种似曾相识的感觉，但是又非常新鲜。比如地图服务器，渲染引擎，缓存，地理信息数据库等，都可以在其他的系统中找到对应。这种感觉好比收集硬币，或者收集邮票一样，当你看到新的有着不同花纹，大小，材质，年代的硬币时，那种既在意料之中又在意料之外的感觉简直太有意思了。</p>
+
+<p>GIS系统，毋庸置疑可以帮助人们更加直观的分析数据，当数据与地理信息有所关联的时候，GIS系统会变得十分友好，也可以更充分的提供信息。</p>
+
+<p>鉴于GIS对我来说是一个完全崭新的领域，那么学习之前，自然有很多的问题出现：</p>
+
+<ol>
+<li>地图的信息（建筑物，河流，街道）从何而来？</li>
+<li>数据在服务器端以何种方式存储？</li>
+<li>地图数据到底如何被渲染出来？</li>
+<li>一个GIS系统的部署结构是什么样的？需要哪些组件？</li>
+<li>业界的标准是什么，有哪些开源的项目和工具可供参考？</li>
+</ol>
+
+
+<p>等等。</p>
+
+<h5>地图是如何被渲染的？</h5>
+
+<p>通常来讲，我们看到的地图是由一个底图和若干个层的叠加来达到的最终结果。其中每个层次都会保存不同类型的地理信息，比如将所有的河流信息放在一个层，将建筑物放在另外一个层。</p>
+
+<p><img src="/images/2014/04/elevation-map.jpg" alt="image" /></p>
+
+<p>这些信息存储在数据文件中（<a href="http://en.wikipedia.org/wiki/Shapefiles">shapefiles</a>）或者数据库中，通过使用专门的工具来将这些地理信息转换成图片。由于每张图片都是透明的，这样叠加起来的最后效果就是如Google Maps之类应用的结果了。当然，叠加过程一般都发生在服务器端（有些简单应用则是在客户端完成某些层次的绘制，比如我之前发过的<a href="http://icodeit.org/placesihavebeen">我去过的地方</a>，这些热力图就是在客户端通过JavaScript加上去的。）。</p>
+
+<p>地图在服务器端被渲染出来之后，尺寸一般会非常大。需要有工具将这些大图切分成很多组的小图，这些小图被称之为瓦片（tile）。为了给不同缩放级别的客户端提供不同的图片，这些瓦片被精心的分成了多个组，每个组都有编号。如果地图支持18级的缩放，就会现有18个分组。当然分组好越靠后，分组中的瓦片越多。</p>
+
+<p><img src="/images/2014/04/tiles-resized.png" alt="image" /></p>
+
+<p>比如当客户端请求缩放级别为10的地图时，客户端（比如OpenLayers）会根据经纬度计算好图片的边界，然后请求第10级的一些瓦片，并将这些瓦片排列在画布上。一般而言，这些瓦片都是正方形（256x256或者512x512）。</p>
+
+<h5>WMS服务</h5>
+
+<p><a href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS(Web Map Service)</a>是一个基于HTTP的简单协议，客户端发送的请求中包含请求类型，地图的层次，边界等信息，服务器根据这个信息生成图片，并返回该图片：</p>
+
+<p><img src="/images/2014/04/wms-request.png" alt="image" /></p>
+
+<p>当然，WMS本身支持多种请求，最常见的就是<code>GetMap</code>，细节可以参考OGC规范及具体服务器的实现。而对于后端的服务器来说，从请求中获取这些信息之后，会首先从数据库/数据文件中得到数据，并使用渲染引擎绘制图片，并最后将图片返回客户端。</p>
+
+<h5>图片类型</h5>
+
+<p>图片分为栅格类型和矢量类型两种。栅格图片一般的原始来源是航拍，遥感等，本质上来说是照片，照片必然会有大小，如果放大到某一个范围之外，就会模糊。而矢量图是数学上的抽象，比如在某个坐标系统中，在某处有一个点A，另一处有一个点B，两点之间有一条线连接。矢量图的特点是与缩放程度无关。</p>
+
+<p><img src="/images/2014/04/bangor_oli_2014040_red_swir_tir_720.jpg" alt="栅格图" /></p>
+
+<p>栅格图的特点是真实，矢量图的特点是抽象（存储方便，占用空间更少，也更容易修改）。但是为了绘制正确，完整的地图，两种类型的图片信息都是必要的：</p>
+
+<p><img src="/images/2014/04/polygon-resized.png" alt="矢量图" /></p>
+
+<h5>常用文件格式</h5>
+
+<p>Shapefiles是Esri公司开发出来的用于存储地理信息的文件格式。说是文件，其实是一个文件族，Shapefile包含了数种文件，其中有三种必须的(.shp，.shx，.dbf)。其他有一些可选的(.prj，.sbn/.sbx等等)。</p>
+
+<p>OSM格式是由OpenStreetMap采用的文件格式，其实是一个XML。</p>
+
+<p>```xml
+<osm version="0.6" generator="Osmosis 0.43.1">
+  <bounds minlon="144.26600" minlat="-38.55200" maxlon="145.81000" maxlat="-37.36500" origin="http://www.openstreetmap.org/api/0.6"/>
+  <node id="579259" version="3" timestamp="2008-12-17T02:28:22Z" uid="57437" user="Canley" changeset="431325" lat="-37.9309048" lon="145.1282066"/>
+  <node id="579260" version="5" timestamp="2009-12-03T21:42:45Z" uid="1679" user="andrewpmk" changeset="3284133" lat="-37.9388304" lon="145.1266866"/>
+  <node id="579261" version="4" timestamp="2013-02-15T20:00:37Z" uid="79475" user="AlexOnTheBus" changeset="15043978" lat="-37.9404366" lon="145.1395848"/>
+  <node id="579262" version="18" timestamp="2013-01-31T21:37:02Z" uid="79475" user="AlexOnTheBus" changeset="14864580" lat="-37.9295116" lon="145.1266366"></p>
+
+<pre><code>&lt;tag k="highway" v="traffic_signals"/&gt;
+</code></pre>
+
+<p>  </node>
+  <node id="579265" version="2" timestamp="2010-06-24T12:05:34Z" uid="57437" user="Canley" changeset="5065613" lat="-37.9369707" lon="145.140732"/>
+  ...
+</osm><br/>
+```</p>
+
+<h4>技术栈</h4>
+
+<p>和传统的三层架构一样，一个典型的GIS系统也是由三部分组成：客户端，服务器，存储。在实际的场景中，可能又会引入缓存服务器，负载均衡服务器等。</p>
+
+<p><img src="/images/2014/04/gis-stack-resized.png" alt="image" /></p>
+
+<ol>
+<li><a href="http://openlayers.org/">OpenLayers</a> / Leaflet</li>
+<li><a href="http://mapnik.org/">Mapnik</a> / Mapnik::OGCServer</li>
+<li><a href="http://www.postgresql.org/">Postgres</a> + <a href="http://postgis.net/">PostGIS</a> / OSM Data / Shapefiles</li>
+</ol>
+
+
+<p><a href="http://openlayers.org/">OpenLayers</a>是一个前端的JavaScript库，几乎可以算是前端的必选了，它提供众多的特性：与任意的后端地图服务集成（Google Maps，Bing Maps，OSM等等），对向量层的支持使得其非常方便的展示用户自定义的元素（多边形，点，InfoWindow等）。OpenLayers的API也非常清晰易用：</p>
+
+<p>```js
+$(function() {</p>
+
+<pre><code>var map = new OpenLayers.Map('map', {});
+
+var layer = new OpenLayers.Layer.WMS('Tile Cache', 
+    'tilecache?', {
+        layers: 'basic',
+        format: 'image/png'
+    });
+
+map.addLayer(layer);
+</code></pre>
+
+<p>});
+```</p>
+
+<ol>
+<li>创建Map对象</li>
+<li>创建Layer对象</li>
+<li>将Layer添加到Map上</li>
+</ol>
+
+
+<p>即可完成基本的设置，并将地图展现在页面上。</p>
+
+<p><a href="http://www.openstreetmap.org/">OSM</a>是Open Street Map的缩写，它本身是一个开源项目，全世界各地的贡献者可以很方便的编辑地图信息，并与其他人分享，整个运作方式非常像Wikipedia，任何人都可以对地图进行编辑。基于这个原因，OSM数据文件是基于XML的。</p>
+
+<p>有很多组织都将OSM的数据下载下来，搭建自己的地图服务器，然后向外部提供<a href="http://en.wikipedia.org/wiki/Web_Map_Service">WMS(Web Map Service)</a>服务。</p>
+
+<p>Mapnik是一个渲染引擎，它可以将地理数据渲染成图片。Mapnik支持来自多种数据源的数据，比如Shapefile，PostGIS中的数据等。而对于OSM数据（一种XML文件），可以使用<a href="https://github.com/openstreetmap/osm2pgsql">osm2postgis</a>工具将其导入到PostGIS数据库，然后使用。</p>
+
+<p>Mapnik本身只是一个C++编写的渲染引擎，并提供很多编程语言的bind，最常用的时python版本的bind，接口非常清晰明了。使用Mapnik可以很容易的定制对地图层次的样式，比如地图中所有土地的颜色，河流的颜色，道路的颜色，标签的字体，属性等等都可以很方便的定制。</p>
+
+<p>实际使用Mapnik+OpenLayers搭建自己的服务器将在下一篇文章中详细描述。</p>
+
+<h5>一些数据源</h5>
+
+<ol>
+<li><a href="http://www.naturalearthdata.com/">Natural Earth</a></li>
+<li><a href="http://download.geofabrik.de/osm/">GEO Fabrik</a></li>
+</ol>
+
 ]]></content>
   </entry>
   

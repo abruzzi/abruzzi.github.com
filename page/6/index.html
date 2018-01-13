@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="现代Web页面开发流程 通常来说，Web页面开发的流程大致是这样的：设计师（设计师不是美工，就像程序员不是码农一样）提供设计稿，通常是图片格式。然后前端的开发人员（在ThoughtWorks我们称之为UI Dev）来手工的将图片转换为对应的HTML+CSS，往往还需要在各个浏览器中调试等。 &hellip;">
+  <meta name="description" content="我在编写《JavaScript核心概念及实践》一书的时候，为了保证读者学习时可以比较专注语言本身，专门用Swing开发了一个小工具JSEvaluator。 这个工具可以当做JavaScript的简单的IDE，有一个编辑区域，有一些按钮(打开，保存，执行等)，执行之后还可以将结果显示在一个面板上。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,115 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2014/12/setup-sublime-as-javascript-development-env/">在Sublime Text中设置JavaScript构建</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-21T18:52:00+08:00" pubdate data-updated="true">Dec 21<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>我在编写<a href="http://book.douban.com/subject/24165880/">《JavaScript核心概念及实践》</a>一书的时候，为了保证读者学习时可以比较专注语言本身，专门用Swing开发了一个小工具<a href="https://github.com/abruzzi/jsevaluator">JSEvaluator</a>。</p>
+
+<p>这个工具可以当做JavaScript的简单的IDE，有一个编辑区域，有一些按钮(打开，保存，执行等)，执行之后还可以将结果显示在一个面板上。书出版后不断有读者问我如何将这个工具运行起来（我自己写这个工具的时候，并没有release的概念，而且最初的几个版本可用之后，就再也没有花心思维护），单独回复比较耗时，今天早上又收到一位热心读者的邮件，就在这里统一回复一下。</p>
+
+<p>其实JSEvaluator的思想和其他的IDE一样：将一个编辑器和命令行工具结合在一起，编辑器提供编辑功能，然后IDE可以将编辑器中的文本发送给命令行工具执行（使用Rhino），将结果重定向到界面上。</p>
+
+<p><a href="http://www.sublimetext.com/3">Sublime Text</a>提供的<code>Build</code>功能也可以做到这一点，并且可以使用它更加强大的其他编辑特性，因此推荐各位读者使用这里介绍的方式。</p>
+
+<h3>Sublime Text编辑器</h3>
+
+<p><a href="http://www.sublimetext.com/3">Sublime Text</a>是一个文本编辑器，非常轻量级，并且有丰富的插件机制。虽然它不是一个免费软件，但是如果不注册还是可以无限试用下去，除了不定时的弹出一个对话框之外。它在现在的前端开发中非常流行，我作为一个<code>Vim</code>的忠实粉丝，也已经花费了很多时间在Sublime Text上了。</p>
+
+<p>在写书的时候，JavaScript已经比较火了，但是更多的是在Web端。在本地开发的支持上还是比较薄弱。但是现在就不一样了，各个操作系统平台上都已经有了许多本地的JavaScript执行环境。比如Mac自带的<code>jsc</code>，跨平台的<a href="http://nodejs.org/">node</a>等。</p>
+
+<h4>准备工作</h4>
+
+<p>如果你在使用Mac OS X，请直接跳到下一步。如果你在使用Windows，请先安装node.js的Windows版本，然后保证<code>node.exe</code>在系统的PATH环境变量中。</p>
+
+<h4>自定义build</h4>
+
+<p>在Sublime Text中，点击<code>Tools</code> -> <code>Build System</code> -> <code>New build system...</code>，Sublime会打开一个文件，我们来编辑这个文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">&quot;cmd&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;jsc&quot;</span><span class="p">,</span> <span class="s2">&quot;$file&quot;</span><span class="p">],</span>
+</span><span class='line'>  <span class="nt">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;source.js&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上边这个命令指定了这个build使用的命令是<code>jsc</code>。如果你在Windows下使用<code>node</code>，那么对应的这个文件应该写成：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='json'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nt">&quot;cmd&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">,</span> <span class="s2">&quot;$file&quot;</span><span class="p">],</span>
+</span><span class='line'>  <span class="nt">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;source.js&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果<code>node.exe</code>不在环境变量PATH中，请保证将其加入。完成这个文件的编辑之后，将其保存为<code>JavaScript.sublime-build</code>文件（Sublime会提示你输入文件名，因此输入JavaScript即可）。</p>
+
+<h4>开始开发</h4>
+
+<p>接下来你就可以在Sublime中开发并编译JavaScript代码了，应该注意的是，如果你使用的是<code>jsc</code>，那么<code>console.log</code>这样的函数式不能直接使用的，不过你可以很容易的将其重新定义：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">console</span> <span class="o">=</span> <span class="nx">console</span> <span class="o">||</span> <span class="p">{};</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="o">=</span> <span class="nx">debug</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里的<code>debug</code>是<code>Sublime</code>提供的输出函数，它将会把结果输出在Sublime的控制台上。</p>
+
+<p><img src="/images/2014/12/sublime-text-jsc-resized.png" alt="Sublime Text Build JavaScript" /></p>
+
+<p>运行构建的快捷键，在Mac OS X下为(<code>Cmd+B</code>)，Windows下为(<code>Ctrl+B</code>)。运行之后，可以看到在编辑器的底部会有一个小的窗口打开，里边的内容就是执行结果了。</p>
+
+<h4>其他资料</h4>
+
+<ol>
+<li>这里有一个<a href="http://calebgrove.com/articles/js-console-sublime-text">英文版</a>，这里是<a href="http://www.wikihow.com/Create-a-Javascript-Console-in-Sublime-Text">另一个</a></li>
+<li>这里有一个<a href="https://cnodejs.org/topic/51ee453af4963ade0ebde85e">中文版</a>，以及它的<a href="http://www.hacke2.cn/nodeJS-sublime-3/">补充</a></li>
+</ol>
+
+
+<p>Note：由于我自己不使用<code>Windows</code>平台，也不推荐其他开发者使用，因此关于Windows的部分并没有经过认真测试。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2117,390 +2226,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2014/06/my-4w-robot-built-on-top-of-arduino/">我的第一个Arduino机器人</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-01T15:21:00+08:00" pubdate data-updated="true">Jun 1<span>st</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>我的第一个机器人</h3>
-
-<p>以我的视角拍摄的机器人</p>
-
-<p><embed src="http://player.youku.com/player.php/sid/XNzIwNzE4NjYw/v.swf" allowFullScreen="true" quality="high" width="480" height="400" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed></p>
-
-<p>以机器人自身的视角拍摄的</p>
-
-<p><embed src="http://player.youku.com/player.php/sid/XNzIwNzI4NDQw/v.swf" allowFullScreen="true" quality="high" width="480" height="400" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed></p>
-
-<p>虽然迟了4年，但是我终于完成了我的第一台机器人的安装和配置。</p>
-
-<ol>
-<li>基于Arduino的<a href="http://arduino.cc/en/Main/arduinoBoard">Duemilanove开发板</a></li>
-<li>可以躲开障碍物继续前进（有距离探测器，与障碍物的距离小于20cm时会自动转向）</li>
-<li>4轮驱动</li>
-</ol>
-
-
-<p>我回忆了一下，这块板子和外设是我2010年3月在昆明的时候买的，那段时间对硬件突然有了极高的热情，但是买了之后准备开始之际，发现了几点困难：</p>
-
-<ol>
-<li>当时航空管制，电池不能空运，因此网购的小车没有电池</li>
-<li>缺乏基本的硬件常识，四个电机如何接在两个电机端口上</li>
-<li>不会焊接电机</li>
-<li>没有买杜邦线，没有测试用的面包板</li>
-</ol>
-
-
-<p>基于这些困难，又加上我当时在找工作，准备面试之类，机器人的制造就放了下来。结果一放就是4年，中途从昆明搬家回到西安，不过细心的孙曼思将那一大包的零部件都打包好带了回来，多亏她认真负责的态度，才让这个机器人的产生有了可能。</p>
-
-<h4>ThoughtWorks西安硬件小组</h4>
-
-<p>2013年，在ThoughtWorks的西安Office有了硬件小组，他们研究开源硬件，以及这些小芯片在实际环境中的应用。比如RCA的高亮，做出了一个“半自动”地移动上的story的产品。2014年Hackday的时候，CASA团队又做出了一个看房机器人Dora，dora可以在房间中移动，由于装置了一个摄像头，因此可以实时的看到它看到的东西，而且Dora有安装了无线模块，你可以在远程操控它并得到实时图像。</p>
-
-<p>好了，这么多铺垫事实上是有意义的，如果没有西安Office的硬件小组，我的这个机器人的诞生可能又需要若干年。它给我提供了丰富的资源，比如：</p>
-
-<ol>
-<li>有丰富硬件经验的张新宇，高亮，王超，可以让我很容易问问题并得到答案</li>
-<li>张新宇帮我焊了一个电源的接头</li>
-<li>王超提供了一个7.2V的电池</li>
-<li>高亮的百宝箱中有一个9V电池盒</li>
-<li>CASA团队桌子上开发Dora的一些下脚料</li>
-<li>杜邦线，热缩管，电烙铁，松香，镊子，钳子，各种螺丝刀等等</li>
-</ol>
-
-
-<h4>4年 vs 4天</h4>
-
-<p>虽然拖的时间很长（4年），但是事实上加起来搭建它的所有时间差不多是4天。</p>
-
-<ol>
-<li>单独测试URM模块</li>
-<li>单独测试电机驱动L298N模块</li>
-</ol>
-
-
-<p>我发现，其实硬件开发和软件一样，化分模块，小步前进，测试，持续集成等等概念可以很好的运用其中，而且效果极好，比如我的小车基本上可以划分为这样几个小功能的逐步实现：</p>
-
-<ol>
-<li>测距模块的单独启动</li>
-<li>测距模块控制一个LED（距离小于5cm，点亮一个LED）</li>
-<li>电机的单独启动（正转，反转）</li>
-<li>测距模块控制电机（距离小于5cm，转动电机）</li>
-<li>多个电机联合（如何联线）</li>
-<li>测距模块控制多个电机</li>
-</ol>
-
-
-<p>当到达最后一步时，基本上所有要验证的功能都已经就绪了，只需要拼装在小车的底座上，进行集成测试即可。其实，当划分好任务之后，每一个小的任务都不会花费很多时间。</p>
-
-<h4>故障</h4>
-
-<p>当我兴高采烈的去掉USB线，加上一个7.2V的电池给整个系统时，URM37测距模块伴随着浓郁的电器焦味中烧坏了，就是因为一个跳线的连接不当。这个系统中，电机需要单独加电，但是由于我自己电气知识的匮乏，导致了这个悲剧的发生。</p>
-
-<p>不过，我又在Office的CASA团队的桌子上发现了另外一个测距模块，不过这次只经过了15分钟就完成了替换掉了老板子，换上了新的测距模块。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;NewPing.h&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">#define TRIGGER_PIN  12  </span><span class="c1">// 12端口</span>
-</span><span class='line'><span class="cp">#define ECHO_PIN     11  </span><span class="c1">// 11端口</span>
-</span><span class='line'><span class="cp">#define MAX_DISTANCE 400</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">ledpin</span> <span class="o">=</span> <span class="mi">13</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">NewPing</span> <span class="n">sonar</span><span class="p">(</span><span class="n">TRIGGER_PIN</span><span class="p">,</span> <span class="n">ECHO_PIN</span><span class="p">,</span> <span class="n">MAX_DISTANCE</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">setup</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">begin</span><span class="p">(</span><span class="mi">9600</span><span class="p">);</span> <span class="c1">// Sets the baud rate to 9600</span>
-</span><span class='line'>  <span class="n">pinMode</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>   <span class="c1">//设置13号口为输出</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">loop</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">uS</span> <span class="o">=</span> <span class="n">sonar</span><span class="p">.</span><span class="n">ping</span><span class="p">();</span> <span class="c1">// 把扫描时间转化成us</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">dis</span> <span class="o">=</span> <span class="n">uS</span> <span class="o">/</span> <span class="n">US_ROUNDTRIP_CM</span><span class="p">;</span> <span class="c1">//转成距离</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">dis</span> <span class="o">&lt;=</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">LOW</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Distance = &quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">dis</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">delay</span><span class="p">(</span><span class="mi">150</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>安装过程</h4>
-
-<p>测距模块很早之前就<a href="http://icodeit.org/2012/01/arduino%E8%B6%85%E5%A3%B0%E6%B3%A2%E6%B5%8B%E8%B7%9D%E6%A8%A1%E5%9D%97%E4%BD%BF%E7%94%A8/">已经整理过</a>了，可以看看这里。不过我最后的成品已经没有使用URM37了，取而代之的是HC-SR04。</p>
-
-<p>连接电机与电机驱动模块：</p>
-
-<p><img src="/images/2014/06/motor-resized.png" alt="image" /></p>
-
-<p>第一次焊接电机，话说这种电机的触头也太粗糙了吧，不自己焊接的话，根本就用不成，完全没有进入模块化世界。</p>
-
-<p><img src="/images/2014/06/motor-repaired-resized.png" alt="image" /></p>
-
-<p>连接之后
-<img src="/images/2014/06/motors-connected-resized.png" alt="image" /></p>
-
-<p>装车
-<img src="/images/2014/06/4w-car-resized.png" alt="image" /></p>
-
-<p><img src="/images/2014/06/debug-car-resized.png" alt="image" /></p>
-
-<h4>最终的代码</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;NewPing.h&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">#define TRIGGER_PIN  12  </span><span class="c1">// 12端口</span>
-</span><span class='line'><span class="cp">#define ECHO_PIN     11  </span><span class="c1">// 11端口</span>
-</span><span class='line'><span class="cp">#define MAX_DISTANCE 400</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">E1</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
-</span><span class='line'><span class="kt">int</span> <span class="n">M1</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">E2</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
-</span><span class='line'><span class="kt">int</span> <span class="n">M2</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">ledpin</span> <span class="o">=</span> <span class="mi">13</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">setup</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">begin</span><span class="p">(</span><span class="mi">9600</span><span class="p">);</span>                  <span class="c1">// Sets the baud rate to 9600</span>
-</span><span class='line'>  <span class="n">pinMode</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>   <span class="c1">//设置13号口为输出</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">pinMode</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
-</span><span class='line'>  <span class="n">pinMode</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span> <span class="n">OUTPUT</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">LOW</span><span class="p">);</span> <span class="c1">//灭掉LED  </span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">delay</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span> <span class="c1">//Give sensor some time to start up --Added By crystal  from Singapo, Thanks Crystal.</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">advance</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span><span class="n">HIGH</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span><span class="n">HIGH</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">backoff</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span><span class="n">LOW</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span><span class="n">LOW</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">left</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span><span class="n">LOW</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span><span class="n">HIGH</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">150</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">150</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">right</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M1</span><span class="p">,</span><span class="n">HIGH</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">M2</span><span class="p">,</span><span class="n">LOW</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">150</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">150</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">delay</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">stop</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E1</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">analogWrite</span><span class="p">(</span><span class="n">E2</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">NewPing</span> <span class="n">sonar</span><span class="p">(</span><span class="n">TRIGGER_PIN</span><span class="p">,</span> <span class="n">ECHO_PIN</span><span class="p">,</span> <span class="n">MAX_DISTANCE</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="nf">loop</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">uS</span> <span class="o">=</span> <span class="n">sonar</span><span class="p">.</span><span class="n">ping</span><span class="p">();</span> <span class="c1">// 把扫描时间转化成us</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">dis</span> <span class="o">=</span> <span class="n">uS</span> <span class="o">/</span> <span class="n">US_ROUNDTRIP_CM</span><span class="p">;</span> <span class="c1">//转成距离</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">dis</span> <span class="o">&lt;=</span> <span class="mi">20</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">stop</span><span class="p">();</span>
-</span><span class='line'>    <span class="n">left</span><span class="p">();</span>
-</span><span class='line'>    <span class="n">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">HIGH</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">advance</span><span class="p">();</span>
-</span><span class='line'>    <span class="n">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">digitalWrite</span><span class="p">(</span><span class="n">ledpin</span><span class="p">,</span> <span class="n">LOW</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Distance = &quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="n">Serial</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="n">dis</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">delay</span><span class="p">(</span><span class="mi">150</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>体会</h4>
-
-<ol>
-<li>和开发软件一样，硬件开发也可以使用“敏捷开发”</li>
-<li>实用主义，比如bluetip的使用，杜邦线拼接等</li>
-<li>迭代开发，小步快跑</li>
-</ol>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/7/">&larr; Older</a>
@@ -2518,6 +2243,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2018/01/feedback-saves-the-world/">反馈拯救世界</a>
+      </li>
+    
+      <li class="post">
         <a href="/2017/08/from-sandwich-to-hexagon/">从三明治到六边形</a>
       </li>
     
@@ -2533,10 +2262,6 @@
         <a href="/2017/03/visualise-the-data-around-you/">一张漂亮的可视化图表背后</a>
       </li>
     
-      <li class="post">
-        <a href="/2017/02/data-visualization-from-baby/">生活中的数据可视化之 &#8211; 换尿布</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -2546,7 +2271,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2017 - Qiu Juntao -
+  Copyright &copy; 2018 - Qiu Juntao -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> | Themed with <a href="https://github.com/lucaslew/whitespace">Whitespace</a></span>
 </p>
 
