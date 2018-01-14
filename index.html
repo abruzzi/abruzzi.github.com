@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="心流 你可能有过这样的体验：在玩一个很有趣的游戏时，时间会飞快的流逝，等你终于通关之后才发现已经是凌晨，而你的午饭和晚饭还都没吃。虽然可能饿着肚子，但是你内心却有一种很兴奋，很神清气爽的感觉。而当你在做一些不得不完成的工作/作业时（比如写年终总结报告），时间又会过得很慢， &hellip;">
+  <meta name="description" content="程序员的分类 最近几年，我在多个不同类型的项目上，以不同的角色工作过：有时候会为项目前期做一些预研、然后为后续的交付估算工作量；有时候则在项目中期加入团队，做本职的交付工作（就是写业务代码）；而另外有些时候则会帮助客户的团队进行能力建设等等。 由于要在不同的场景和不同的上下文中频繁切换， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,182 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2018/01/two-types-of-developer/">团队里的两类程序员</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2018-01-14T11:35:00+08:00" pubdate data-updated="true">Jan 14<span>th</span>, 2018</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>程序员的分类</h2>
+
+<p>最近几年，我在多个不同类型的项目上，以不同的角色工作过：有时候会为项目前期做一些预研、然后为后续的交付估算工作量；有时候则在项目中期加入团队，做本职的交付工作（就是写业务代码）；而另外有些时候则会帮助客户的团队进行能力建设等等。</p>
+
+<p>由于要在不同的场景和不同的上下文中频繁切换，我和很多不同水平、有着不同变成习惯和思维方式的程序员一起工作过。我觉得对于<code>程序员</code>这样一种角色，还可以再细化成两大类。虽然都是程序员，但是其职责，技能要求，甚至思维方式都可能有很大的不同。</p>
+
+<p>这两大类程序员分别为：</p>
+
+<ul>
+<li>原型类程序员（prototyper）</li>
+<li>产品类程序员（engineer）</li>
+</ul>
+
+
+<h3>原型类程序员</h3>
+
+<p>如果通过敏捷的方式来运作一个项目，在项目开始的时候，开发往往需要客户/用户，BA（业务分析师）等角色一起协作。在有一个对需求的粗略梳理之后，通过技术手段快速实现应用程序的原型，用以快速验证业务场景。由于对需求的梳理是较为粗略的，其中有很多待验证的假设，如果按照传统的方式来运作，则会有很多不必要的浪费</p>
+
+<ol>
+<li>设计师通过Photoshop作出页面</li>
+<li>开发根据PS文件来开发</li>
+<li>开发的同时，业务分析可能有了新的发现</li>
+<li>设计师对Photoshop作出修改</li>
+<li>开发根据新的PS来做修改</li>
+</ol>
+
+
+<p>这种重量级的，<code>瀑布</code>方式的工作体验非常糟糕，不论是设计师，还是开发，总觉得很多事情都在变化，自己花费了很大力气做的像素级别的精准调整可能在第二天就要被推翻。不过现实世界就是这样：需求的变化是不可避免的，我们唯一能做的是积极拥抱变化，而不是在最开始就尝试设计、实现完美的效果。</p>
+
+<p>与其在一开始就试图设计一个完美的、确定的系统，不如放弃幻想，每次只做简陋而可以示意的原型，然后不断去迭代，最后达到可用的系统。</p>
+
+<p>比如，如果设计师完全不使用<code>Photoshop</code>，也不产出任何的PS文件，而是和开发坐在一起，开发一个简陋，但是易于修改（比如HTML+CSS）的页面，然后向业务分析师或者客户来确认，然后根据反馈来快速调整。在迭代过程中，每次确认之前，只做非常少量的工作，这样既可以避免返工，又可以让将来的调整更容易。</p>
+
+<p>如果用这种方式来运作，我们队程序员的能力要求是这样的：</p>
+
+<ul>
+<li>手速快（可以在很短时间内作出一个可以工作的原型）</li>
+<li>技术广博（前后端）</li>
+<li>可以与不同角色一起工作（最好是通过结对的方式）</li>
+</ul>
+
+
+<p>比如通过<code>python -m http.server 8080</code>来运行一个Web服务器，而不是去考虑负载均衡或者HTTP缓存等，也无需考虑在为前端代码加入动态路由。</p>
+
+<p>很有可能，一个在<code>&lt;head&gt;</code>里通过<code>CDN</code>引入外部依赖，然后将所有代码都写入<code>main.js</code>就可以让我们的想法变成触手可及的应用，在建立起快速反馈的机制之后，就可以和我们的BA，甚至客户一起来协作，并快速打磨原型，使之和客户的期望契合。</p>
+
+<h3>原型驱动</h3>
+
+<p>去年我参加了一个非常有意思的项目，在我加入的时候，客户只有一个非常粗糙的想法：在网络（不是计算机网络）中，如果某个实体被攻击了，那么对整个系统的影响是什么？比如某个变电站由于气温太高爆炸了（<a href="https://baike.baidu.com/item/6%C2%B718%E8%A5%BF%E5%AE%89%E5%8F%98%E7%94%B5%E7%AB%99%E7%88%86%E7%82%B8%E4%BA%8B%E6%95%85">6·18西安变电站爆炸事故</a>），那么哪些地铁站会受到影响？以及收到多大影响？又或者某个运营商的网络中断了，那么它对该城市的各大银行的转账业务有多大影响？</p>
+
+<p>客户希望有一个比较直观的方式来展现网络中的节点，以及当故障发生时会有什么样的影响。我们从原型开始，没有设计师的参加，也没有专门的业务分析师，一开始只有有一个简单的文档来描述，然后我根据文档画了一个草图：</p>
+
+<p><img src="/images/2018/01/prototype-01-resized.png" alt="" /></p>
+
+<p>和客户确认了，我用<code>bootstrap+leaflet</code>做了一个简单的页面：</p>
+
+<p><img src="/images/2018/01/prototoype-02-resized.png" alt="" /></p>
+
+<p>客户表示大致是这么个意思。这时候我的代码是这样的：</p>
+
+<ul>
+<li>一个HTML文件</li>
+<li>从<code>CDN</code>来获取<code>jQuery</code>，<code>bootstrap</code>，<code>leaflet</code></li>
+<li>inline的script中写了一点微小的代码</li>
+<li>inline的css</li>
+</ul>
+
+
+<p>确定了这就是客户想要的效果之后，我做了一些简单的调整：</p>
+
+<ul>
+<li>将第三方依赖下载下来，放到本地的一个目录中</li>
+<li>将inline的<code>JavaScript</code>和<code>CSS</code>抽取到文件</li>
+<li>写了一个简单的shell script用来启停本地的HttpServer</li>
+</ul>
+
+
+<p>几周之后，客户对右侧的两个panel有一些新的需求，要求有一棵树，可以点击，然后要做各种同步：</p>
+
+<p><img src="/images/2018/01/prototype-03-resized.png" alt="" /></p>
+
+<p>这时候，我的代码还是几个微小的jQuery写的文件，通过简单的事件机制来完成交互。很快，客户有了一个新的需求：中间区域的图中的非叶子节点要可点击，点击之后右侧的一个panel显示该节点下的所有叶子，同样，右侧panel中的节点也需要可点击。</p>
+
+<p>也就是说，中间的树需要两个不同的视图，而背后的数据只有一份（这样点击时的展开和收起才会是同步的），这时候用事件机制就很难做到了，而且代码的复杂度直线上升，而且可维护性基本没有。</p>
+
+<p>基本满足客户的需求之后，团队里加入了两位同事，这时候我做了一个比较大胆的决定，用vue.js将整个应用重写，将大部分功能都抽象为组件，方便以后的扩展。完成的时候，界面看起来是这样子的：</p>
+
+<p><img src="/images/2018/01/prototype-05-resized.png" alt="" /></p>
+
+<p>如果整理一下思路，原型类开发的流程是这样的：</p>
+
+<ul>
+<li>用<code>CDN</code>+胶水代码迅速实现</li>
+<li>及时与客户沟通，并根据反馈修改</li>
+<li>在需求相对稳定，方向确定之后，再做实际的技术选型</li>
+<li>重构 — 甚至重写（使用靠谱的技术站进行）</li>
+</ul>
+
+
+<p>比如上面这个项目，如果现在让我再来做一次技术选型，我可能会这样选择：</p>
+
+<ul>
+<li>前端框架：React + Redux + React-router</li>
+<li>界面原型：AntDesign</li>
+<li>地图：Leaflet</li>
+<li>可视化：D3</li>
+</ul>
+
+
+<h3>产品类程序员</h3>
+
+<p>另一方面，当<code>idea</code>已经经过验证，我们需要通过严谨的工程实践将其产品化，那么对开发的要求却又有不同：</p>
+
+<ul>
+<li>非功能需求（安全/性能/容灾等)</li>
+<li>深刻而周全</li>
+<li>自动化测试</li>
+<li>软件架构</li>
+</ul>
+
+
+<p>我在去年的另外一个项目上，负责一个具体模块的开发，一起在项目上有位同事，叫侯晓成。在<code>kick off</code>用户故事（开发和业务分析师，QA等角色一起确认需求，进入开发阶段之前的一个敏捷实践）的时候，他常常可以把BA问的答不上话来。</p>
+
+<p>我们构建的系统需要管理零售中的促销活动，促销活动可以被多个不同的门店执行，这些门店可能位于全球任何一个地方。这时候就会涉及促销活动开始和结束的事件与时区的问题。比如管理员创建了一个圣诞促销，所有商品9折。但是由于时区的存在，各个国家的<code>圣诞节</code>并不是同一天，诸如此类的场景，在编码是都要考虑到。</p>
+
+<p>侯晓成会非常全面的考虑各种业务场景。另一方面，大的系统往往涉及多个集成点，性能、安全，缓存的使用等等，都需要开发人员在编码时就考虑到。为了保证软件的内部质量，程序员还需要有非常好的测试意识和写测试的习惯，不论是比较高层次的集成测试还是更底层单元测试。</p>
+
+<p>除了交付本身，产品型程序员可能还会考虑这样一些工程实践，来保证产品从开发到上线甚至到运维的各个方面：</p>
+
+<ul>
+<li>持续集成、持续交付</li>
+<li>自动化测试</li>
+<li>DevOps</li>
+</ul>
+
+
+<p><img src="/images/2016/02/knowledge-framework.png" alt="" /></p>
+
+<h3>小结</h3>
+
+<p>毫无疑问，我们在实际项目中，这两种程序员都是缺一不可，相互补充的。在需求还没有完全明朗，需要快速验证市场，探索业务方向的正确性，我们需要原型类程序员。他们通过和业务分析师，设计师等角色一起工作，可以快速且轻量级的迭代出产品的原型。而一旦市场基本确定，我们就需要产品型程序员的帮助，将产品的开发、测试、部署、运维整个生命周期都规范化，引入相对重量且长期的工程实践，这样产品在后续的迭代中才可能保持非常高的内部质量。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3317,236 +3493,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2017/01/why-software-is-complex/">软件开发为什么很难</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2017-01-06T18:06:00+08:00" pubdate data-updated="true">Jan 6<span>th</span>, 2017</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>问题的分类</h2>
-
-<p>最初在1999年被Dave Snowden开发出来的<strong><a href="https://en.wikipedia.org/wiki/Cynefin_framework">Cynefin</a>框架</strong>尝试把世界上的问题划分到了5个域中（大类）：</p>
-
-<p><img src="/images/2017/01/cynefin-resized.png" alt="" /></p>
-
-<ul>
-<li>简单（Simple）问题，该域中的因果关系非常明显，解决这些问题的方法是 <code>感知-分类-响应</code>（Sense-Categorise-Respond），有对应的<strong>最佳</strong>实践</li>
-<li>复合（Complicated）问题，该域中的因果关系需要分析，或者需要一些其他形式的调查和/或专业知识的应用，解决这些问题的方法是<code>感知-分析-响应</code>（Sense-Analyze-Respond），有对应的<strong>好的</strong>实践</li>
-<li>复杂（Complex）问题，该域中的因果关系仅能够从回顾中发现，解决这些问题的方法是<code>探索-感知-响应</code>（Probe-Sense-Respond），我们能够感知<strong>涌现</strong>实践（emergent practice）</li>
-<li>混乱（Chaotic）问题，该域中没有系统级别的因果关系，方法是<code>行动-感知-响应</code>（Act-Sense-Respond），我们能够发现<strong>新颖</strong>实践（novel practice）</li>
-<li>失序（Disorder）问题，该域中没有因果关系，不可感知，其中的问题也无法被解决</li>
-</ul>
-
-
-<p>显然，软件开发过程更多地是一个复杂（Complex）问题。在一个产品被开发出来之前，不确定性非常高，团队（包括业务人员和技术人员）对产品的知识也是最少的，而且需要大量的学习和尝试才可以明确下一步可能的方向。不幸的是，很多时候我们需要在一开始（不确定性最高的时候）就为项目做计划。这种从传统行业中非常适合的方法在软件开发领域不再适用，这也是敏捷开发、精益等方法论在软件开发中更加适合的原因。</p>
-
-<p><img src="/images/2017/01/learning-curve-resized.png" alt="" /></p>
-
-<p><em>来源：http://alistair.cockburn.us/Disciplined+Learning</em></p>
-
-<p>正因为软件开发事实上是一个学习的过程，我们学习到的新知识反过来会帮助我们对问题的定义，从而带来变化。这里的变化可能来自两个方向：</p>
-
-<ul>
-<li>功能性</li>
-<li>非功能性</li>
-</ul>
-
-
-<p>功能性的变化指随着对业务的深入理解、或者已有业务规则为了匹配市场而产生的变化。比如支付方式由传统的货到付款变成了网银付款，又变成了微信支付、支付宝扫码等等。一个原始的电商平台仅仅提供基本的购物服务，但是后来可以根据已有数据产生推荐商品，从来带来更大的流量。这些变化需要体现在已有的代码中，而对代码的修改往往是牵一发而动全身。</p>
-
-<p>非功能性的变化是指随着业务的发展，用户规模的增加，数据量的变化，安全认知的变化等产生的新的需求。比如100个用户的时候无需考虑性能问题，但是100万用户的时候，性能就变成了必须重视的问题。天气预报应用的数据安全性和网络银行的数据安全性要求也大不相同。</p>
-
-<p><em>而在业务提出一个需求的时候，往往只是一个简化过的版本。</em></p>
-
-<h3>非功能性复杂性</h3>
-
-<p><img src="/images/2017/01/ui-resized.png" alt="" /></p>
-
-<p><em>来源：https://d13yacurqjgara.cloudfront.net/users/749341/screenshots/2228676/uielements_day021_dribbbleinvites.jpg</em></p>
-
-<p>这是一个经过设计师精确设计的界面，在它被设计出来之前，用户事实上无法准确的描述出它。设计过程中经历了很多的诸如：</p>
-
-<ul>
-<li>线框图</li>
-<li>颜色的确定</li>
-<li>交互的动画</li>
-<li>信息层次</li>
-</ul>
-
-
-<p>往复多次之后，界面确定了。在没有仔细思考使用场景的时候，开发会误以为这个功能非常简单。但是如果你是一个有经验的开发者，很快会想到的一些问题是：</p>
-
-<ul>
-<li>在宽屏下如何展示</li>
-<li>在平板上如何展示</li>
-<li>在手机上如何展示</li>
-<li>即使仅仅支持桌面版，跨浏览器要考虑吗？支持哪些版本？</li>
-<li>有些UI效果在低版本的浏览器上不工作，需要Shim技术</li>
-</ul>
-
-
-<p>除此之外，依然有大量的其他细节需要考虑：</p>
-
-<ul>
-<li>性能要求是什么样的？</li>
-<li>安全性要考虑吗？</li>
-<li>在网络环境不好的时候，要不要fallback到基础视图？</li>
-<li>既然涉及发送邀请函，送达率如何保证</li>
-<li>与外部邮件服务提供商集成时的工作量</li>
-</ul>
-
-
-<p>等等。这些隐含的信息需要被充分挖掘出来，然后开发者才能做一个合理的评估，而且这还只是开始。一旦进入开发阶段，很多之前没有考虑到的细节开始涌现：字体的选用，字号，字体颜色，元素间的间距等等，如何测试邮件是否发送成功，多个角色之间的conversation又会消耗很多时间。</p>
-
-<h3>需求的变化方向</h3>
-
-<p>作为程序员，有一天你被要求写一段代码，这段代码需要完成一件很简单的事：</p>
-
-<ol>
-<li>打印&#8221;Hello, world&#8221;5次</li>
-</ol>
-
-
-<p>很容易嘛，你想，然后顺手就写下了下面这几行代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">print</span><span class="p">(</span><span class="s2">&quot;Hello, world&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="nx">print</span><span class="p">(</span><span class="s2">&quot;Hello, world&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="nx">print</span><span class="p">(</span><span class="s2">&quot;Hello, world&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="nx">print</span><span class="p">(</span><span class="s2">&quot;Hello, world&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="nx">print</span><span class="p">(</span><span class="s2">&quot;Hello, world&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>不过，拷贝粘贴看起来有点低端，你做了一个微小的改动：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;Hello, world&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>看起来还不错，老板的需求又变成了打印&#8221;Goodbye, world&#8221;5次。既然是打印<code>不同</code>的消息，那何不把消息作为参数呢？</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">printMessage</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">print</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">printMessage</span><span class="p">(</span><span class="s2">&quot;Hello, world&quot;</span><span class="p">)</span>
-</span><span class='line'><span class="nx">printMessage</span><span class="p">(</span><span class="s2">&quot;Goodbye, world&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有了这个函数，你可以打印<code>任意消息</code>5次了。老板又一次改变了需求：打印&#8221;Hello, world&#8221;13次（没人知道为什么是13）。既然次数也变化了，那么一个可能是将<code>次数</code>作为参数传入：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">printMessage</span><span class="p">(</span><span class="nx">count</span><span class="p">,</span> <span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">count</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">print</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">printMessage</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="s2">&quot;Hello, world&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nx">printMessage</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Goodbye, world&quot;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>完美，这就是抽象的魅力。有了这个函数，你可以将任意消息打印任意次数。不过老板是永远无法满足的，就在这次需求变化之后的第二天，他的需求又变了：不但要将&#8221;Hello, world&#8221;打印到控制台，还要将其计入日志。</p>
-
-<p>没办法，通过搜索<code>JavaScript</code>的文档，你发现了一个叫做高阶函数的东东：<strong>函数可以作为参数传入另一个参数！</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="nx">system</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">function</span> <span class="nx">doMessage</span><span class="p">(</span><span class="nx">count</span><span class="p">,</span> <span class="nx">message</span><span class="p">,</span> <span class="nx">action</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">count</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">action</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">doMessage</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Hello, world&quot;</span><span class="p">,</span> <span class="nx">print</span><span class="p">);</span>
-</span><span class='line'><span class="nx">doMessage</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Hello, world&quot;</span><span class="p">,</span> <span class="nx">log</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这下厉害了，我们可以对任意消息，做任意次的任意动作！再回过头来看看那个最开始的需求：</p>
-
-<ol>
-<li>打印&#8221;Hello, world&#8221;5次</li>
-</ol>
-
-
-<p>稍微分割一下这句话：<strong>打印，&#8221;Hello, world&#8221;，5次</strong>，可以看到，这三个元素最后都变成了可以变化的点，软件开发很多时候正是如此，需求可能在任意<em>可能变化</em>的方向上变化。这也是各种软件开发原则尝试解决的问题：如何写出更容易扩展，更容易响应变化的代码来。</p>
-
-<h3>小节</h3>
-
-<p>软件的复杂性来自于大量的<strong>不确定性</strong>，而这个不确定性事实上是无法避免的，而且每个软件都是独一无二的。另一方面，软件的需求会以各种方式来变化，而且往往会以开发者没有预料到的方向。比如上面这个小例子中看到的，最后的需求可能会变成将消息以短信的方式发送给手机号以<code>185</code>开头的用户手机上。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -3562,6 +3508,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2018/01/two-types-of-developer/">团队里的两类程序员</a>
+      </li>
+    
+      <li class="post">
         <a href="/2018/01/feedback-saves-the-world/">反馈拯救世界</a>
       </li>
     
@@ -3575,10 +3525,6 @@
     
       <li class="post">
         <a href="/2017/03/whats-the-thoughtworks-insight-talking-about/">ThoughtWorks洞见讲什么？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2017/03/visualise-the-data-around-you/">一张漂亮的可视化图表背后</a>
       </li>
     
   </ul>

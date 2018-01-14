@@ -9,9 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="我的第一个机器人 以我的视角拍摄的机器人 以机器人自身的视角拍摄的 虽然迟了4年，但是我终于完成了我的第一台机器人的安装和配置。 基于Arduino的Duemilanove开发板
-可以躲开障碍物继续前进（有距离探测器，与障碍物的距离小于20cm时会自动转向）
-4轮驱动 我回忆了一下， &hellip;">
+  <meta name="description" content="分支策略 本来准备整理一篇版本管理中，关于分支的维护策略。后来看到阮一峰老师的这篇文章，觉得非常清晰，这里给出一个链接供参考。 另外一个有意思的链接在这里，也可以一并参看。 本文就仅仅简单的描述一下，使用svn的命令行工具，如何具体完成合并的操作： 在Svn中合并分支 在svn中，要合并两个分支（ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +78,163 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2014/08/how-to-merge-branches-in-svn/">SVN中合并分支</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-25T22:42:00+08:00" pubdate data-updated="true">Aug 25<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>分支策略</h3>
+
+<p>本来准备整理一篇版本管理中，关于分支的维护策略。后来看到阮一峰老师的<a href="http://www.ruanyifeng.com/blog/2012/07/git.html">这篇文章</a>，觉得非常清晰，这里给出一个链接供参考。</p>
+
+<p>另外一个有意思的<a href="http://codicesoftware.blogspot.com/2008/08/4-steps-to-make-version-control-shine.html">链接在这里</a>，也可以一并参看。</p>
+
+<p>本文就仅仅简单的描述一下，使用svn的命令行工具，如何具体完成合并的操作：</p>
+
+<h3>在Svn中合并分支</h3>
+
+<p>在svn中，要合并两个分支（通常是将某个分支b合并到trunk上，不过另一种模式下也可以将trunk合并到b上）非常简单，我们以一个简单的例子来说明其步骤。</p>
+
+<p>比如我们要将trunk上的修改合并到分支b上，操作可以分为4步：</p>
+
+<ol>
+<li>切换到分支b上（之前执行过<code>svn co /path/branches/b</code>之后的目录）</li>
+<li>使用<code>svn log --stop-on-copy</code>命令得到该分支的最早版本号</li>
+<li>使用<code>svn merge --dry-run -rXXX:HEAD /path/trunk</code>来预览合并列表</li>
+<li>合并</li>
+</ol>
+
+
+<p>在第二步中，一个典型的输出是这样的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn log --stop-on-copy
+</span><span class='line'>...
+</span><span class='line'>
+</span><span class='line'>r231625 | juntao | 2014-07-10 13:33:36 +1000 <span class="o">(</span>Thu, 10 Jul 2014<span class="o">)</span> | 1 line
+</span><span class='line'>
+</span><span class='line'>Juntao Change the version in pom.xml
+</span><span class='line'>------------------------------------------------------------------------
+</span><span class='line'>r231623 | abruzzi | 2014-07-10 13:22:00 +1000 <span class="o">(</span>Thu, 10 Jul 2014<span class="o">)</span> | 1 line
+</span><span class='line'>
+</span><span class='line'>Spike on data structure of c-wifi, a workable prototype
+</span><span class='line'>------------------------------------------------------------------------
+</span><span class='line'>r231610 | juntao | 2014-07-10 12:29:01 +1000 <span class="o">(</span>Thu, 10 Jul 2014<span class="o">)</span> | 1 line
+</span><span class='line'>
+</span><span class='line'>Create a new branch <span class="k">for </span>c-wifi
+</span><span class='line'>------------------------------------------------------------------------
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一旦有了这个修订号(231610)，就可以开始合并了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn merge --dry-run -r231610:HEAD /path/trunk
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个命令会列出从修订好r231610到当前版本之中，trunk和分支b之间的所有需要合并的文件列表：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>--- Merging r235763 through r236311 into <span class="s1">&#39;src/test/java&#39;</span>:
+</span><span class='line'>U    src/test/java/tcom/checkout/CheckoutServiceTest.java
+</span><span class='line'>U    src/test/java/bundles/checkout/accordion/AppointmentTest.java
+</span><span class='line'>U    src/test/java/common/service/ServiceHandlerTest.java
+</span><span class='line'>...
+</span><span class='line'>Summary of conflicts:
+</span><span class='line'>  Text conflicts: 2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，svn会给出冲突信息（如果有的话），这时，我们来决定是否合并，以及合并哪些修订号区间的修改。如果预览之后觉得可以直接合并，则可以直接运行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn merge -r231610:HEAD /path/trunk
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>过程中，遇到冲突的情况，svn会询问采取哪种方式来处理</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>Select: <span class="o">(</span>p<span class="o">)</span> postpone, <span class="o">(</span>df<span class="o">)</span> diff-full, <span class="o">(</span>e<span class="o">)</span> edit,
+</span><span class='line'>        <span class="o">(</span>mc<span class="o">)</span> mine-conflict, <span class="o">(</span>tc<span class="o">)</span> theirs-conflict,
+</span><span class='line'>        <span class="o">(</span>s<span class="o">)</span> show all options: p
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果拿不准，可以使用<code>p</code>子命令，然后等到最后在IDE或者编辑器中合并，如果想要丢弃自己的修改，使用<code>tc</code>子命令；如果要丢弃别人的修改，使用<code>mc</code>子命令。</p>
+
+<p>最后，在编辑器中修改完了这些冲突之后，使用:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>svn resolved pom.xml
+</span><span class='line'>Resolved conflicted state of <span class="s1">&#39;pom.xml&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>来标记该冲突已经被解决。最后，运行测试并提交本次修改：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>mvn clean <span class="nb">test</span>
+</span><span class='line'><span class="nv">$ </span>svn ci -m <span class="s2">&quot;Merge branch b with trunk&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2453,508 +2608,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/12/meta-programming-in-ruby/">Ruby元编程的一个示例：InactiveRecord</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-15T15:18:00+08:00" pubdate data-updated="true">Dec 15<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h4>一个场景</h4>
-
-<p>元编程在所有的Lisp系语言中应该都是一个必备的feature，coommon lisp, scheme等包含该功能自然不在话下，而比较主流的编程语言如JavaScript，python之流，也或多或少的受到了lisp得影响，在面向对象的同时，也嵌入了一些元编程的特性。</p>
-
-<p>而元编程在ruby中，虽然不如在lisp的宏那样灵活/强大，但是对于被“主流”编程语言影响很久的程序员 &#8211; 如我，来说，已经非常震撼了。</p>
-
-<p>很多ruby程序员都是通过rails才慢慢接触到ruby本身的，在rails中，ORM是通过强大到无穷大得<a href="http://guides.rubyonrails.org/active_record_basics.html">ActiveRecord</a>来完成的。</p>
-
-<p>一个简单的示例如：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class Person &lt; ActiveRecord::Base
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>对应的，数据库中有一个Person的表：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>CREATE TABLE person (
-</span><span class='line'>   id int(11) NOT NULL auto_increment,
-</span><span class='line'>   name varchar(255),
-</span><span class='line'>   age int,
-</span><span class='line'>   email varchar(255),
-</span><span class='line'>   PRIMARY KEY  (id)
-</span><span class='line'>);</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，在使用模型Person的地方，可以很容易的编写这样的代码：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>juntao = Person.new
-</span><span class='line'>
-</span><span class='line'>juntao.name = 'juntao'
-</span><span class='line'>juntao.age = 28
-</span><span class='line'>juntao.email = 'juntao.qiu@gmail.com'
-</span><span class='line'>
-</span><span class='line'>juntao.save</span></code></pre></td></tr></table></div></figure>
-
-
-<p>也就是说，开发者仅仅需要简单的创建一个与数据库同名的ruby类，然后这个类(Person)只需要继承自<code>ActiveRecord::Base</code>，那么它就自动的获得了很多的功能。这些神奇的功能就是通过ruby的元编程来完成的。</p>
-
-<h4>一个ActiveRecord的拙劣模仿</h4>
-
-<p>我们在这里将编写一个简单的类<code>InactiveRecord</code>，当有其他类继承自此类时，会完成如<code>ActiveRecord</code>那样的功能，当然第一步我们并没有数据校验之类的功能，只是简单的将数据存储起来即可：</p>
-
-<p>在person.rb文件中</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class Person &lt; InactiveRecord::Base
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在address.rb中：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class Address &lt; InactiveRecord::Base
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而在使用他们的地方：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require './person'
-</span><span class='line'>require './address'
-</span><span class='line'>
-</span><span class='line'>def test
-</span><span class='line'>    juntao = Person.new do |p| 
-</span><span class='line'>        p.name = 'Juntao'
-</span><span class='line'>        p.age = 28
-</span><span class='line'>        p.email = 'juntao.qiu@gmail.com'
-</span><span class='line'>    end 
-</span><span class='line'>
-</span><span class='line'>    juntao.save
-</span><span class='line'>
-</span><span class='line'>    nicholas = Person.new
-</span><span class='line'>    nicholas.name = 'Nicholas'
-</span><span class='line'>    nicholas.email = 'nicholas.ren@gmail.com'
-</span><span class='line'>
-</span><span class='line'>    nicholas.save
-</span><span class='line'>
-</span><span class='line'>    thougtworks = Address.new do |a| 
-</span><span class='line'>        a.street = 'Jinye 1st Rd'
-</span><span class='line'>        a.city = 'Xian'
-</span><span class='line'>        a.state = 'Shaanxi'
-</span><span class='line'>        a.country = 'China'
-</span><span class='line'>    end 
-</span><span class='line'>
-</span><span class='line'>    thougtworks.save
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>test</span></code></pre></td></tr></table></div></figure>
-
-
-<p>预期的，test测试会打印出一下信息：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ ruby main.rb 
-</span><span class='line'>{"name"=&gt;"Juntao", "age"=&gt;28, "email"=&gt;"juntao.qiu@gmail.com"}
-</span><span class='line'>{"name"=&gt;"Nicholas", "email"=&gt;"nicholas.ren@gmail.com"}
-</span><span class='line'>{"street"=&gt;"Jinye 1st Rd", "city"=&gt;"Xian", "state"=&gt;"Shaanxi", "country"=&gt;"China"}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里的save方法仅仅打印出当前对象上的属性即可。</p>
-
-<h4>InactiveRecord的实现</h4>
-
-<p>首先，对于最简单的case：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def test
-</span><span class='line'>    nicholas = Person.new
-</span><span class='line'>    nicholas.name = 'Nicholas'
-</span><span class='line'>    nicholas.email = 'nicholas.ren@gmail.com'
-</span><span class='line'>
-</span><span class='line'>    nicholas.save
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>只需要动态的创建<code>name=</code>或者<code>email=</code>这样的方法即可，这里有个比较trick的地方是，<code>nicholas.name = 'Nicholas'</code>其实是在<code>nicholas</code>对象上调用了一个名叫<code>name=</code>的方法，ruby会将等号和对象间的空格去掉。</p>
-
-<p>此时的实现非常简单，只需要在<code>method_missing</code>时，将调用时的key,value存在一个hash表中即可。这意味着，test中的那些<em>赋值</em>方法其实至始至终都并不存在，当ruby调用<code>name=</code>的时候，发现<code>nicholas</code>对象上并没有这个方法，然后ruby会沿着方法查找链向上追溯，直到顶级对象BasicObject时，还是没有发现，这时候，ruby会fallback到method_missing上，这个时刻，如果我们捕获这个调用，并完成对@attrs的赋值的话，那么这个方法事实上并不存在，但是又不会抛出异常。</p>
-
-<p>当然在这个时刻，我们事实上可以为类动态的定义一些方法，由于这些方法不能通过常规方式看到(类定义中无法看到，而且在对象的methods列表中也无法看到)，因此它被称之为幽灵方法。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>module InactiveRecord
-</span><span class='line'>    class Base
-</span><span class='line'>        def initialize(&block)
-</span><span class='line'>            @attrs = {}
-</span><span class='line'>        end 
-</span><span class='line'>            
-</span><span class='line'>        def method_missing(method, *args, &block)
-</span><span class='line'>           attr = method.to_s
-</span><span class='line'>           if attr =~ /=$/
-</span><span class='line'>               @attrs[attr.chop] = args[0]
-</span><span class='line'>           else
-</span><span class='line'>               @attrs[attr]
-</span><span class='line'>           end 
-</span><span class='line'>        end 
-</span><span class='line'>
-</span><span class='line'>        def save
-</span><span class='line'>            p @attrs
-</span><span class='line'>        end 
-</span><span class='line'>    end 
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>更进一步，对于下边这种形式的创建方式：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>juntao = Person.new do |p| 
-</span><span class='line'>  p.name = 'Juntao'
-</span><span class='line'>  p.age = 28
-</span><span class='line'>  p.email = 'juntao.qiu@gmail.com'
-</span><span class='line'>end 
-</span><span class='line'>
-</span><span class='line'>juntao.save</span></code></pre></td></tr></table></div></figure>
-
-
-<p>则需要对<code>InactiveRecord::Base</code>中做一些修改：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def initialize(&block)
-</span><span class='line'>    @attrs = {}
-</span><span class='line'>    if block_given?
-</span><span class='line'>        if block.arity == 1
-</span><span class='line'>            yield self
-</span><span class='line'>        end
-</span><span class='line'>    end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果调用者传递了一个block(可执行的单元)进来，那么使用<code>yield</code>将对象本身传递给该block。</p>
-
-<h4>专业的spec</h4>
-
-<p><a href="http://nicholasren.github.io/">同事任晓君</a>是一个ruby专家，他为这个InactiveRecord设计了一个spec：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>require 'spec_helper'
-</span><span class='line'>
-</span><span class='line'>InactiveRecord::Base.config do |config|
-</span><span class='line'>  config.schemas "spec/fixtures/schema.yml"
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>class Person &lt; InactiveRecord::Base
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>describe "InactiveRecord" do
-</span><span class='line'>  context "save attribtues" do
-</span><span class='line'>    subject {
-</span><span class='line'>      juntao = Person.new do |p|
-</span><span class='line'>        p.name = 'juntao'
-</span><span class='line'>        p.age = 28
-</span><span class='line'>        p.email = 'juntao.qiu@gmail.com'
-</span><span class='line'>      end
-</span><span class='line'>      juntao
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    it "should read saved attributes " do
-</span><span class='line'>      subject.name.should == 'juntao'
-</span><span class='line'>      subject.age.should == 28
-</span><span class='line'>      subject.email.should == "juntao.qiu@gmail.com"
-</span><span class='line'>    end
-</span><span class='line'>  end
-</span><span class='line'>
-</span><span class='line'>  context "schema validation" do
-</span><span class='line'>    subject {
-</span><span class='line'>      juntao = Person.new do |p|
-</span><span class='line'>        p.name = 'juntao'
-</span><span class='line'>        p.age = 28
-</span><span class='line'>        p.email = 'juntao.qiu@gmail.com'
-</span><span class='line'>      end
-</span><span class='line'>      juntao
-</span><span class='line'>    }
-</span><span class='line'>
-</span><span class='line'>    context "change a valid field" do
-</span><span class='line'>      it "should succeed" do
-</span><span class='line'>        subject.age = 29
-</span><span class='line'>        subject.age.should == 29
-</span><span class='line'>      end
-</span><span class='line'>    end
-</span><span class='line'>
-</span><span class='line'>    context "change a invalid field" do
-</span><span class='line'>      it "should raise error" do
-</span><span class='line'>        expect { subject.weight= 60 }.to raise_error(StandardError)
-</span><span class='line'>      end
-</span><span class='line'>    end
-</span><span class='line'>  end
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在<code>spec/fixtures/schema.yml</code>中，定义了Person的schema，<code>ActiveRecord</code>会从数据库中获得元数据，<code>InactiveRecord</code>在一点上大大的简化了：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>---
-</span><span class='line'>Person:
-</span><span class='line'>  Name: String
-</span><span class='line'>  Age: Integer
-</span><span class='line'>  Email: String</span></code></pre></td></tr></table></div></figure>
-
-
-<p>预期的运行结果应当是：</p>
-
-<p><img src="http://abruzzi.github.com/images/2013/12/rspec.png" alt="image" /></p>
-
-<h4>基于这个spec的进一步实现</h4>
-
-<p>由于加入了对schema的校验，即，对于非法的赋值<code>juntao.weight=60</code>，InactiveRecord会报告一个异常，因为<code>weight</code>并不存在在schema中。</p>
-
-<p>ruby在对象模型中提供了一些hook，当别的类包含一个模块，或者集成一个类时，这些hook会被触发，这个特性被很多ruby框架使用，从而实现很多有趣的代码风格。</p>
-
-<p>由于所有的model都需要继承自<code>InactiveRecord::Base</code>，因此我们可以在该类上注册一个hook：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def inherited(who)
-</span><span class='line'>    table_name = who.name.downcase
-</span><span class='line'>    table = YAML.load_file("./metadata/#{table_name}.yml")
-</span><span class='line'>        
-</span><span class='line'>    who.class_eval do
-</span><span class='line'>        define_method :schema do
-</span><span class='line'>            table[who.name]
-</span><span class='line'>        end 
-</span><span class='line'>    end 
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，对于每一个继承自<code>InactiveRecord::Base</code>的类，就动态的添加了一个方法，方法名为schema，这个方法可以获得类名对应的yml文件中定义的shema信息。此处的<code>define_method</code>动态的定义了一个新的方法，方法名为<code>schema</code>，后边的block中定义了方法体，在此处仅仅是返回从yml中读取的schema。</p>
-
-<p>最后，在method_missing中，需要在赋值方法被调用时，查看该方法是否存在于schema中：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>def method_missing(method, *args, &block)
-</span><span class='line'>   attr = method.to_s
-</span><span class='line'>   if @attrs.key?(attr)
-</span><span class='line'>       @attrs[attr]
-</span><span class='line'>   elsif attr =~ /=$/
-</span><span class='line'>       raise StandardError.new("invalid attribute") 
-</span><span class='line'>       unless valid?(attr.chop)
-</span><span class='line'>       @attrs[attr.chop] = args[0]
-</span><span class='line'>   else
-</span><span class='line'>       super.method_missing(method, args, &block)
-</span><span class='line'>   end
-</span><span class='line'>end
-</span><span class='line'>
-</span><span class='line'>def valid? attr
-</span><span class='line'>    schema.keys.map{|key| key.downcase}.include? attr
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果schema中并不包含赋值字段：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>person.style = "#004c97"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>则会抛出一个错误退出:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>/Users/twer/develop/tutorial/meta/inactive_record.rb:38:in `method_missing': invalid attribute (StandardError)
-</span><span class='line'>  from main.rb:38:in `test'
-</span><span class='line'>  from main.rb:41:in `&lt;main&gt;'</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/8/">&larr; Older</a>
@@ -2972,6 +2625,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2018/01/two-types-of-developer/">团队里的两类程序员</a>
+      </li>
+    
+      <li class="post">
         <a href="/2018/01/feedback-saves-the-world/">反馈拯救世界</a>
       </li>
     
@@ -2985,10 +2642,6 @@
     
       <li class="post">
         <a href="/2017/03/whats-the-thoughtworks-insight-talking-about/">ThoughtWorks洞见讲什么？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2017/03/visualise-the-data-around-you/">一张漂亮的可视化图表背后</a>
       </li>
     
   </ul>

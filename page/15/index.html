@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="前言 日常的开发工作中，为代码添加注释是代码可维护性的一个重要方面，但是仅仅提供注释是不够的，特别是当系统功能越来越复杂，涉及到的模块越来越多的时候，仅仅靠代码就很难从宏观的层次去理解。因此我们需要图例的支持，图例不仅仅包含功能之间的交互，也可以包含复杂的数据结构的示意图，数据流向等。 但是， &hellip;">
+  <meta name="description" content="很早前在javaeye发布《JavaScript内核系列》的时候，就提到一个JavaScript的解释器的桌面版本，实现基本的代码编辑和脚本执行的功能。最初的计划是：用户可以很方便的使用这个小工具进行JavaScript代码的验证，测试等，但是由于最初的代码和UI都很糟糕，就一直放着， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,50 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/01/jsevaluator-1-0beta%E7%89%88%E6%9C%AC%E5%8F%91%E5%B8%83/">JSEvaluator 1.0beta版本发布</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-01-29T00:00:00+08:00" pubdate data-updated="true">Jan 29<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><p>很早前在javaeye发布<a href="http://abruzzi.iteye.com/blog/895099" target="_blank">《JavaScript内核系列》</a>的时候，就提到一个JavaScript的解释器的桌面版本，实现基本的代码编辑和脚本执行的功能。最初的计划是：用户可以很方便的使用这个小工具进行JavaScript代码的验证，测试等，但是由于最初的代码和UI都很糟糕，就一直放着，最近又开始整理《JavaScript Core》，就重构了一下代码，并作为v1.0beta版本发布。目前托管在google code上，项目名叫<a href="http://code.google.com/p/jsevaluator/" target="_blank">jsevaluator</a>。</p> <p><a href="http://abruzzi.github.com/images/2012/01/JSEvaluator-real.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="JSEvaluator-real" border="0" alt="JSEvaluator-real" src="http://abruzzi.github.com/images/2012/01/JSEvaluator-real_thumb.png" width="501" height="377" /></a></p> <p>比如，要验证对JavaScript数组的两种遍历的不同，代码如下：</p> <div id="codeSnippetWrapper"> <div style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum1">   1:</span> <span style="color: #0000ff">var</span> array = [<span style="color: #006080">'one'</span>, <span style="color: #006080">'two'</span>, <span style="color: #006080">'three'</span>, <span style="color: #006080">'four'</span>];</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum2">   2:</span> array.<span style="color: #0000ff">extern</span> = <span style="color: #006080">'external'</span>;</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum3">   3:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum4">   4:</span> <span style="color: #0000ff">for</span>(<span style="color: #0000ff">var</span> item <span style="color: #0000ff">in</span> array){</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum5">   5:</span>     print(item+<span style="color: #006080">'='</span>+array[item]);</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum6">   6:</span> }</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum7">   7:</span>&nbsp; </pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum8">   8:</span> <span style="color: #0000ff">for</span>(<span style="color: #0000ff">var</span> i = 0; i &lt; array.length; i++){</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: white; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum9">   9:</span>     print(array[i]);</pre><!--CRLF--><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px"><span style="color: #606060" id="lnum10">  10:</span> }</pre><!--CRLF--></div></div>
+<p>&nbsp;</p>
+<p>其中使用到了一个外部的代码语法高亮组件<a href="http://code.google.com/p/jsyntaxpane/" target="_blank">jsyntaxpane</a>，非常好用。目前，jsevaluator仅支持最基本的一些功能：</p>
+<ul>
+<li>载入外部的JavaScript文件</li>
+<li>新建一个临时缓冲区(类似于mini-buffer)</li>
+<li>编译并执行JavaScript脚本，并将结果输出在console窗口中</li>
+<li>保存文件内容</li></ul>
+<p>最为一个实验工具，上述功能已经差不多够用，如果有人想做扩展，不妨加入这个<a href="http://code.google.com/p/jsevaluator/" target="_blank">小项目</a>，并提供自己的修改。</p></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -687,49 +731,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2010/01/%E8%AE%BA%E6%96%87%E8%A8%80%E6%96%87%E4%B8%AD%E7%9A%84%E8%AF%AD%E8%A8%80%E5%8E%8B%E7%BC%A9%E7%8E%B0%E8%B1%A1/">论文言文中的语言压缩现象</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2010-01-03T00:00:00+08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2010</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><h2>前言</h2>
-文言文在中国的封建社会中作为文化的载体存在并发展了2000余年，其中存在着大量的，与现代语文不同的语言现象。最近翻了翻《明文选》，发现了若干处关于文言文中的“语言压缩”现象，收录如后。语言压缩，主要体现在对成语，谶语，典故的运用，通过这种约定俗成的简写形式，减少了信息冗余(当然可能并非文言文之本意)。写作时，作者对信息进行压缩，在另一个人读的时候，在读者的大脑中在进行解压缩，还原为原始的信息。
-<h2>案例</h2>
-唐顺之《答茅鹿门知县二》中有云：“鹿门所见于吾者，殆故吾矣，而未尝见夫槁形灰心之吾乎？”，是说，鹿门(茅坤，字顺甫，号鹿门，唐顺之之知交)知道的我，应该是之前的我，而不是“槁形灰心”的我。槁形灰心，语本《庄子.齐物论》：“南郭子綦隐机而坐，仰天而嘘，苔焉似丧其耦。颜成子游立侍乎前 ，曰：‘何居乎？形固可使如槁木，而心固可使如死灰乎？今之隐机者，非昔之隐机者也？”子綦曰：“偃，不亦善乎而问之也！今者吾丧我，汝知之乎？女闻人籁而未闻地籁，女闻地籁而不闻天籁夫！’”本义为形容枯槁，心如死灰。“今之隐机者，非昔之隐机者也？”，意为今天伏案的你，不像往常伏案的你了。子綦回答：“问得好，今天的我已经抛弃了过去的旧我，……”，所以根据上下文可知，此处的“槁形灰心”并非指作者(唐顺之)形容枯槁，而是表达：“今天的我已经不是过去的我了”这层意思。短短四字，即可传神的表达出作者知今是而昨非的感慨。</p>
-
-<p>在同一篇文章中，有“文莫犹人，躬行未得，此一段公案姑不敢论”，语本《论语.述而》：“文，莫吾犹人也，躬行君子，则吾未之有得”。这句话中的“莫”字，有两种理解，则这句话就有两个截然不同的意义。魏何晏注：“莫，无也”，意思则为：书本上的学问，我不如别人，亲身实践，我也没有成功。宋朱熹注：“莫，疑辞”，表怀疑的语气，意为：书本上的学问，我可能和别人差不多，但亲身实践，则还没有成功。因为一个字的解释会影响到整句话，所以称为公案。
-<h2>小结</h2>
-《明文选》凡一百五十一篇，作者六十四位，其中语法各种语法现象杂出其间，值得深入研究，这次先介绍一下“语言压缩”现象，至于其他，容后再续。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/16/">&larr; Older</a>
@@ -747,6 +748,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2018/01/two-types-of-developer/">团队里的两类程序员</a>
+      </li>
+    
+      <li class="post">
         <a href="/2018/01/feedback-saves-the-world/">反馈拯救世界</a>
       </li>
     
@@ -760,10 +765,6 @@
     
       <li class="post">
         <a href="/2017/03/whats-the-thoughtworks-insight-talking-about/">ThoughtWorks洞见讲什么？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2017/03/visualise-the-data-around-you/">一张漂亮的可视化图表背后</a>
       </li>
     
   </ul>
