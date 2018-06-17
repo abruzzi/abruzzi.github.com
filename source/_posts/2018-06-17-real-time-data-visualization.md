@@ -306,7 +306,7 @@ ws.onmessage = function (evt) {
 
 ## 统计信息的呈现
 
-### Graphite
+### 使用Graphite
 
 `graphite`自带了一个可视化的界面，你可以选择将多个指标展现在同一个界面上：
 
@@ -328,54 +328,53 @@ http://localhost/render?format=raw&target=alias(sumSeries(stats.jc.airport.campa
 
 这里的`target`的值为`alias(sumSeries(stats.jc.airport.campaigns.*), '')`，表示要对所有的以`stats.jc.airport.campaigns`开头的指标的值求和。通过`from`和`until`指定起止时间，可以获取在该段时间中所有的数据，这样我们可以通过客户端轮询的方式，逐步的、实时的展现出一些指标的统计信息。
 
-### [Cubism.js](http://square.github.io/cubism/) + graphite
+`Graphite`提供了丰富的函数用以聚合指标，比如求平均值，方差，极值等常规操作，还可以对两个/多个指标进行算数操作，从而获得新的数据集等等。这里有一份[完整的列表](http://graphite.readthedocs.io/en/latest/render_api.html#id3)。
 
-`Cubism`是D3.js的一个插件，专门用来展现基于时间的实时报表。事实上，其背后有许多研究和论文支持，即`horizon`图。
+### 使用Horizon Chart展现实时数据
+
+[Cubism](http://square.github.io/cubism/)是D3.js的一个插件，专门用来展现基于时间的实时报表。事实上，Cubism背后有许多研究和论文支持，即`horizon Chart`（地平线图）。这种图表会以一个固定频率来不断的刷新，数据看起来会不断的向左侧移动，最左侧的、老的数据会消失；同事右侧会不断的有新的数据流入并被绘制。
+
+你可以为地平线图指定不同的数据源，以`graphite`为例，你可以这样指定：
 
 ```js
-var context = cubism.context()
-    .serverDelay(10 * 1000) // allow 10 seconds of collection lag
-    .step(10 * 1000) // 10 seconds per value
-    .size(1440); // fetch 1440 values (720p)
-
 var graphite = context.graphite("http://localhost");
 
 var api_metrics = [
   graphite.metric("sumSeries(stats.jc.airport.campaigns.*)").alias("Campaigns Freq")
 ];
+```
 
-var horizon = context
-	.horizon()
-	.colors(["#78FF00", "#CFFFA4", "#B3FF70", "#5BC200", "#469500"])
-	.height(40);
+这样`cubism`会向`graphite`服务器会定时的发送请求：
 
-d3.select("body").selectAll(".axis")
-    .data(["top", "bottom"])
-  .enter().append("div").attr("class", "fluid-row")
-    .attr("class", function(d) { return d + " axis"; })
-    .each(function(d) { d3.select(this).call(context.axis().ticks(12).orient(d)); });
+```
+http://localhost/render?format=raw&target=alias(sumSeries(stats.jc.airport.campaigns.*)%2C%27%27)&from=1529245830&until=1529245929
+```
 
-d3.select("body").append("div")
-    .attr("class", "rule")
-    .call(context.rule());
+然后根据实际的数据，`cubism`会不断的刷新图表：
 
+```js
 d3.select("body").selectAll(".horizon")
     .data(api_metrics)
   .enter().insert("div", ".bottom")
     .attr("class", "horizon").call(horizon.extent([0, 50]));
-
-context.on("focus", function(i) {
-  d3.selectAll(".value")
-  	.style("right", i == null ? null : context.size() - 1 - i + "px")
-  	.text((d) => isNaN(d) ? 0 : d.toFixed(2)) ;
-});
 ```
 
 ![](/images/2018/06/cubism-graphite-resized.png)
+
+事实上，由于`horizon`图表纵向占用的空间很少，你可以很容易的将多个表合并在一起，形成多行图表。
 
 ## 小结
 
 本文介绍了实时数据可视化的一些典型场景，以及通用的数据准备及呈现方法。通过一些既有的工具或者简单的脚本，我们就可以将实时产生的数据feed到统计用的时序数据库，然后按照不同的需求方式呈现出来。通常来说，基于固定时间间隔的统计数据更有意义一些，比如单位时间内的请求数量，请求的平均时延等；另一方面，仅仅将数据实时的呈现出来在某些场景下也非常有意义，比如系统实时的在线人数，发生登陆异常的占比，某些节点高于90%的负载等信息。
 
+### 参考资料
 
+- [Horizon Chart](http://vis.berkeley.edu/papers/horizon/2009-TimeSeries-CHI.pdf)
+- [Visualisation Papers](http://vis.berkeley.edu/papers/)
+- [Cubism](https://github.com/square/cubism/wiki)
+
+### 其他资料
+
+- [Setup Graphite in Docker](https://github.com/graphite-project/docker-graphite-statsd)
+- [An concrete example for using cubism with graphite](https://github.com/phobos182/cubism-graphite/blob/master/cubism/index.html)
 
