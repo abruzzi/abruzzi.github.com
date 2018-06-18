@@ -9,20 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="一个小故事 三年前，我在一篇博客里不无自豪的记录了python编写的小函数，当时感觉python真强大，11行代码就写出了一个配置文件的解析器。 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-def loadUserInfo(fileName): userinfo = {} file &hellip;">
+  <meta name="description" content="前言 4月初在北京的时候，徐昊同学表示我们公司的同事们写的文章都太简单，太注重细节，然后捡起了芝麻丢了西瓜，于是我就不再更新博客（其实根本原因是项目太忙）。上周和其他几个同事一起参加“Martin Fowler深圳行”的活动，我和同事扎西贡献了一个《FullStack Language &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -91,6 +78,387 @@ def loadUserInfo(fileName): userinfo = {} file &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/05/functional-programming-again/">又一篇JavaScript的函数式编程教程</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-23T17:37:00+08:00" pubdate data-updated="true">May 23<span>rd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>前言</h2>
+
+<p>4月初在北京的时候，徐昊同学表示我们公司的同事们写的文章都太简单，太注重细节，然后捡起了芝麻丢了西瓜，于是我就不再更新博客（其实根本原因是项目太忙）。上周和其他几个同事一起参加“Martin Fowler深圳行”的活动，我和同事扎西贡献了一个《FullStack Language JavaScript》，一起的还有杨云（江湖人称大魔头）的话题是《掌握函数式编程，控制系统复杂度》，李新（江湖人称新爷）的话题是《并发：前生来世》。</p>
+
+<p>和其他同事预演的时候，突然发现其实我们的主题或多或少都有些关联，我讲的部分也涉及到了基于事件的并发机制和函数式编程。仔细想想，应该与JavaScript本身的特性不无关系：</p>
+
+<ol>
+<li>基于事件（Event-Based）的Node.js的正是并发中很典型的一个模型</li>
+<li>函数式编程使其天然支持回调，从而非常适合异步/事件机制</li>
+<li>函数式编程特性使其非常适合DSL的编写</li>
+</ol>
+
+
+<p>会后的第二天，我在项目代码里忽然想要将一个聚合模型用函数式编程的方式重写一下，结果发现思路竟然与NoSQL依稀有些联系，进一步发现自己很多不足。</p>
+
+<p>下面这个例子来自于实际项目中的场景，不过Domain做了切换，但是丝毫不影响阅读和理解背后的机制。</p>
+
+<h3>一个书签应用</h3>
+
+<p>设想有这样一个应用：用户可以看到一个订阅的RSS的列表。列表中的每一项（称为一个Feed），包含一个<code>id</code>，一个文章的标题<code>title</code>和一个文章的链接<code>url</code>。</p>
+
+<p>数据模型看起来是这样的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">feeds</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s1">&#39;id&#39;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;url&#39;</span><span class="o">:</span> <span class="s1">&#39;http://abruzzi.github.com/2015/03/list-comprehension-in-python/&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;title&#39;</span><span class="o">:</span> <span class="s1">&#39;Python中的 list comprehension 以及 generator&#39;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s1">&#39;id&#39;</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;url&#39;</span><span class="o">:</span> <span class="s1">&#39;http://abruzzi.github.com/2015/03/build-monitor-script-based-on-inotify/&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;title&#39;</span><span class="o">:</span> <span class="s1">&#39;使用inotify/fswatch构建自动监控脚本&#39;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="s1">&#39;id&#39;</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;url&#39;</span><span class="o">:</span> <span class="s1">&#39;http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery/&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;title&#39;</span><span class="o">:</span> <span class="s1">&#39;使用underscore.js构建前端应用&#39;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当这个简单应用没有任何用户相关的信息时，模型非常简单。但是很快，应用需要从单机版扩展到Web版，也就是说，我们引入了用户的概念。每个用户都能看到一个这样的列表。另外，用户还可以收藏Feed。当然，收藏之后，用户还可以查看收藏的Feed列表。</p>
+
+<p><img src="/images/2015/05/bookmarks.png" alt="feed and user" /></p>
+
+<p>由于每个用户可以收藏多个Feed，而每个Feed也可以被多个用户收藏，因此它们之间的多对多关系如上图所示。可能你还会想到诸如:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl http://localhost:9999/user/1/feeds
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>来获取用户<code>1</code>的所有<code>feed</code>等，但是这些都不重要，真正的问题是，当你拿到了所有Feed之后，在UI上，需要为每个Feed填加一个属性<code>makred</code>。这个属性用来标示该feed是否已经被收藏了。对应到界面上，可能是一枚黄色的星星，或者一个红色的心。</p>
+
+<p><img src="/images/2015/05/bookmarks-design-resized.png" alt="bookmarkds design" /></p>
+
+<h4>服务器端聚合</h4>
+
+<p>由于关系型数据库的限制，你需要在服务器端做一次聚合，比如将feed对象包装一下，生成一个<code>FeedWrapper</code>之类的对象：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FeedWrapper</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Feed</span> <span class="n">feed</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">marked</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isMarked</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">marked</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setMarked</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">marked</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">marked</span> <span class="o">=</span> <span class="n">marked</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">FeedWrapper</span><span class="o">(</span><span class="n">Feed</span> <span class="n">feed</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">marked</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">feed</span> <span class="o">=</span> <span class="n">feed</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">marked</span> <span class="o">=</span> <span class="n">marked</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后定义一个<code>FeedService</code>之类的服务对象：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">FeedWrapper</span><span class="o">&gt;</span> <span class="n">wrapFeed</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Feed</span><span class="o">&gt;</span> <span class="n">markedFeeds</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Feed</span><span class="o">&gt;</span> <span class="n">feeds</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nf">newArrayList</span><span class="o">(</span><span class="n">transform</span><span class="o">(</span><span class="n">feeds</span><span class="o">,</span> <span class="k">new</span> <span class="n">Function</span><span class="o">&lt;</span><span class="n">Feed</span><span class="o">,</span> <span class="n">FeedWrapper</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="n">FeedWrapper</span> <span class="nf">apply</span><span class="o">(</span><span class="n">Feed</span> <span class="n">feed</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">markedFeeds</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">feed</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">return</span> <span class="k">new</span> <span class="nf">FeedWrapper</span><span class="o">(</span><span class="n">feed</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>                <span class="k">return</span> <span class="k">new</span> <span class="nf">FeedWrapper</span><span class="o">(</span><span class="n">feed</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>好吧，这也算是一个还凑合的实现，但是静态强类型的Java做这个事儿有点勉强，而且一旦发生新的变化（几乎肯定会发生），我们还是把这部分逻辑放在JavaScript中，来看看它是如何简化这一个过程的。</p>
+
+<h4>客户端聚合</h4>
+
+<p>快要说到主题了，这篇文章我们会使用<code>lodash</code>作为函数式编程的库来简化代码的编写。由于JavaScript是一个动态弱类型的语言，我们可以随时为一个对象添加属性，这样一个简单的<code>map</code>操作就可以完成上边的Java对应的代码了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">marked</span><span class="o">:</span> <span class="nx">isMarked</span><span class="p">(</span><span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">)});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中函数<code>isMarked</code>会做这样一件事儿：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">userMarkedIds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">];</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">isMarked</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">userMarkedIds</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>即查看传入的参数是否在一个列表<code>userMarkedIds</code>，这个列表可能由下列的请求来获得：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl http://localhost:9999/user/1/marked-feed-ids
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>之所有只获取id是为了减少网络传输的数据大小，当然你也可以将全部的<code>/marked-feeds</code>都请求到，然后在本地做<code>_.pluck(feeds, 'id')</code>来抽取所有的<code>id</code>属性。</p>
+
+<p>嗯，代码是精简了许多。但是如果仅仅能做到这一步的话，也没有多大的好处嘛。现在需求又有了变化，我们需要在另一个页面上展示当前用户的收藏夹（用以展示用户所有收藏的feed）。作为程序员，我们可不愿意重新写一套界面，如果能复用同一套逻辑当然最好了。</p>
+
+<p>比如对于上面这个列表，我们已经有了对应的模板：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="o">{{</span><span class="c">#each feeds}}</span>
+</span><span class='line'>&lt;li <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;list-item&quot;</span>&gt;
+</span><span class='line'>    &lt;div <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;section&quot;</span> data-feed-id<span class="o">=</span><span class="s2">&quot;{{this.id}}&quot;</span>&gt;
+</span><span class='line'>        <span class="o">{{</span><span class="c">#if this.marked}}</span>
+</span><span class='line'>            &lt;span <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;marked icon-favorite&quot;</span>&gt;&lt;/span&gt;
+</span><span class='line'>        <span class="o">{{</span><span class="k">else</span><span class="o">}}</span>
+</span><span class='line'>            &lt;span <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;unmarked icon-favorite&quot;</span>&gt;&lt;/span&gt;
+</span><span class='line'>        <span class="o">{{</span>/if<span class="o">}}</span>
+</span><span class='line'>        &lt;a <span class="nv">href</span><span class="o">=</span><span class="s2">&quot;/feeds/{{this.url}}&quot;</span>&gt;
+</span><span class='line'>            &lt;div <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;detail&quot;</span>&gt;
+</span><span class='line'>                &lt;h3&gt;<span class="o">{{</span>this.title<span class="o">}}</span>&lt;/h3&gt;
+</span><span class='line'>            &lt;/div&gt;
+</span><span class='line'>        &lt;/a&gt;
+</span><span class='line'>    &lt;/div&gt;
+</span><span class='line'>&lt;/li&gt;
+</span><span class='line'><span class="o">{{</span>/each<span class="o">}}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>事实上，这段代码在收藏夹页面上完全可以复用，我们只需要把所有的<code>marked</code>属性都设置为true就行了！简单，很快我们就可以写出对应的代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">marked</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>漂亮！而且重要的是，它还可以如正常工作！但是作为程序员，你很快就发现了两处代码的相似性：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">marked</span><span class="o">:</span> <span class="nx">isMarked</span><span class="p">(</span><span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">)});</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">marked</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>消除重复是一个有追求的程序员的基本素养，不过要消除这两处貌似有点困难：位于<code>marked:</code>后边的，一个是函数调用，另一个是值！如果要简化，我们不得不做一个匿名函数，然后以回调的方式来简化：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">predicate</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">marked</span><span class="o">:</span> <span class="nx">predicate</span><span class="p">(</span><span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">)});</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对于feed列表，我们要调用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">isMarked</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而对于收藏夹，则需要传入一个匿名函数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span><span class="k">return</span> <span class="kc">true</span><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在<code>lodash</code>中，这样的匿名函数可以用<code>_.wrap</code>来简化：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">wrap</span><span class="p">(</span><span class="kc">true</span><span class="p">));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>好了，目前来看，简化的还不错，代码缩减了，而且也好读了一些（当然前提是你已经熟悉了函数式编程的读法）。</p>
+
+<h4>更进一步</h4>
+
+<p>如果仔细审视<code>isMarked</code>函数，会发现它对外部的依赖不是很漂亮（而且这个外部依赖是从网络异步请求来的），也就是说，我们需要在请求到<code>markedIds</code>的地方才能定义<code>isMarked</code>函数，这样就把函数定义<code>绑定</code>到了一个固定的地方，如果该函数的逻辑比较复杂，那么势必会影响代码的可维护性（或者更糟糕的是，多出维护）。</p>
+
+<p>要将这部分代码隔离出去，我们需要将<code>ids</code>作为参数传递出去，并得到一个可以当做谓词（判断一个id是否在列表中的谓词）的函数。</p>
+
+<p>简而言之，我们需要：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">predicate</span> <span class="o">=</span> <span class="nx">createFunc</span><span class="p">(</span><span class="nx">ids</span><span class="p">);</span>
+</span><span class='line'><span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">predicate</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里的<code>createFunc</code>函数接受一个列表作为参数，并返回了一个谓词函数。而这个谓词函数就是上边说的<code>isMarked</code>。这个神奇的过程被称为柯里化<code>currying</code>，或者偏函数<code>partial</code>。在<code>lodash</code>中，这个很容易实现：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">isMarkedIn</span><span class="p">(</span><span class="nx">ids</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">partial</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">includes</span><span class="p">,</span> <span class="nx">ids</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个函数会将<code>ids</code>保存起来，当被调用时，它会被展开为：<code>_.includes(ids, &lt;id&gt;)</code>。只不过这个<code>&lt;id&gt;</code>会在实际迭代的时候才传入：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;/marked-feed-ids&#39;</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">ids</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">wrappedFeeds</span> <span class="o">=</span> <span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">isMarkedIn</span><span class="p">(</span><span class="nx">ids</span><span class="p">));</span>
+</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">wrappedFeeds</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样我们的代码就被简化成了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;/marked-feed-ids&#39;</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">ids</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">wrappedFeeds</span> <span class="o">=</span> <span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">isMarkedIn</span><span class="p">(</span><span class="nx">ids</span><span class="p">));</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">markedFeeds</span> <span class="o">=</span> <span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">wrap</span><span class="p">(</span><span class="kc">true</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">allFeedList</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">template</span><span class="p">({</span><span class="nx">feeds</span><span class="o">:</span> <span class="nx">wrappedFeeds</span><span class="p">}));</span>
+</span><span class='line'>    <span class="nx">markedFeedList</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">template</span><span class="p">({</span><span class="nx">feeds</span><span class="o">:</span> <span class="nx">markedFeeds</span><span class="p">}));</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3172,399 +3540,6 @@ def loadUserInfo(fileName): userinfo = {} file &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2015/01/page-object-with-site-prism/">编写体面的UI测试</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-01-02T13:58:00+08:00" pubdate data-updated="true">Jan 2<span>nd</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>PageObject简介</h3>
-
-<p><code>PageObject</code>是编写UI测试时的<a href="http://martinfowler.com/bliki/PageObject.html">一种模式</a>。简而言之，你可以将所有知道页面细节的部分放入到这个对象上，对于编写测试的人来说，一个<code>PageObject</code>代表了一个页面，或者页面上的一个区域（比如搜索框，搜索结果，侧边栏等都可能是一个独立的<code>Object</code>）。这样做的好处分为两个方面：</p>
-
-<ol>
-<li>封装了所有的实现细节（内部的HTML是如何组织的）</li>
-<li>对外的接口非常清晰，从而代码更加语义化</li>
-</ol>
-
-
-<p>我们这里列举一个简单的例子来说明：</p>
-
-<p>我们要测试的场景是：我们在一个搜索应用中，用户输入了<code>ThoughtWorks</code>，我们来判断搜索结果的第一页有<code>10</code>条结果。如果使用原生的<code>capybara</code>，代码大致会如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">visit</span> <span class="s1">&#39;/search&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">fill_in</span> <span class="s1">&#39;Search&#39;</span><span class="p">,</span> <span class="ss">:with</span> <span class="o">=&gt;</span> <span class="s1">&#39;ThoughtWorks&#39;</span>
-</span><span class='line'><span class="n">click_button</span> <span class="s1">&#39;#search&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">expect</span><span class="p">(</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;#result&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;.tips&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">to</span> <span class="n">have_content</span><span class="p">(</span><span class="s2">&quot;10&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>首先我们进入<code>/search</code>页面，然后在<code>Search</code>中输入了<code>ThoughtWorks</code>关键字，然后点击<code>#search</code>按钮，最后判断<code>#result .tips</code>下有<code>10</code>的字样。</p>
-
-<p>如果使用<code>PageObject</code>，代码则会变成（<em>这个是伪代码</em>）：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">search</span> <span class="o">=</span> <span class="no">SearchBox</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="no">SearchResult</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">search</span><span class="o">.</span><span class="n">type</span> <span class="s2">&quot;ThoughtWorks&quot;</span>
-</span><span class='line'><span class="n">expect</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">eq</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>site_prism 简介</h3>
-
-<p><a href="https://github.com/natritmeyer/site_prism">site_prism</a>是一个构建在<a href="https://github.com/jnicklas/capybara">capybara</a>之上的用于建模<code>Page Object</code>的gem。使用<code>site_prism</code>可以很语义化的编写<code>Page Object</code>，可以使代码非常易读。</p>
-
-<p>位于<code>顶层</code>的<code>Page</code>对象可以拥有多个<code>Section</code>对象，每个<code>Section</code>可以对应页面上的一些逻辑上的块，比如内容区域，边栏等。对于现在流行的<code>SPA</code>，我们只需要一个<code>Page</code>和若干个<code>Section</code>就足够了。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">MovingHome</span> <span class="o">&lt;</span> <span class="no">SitePrism</span><span class="o">::</span><span class="no">Page</span>
-</span><span class='line'>  <span class="n">set_url</span> <span class="s1">&#39;http://localhost:8100/bundles/moving-home&#39;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:container</span><span class="p">,</span> <span class="s2">&quot;#tmsCheckout&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">section</span> <span class="ss">:personal</span><span class="p">,</span> <span class="no">PersonalSection</span><span class="p">,</span> <span class="s2">&quot;#acc-personal&quot;</span>
-</span><span class='line'>  <span class="n">section</span> <span class="ss">:contact</span><span class="p">,</span> <span class="no">ContactSection</span><span class="p">,</span> <span class="s2">&quot;#acc-contact&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>set_url</code>方法制定了如何到达当前页，也是<code>webdriver</code>会实际发送请求的<code>URL</code>。页面本身上可以用<code>element</code>方法来声明一个元素，以及该元素对应的CSS选择器，这样就可以通过元素的名称来访问该选择器对应的HTML元素了。</p>
-
-<p>比如上例中的<code>container</code>，我们在测试中就可以这样来访问它：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="vi">@moving</span> <span class="o">=</span> <span class="no">MovingHome</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'><span class="vi">@moving</span><span class="o">.</span><span class="n">load</span>
-</span><span class='line'>
-</span><span class='line'><span class="vi">@moving</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">should</span> <span class="n">be_visible</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而对应的<code>section</code>元素，则声明了一个块的名称，块的类和块的选择器。这样我们就可以通过名称来应用该块了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">set</span> <span class="s2">&quot;Juntao&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">expect</span><span class="p">(</span><span class="vi">@moving</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_personal</span>
-</span><span class='line'><span class="n">expect</span><span class="p">(</span><span class="vi">@moving</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_contact</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>have_</code>前缀加块的名称，用来判断该块是否可见（比如display: block）。</p>
-
-<h3>一个项目上的实例</h3>
-
-<p>目前项目上有一个页面需要添加一些新的特性，对应的需要添加一些UI测试。之前的所有代码都是面向过程的，代码非常多，重复代码都通过抽成一个函数来组织，无法和实际的页面模块对应起来。因此我使用<code>site_prism</code>做了一些尝试。</p>
-
-<p>业务场景是这样的：用户想要办理移机业务（比如搬家了，相应的宽带/有线电视要办理移机），这时候用户需要填写一些个人信息，联系方式，老地址，新地址等，这样我们就可以联系到他并帮他完成移机。而目前的页面也已经按照这些信息的关联度组织成了这样的形式：</p>
-
-<p><img src="/images/2015/01/moving-home-resized.png" alt="moving home" /></p>
-
-<p>可以看到，页面本身的组织已经比较清晰了，这非常方便我们抽取<code>PageObject</code>：每一个<code>块</code>都可以抽取为一个<code>Section</code>类的子类。</p>
-
-<h4>第一次尝试</h4>
-
-<p>比如对于个人信息这一个块：</p>
-
-<p><img src="/images/2015/01/personal-resized.png" alt="personal" /></p>
-
-<p>这个块包含称呼，姓名，出生日期等几部分，我们可以很容易找到对应的页面元素，并抽取为：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">class</span> <span class="nc">PersonalSection</span> <span class="o">&lt;</span> <span class="no">SitePrism</span><span class="o">::</span><span class="no">Section</span>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:myservice</span><span class="p">,</span> <span class="s2">&quot;#personal-my-services&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:title</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.title&quot;</span>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:first</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.firstName&quot;</span>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:last</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.lastName&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:dob_day</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.dobDay&quot;</span>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:dob_month</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.dobMonth&quot;</span>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:dob_year</span><span class="p">,</span> <span class="s2">&quot;#personal</span><span class="se">\\</span><span class="s2">.dobYear&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:summary</span><span class="p">,</span> <span class="s2">&quot;.tms-accordion-summary-content&quot;</span>
-</span><span class='line'>  <span class="n">element</span> <span class="ss">:next</span><span class="p">,</span> <span class="s2">&quot;.tms-btn-next&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>最直接的使用方法就是直接调用<code>set</code>方法：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">def</span> <span class="nf">fulfill_personal</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">myservice</span><span class="o">.</span><span class="n">set</span> <span class="s2">&quot;MINE&quot;</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">select</span> <span class="s2">&quot;Mr&quot;</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">set</span> <span class="s2">&quot;Juntao&quot;</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">set</span> <span class="s2">&quot;Qiu&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">dob_day</span><span class="o">.</span><span class="n">select</span> <span class="s2">&quot;21&quot;</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">dob_month</span><span class="o">.</span><span class="n">select</span> <span class="s2">&quot;Jan&quot;</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">dob_year</span><span class="o">.</span><span class="n">select</span> <span class="s2">&quot;1985&quot;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">next</span><span class="o">.</span><span class="n">click</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样在<code>Cucumber</code>测试中就可以写成：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">Given</span> <span class="sr">/I am on moving home page/</span> <span class="k">do</span>
-</span><span class='line'>  <span class="vi">@moving</span> <span class="o">=</span> <span class="no">MovingHome</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>      <span class="vi">@moving</span><span class="o">.</span><span class="n">load</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">When</span> <span class="sr">/I fulfill my personal information/</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">fulfill_personal</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>面向对象</h4>
-
-<p>这样的代码事实上已经沦为了面向过程的方式了，更好的做法是讲fulfill_personal放入<code>Personal</code>本身中：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="k">def</span> <span class="nf">fulfill</span><span class="p">(</span><span class="n">personal</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">myservice</span><span class="o">.</span><span class="n">set</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;myservice&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="n">title</span><span class="o">.</span><span class="n">select</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;title&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="n">first</span><span class="o">.</span><span class="n">set</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;first&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="n">last</span><span class="o">.</span><span class="n">set</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;last&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="n">dob_day</span><span class="o">.</span><span class="n">select</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;dob_day&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="n">dob_month</span><span class="o">.</span><span class="n">select</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;dob_month&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="n">dob_year</span><span class="o">.</span><span class="n">select</span> <span class="n">personal</span><span class="o">[</span><span class="s2">&quot;dob_year&quot;</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">next_button</span><span class="o">.</span><span class="n">click</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样，外部的使用者只需要调用即可：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">fixture</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">::</span><span class="n">load_file</span><span class="p">(</span><span class="s1">&#39;fixtures/moving.yml&#39;</span><span class="p">)</span>
-</span><span class='line'><span class="vi">@moving</span><span class="o">.</span><span class="n">personal</span><span class="o">.</span><span class="n">fulfill</span><span class="p">(</span><span class="n">fixture</span><span class="o">[</span><span class="s2">&quot;personal&quot;</span><span class="o">]</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>对应的<code>moving.yml</code>文件定义如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">personal</span><span class="p-Indicator">:</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">myservice</span><span class="p-Indicator">:</span> <span class="s">&quot;MINE&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">title</span><span class="p-Indicator">:</span> <span class="s">&quot;Mr&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">first</span><span class="p-Indicator">:</span> <span class="s">&quot;Juntao&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">last</span><span class="p-Indicator">:</span> <span class="s">&quot;Qiu&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">dob_day</span><span class="p-Indicator">:</span> <span class="s">&quot;1&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">dob_month</span><span class="p-Indicator">:</span> <span class="s">&quot;Jan&quot;</span>
-</span><span class='line'>    <span class="l-Scalar-Plain">dob_year</span><span class="p-Indicator">:</span> <span class="s">&quot;1985&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Misc</h4>
-
-<p>为了达到视觉效果，UI上通常会有一些延迟的效果。比如点击一个按钮，在100ms之后弹出一个对话框，但是这种效果会导致测试的<code>随机</code>失败。</p>
-
-<p>为了解决这个问题，我们可以通过给元素添加<code>wait_until_</code>前缀来等待。比如我们的测试中，在点击了下一步的按钮之后，预期有一个<code>查看收费详情</code>的对话框出现。根据一般的实现方式，这个对话框是预先写在页面上的，然后在合适的实际通过<code>JavaScript</code>将其显示在页面上（这样我们就不能通过查看该元素<em>是否存在</em>在页面上来编写断言了）。</p>
-
-<p><img src="/images/2015/01/lightbox-resized.png" alt="lightbox" /></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="n">element</span> <span class="ss">:lightbox_view_fees</span><span class="p">,</span> <span class="s2">&quot;#tmsLBViewFees&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">Then</span> <span class="sr">/I can see the lightbox View Fees shows up/</span> <span class="k">do</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">wait_until_lightbox_view_fees_visible</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>最后的结论</h3>
-
-<p>通常，我们的UI测试会和<code>特性描述</code>写在一起，以<code>Cucumber</code>为例，在<code>feature</code>文件中，我们会编写诸如这样的描述：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">Feature</span><span class="p">:</span> <span class="no">Platinum</span> <span class="no">Move</span>
-</span><span class='line'>  <span class="no">Scenario</span><span class="p">:</span> <span class="no">Platinum</span> <span class="no">Move</span>
-</span><span class='line'>      <span class="no">Given</span> <span class="n">I</span> <span class="n">am</span> <span class="n">on</span> <span class="n">moving</span> <span class="n">home</span> <span class="n">page</span>
-</span><span class='line'>      <span class="no">When</span> <span class="n">I</span> <span class="nb">select</span> <span class="n">to</span> <span class="n">move</span> <span class="n">my</span> <span class="n">service</span> <span class="s2">&quot;Foxtel from Telstra&quot;</span>
-</span><span class='line'>      <span class="no">And</span> <span class="n">I</span> <span class="nb">select</span> <span class="n">a</span> <span class="s2">&quot;Telstra technician install&quot;</span>
-</span><span class='line'>      <span class="no">Then</span> <span class="n">I</span> <span class="n">can</span> <span class="n">see</span> <span class="n">the</span> <span class="n">lightbox</span> <span class="s2">&quot;View Fees&quot;</span> <span class="n">shows</span> <span class="n">up</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而一个良好的<code>实现</code>，我是说，像<code>feature</code>描述一样清晰的实现，可能是这样的：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="no">Given</span> <span class="sr">/I am on moving home page/</span> <span class="k">do</span>
-</span><span class='line'>  <span class="vi">@moving</span> <span class="o">=</span> <span class="no">MovingHome</span><span class="o">.</span><span class="n">new</span>
-</span><span class='line'>      <span class="vi">@moving</span><span class="o">.</span><span class="n">load</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">When</span> <span class="sr">/I select to move my telstra service &quot;([^&quot;]*)&quot;/</span> <span class="k">do</span> <span class="o">|</span><span class="n">selected</span><span class="o">|</span>
-</span><span class='line'>  <span class="n">setup_data</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">fulfill</span> <span class="n">selected</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Then</span> <span class="sr">/I can see the installation form/</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">expect</span><span class="p">(</span><span class="vi">@moving</span><span class="p">)</span><span class="o">.</span><span class="n">to</span> <span class="n">have_move_service</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Then</span> <span class="sr">/I cannot see the installation form/</span> <span class="k">do</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">move_service</span><span class="o">.</span><span class="n">should_not</span> <span class="n">be_visible</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">And</span> <span class="sr">/I select a &quot;([^&quot;]*)&quot;/</span> <span class="k">do</span> <span class="o">|</span><span class="n">install</span><span class="o">|</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">move_service</span><span class="o">.</span><span class="n">select_install</span> <span class="n">install</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Then</span> <span class="sr">/I can see the lightbox &quot;([^&quot;]*)&quot; shows up/</span> <span class="k">do</span> <span class="o">|</span><span class="nb">name</span><span class="o">|</span>
-</span><span class='line'>  <span class="vi">@moving</span><span class="o">.</span><span class="n">lightbox</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span><span class="o">.</span><span class="n">should</span> <span class="n">be_visible</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>基本上，每个<code>step</code>仅仅对应1行（或者很少的几行）代码，而这些代码背后有一组组织良好的<code>PageObject</code>。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/6/">&larr; Older</a>
@@ -3582,6 +3557,10 @@ def loadUserInfo(fileName): userinfo = {} file &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2018/06/real-time-data-visualization/">实时数据的可视化</a>
+      </li>
+    
+      <li class="post">
         <a href="/2018/01/two-types-of-developer/">团队里的两类程序员</a>
       </li>
     
@@ -3595,10 +3574,6 @@ def loadUserInfo(fileName): userinfo = {} file &hellip;">
     
       <li class="post">
         <a href="/2017/07/tips-for-newbies/">如何成为一名优秀的程序员？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2017/03/whats-the-thoughtworks-insight-talking-about/">ThoughtWorks洞见讲什么？</a>
       </li>
     
   </ul>

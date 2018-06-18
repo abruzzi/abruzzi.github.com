@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="前言 Mapfile是MapServer用来描述一个地图的配置文件。它是一个很简单的声明式语言，一个地图（Map）可以有多个层（Layer），每个层可以有很多属性（键值对）。在一个层的定义中，还可以定义若干个类（Class），这个类用以管理不同的样式（Style）。 &hellip;">
+  <meta name="description" content="数据可视化 多年下来，我的Google Bookmarks里已经有近万条的书签。大部分内容是我在读过一遍之后就收藏起来的，也有很多看了一眼之后，觉得不错，然后收藏起来准备以后读的（当然，你也知道，再也没有打开过）。 有没有一个方法可以让我以可视化的方式，看到这些年我都学了那些东西呢？ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,235 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/11/what-you-have-learnt-those-years/">看看这些年你都学了什么？</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-11-01T17:03:00+08:00" pubdate data-updated="true">Nov 1<span>st</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>数据可视化</h3>
+
+<p>多年下来，我的<code>Google Bookmarks</code>里已经有近万条的书签。大部分内容是我在读过一遍之后就收藏起来的，也有很多看了一眼之后，觉得不错，然后收藏起来准备以后读的（当然，你也知道，再也没有打开过）。</p>
+
+<p>有没有一个方法可以让我以可视化的方式，看到这些年我都学了那些东西呢？将书签列表作为源数据，然后将这些信息可视化出来会非常有意思：比如收藏夹中的热门词是什么，哪段时间收藏了多少条的书签（学习投入程度趋势）等等。</p>
+
+<p>下图是我的书签中，排行前<code>30</code>的关键字排序。可以明显的看出，我对于<code>JavaScript</code>的喜爱程度相当高，对<code>美食</code>的喜爱也超过了<code>python</code>和<code>linux</code>。</p>
+
+<p><img src="/images/2015/11/bookmarks-trending-resized.png" alt="bookmarks trending" /></p>
+
+<p>这里我将使用<code>python</code>，结合<code>python</code>的一些库来实现<code>书签可视化</code>。简而言之，整个过程可以分成这样几个步骤：</p>
+
+<ol>
+<li>将Google Bookmarks导出为本地文件</li>
+<li>将书签文件解析为容易处理的内部格式（比如python的dict等）</li>
+<li>由于书签中会有中文的句子，所以会涉及到分词</li>
+<li>统计词语的频率，并绘制成图标</li>
+</ol>
+
+
+<h4>数据源</h4>
+
+<p><code>Google Bookmarks</code>本身可以直接导出成<code>HTML</code>文件。该<code>HTML</code>文件包含了时间戳和书签的标题，我们可以通过<code>python</code>的库<code>BeautifulSoup</code>将HTML中的文本抽取出来：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">load_bookmarks_data</span><span class="p">():</span>
+</span><span class='line'>  <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s">&#39;bookmarks_10_21_15.html&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="s">&quot;html.parser&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">soup</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+</span><span class='line'>  
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span class='line'>  <span class="k">print</span> <span class="n">load_bookmarks_data</span><span class="p">()</span>    
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>BeautifulSoup</code>提供非常好用的API来抽取结构化文档中的内容。</p>
+
+<p><img src="/images/2015/11/bookmark-titles-resized.png" alt="bookmark titles" /></p>
+
+<h4>分词</h4>
+
+<p><code>BeautifulSoup</code>获得的是一条条独立的句子，我们需要使用分词器将所有的句子分解成片段。这里我使用了<code>jieba</code>（<a href="https://github.com/fxsjy/jieba">结巴分词</a>）分词器来完成这个任务：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">jieba</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="s">&quot;我在出报表，你的博客写的怎么样了&quot;</span>
+</span><span class='line'><span class="n">seg_list</span> <span class="o">=</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">seg_list</span><span class="p">:</span>
+</span><span class='line'>     <span class="k">print</span> <span class="n">seg</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将会输出：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">我</span>
+</span><span class='line'><span class="err">在</span>
+</span><span class='line'><span class="err">出</span>
+</span><span class='line'><span class="err">报表</span>
+</span><span class='line'><span class="err">，</span>
+</span><span class='line'><span class="err">你</span>
+</span><span class='line'><span class="err">的</span>
+</span><span class='line'><span class="err">博客</span>
+</span><span class='line'><span class="err">写</span>
+</span><span class='line'><span class="err">的</span>
+</span><span class='line'><span class="err">怎么样</span>
+</span><span class='line'><span class="err">了</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们定义一个方法来将上一步中的文本分词：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">extract_segments</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">seg_list</span> <span class="o">=</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="n">seg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">seg_list</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>分词之后，我们将单词转换为小写，并剔除掉那些长度小于1的字符串。这样可以保证所有的词都是词语。python的<code>list推导式</code>写起来非常简洁，一行代码就完成了<code>过滤</code>和<code>映射</code>的工作。</p>
+
+<h4>可视化</h4>
+
+<p>有了分好的词之后，只需要统计每个词出现的频率，然后按照频率来绘制图表。我们使用<code>python</code>标准库中的<code>Counter</code>来实现：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">tokenize</span><span class="p">():</span> 
+</span><span class='line'>  <span class="n">filtered</span> <span class="o">=</span> <span class="n">extract_segments</span><span class="p">(</span><span class="n">load_bookmarks_data</span><span class="p">())</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">Counter</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">filtered</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>要获取前<code>N</code>个，只需要使用<code>most_common(N)</code>即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">tokenize</span><span class="p">()</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[(</span><span class="s">u&#39;and&#39;</span><span class="p">,</span> <span class="mi">552</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;the&#39;</span><span class="p">,</span> <span class="mi">501</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;with&#39;</span><span class="p">,</span> <span class="mi">485</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;to&#39;</span><span class="p">,</span> <span class="mi">446</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;javascript&#39;</span><span class="p">,</span> <span class="mi">432</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;in&#39;</span><span class="p">,</span> <span class="mi">330</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;for&#39;</span><span class="p">,</span> <span class="mi">308</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;...&#39;</span><span class="p">,</span> <span class="mi">270</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;java&#39;</span><span class="p">,</span> <span class="mi">270</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;blog&#39;</span><span class="p">,</span> <span class="mi">269</span><span class="p">)]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有了数据之后，使用<code>matplotlib</code>做一个简单的<code>bar</code>图标：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">matplotlib</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">visualize</span><span class="p">():</span>
+</span><span class='line'>  <span class="n">frame</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">tokenize</span><span class="p">()</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;keywords&#39;</span><span class="p">,</span> <span class="s">&#39;frequencies&#39;</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">ax</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s">&#39;bar&#39;</span><span class="p">)</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;bookmarks_trending.png&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2015/11/bookmarks-trending-with-stops-resized.png" alt="" /></p>
+
+<h4>stopwords</h4>
+
+<p>不过，上图中有很多噪音信息，如<code>and</code>, <code>the</code>等，这些在所有文章中都会出现的词并没有实际意义，统称为<code>stopwords</code>。通常在计算过程中会将其忽略：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">tokenize</span><span class="p">():</span>  
+</span><span class='line'>  <span class="n">stoplist</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;me&#39;</span><span class="p">,</span> <span class="s">&#39;my&#39;</span><span class="p">,</span> <span class="s">&#39;myself&#39;</span><span class="p">,</span> <span class="s">&#39;we&#39;</span><span class="p">,</span> <span class="s">&#39;our&#39;</span><span class="p">,</span> <span class="s">&#39;ours&#39;</span><span class="p">,</span> <span class="s">&#39;ourselves&#39;</span><span class="p">,</span> <span class="s">&#39;you&#39;</span><span class="p">,</span> <span class="s">&#39;your&#39;</span><span class="p">,</span> <span class="s">&#39;yours&#39;</span><span class="p">,</span> <span class="s">&#39;yourself&#39;</span><span class="p">,</span> <span class="s">&#39;yourselves&#39;</span><span class="p">,</span> <span class="s">&#39;he&#39;</span><span class="p">,</span> <span class="s">&#39;him&#39;</span><span class="p">,</span> <span class="s">&#39;his&#39;</span><span class="p">,</span> <span class="s">&#39;himself&#39;</span><span class="p">,</span> <span class="s">&#39;she&#39;</span><span class="p">,</span> <span class="s">&#39;her&#39;</span><span class="p">,</span> <span class="s">&#39;hers&#39;</span><span class="p">,</span> <span class="s">&#39;herself&#39;</span><span class="p">,</span> <span class="s">&#39;it&#39;</span><span class="p">,</span> <span class="s">&#39;its&#39;</span><span class="p">,</span> <span class="s">&#39;itself&#39;</span><span class="p">,</span> <span class="s">&#39;they&#39;</span><span class="p">,</span> <span class="s">&#39;them&#39;</span><span class="p">,</span> <span class="s">&#39;their&#39;</span><span class="p">,</span> <span class="s">&#39;theirs&#39;</span><span class="p">,</span> <span class="s">&#39;themselves&#39;</span><span class="p">,</span> <span class="s">&#39;what&#39;</span><span class="p">,</span> <span class="s">&#39;which&#39;</span><span class="p">,</span> <span class="s">&#39;who&#39;</span><span class="p">,</span> <span class="s">&#39;whom&#39;</span><span class="p">,</span> <span class="s">&#39;this&#39;</span><span class="p">,</span> <span class="s">&#39;that&#39;</span><span class="p">,</span> <span class="s">&#39;these&#39;</span><span class="p">,</span> <span class="s">&#39;those&#39;</span><span class="p">,</span> <span class="s">&#39;am&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="s">&#39;are&#39;</span><span class="p">,</span> <span class="s">&#39;was&#39;</span><span class="p">,</span> <span class="s">&#39;were&#39;</span><span class="p">,</span> <span class="s">&#39;be&#39;</span><span class="p">,</span> <span class="s">&#39;been&#39;</span><span class="p">,</span> <span class="s">&#39;being&#39;</span><span class="p">,</span> <span class="s">&#39;have&#39;</span><span class="p">,</span> <span class="s">&#39;has&#39;</span><span class="p">,</span> <span class="s">&#39;had&#39;</span><span class="p">,</span> <span class="s">&#39;having&#39;</span><span class="p">,</span> <span class="s">&#39;do&#39;</span><span class="p">,</span> <span class="s">&#39;does&#39;</span><span class="p">,</span> <span class="s">&#39;did&#39;</span><span class="p">,</span> <span class="s">&#39;doing&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;an&#39;</span><span class="p">,</span> <span class="s">&#39;the&#39;</span><span class="p">,</span> <span class="s">&#39;and&#39;</span><span class="p">,</span> <span class="s">&#39;but&#39;</span><span class="p">,</span> <span class="s">&#39;if&#39;</span><span class="p">,</span> <span class="s">&#39;or&#39;</span><span class="p">,</span> <span class="s">&#39;because&#39;</span><span class="p">,</span> <span class="s">&#39;as&#39;</span><span class="p">,</span> <span class="s">&#39;until&#39;</span><span class="p">,</span> <span class="s">&#39;while&#39;</span><span class="p">,</span> <span class="s">&#39;of&#39;</span><span class="p">,</span> <span class="s">&#39;at&#39;</span><span class="p">,</span> <span class="s">&#39;by&#39;</span><span class="p">,</span> <span class="s">&#39;for&#39;</span><span class="p">,</span> <span class="s">&#39;with&#39;</span><span class="p">,</span> <span class="s">&#39;about&#39;</span><span class="p">,</span> <span class="s">&#39;against&#39;</span><span class="p">,</span> <span class="s">&#39;between&#39;</span><span class="p">,</span> <span class="s">&#39;into&#39;</span><span class="p">,</span> <span class="s">&#39;through&#39;</span><span class="p">,</span> <span class="s">&#39;during&#39;</span><span class="p">,</span> <span class="s">&#39;before&#39;</span><span class="p">,</span> <span class="s">&#39;after&#39;</span><span class="p">,</span> <span class="s">&#39;above&#39;</span><span class="p">,</span> <span class="s">&#39;below&#39;</span><span class="p">,</span> <span class="s">&#39;to&#39;</span><span class="p">,</span> <span class="s">&#39;from&#39;</span><span class="p">,</span> <span class="s">&#39;up&#39;</span><span class="p">,</span> <span class="s">&#39;down&#39;</span><span class="p">,</span> <span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="s">&#39;out&#39;</span><span class="p">,</span> <span class="s">&#39;on&#39;</span><span class="p">,</span> <span class="s">&#39;off&#39;</span><span class="p">,</span> <span class="s">&#39;over&#39;</span><span class="p">,</span> <span class="s">&#39;under&#39;</span><span class="p">,</span> <span class="s">&#39;again&#39;</span><span class="p">,</span> <span class="s">&#39;further&#39;</span><span class="p">,</span> <span class="s">&#39;then&#39;</span><span class="p">,</span> <span class="s">&#39;once&#39;</span><span class="p">,</span> <span class="s">&#39;here&#39;</span><span class="p">,</span> <span class="s">&#39;there&#39;</span><span class="p">,</span> <span class="s">&#39;when&#39;</span><span class="p">,</span> <span class="s">&#39;where&#39;</span><span class="p">,</span> <span class="s">&#39;why&#39;</span><span class="p">,</span> <span class="s">&#39;how&#39;</span><span class="p">,</span> <span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="s">&#39;any&#39;</span><span class="p">,</span> <span class="s">&#39;both&#39;</span><span class="p">,</span> <span class="s">&#39;each&#39;</span><span class="p">,</span> <span class="s">&#39;few&#39;</span><span class="p">,</span> <span class="s">&#39;more&#39;</span><span class="p">,</span> <span class="s">&#39;most&#39;</span><span class="p">,</span> <span class="s">&#39;other&#39;</span><span class="p">,</span> <span class="s">&#39;some&#39;</span><span class="p">,</span> <span class="s">&#39;such&#39;</span><span class="p">,</span> <span class="s">&#39;no&#39;</span><span class="p">,</span> <span class="s">&#39;nor&#39;</span><span class="p">,</span> <span class="s">&#39;not&#39;</span><span class="p">,</span> <span class="s">&#39;only&#39;</span><span class="p">,</span> <span class="s">&#39;own&#39;</span><span class="p">,</span> <span class="s">&#39;same&#39;</span><span class="p">,</span> <span class="s">&#39;so&#39;</span><span class="p">,</span> <span class="s">&#39;than&#39;</span><span class="p">,</span> <span class="s">&#39;too&#39;</span><span class="p">,</span> <span class="s">&#39;very&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="s">&#39;can&#39;</span><span class="p">,</span> <span class="s">&#39;will&#39;</span><span class="p">,</span> <span class="s">&#39;just&#39;</span><span class="p">,</span> <span class="s">&#39;don&#39;</span><span class="p">,</span> <span class="s">&#39;should&#39;</span><span class="p">,</span> <span class="s">&#39;now&#39;</span><span class="p">]</span>
+</span><span class='line'>  <span class="n">stoplist</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">&#39;...&#39;</span><span class="p">,</span> <span class="s">&#39;com&#39;</span><span class="p">,</span> <span class="s">&#39;using&#39;</span><span class="p">,</span> <span class="s">u&#39;使用&#39;</span><span class="p">,</span> <span class="s">&#39;blog&#39;</span><span class="p">,</span> <span class="s">u&#39;博客&#39;</span><span class="p">,</span> <span class="s">u&#39;博客园&#39;</span><span class="p">,</span> <span class="s">u&#39;做法&#39;</span><span class="p">,</span> <span class="s">u&#39;论坛&#39;</span><span class="p">,</span> <span class="s">&#39;part&#39;</span><span class="p">,</span> <span class="s">u&#39;部分&#39;</span><span class="p">,</span> <span class="s">u&#39;天下&#39;</span><span class="p">])</span>
+</span><span class='line'>  <span class="n">filtered</span> <span class="o">=</span> <span class="n">extract_segments</span><span class="p">(</span><span class="n">load_bookmarks_data</span><span class="p">())</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">return</span> <span class="n">Counter</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">filtered</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stoplist</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>重新绘制即可获得上文中的图：</p>
+
+<p><img src="/images/2015/11/bookmarks-trending-resized.png" alt="bookmarks trending" /></p>
+
+<p>完整的代码<a href="https://github.com/abruzzi/bookmarks-viz">请参考这里</a>。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2793,387 +3022,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2015/05/functional-programming-again/">又一篇JavaScript的函数式编程教程</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-05-23T17:37:00+08:00" pubdate data-updated="true">May 23<span>rd</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>前言</h2>
-
-<p>4月初在北京的时候，徐昊同学表示我们公司的同事们写的文章都太简单，太注重细节，然后捡起了芝麻丢了西瓜，于是我就不再更新博客（其实根本原因是项目太忙）。上周和其他几个同事一起参加“Martin Fowler深圳行”的活动，我和同事扎西贡献了一个《FullStack Language JavaScript》，一起的还有杨云（江湖人称大魔头）的话题是《掌握函数式编程，控制系统复杂度》，李新（江湖人称新爷）的话题是《并发：前生来世》。</p>
-
-<p>和其他同事预演的时候，突然发现其实我们的主题或多或少都有些关联，我讲的部分也涉及到了基于事件的并发机制和函数式编程。仔细想想，应该与JavaScript本身的特性不无关系：</p>
-
-<ol>
-<li>基于事件（Event-Based）的Node.js的正是并发中很典型的一个模型</li>
-<li>函数式编程使其天然支持回调，从而非常适合异步/事件机制</li>
-<li>函数式编程特性使其非常适合DSL的编写</li>
-</ol>
-
-
-<p>会后的第二天，我在项目代码里忽然想要将一个聚合模型用函数式编程的方式重写一下，结果发现思路竟然与NoSQL依稀有些联系，进一步发现自己很多不足。</p>
-
-<p>下面这个例子来自于实际项目中的场景，不过Domain做了切换，但是丝毫不影响阅读和理解背后的机制。</p>
-
-<h3>一个书签应用</h3>
-
-<p>设想有这样一个应用：用户可以看到一个订阅的RSS的列表。列表中的每一项（称为一个Feed），包含一个<code>id</code>，一个文章的标题<code>title</code>和一个文章的链接<code>url</code>。</p>
-
-<p>数据模型看起来是这样的：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">feeds</span> <span class="o">=</span> <span class="p">[</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s1">&#39;id&#39;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
-</span><span class='line'>        <span class="s1">&#39;url&#39;</span><span class="o">:</span> <span class="s1">&#39;http://abruzzi.github.com/2015/03/list-comprehension-in-python/&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s1">&#39;title&#39;</span><span class="o">:</span> <span class="s1">&#39;Python中的 list comprehension 以及 generator&#39;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s1">&#39;id&#39;</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
-</span><span class='line'>        <span class="s1">&#39;url&#39;</span><span class="o">:</span> <span class="s1">&#39;http://abruzzi.github.com/2015/03/build-monitor-script-based-on-inotify/&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s1">&#39;title&#39;</span><span class="o">:</span> <span class="s1">&#39;使用inotify/fswatch构建自动监控脚本&#39;</span>
-</span><span class='line'>    <span class="p">},</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="s1">&#39;id&#39;</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span>
-</span><span class='line'>        <span class="s1">&#39;url&#39;</span><span class="o">:</span> <span class="s1">&#39;http://abruzzi.github.com/2015/02/build-sample-application-by-using-underscore-and-jquery/&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s1">&#39;title&#39;</span><span class="o">:</span> <span class="s1">&#39;使用underscore.js构建前端应用&#39;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">];</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当这个简单应用没有任何用户相关的信息时，模型非常简单。但是很快，应用需要从单机版扩展到Web版，也就是说，我们引入了用户的概念。每个用户都能看到一个这样的列表。另外，用户还可以收藏Feed。当然，收藏之后，用户还可以查看收藏的Feed列表。</p>
-
-<p><img src="/images/2015/05/bookmarks.png" alt="feed and user" /></p>
-
-<p>由于每个用户可以收藏多个Feed，而每个Feed也可以被多个用户收藏，因此它们之间的多对多关系如上图所示。可能你还会想到诸如:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl http://localhost:9999/user/1/feeds
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>来获取用户<code>1</code>的所有<code>feed</code>等，但是这些都不重要，真正的问题是，当你拿到了所有Feed之后，在UI上，需要为每个Feed填加一个属性<code>makred</code>。这个属性用来标示该feed是否已经被收藏了。对应到界面上，可能是一枚黄色的星星，或者一个红色的心。</p>
-
-<p><img src="/images/2015/05/bookmarks-design-resized.png" alt="bookmarkds design" /></p>
-
-<h4>服务器端聚合</h4>
-
-<p>由于关系型数据库的限制，你需要在服务器端做一次聚合，比如将feed对象包装一下，生成一个<code>FeedWrapper</code>之类的对象：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FeedWrapper</span> <span class="o">{</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="n">Feed</span> <span class="n">feed</span><span class="o">;</span>
-</span><span class='line'>    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">marked</span><span class="o">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isMarked</span><span class="o">()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="n">marked</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setMarked</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">marked</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">marked</span> <span class="o">=</span> <span class="n">marked</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kd">public</span> <span class="nf">FeedWrapper</span><span class="o">(</span><span class="n">Feed</span> <span class="n">feed</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">marked</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">feed</span> <span class="o">=</span> <span class="n">feed</span><span class="o">;</span>
-</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">marked</span> <span class="o">=</span> <span class="n">marked</span><span class="o">;</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后定义一个<code>FeedService</code>之类的服务对象：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">FeedWrapper</span><span class="o">&gt;</span> <span class="n">wrapFeed</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Feed</span><span class="o">&gt;</span> <span class="n">markedFeeds</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Feed</span><span class="o">&gt;</span> <span class="n">feeds</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nf">newArrayList</span><span class="o">(</span><span class="n">transform</span><span class="o">(</span><span class="n">feeds</span><span class="o">,</span> <span class="k">new</span> <span class="n">Function</span><span class="o">&lt;</span><span class="n">Feed</span><span class="o">,</span> <span class="n">FeedWrapper</span><span class="o">&gt;()</span> <span class="o">{</span>
-</span><span class='line'>        <span class="nd">@Override</span>
-</span><span class='line'>        <span class="kd">public</span> <span class="n">FeedWrapper</span> <span class="nf">apply</span><span class="o">(</span><span class="n">Feed</span> <span class="n">feed</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>            <span class="k">if</span> <span class="o">(</span><span class="n">markedFeeds</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">feed</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>                <span class="k">return</span> <span class="k">new</span> <span class="nf">FeedWrapper</span><span class="o">(</span><span class="n">feed</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
-</span><span class='line'>            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-</span><span class='line'>                <span class="k">return</span> <span class="k">new</span> <span class="nf">FeedWrapper</span><span class="o">(</span><span class="n">feed</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
-</span><span class='line'>            <span class="o">}</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>    <span class="o">}));</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>好吧，这也算是一个还凑合的实现，但是静态强类型的Java做这个事儿有点勉强，而且一旦发生新的变化（几乎肯定会发生），我们还是把这部分逻辑放在JavaScript中，来看看它是如何简化这一个过程的。</p>
-
-<h4>客户端聚合</h4>
-
-<p>快要说到主题了，这篇文章我们会使用<code>lodash</code>作为函数式编程的库来简化代码的编写。由于JavaScript是一个动态弱类型的语言，我们可以随时为一个对象添加属性，这样一个简单的<code>map</code>操作就可以完成上边的Java对应的代码了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">marked</span><span class="o">:</span> <span class="nx">isMarked</span><span class="p">(</span><span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">)});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中函数<code>isMarked</code>会做这样一件事儿：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">userMarkedIds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">];</span>
-</span><span class='line'><span class="kd">function</span> <span class="nx">isMarked</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">includes</span><span class="p">(</span><span class="nx">userMarkedIds</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>即查看传入的参数是否在一个列表<code>userMarkedIds</code>，这个列表可能由下列的请求来获得：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>curl http://localhost:9999/user/1/marked-feed-ids
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>之所有只获取id是为了减少网络传输的数据大小，当然你也可以将全部的<code>/marked-feeds</code>都请求到，然后在本地做<code>_.pluck(feeds, 'id')</code>来抽取所有的<code>id</code>属性。</p>
-
-<p>嗯，代码是精简了许多。但是如果仅仅能做到这一步的话，也没有多大的好处嘛。现在需求又有了变化，我们需要在另一个页面上展示当前用户的收藏夹（用以展示用户所有收藏的feed）。作为程序员，我们可不愿意重新写一套界面，如果能复用同一套逻辑当然最好了。</p>
-
-<p>比如对于上面这个列表，我们已经有了对应的模板：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="o">{{</span><span class="c">#each feeds}}</span>
-</span><span class='line'>&lt;li <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;list-item&quot;</span>&gt;
-</span><span class='line'>    &lt;div <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;section&quot;</span> data-feed-id<span class="o">=</span><span class="s2">&quot;{{this.id}}&quot;</span>&gt;
-</span><span class='line'>        <span class="o">{{</span><span class="c">#if this.marked}}</span>
-</span><span class='line'>            &lt;span <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;marked icon-favorite&quot;</span>&gt;&lt;/span&gt;
-</span><span class='line'>        <span class="o">{{</span><span class="k">else</span><span class="o">}}</span>
-</span><span class='line'>            &lt;span <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;unmarked icon-favorite&quot;</span>&gt;&lt;/span&gt;
-</span><span class='line'>        <span class="o">{{</span>/if<span class="o">}}</span>
-</span><span class='line'>        &lt;a <span class="nv">href</span><span class="o">=</span><span class="s2">&quot;/feeds/{{this.url}}&quot;</span>&gt;
-</span><span class='line'>            &lt;div <span class="nv">class</span><span class="o">=</span><span class="s2">&quot;detail&quot;</span>&gt;
-</span><span class='line'>                &lt;h3&gt;<span class="o">{{</span>this.title<span class="o">}}</span>&lt;/h3&gt;
-</span><span class='line'>            &lt;/div&gt;
-</span><span class='line'>        &lt;/a&gt;
-</span><span class='line'>    &lt;/div&gt;
-</span><span class='line'>&lt;/li&gt;
-</span><span class='line'><span class="o">{{</span>/each<span class="o">}}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>事实上，这段代码在收藏夹页面上完全可以复用，我们只需要把所有的<code>marked</code>属性都设置为true就行了！简单，很快我们就可以写出对应的代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">marked</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>漂亮！而且重要的是，它还可以如正常工作！但是作为程序员，你很快就发现了两处代码的相似性：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">marked</span><span class="o">:</span> <span class="nx">isMarked</span><span class="p">(</span><span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">)});</span>
-</span><span class='line'><span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">marked</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>消除重复是一个有追求的程序员的基本素养，不过要消除这两处貌似有点困难：位于<code>marked:</code>后边的，一个是函数调用，另一个是值！如果要简化，我们不得不做一个匿名函数，然后以回调的方式来简化：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">predicate</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">item</span><span class="p">,</span> <span class="p">{</span><span class="nx">marked</span><span class="o">:</span> <span class="nx">predicate</span><span class="p">(</span><span class="nx">item</span><span class="p">.</span><span class="nx">id</span><span class="p">)});</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>对于feed列表，我们要调用：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">isMarked</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>而对于收藏夹，则需要传入一个匿名函数：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">item</span><span class="p">)</span> <span class="p">{</span><span class="k">return</span> <span class="kc">true</span><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在<code>lodash</code>中，这样的匿名函数可以用<code>_.wrap</code>来简化：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">wrap</span><span class="p">(</span><span class="kc">true</span><span class="p">));</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>好了，目前来看，简化的还不错，代码缩减了，而且也好读了一些（当然前提是你已经熟悉了函数式编程的读法）。</p>
-
-<h4>更进一步</h4>
-
-<p>如果仔细审视<code>isMarked</code>函数，会发现它对外部的依赖不是很漂亮（而且这个外部依赖是从网络异步请求来的），也就是说，我们需要在请求到<code>markedIds</code>的地方才能定义<code>isMarked</code>函数，这样就把函数定义<code>绑定</code>到了一个固定的地方，如果该函数的逻辑比较复杂，那么势必会影响代码的可维护性（或者更糟糕的是，多出维护）。</p>
-
-<p>要将这部分代码隔离出去，我们需要将<code>ids</code>作为参数传递出去，并得到一个可以当做谓词（判断一个id是否在列表中的谓词）的函数。</p>
-
-<p>简而言之，我们需要：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">var</span> <span class="nx">predicate</span> <span class="o">=</span> <span class="nx">createFunc</span><span class="p">(</span><span class="nx">ids</span><span class="p">);</span>
-</span><span class='line'><span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">predicate</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里的<code>createFunc</code>函数接受一个列表作为参数，并返回了一个谓词函数。而这个谓词函数就是上边说的<code>isMarked</code>。这个神奇的过程被称为柯里化<code>currying</code>，或者偏函数<code>partial</code>。在<code>lodash</code>中，这个很容易实现：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="kd">function</span> <span class="nx">isMarkedIn</span><span class="p">(</span><span class="nx">ids</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">partial</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">includes</span><span class="p">,</span> <span class="nx">ids</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个函数会将<code>ids</code>保存起来，当被调用时，它会被展开为：<code>_.includes(ids, &lt;id&gt;)</code>。只不过这个<code>&lt;id&gt;</code>会在实际迭代的时候才传入：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;/marked-feed-ids&#39;</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">ids</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">wrappedFeeds</span> <span class="o">=</span> <span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">isMarkedIn</span><span class="p">(</span><span class="nx">ids</span><span class="p">));</span>
-</span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">wrappedFeeds</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样我们的代码就被简化成了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;/marked-feed-ids&#39;</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">ids</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">wrappedFeeds</span> <span class="o">=</span> <span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">isMarkedIn</span><span class="p">(</span><span class="nx">ids</span><span class="p">));</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">markedFeeds</span> <span class="o">=</span> <span class="nx">wrapFeeds</span><span class="p">(</span><span class="nx">feeds</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">wrap</span><span class="p">(</span><span class="kc">true</span><span class="p">));</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">allFeedList</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">template</span><span class="p">({</span><span class="nx">feeds</span><span class="o">:</span> <span class="nx">wrappedFeeds</span><span class="p">}));</span>
-</span><span class='line'>    <span class="nx">markedFeedList</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">template</span><span class="p">({</span><span class="nx">feeds</span><span class="o">:</span> <span class="nx">markedFeeds</span><span class="p">}));</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/5/">&larr; Older</a>
@@ -3191,6 +3039,10 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2018/06/real-time-data-visualization/">实时数据的可视化</a>
+      </li>
+    
+      <li class="post">
         <a href="/2018/01/two-types-of-developer/">团队里的两类程序员</a>
       </li>
     
@@ -3204,10 +3056,6 @@ Dev眼中的世界是这样的，从墙上（物理的或者电子的）上找�
     
       <li class="post">
         <a href="/2017/07/tips-for-newbies/">如何成为一名优秀的程序员？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2017/03/whats-the-thoughtworks-insight-talking-about/">ThoughtWorks洞见讲什么？</a>
       </li>
     
   </ul>

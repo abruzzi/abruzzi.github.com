@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: d3 | I code it]]></title>
+  <link href="http://abruzzi.github.com/category/d3/atom.xml" rel="self"/>
+  <link href="http://abruzzi.github.com/"/>
+  <updated>2018-06-18T10:40:40+08:00</updated>
+  <id>http://abruzzi.github.com/</id>
+  <author>
+    <name><![CDATA[Qiu Juntao]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[实时数据的可视化]]></title>
+    <link href="http://abruzzi.github.com/2018/06/real-time-data-visualization/"/>
+    <updated>2018-06-17T11:21:00+08:00</updated>
+    <id>http://abruzzi.github.com/2018/06/real-time-data-visualization</id>
+    <content type="html"><![CDATA[<h2>实时数据特征</h2>
+
+<p>通常来说，可视化的报表会以更高效率的方式将数据背后隐藏的信息传递给我们。通过一个简单的<code>BarChart</code>，我们就很容易对比某商品在第二季度中的销量差异；而通过一条简单的<code>LineChart</code>，则很容易看出员工平均工作时间在某个月份的分布。这些报表都或多或少与时间相关：随着时间的流逝，某项指标会因为各种各样的因素而产生变化。</p>
+
+<p>另一方面，在某些领域，我们需要更高时效性的报表。比如产品的线上指标分析：有多少用户当前在线，主站的负载情况如何，有多少在线交易正在形成等等。此外，很多运维数据也希望有更高的实时性，比如目前服务器的负载如何，过去的5分钟的负载情况又是什么样子的等等。</p>
+
+<p>这类报表的特点是：</p>
+
+<ul>
+<li>高时效性</li>
+<li>对于细粒度的指标，数据量可能会很大</li>
+<li>过了某段特定的时间段，数据的价值会骤降</li>
+</ul>
+
+
+<p><img src="/images/2018/06/cpu-load-resized.png" alt="mac-cpu" /></p>
+
+<p>比如上图是Mac上的CPU使用情况的实时报表，它展现了一段时间内的各个核上的计算负载。这些信息不断产生，有不断被丢弃，没有人关注一个小时之前的CPU占用，只要能展示出最近几分钟的就好。</p>
+
+<p>基于这些特性，如何存取数据、如何分析度量结果、如何滚动历史数据等等都会遇到和其他图表不尽相同的问题。另外，由于实时数据的可视化与时间是强相关的 -- 它本质上必须是一个动态的图表，这与其他的图表类型又有不同。我们在这篇文章中将会讨论这些问题，以及解决这些问题的常见方案。</p>
+
+<h3>数据指标</h3>
+
+<p>对于实时数据，我们关注不同事件发生的次数，以及事件发生时持续的时长等。我们首先需要定义一些对象：</p>
+
+<ul>
+<li>计数器（counter）</li>
+<li>计时器（timer）</li>
+<li>标量（gauge）</li>
+</ul>
+
+
+<h4>计数器</h4>
+
+<p>计数器涉及需要被记录次数的事件（通常是每发生一次，计数器加一/减一），这类数据的增长/减少规律比较固定，比如：</p>
+
+<ul>
+<li>响应为200的请求 - <code>response.code === 200</code></li>
+<li>从某个session产生的请求 - <code>session.id === 'b1b2b3bab22123bb1a'</code></li>
+</ul>
+
+
+<h4>计时器</h4>
+
+<p>计时器涉及所有应该记录时间长度的事件，通常这类时间我们可以通过引入一个时间段（interval）来计算一些统计信息，比如平均值，方差，标准差，最大值，最小值等。比如：</p>
+
+<ul>
+<li>请求响应时间 - <code>response.time</code></li>
+<li>停留时间 - <code>stay.time</code></li>
+</ul>
+
+
+<h4>标量</h4>
+
+<p>还有一种经常会用到的量，我们不关注过程中它的变化倾向，只关注某个时刻上的数字/状态，比如：</p>
+
+<ul>
+<li>节点是否可用</li>
+<li>某一时刻的进程数</li>
+<li>某一时刻的CPU负载/内存占用率</li>
+</ul>
+
+
+<h3>数据处理典型流程</h3>
+
+<p>对于生产环境，实时数据既可以以日志的形式提供，也可以是来源于事件数据库。日志是最常见的形式，几乎所有的系统都会以各种各样的方式记录日志，大部分的日志会提供滚动机制：日志会被记录到一个固定尺寸的文件中，旧的日志会被滚动的写入到另一个文件（通常还会有配套的定时任务来清理更早的日志等）。另一方面，对于很多基于事件的软件系统中，事件会被写入到数据库中，这些数据也可以用作实时数据可视化的来源。</p>
+
+<p>原始数据往往不能直接用来做可视化展现，通常我们需要做一些预处理，这些过程包括：</p>
+
+<ul>
+<li>原始数据获取</li>
+<li>结构化</li>
+<li>初步统计</li>
+<li>高阶统计</li>
+</ul>
+
+
+<h4>数据结构化</h4>
+
+<p>有很多的工具可以帮助我们实现这些步骤，比如我们通过一个简单的配置，就可以让<a href="https://www.elastic.co/products/logstash">logstash</a>自动将源源不断产生的日志数据写入到<a href="https://github.com/etsy/statsd">statsd</a>（最终周期性的写入到<a href="https://graphiteapp.org/">graphite</a>数据库中）:</p>
+
+<p>```sh
+input {
+  stdin {}
+}</p>
+
+<p>filter {
+  grok {</p>
+
+<pre><code>match =&gt; {
+  "message" =&gt; "%{DATA:time} %{DATA:status} %{NUMBER:request_time} %{DATA:campaign} %{DATA:mac} %{DATA:ap_mac} %{GREEDYDATA:session}"
+}
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>output {
+  stdout { codec => rubydebug }</p>
+
+<p>  statsd {</p>
+
+<pre><code>host =&gt; 'localhost'
+increment =&gt; "airport.%{session}"
+</code></pre>
+
+<p>  }</p>
+
+<p>  statsd {</p>
+
+<pre><code>host =&gt; 'localhost'
+increment =&gt; "airport.%{status}"
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p><code>logstash</code>是一个非常灵活其高度可定制的工具，我们只需要指定输入数据源，匹配规则，输出数据源即可做到：对于<code>输入</code>中，如果有满足<code>匹配规则</code>的数据，则将这些数据写入到<code>输出</code>中。这个听起来是不是有点像<a href="https://ifttt.com/">IFTTT</a>(If This Then That)工具做的事情呢？</p>
+
+<p><code>sh
+tail -f /var/logs/nginx/access.log | logstash -f log.conf
+</code></p>
+
+<p>在这个例子中，我们使用标准输入为数据源，当输入中有<code>time status request_time campaign mac ap_mac session</code>这样的字符串时，则认为是匹配成功，对于匹配成功的数据，将其通过<code>statsd</code>插件写入到<code>localhost</code>中。<code>increment</code>指令对上述的<code>counter</code>数据类型，即每发生一次匹配，对应的值自增一。</p>
+
+<p>比如当输入的日志内容为：</p>
+
+<p><code>
+1529242838 403 0.02 f3715a7f52d8cef53fef1f73134e487a 00:61:71:53:ff:b0 T2-CL*-49-D* 2293c8e9-8801-485b-9f1d-9e5a7f5a8965
+</code></p>
+
+<p>匹配结果为：</p>
+
+<p>```json
+{</p>
+
+<pre><code>    "campaign" =&gt; "f3715a7f52d8cef53fef1f73134e487a",
+"request_time" =&gt; "0.02",
+      "status" =&gt; "403",
+     "session" =&gt; "2293c8e9-8801-485b-9f1d-9e5a7f5a8965",
+     "message" =&gt; "1529242838 403 0.02 f3715a7f52d8cef53fef1f73134e487a 00:61:71:53:f4:0b T2-CL13-49-D87 2293c8e9-8801-485b-9f1d-9e5a7f5a8965",
+    "@version" =&gt; "1",
+        "host" =&gt; "juntao-qiu.local",
+      "ap_mac" =&gt; "T2-CL*-49-D*",
+        "time" =&gt; "1529242838",
+         "mac" =&gt; "00:61:71:53:ff:b0",
+  "@timestamp" =&gt; 2018-06-17T13:40:39.023Z
+</code></pre>
+
+<p>}
+```</p>
+
+<p>这时候，<code>logstash</code>会为<code>airport.2293c8e9-8801-485b-9f1d-9e5a7f5a8965</code>这个<code>counter</code>加一：</p>
+
+<p><code>js
+counter["airport.2293c8e9-8801-485b-9f1d-9e5a7f5a8965"] += 1
+</code></p>
+
+<h4>统计</h4>
+
+<p>对于结构化的数据，我们需要按照一定的周期来对数据进行初步的统计，比如对于计时器类型的数据，需要做求和，平均值，方差、标准差，中位数等的计算；而对于计数器，则需要累计其值。我们可以通过<code>statsd</code>来完成这些动作。</p>
+
+<p><code>StatsD</code>本质上来说，是一个非常简单基于<code>UDP</code>的服务。而对于大多数情况，为了避免在数据量变大的时候<code>TCP</code>的巨大开销，使用<code>UDP</code>的<em>不可靠</em>（但是高效）连接反而更可靠。<code>StatsD</code>在接受到客户端请求后，会在本地维护一些<code>counter</code>和<code>timer</code>的计数，然后定时的(默认为10秒)会向<code>graphite</code>发送一次数据。</p>
+
+<h3>可视化</h3>
+
+<p>对于实时数据的可视化，有很多需要考虑的点。比如结果是呈现在Desktop上还是Web页面上或者移动设备上？对于Web界面来说，是否需要考虑响应式设计，以匹配不同尺寸的屏幕？是否需要又动态的交互，或者只需要静态的展现即可？</p>
+
+<p>另一方面，项目对于数据精度的要求是什么？需要精确到分钟级别，或者是每15分钟？对于不同精度的数据，对存储容量的要求是完全不同的。一种常见的策略是将过期的数据降低精度，而仅仅为最近的数据提供高精度。</p>
+
+<p>对于销售结果，精确到天的统计已经算是实时数据。而对于在线交易的监控，则需要精确到秒级别。在设计这种数据可视化的时候，需要充分考虑对数据实时性的要求。</p>
+
+<p><img src="/images/2018/06/grafana-resized.png" alt="grafana" /></p>
+
+<p>上图一个典型的基于Web的实时数据可视化Dashboard。</p>
+
+<h2>工具</h2>
+
+<p>在实现实时数据可视化的过程中，我们需要一系列工具的支撑。简而言之，我们需要实际保存数据的数据库，需要保存/查询数据的客户端API，最后是用于客户端呈现的库或者框架。</p>
+
+<h3>时间序列数据库</h3>
+
+<p>对于实时数据的存储，事实上有一个专门的数据库分类：时间序列数据库（Time Series DBMS）。时间序列数据库是一个<code>Key-Value</code>数据库的细分，通常它维护的对象为：时间戳，指标名称，指标值。另外，各个实现往往还会提供一些<code>Query Language</code>来方便指标的检索。</p>
+
+<p>这里是一些常见的时序数据库（或者被用作时序数据库）的实现：</p>
+
+<ul>
+<li><a href="https://graphiteapp.org/">Graphite</a></li>
+<li><a href="https://www.influxdata.com/">Influxdb</a></li>
+<li><a href="https://prometheus.io/">Promethous</a></li>
+</ul>
+
+
+<h3>Feeder / API</h3>
+
+<p>虽然大部分时序数据库都提供Native API来进行数据的存储、检索，不过大部分时候人们更倾向使用简单的HTTP API或者客户端库。</p>
+
+<p>比如，<code>StatsD</code>是一个Node.js的服务，通过它的客户端API，我们可以很容易的创建<code>counter</code>, <code>timer</code>等指标。</p>
+
+<ul>
+<li><a href="https://github.com/etsy/statsd">StatsD</a></li>
+<li><a href="https://graphiteapp.org/">Graphite</a></li>
+</ul>
+
+
+<h3>数据的可视化</h3>
+
+<p><code>Grafana</code>是一个非常强大、已于使用的客户端框架。通过它，你可以很容易的将多个数据源的数据集成在同一个Dashboard上进行展现。比如CPU/Memory的负载信息来自于<code>graphite</code>，而用户的在线情况则可能来自于<code>influxdb</code>或者<code>promethous</code>。</p>
+
+<p>如果你需要更高的可定制性，比如在自己的页面上绘制一个实时图表，则可以考虑使用<code>d3.js</code>+<code>cubism</code>的组合。它可以从不同的后端<code>API</code>周期性的获取数据，并实时呈现在<code>svg</code>/<code>canvas</code>画布上。</p>
+
+<ul>
+<li><a href="https://grafana.com/">Grafana</a></li>
+<li><a href="http://square.github.io/cubism/">Cubism</a></li>
+</ul>
+
+
+<h2>数据直接呈现</h2>
+
+<h3>Logstalgia</h3>
+
+<p><code>Logstalgia</code>可以将特定格式的日志文件分析，并以一种非常酷炫的方式展现出来，就好像是在玩经典游戏<code>打砖块</code>一样。</p>
+
+<p><img src="/images/2018/06/logstalgia-resized.png" alt="logstalia" /></p>
+
+<p><code>Logstalgia</code>要求一些必填字段：</p>
+
+<ul>
+<li>UNIX时间戳</li>
+<li>请求的hostname/ip</li>
+<li>请求资源的路径</li>
+<li>响应码（201, 500等）</li>
+<li>响应的大小</li>
+</ul>
+
+
+<p><code>sh
+1529206121|12.21.18.246|/dispatcher/campaigns/2de808e08dccec2c7e55e41ecbd5a421|200|20
+</code></p>
+
+<p>如果原始日志不是这个格式，你可以写一个简单的转换器来适配：</p>
+
+<p>```js
+const source = '[$time_local] "$remote_addr - $remote_user" "$request" $status $body_bytes_sent "$http_referer" $request_time "$http_user_agent"';</p>
+
+<p>const NginxParser = require('nginxparser');
+const parser = new NginxParser(source);</p>
+
+<p>const moment = require('moment');</p>
+
+<p>parser.read('-', (row) => {</p>
+
+<pre><code>const ts = moment(row.time_local, "DD/MMM/YYYY:HH:mm:ss Z").unix();
+const parsed = row.request.split(/\s+/)
+console.log(`${ts}|${row.ip_str}|${parsed[1]}|${row.status}|${row.body_bytes_sent}`);
+</code></pre>
+
+<p>}, (err) => {</p>
+
+<pre><code>throw err;
+</code></pre>
+
+<p>});
+```</p>
+
+<p>注意这个脚本的输入和输出是标准输入和输出，即你可以通过管道将它接入到命令行中。比如：</p>
+
+<p><code>sh
+tail -f /var/log/nginx/access.log | node adaptor.js | logstalgia
+</code></p>
+
+<p>不过，<code>logstalgia</code>只能运行在Desktop上，应用的外观比较固定，基本上无法定制（比如动画效果的配置等）。更多时候，我们希望可以将实时数据的呈现放在Web端，以提高可定制性。</p>
+
+<h3>实时数据呈现</h3>
+
+<p>如果要做到实时呈现，我们可以直接读取日志，并将日志通过WebSocket发送给客户端。这种做法的好处是实时，比如一个相应为500的错误，一个交易失败的异常等，可以非常直观的展现出来。它的缺点也很明显，一方面如果信息量很大，即日志写入速度太快，前端很可能处理不过来，另一方面，这种被<code>摊平</code>的原始信息可能太过于粗糙，无法做到统计分析。</p>
+
+<h4>WebScoket + D3.js</h4>
+
+<p>```js
+const _ = require('lodash');
+const { spawn } = require('child_process');
+const generator = spawn('./generator.sh');</p>
+
+<p>const WebSocket = require('ws');</p>
+
+<p>const wss = new WebSocket.Server({ port: 8080 });</p>
+
+<p>function parse(data) {</p>
+
+<pre><code>//...
+</code></pre>
+
+<p>}</p>
+
+<p>wss.on('connection', (ws) => {</p>
+
+<p>  const output = (data) => {</p>
+
+<pre><code>ws.send(JSON.stringify(parse(data)));
+</code></pre>
+
+<p>  }</p>
+
+<p>  generator.stdout.on('data', output);</p>
+
+<p>  ws.on('close', () => {</p>
+
+<pre><code>generator.stdout.removeListener('data', output);
+</code></pre>
+
+<p>  });
+});
+```</p>
+
+<p>我们通过<code>spawn</code>来在子进程中启动一个shell脚本，这个脚本会不断的从远程服务器上的日志文件中读取日志，并输出到控制台上。当有新的WebSocket连接建立时，我们会将<code>generator</code>子进程上产生的数据写入该连接，当然，在写入前会将基于行的日志解析成客户端消费的结构化的数据，并以JSON格式返回。</p>
+
+<p>最后，当客户端主动断开连接时，我们需要将<code>generator</code>上的事件监听函数删除掉。</p>
+
+<p>这里的<code>generator.sh</code>内容可以是任何能从日志读取信息，并输出到控制台的脚本。比如最简单的可能是这样：</p>
+
+<p><code>sh
+tail -f /var/logs/nginx/access.log
+</code></p>
+
+<p>如果本地没有访问流量，我们可以将其指向测试环境：</p>
+
+<p><code>sh
+ssh qa-env tail -f /var/logs/wifi-portal/wifi-portal-2018-06-13-access.log
+</code></p>
+
+<p>对于客户端而言，只需要在页面加载时建立一个WebSocket连接，当数据到来时做重新处罚绘制接口。此处使用了一个D3.js的<a href="https://bl.ocks.org/boeric/6a83de20f780b42fadb9">实时报表插件</a>。</p>
+
+<p>```js
+var ws = new WebSocket("ws://localhost:8080");</p>
+
+<p>ws.onopen = function() {
+  console.log('connected');
+};</p>
+
+<p>ws.onmessage = function (evt) {
+  const event = JSON.parse(evt.data);
+  categroies.push(<em>.truncate(event.campaign, { 'length': 8 }));
+  const campaigns = </em>.uniq(categroies);</p>
+
+<p>  chart.yDomain(campaigns);
+  chart.yDomain().forEach(function(cat, i) {</p>
+
+<pre><code>var now = new Date(event.date);
+
+var mills = event.mills * 200;
+
+const obj = {
+  time: now,
+  color: color(mills),
+  opacity: 1,
+  category: _.truncate(event.campaign, { 'length': 8}),
+  type: "circle",
+  size: mills,
+}
+
+chart.datum(obj);
+</code></pre>
+
+<p>  });</p>
+
+<p>};
+```</p>
+
+<p><img src="/images/2018/06/websocket-d3-pretty-resized.png" alt="" /></p>
+
+<p>上图对应的图例为：</p>
+
+<ul>
+<li>横轴表示时间</li>
+<li>纵轴表示被请求的特定资源（比如某个API，或者某个静态图片）</li>
+<li>每一个时刻被请求到的资源会在画布上形成一个点</li>
+<li>点的大小反应了响应时长</li>
+</ul>
+
+
+<h2>统计信息的呈现</h2>
+
+<h3>使用Graphite</h3>
+
+<p><code>graphite</code>自带了一个可视化的界面，你可以选择将多个指标展现在同一个界面上：</p>
+
+<p><img src="/images/2018/06/graphite-campaigns.png" alt="" /></p>
+
+<p>除此之外，<code>graphite</code>还提供了更强大的<code>render</code>API，使用这个API，你可以获得多种输出格式，比如：<code>csv</code>, <code>json</code>等，方便二次开发。另一方面，你可以通过<code>target</code>参数将表达式来获取更为复杂的指标计算。</p>
+
+<p>比如：</p>
+
+<p><code>
+http://localhost/render/?format=json&amp;target=stats.jc.airport.campaigns.1565ae2c79aee5e635e55d73354c7cd3
+</code></p>
+
+<p>其中，format指定了<code>json</code>，而<code>target</code>指定了指标的名称，事实上，<code>target</code>可以更丰富：</p>
+
+<p><code>
+http://localhost/render?format=raw&amp;target=alias(sumSeries(stats.jc.airport.campaigns.*)%2C%27%27)&amp;from=1529245830&amp;until=1529245929
+</code></p>
+
+<p>这里的<code>target</code>的值为<code>alias(sumSeries(stats.jc.airport.campaigns.*), '')</code>，表示要对所有的以<code>stats.jc.airport.campaigns</code>开头的指标的值求和。通过<code>from</code>和<code>until</code>指定起止时间，可以获取在该段时间中所有的数据，这样我们可以通过客户端轮询的方式，逐步的、实时的展现出一些指标的统计信息。</p>
+
+<p><code>Graphite</code>提供了丰富的函数用以聚合指标，比如求平均值，方差，极值等常规操作，还可以对两个/多个指标进行算数操作，从而获得新的数据集等等。这里有一份<a href="http://graphite.readthedocs.io/en/latest/render_api.html#id3">完整的列表</a>。</p>
+
+<h3>使用 Horizon Chart 展现实时数据</h3>
+
+<p><a href="http://square.github.io/cubism/">Cubism</a>是D3.js的一个插件，专门用来展现基于时间的实时报表。事实上，Cubism背后有许多研究和论文支持，即<code>horizon Chart</code>（地平线图）。这种图表会以一个固定频率来不断的刷新，数据看起来会不断的向左侧移动，最左侧的、老的数据会消失；同事右侧会不断的有新的数据流入并被绘制。</p>
+
+<p>你可以为地平线图指定不同的数据源，以<code>graphite</code>为例，你可以这样指定：</p>
+
+<p>```js
+var graphite = context.graphite("http://localhost");</p>
+
+<p>var api_metrics = [
+  graphite.metric("sumSeries(stats.jc.airport.campaigns.*)").alias("Campaigns Freq")
+];
+```</p>
+
+<p>这样<code>cubism</code>会向<code>graphite</code>服务器会定时的发送请求：</p>
+
+<p><code>
+http://localhost/render?format=raw&amp;target=alias(sumSeries(stats.jc.airport.campaigns.*)%2C%27%27)&amp;from=1529245830&amp;until=1529245929
+</code></p>
+
+<p>然后根据实际的数据，<code>cubism</code>会不断的刷新图表：</p>
+
+<p>```js
+d3.select("body").selectAll(".horizon")</p>
+
+<pre><code>.data(api_metrics)
+</code></pre>
+
+<p>  .enter().insert("div", ".bottom")</p>
+
+<pre><code>.attr("class", "horizon").call(horizon.extent([0, 50]));
+</code></pre>
+
+<p>```</p>
+
+<p><img src="/images/2018/06/cubism-graphite-resized.png" alt="" /></p>
+
+<p>事实上，由于<code>horizon</code>图表纵向占用的空间很少，你可以很容易的将多个表合并在一起，形成多行图表。</p>
+
+<h2>小结</h2>
+
+<p>本文介绍了实时数据可视化的一些典型场景，以及通用的数据准备及呈现方法。通过一些既有的工具或者简单的脚本，我们就可以将实时产生的数据feed到统计用的时序数据库，然后按照不同的需求方式呈现出来。通常来说，基于固定时间间隔的统计数据更有意义一些，比如单位时间内的请求数量，请求的平均时延等；另一方面，仅仅将数据实时的呈现出来在某些场景下也非常有意义，比如系统实时的在线人数，发生登陆异常的占比，某些节点高于90%的负载等信息。</p>
+
+<h3>参考资料</h3>
+
+<ul>
+<li><a href="http://vis.berkeley.edu/papers/horizon/2009-TimeSeries-CHI.pdf">Horizon Chart</a></li>
+<li><a href="http://vis.berkeley.edu/papers/">Visualisation Papers</a></li>
+<li><a href="https://github.com/square/cubism/wiki">Cubism</a></li>
+</ul>
+
+
+<h3>其他资料</h3>
+
+<ul>
+<li><a href="https://github.com/graphite-project/docker-graphite-statsd">Setup Graphite in Docker</a></li>
+<li><a href="https://github.com/phobos182/cubism-graphite/blob/master/cubism/index.html">An concrete example for using cubism with graphite</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

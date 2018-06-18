@@ -9,7 +9,7 @@
   <meta name="author" content="Qiu Juntao">
 
   
-  <meta name="description" content="知识漩涡 只需稍加留意，我们就会发现自己被各种技术，工具包围。ThoughtWorks的技术雷达差不多每隔半年就会更新一次，而项目中更是会遇到很多已经从技术雷达上消失的技术，项目上的旧技术/旧框架还在服役，新的技术/工具/语言/框架又在迅速的出现，有些昙花一现，迅速被新的后来者取代，有的留下来了， &hellip;">
+  <meta name="description" content="Web站点的响应速度 雅虎在2006年就发布了一份提升Web站点响应速度的最佳实践指南。该指南包含了35条规则，分为7个类别。这些规则已经被广泛使用，并指导人们在新的站点设计时更有针对性的考虑问题。这份指南已经成了Web前端性能度量的一个事实标准了。 YSlow是一个基于这份指南的测试工具， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,266 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2016/02/performance-testing-in-ci/">CI上的Web前端性能测试</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-20T18:18:00+08:00" pubdate data-updated="true">Feb 20<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Web站点的响应速度</h2>
+
+<p>雅虎在2006年就发布了一份提升Web站点响应速度的<a href="https://developer.yahoo.com/performance/rules.html">最佳实践指南</a>。该指南包含了35条规则，分为7个类别。这些规则已经被广泛使用，并指导人们在新的站点设计时更有针对性的考虑问题。这份指南已经成了Web前端性能度量的一个事实标准了。</p>
+
+<p><a href="http://yslow.org/">YSlow</a>是一个基于这份指南的测试工具，它可以测试一个站点是否“慢”，以及为什么“慢”？你可以通过很多方式来使用<a href="http://yslow.org/">YSlow</a>，比如Firefox，Chrome的插件，命令行工具，甚至PhantomJS这样的无头（Headless）浏览器。YSlow会检测你的站点中的资源是否没有压缩，是否缺失了超时设置，更进一步，它还会检测你的JS/CSS是否已经压缩/精简化，图片的尺寸，是否使用了CDN等等很多的维度。它还可以生成很多格式的报告，比如打分信息，TAP协议的输出，以及junit测试报告的格式。</p>
+
+<p>我们这里讨论如何在持续集成服务器上设置一个<code>YSlow</code>任务，这个任务会在每次构建之后，测试你应用的性能指标，以帮助你更快的发现和定位问题。当然，我推荐你在<code>staging</code>环境，很多开发者在测试环境，本地开发环境都会启动很多对<code>Debug</code>友好的设置，比如未压缩的JS/CSS，没有超时设置的响应等，这会导致该构建任务的<code>打分</code>不够准确。</p>
+
+<p><img src="/images/2016/02/jenkins-report-resized.png" alt="jenkins failure" /></p>
+
+<h3>搭建CI环境</h3>
+
+<p>按照传统方式，如果要搭建一个这样的CI任务，我们需要至少做这样一些事情：</p>
+
+<ul>
+<li>安装JDK</li>
+<li>安装Jenkins</li>
+<li>安装<a href="http://phantomjs.org/">PhantomJS</a></li>
+<li>安装<a href="http://yslow.org/phantomjs/">YSlow.js脚本</a></li>
+</ul>
+
+
+<p>然后设置环境变量，在Jenkins上创建任务，并运行YSlow.js脚本。这个任务很简单，只需要设置好参数，然后将结果输出为Jenkins上的报告即可。比如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>phantomjs /var/share/yslow.js -i grade -threshold <span class="s2">&quot;B&quot;</span> -f junit <span class="se">\</span>
+</span><span class='line'>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/ &gt; yslow.xml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>-i grade</code> 展示打分（grade）信息（还可以是basic/stats/all）等</li>
+<li><code>-threshold "B"</code> 指定失败的阈值为B</li>
+<li><code>-f junit</code> 输出为<code>junit</code>识别的XML格式</li>
+</ul>
+
+
+<p>这里的阈值可以是数字（0-100分），字母（A-F级别）或者一个JSON字符串（混合使用）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>-threshold <span class="s1">&#39;{&quot;overall&quot;: &quot;B&quot;, &quot;ycdn&quot;: &quot;F&quot;, &quot;yexpires&quot;: 85}&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的命令会测试站点<code>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/</code>的各项指标，并应用雅虎的那35条规则，并最终生成一个<code>junit</code>测试报告格式的文件：<code>yslow.xml</code>。</p>
+
+<p>但是维护CI环境是一个比较麻烦的事情，而且既然每个项目都可能会用到这样的<code>基础设施</code>，一种好的做法就是将其做成一个<code>镜像</code>保存起来，以方便其他项目的复用！这里我们使用<code>docker</code>来安装和配置我们的CI环境，配置完成之后，我们可以将<code>docker</code>的镜像分享给其他团队，也可以供我们在下一个项目中使用。</p>
+
+<h3>基于docker/docker-compose的环境搭建</h3>
+
+<p>在<a href="https://www.docker.com/">docker</a>出现之前，我们要搭建一个<code>测试</code>或者<code>staging</code>环境，往往需要很多个不同角色的机器：有专门的数据库服务器，文件服务器，缓存服务器，Web服务器，反向代理等等。这样在成本上显然是个不小的开销，如果将所有不同的组件部署在同一台机器上，则又可能互相干扰，只需要一个小小的失误，整个系统就需要重新配置。更可怕的是，这个环境和生产系统不一致，那么很可能真实的错误要等到系统上线之后才会被发现。</p>
+
+<p>比如在2012年，我所在的一个项目中，客户的系统采用传统的J2EE架构。本地开发中，我们使用了Jetty作为容器，而<code>测试</code>和<code>Staging</code>环境使用了Tomcat。由于Tomcat对空格的处理和Jetty有所不同，我们在本地测试通过，并且运行良好的代码，在<code>Staging</code>变得完全不能工作。这个问题花费了团队很多时间来排查错误。</p>
+
+<p>在<code>docker</code>出现之后，我们可以在一台物理机器上运行多个互不干涉的容器，每个容器可以是一个组件（比如运行数据库的容器，Web服务器容器等等）。这样不但缩减了成本，而且可以让我们的环境尽可能和生产环境一致（有的项目甚至直接将CI出来的镜像应用到生产中）。不过对多个容器的管理是一个很麻烦的事情，好在<code>docker</code>提供了<a href="https://docs.docker.com/compose/overview/">docker-compose</a>工具来解决这个问题。使用<code>docker-compose</code>可以定义一组互相独立，但是又可以协作在一起的容器，这样我们可以很容易的搭建一个<code>仿生产</code>环境。</p>
+
+<p>比如我们可以定义个<code>docker-compse.yml</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">app</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">build</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">.</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">links</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">db:postgres</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">ports</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">8000:8000</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">volumes</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">.:/app</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">working_dir</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/app</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">entrypoint</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/app/start.sh</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">environment</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">JDBC_DATABASE_URL</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">jdbc:postgresql://postgres:5432/bookmarks</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">DATABASE_USER</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">bookmarks-user</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">DATABASE_PASS</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">bookmarks-password</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">db</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">image</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">postgres:9.3</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">ports</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">5432:5432</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">environment</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">POSTGRES_DB</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">bookmarks</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">POSTGRES_USER</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">bookmarks-user</span>
+</span><span class='line'>    <span class="l-Scalar-Plain">POSTGRES_PASSWORD</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">bookmarks-password</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个<code>docker-compose</code>定义了两个组件，<code>app</code>和<code>db</code>。<code>db</code>使用了<code>postgres:9.3</code>镜像，并设置了自己的环境变量。<code>app</code>则从当前目录<code>.</code>构建一个新的镜像，<code>app</code>与<code>db</code>通过<code>links</code>属性连接起来。</p>
+
+<p>如果在当前目录执行<code>docker-compose build</code>命令，<code>docker-compose</code>会找到本地的<code>Dockerfile</code>，然后构建出一个<code>docker</code>的镜像，并启动该容器，同时，它还会启动<code>postgres:9.3</code>容器作为数据库组件。这样我们的环境就被完整的搭建好了。</p>
+
+<h4>搭建CI环境</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">app</span><span class="p-Indicator">:</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">build</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">.</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">ports</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">8080:8080</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">50000:50000</span>
+</span><span class='line'>  <span class="l-Scalar-Plain">volumes</span><span class="p-Indicator">:</span>
+</span><span class='line'>    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">./data:/var/jenkins_home</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个配置，表明我们会根据当前目录的<code>Dockerfile</code>来构建一个镜像。</p>
+
+<p>通过命令<code>volumns</code>，我们将本地目录<code>./data</code>映射为<code>jenkins_home</code>，这样我们定义的job信息，以及插件的安装都会放到本地的目录中，方便管理。配置完成之后，构建并启动该容器：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='yaml'><span class='line'><span class="l-Scalar-Plain">FROM jenkins:latest</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain"># Env</span>
+</span><span class='line'><span class="l-Scalar-Plain">ENV PHANTOMJS_VERSION 1.9.6</span>
+</span><span class='line'><span class="l-Scalar-Plain">ENV PHANTOMJS_YSLOW_VERSION 3.1.8</span>
+</span><span class='line'><span class="l-Scalar-Plain">ENV SHARE_BIN /var/share</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain"># Install stuff by using root</span>
+</span><span class='line'><span class="l-Scalar-Plain">USER root</span>
+</span><span class='line'><span class="l-Scalar-Plain">RUN apt-get update</span>
+</span><span class='line'><span class="l-Scalar-Plain">RUN apt-get upgrade -y</span>
+</span><span class='line'><span class="l-Scalar-Plain">RUN apt-get install -y git wget libfreetype6 libfontconfig bzip2</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">RUN mkdir -p $SHARE_BIN</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">RUN wget -q --no-check-certificate -O /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 \</span>
+</span><span class='line'><span class="l-Scalar-Plain">https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2</span>
+</span><span class='line'><span class="l-Scalar-Plain">RUN tar -xjf /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 -C /tmp</span>
+</span><span class='line'><span class="l-Scalar-Plain">RUN rm -f /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2</span>
+</span><span class='line'><span class="l-Scalar-Plain">RUN mv /tmp/phantomjs-$PHANTOMJS_VERSION-linux-x86_64/ $SHARE_BIN/phantomjs</span>
+</span><span class='line'><span class="l-Scalar-Plain">RUN ln -s $SHARE_BIN/phantomjs/bin/phantomjs /usr/bin/phantomjs</span>
+</span><span class='line'>
+</span><span class='line'><span class="l-Scalar-Plain">RUN wget -q --no-check-certificate -O /tmp/yslow-phantomjs-$PHANTOMJS_YSLOW_VERSION.zip \</span>
+</span><span class='line'><span class="l-Scalar-Plain">http://yslow.org/yslow-phantomjs-$PHANTOMJS_YSLOW_VERSION.zip</span>
+</span><span class='line'><span class="l-Scalar-Plain">RUN unzip /tmp/yslow-phantomjs-$PHANTOMJS_YSLOW_VERSION.zip -d $SHARE_BIN/</span>
+</span><span class='line'><span class="l-Scalar-Plain">USER jenkins</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行下面的命令来设置并启动CI服务器：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>docker-compose up
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/2016/02/jenkins-in-docker-resized.png" alt="jenkins in docker" /></p>
+
+<p>创建新任务，并指定该任务执行的命令为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="nv">$ </span>phantomjs /var/share/yslow.js -i grade -threshold <span class="s2">&quot;B&quot;</span> -f junit <span class="se">\</span>
+</span><span class='line'>http://bookmarks-frontend.s3-website-us-west-2.amazonaws.com/ &gt; yslow.xml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>由于此时<code>phantomjs</code>已经被安装到了容器中，我们可以直接在jenkins中使用。运行结束之后，这个命令会生成一个报告：</p>
+
+<p><img src="/images/2016/02/jenkins-report-resized.png" alt="jenkins failure" /></p>
+
+<ul>
+<li>没有压缩内容</li>
+<li>没有添加过期的头信息</li>
+</ul>
+
+
+<p>在产品环境，我们需要使用反向代理来添加这些头信息，以保证最终用户在使用Web站点时的体验。</p>
+
+<h3>总结</h3>
+
+<p>我们只需要很少的配置就可以设置好一个工作良好的CI任务，这样在程序员某天引入了未经压缩的JS/CSS或者UX不小心提供了巨大而未经处理的图片时，你可以尽快的得到通知，并在正是上线之前发现这些问题。</p>
+
+<p><a href="https://github.com/abruzzi/phantomjs-yslow">代码配置</a>在这里。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2981,235 +3241,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2015/11/what-you-have-learnt-those-years/">看看这些年你都学了什么？</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-11-01T17:03:00+08:00" pubdate data-updated="true">Nov 1<span>st</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>数据可视化</h3>
-
-<p>多年下来，我的<code>Google Bookmarks</code>里已经有近万条的书签。大部分内容是我在读过一遍之后就收藏起来的，也有很多看了一眼之后，觉得不错，然后收藏起来准备以后读的（当然，你也知道，再也没有打开过）。</p>
-
-<p>有没有一个方法可以让我以可视化的方式，看到这些年我都学了那些东西呢？将书签列表作为源数据，然后将这些信息可视化出来会非常有意思：比如收藏夹中的热门词是什么，哪段时间收藏了多少条的书签（学习投入程度趋势）等等。</p>
-
-<p>下图是我的书签中，排行前<code>30</code>的关键字排序。可以明显的看出，我对于<code>JavaScript</code>的喜爱程度相当高，对<code>美食</code>的喜爱也超过了<code>python</code>和<code>linux</code>。</p>
-
-<p><img src="/images/2015/11/bookmarks-trending-resized.png" alt="bookmarks trending" /></p>
-
-<p>这里我将使用<code>python</code>，结合<code>python</code>的一些库来实现<code>书签可视化</code>。简而言之，整个过程可以分成这样几个步骤：</p>
-
-<ol>
-<li>将Google Bookmarks导出为本地文件</li>
-<li>将书签文件解析为容易处理的内部格式（比如python的dict等）</li>
-<li>由于书签中会有中文的句子，所以会涉及到分词</li>
-<li>统计词语的频率，并绘制成图标</li>
-</ol>
-
-
-<h4>数据源</h4>
-
-<p><code>Google Bookmarks</code>本身可以直接导出成<code>HTML</code>文件。该<code>HTML</code>文件包含了时间戳和书签的标题，我们可以通过<code>python</code>的库<code>BeautifulSoup</code>将HTML中的文本抽取出来：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">load_bookmarks_data</span><span class="p">():</span>
-</span><span class='line'>  <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s">&#39;bookmarks_10_21_15.html&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="s">&quot;html.parser&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">soup</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
-</span><span class='line'>  
-</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
-</span><span class='line'>  <span class="k">print</span> <span class="n">load_bookmarks_data</span><span class="p">()</span>    
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>BeautifulSoup</code>提供非常好用的API来抽取结构化文档中的内容。</p>
-
-<p><img src="/images/2015/11/bookmark-titles-resized.png" alt="bookmark titles" /></p>
-
-<h4>分词</h4>
-
-<p><code>BeautifulSoup</code>获得的是一条条独立的句子，我们需要使用分词器将所有的句子分解成片段。这里我使用了<code>jieba</code>（<a href="https://github.com/fxsjy/jieba">结巴分词</a>）分词器来完成这个任务：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">jieba</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">data</span> <span class="o">=</span> <span class="s">&quot;我在出报表，你的博客写的怎么样了&quot;</span>
-</span><span class='line'><span class="n">seg_list</span> <span class="o">=</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">seg_list</span><span class="p">:</span>
-</span><span class='line'>     <span class="k">print</span> <span class="n">seg</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>将会输出：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">我</span>
-</span><span class='line'><span class="err">在</span>
-</span><span class='line'><span class="err">出</span>
-</span><span class='line'><span class="err">报表</span>
-</span><span class='line'><span class="err">，</span>
-</span><span class='line'><span class="err">你</span>
-</span><span class='line'><span class="err">的</span>
-</span><span class='line'><span class="err">博客</span>
-</span><span class='line'><span class="err">写</span>
-</span><span class='line'><span class="err">的</span>
-</span><span class='line'><span class="err">怎么样</span>
-</span><span class='line'><span class="err">了</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们定义一个方法来将上一步中的文本分词：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">extract_segments</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">seg_list</span> <span class="o">=</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">cut_all</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">[</span><span class="n">seg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">seg_list</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>分词之后，我们将单词转换为小写，并剔除掉那些长度小于1的字符串。这样可以保证所有的词都是词语。python的<code>list推导式</code>写起来非常简洁，一行代码就完成了<code>过滤</code>和<code>映射</code>的工作。</p>
-
-<h4>可视化</h4>
-
-<p>有了分好的词之后，只需要统计每个词出现的频率，然后按照频率来绘制图表。我们使用<code>python</code>标准库中的<code>Counter</code>来实现：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">tokenize</span><span class="p">():</span> 
-</span><span class='line'>  <span class="n">filtered</span> <span class="o">=</span> <span class="n">extract_segments</span><span class="p">(</span><span class="n">load_bookmarks_data</span><span class="p">())</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">Counter</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">filtered</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>要获取前<code>N</code>个，只需要使用<code>most_common(N)</code>即可：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">tokenize</span><span class="p">()</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[(</span><span class="s">u&#39;and&#39;</span><span class="p">,</span> <span class="mi">552</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;the&#39;</span><span class="p">,</span> <span class="mi">501</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;with&#39;</span><span class="p">,</span> <span class="mi">485</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;to&#39;</span><span class="p">,</span> <span class="mi">446</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;javascript&#39;</span><span class="p">,</span> <span class="mi">432</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;in&#39;</span><span class="p">,</span> <span class="mi">330</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;for&#39;</span><span class="p">,</span> <span class="mi">308</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;...&#39;</span><span class="p">,</span> <span class="mi">270</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;java&#39;</span><span class="p">,</span> <span class="mi">270</span><span class="p">),</span> <span class="p">(</span><span class="s">u&#39;blog&#39;</span><span class="p">,</span> <span class="mi">269</span><span class="p">)]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有了数据之后，使用<code>matplotlib</code>做一个简单的<code>bar</code>图标：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">matplotlib</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">DataFrame</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">visualize</span><span class="p">():</span>
-</span><span class='line'>  <span class="n">frame</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">tokenize</span><span class="p">()</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;keywords&#39;</span><span class="p">,</span> <span class="s">&#39;frequencies&#39;</span><span class="p">])</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">ax</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s">&#39;bar&#39;</span><span class="p">)</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;bookmarks_trending.png&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="/images/2015/11/bookmarks-trending-with-stops-resized.png" alt="" /></p>
-
-<h4>stopwords</h4>
-
-<p>不过，上图中有很多噪音信息，如<code>and</code>, <code>the</code>等，这些在所有文章中都会出现的词并没有实际意义，统称为<code>stopwords</code>。通常在计算过程中会将其忽略：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">tokenize</span><span class="p">():</span>  
-</span><span class='line'>  <span class="n">stoplist</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;me&#39;</span><span class="p">,</span> <span class="s">&#39;my&#39;</span><span class="p">,</span> <span class="s">&#39;myself&#39;</span><span class="p">,</span> <span class="s">&#39;we&#39;</span><span class="p">,</span> <span class="s">&#39;our&#39;</span><span class="p">,</span> <span class="s">&#39;ours&#39;</span><span class="p">,</span> <span class="s">&#39;ourselves&#39;</span><span class="p">,</span> <span class="s">&#39;you&#39;</span><span class="p">,</span> <span class="s">&#39;your&#39;</span><span class="p">,</span> <span class="s">&#39;yours&#39;</span><span class="p">,</span> <span class="s">&#39;yourself&#39;</span><span class="p">,</span> <span class="s">&#39;yourselves&#39;</span><span class="p">,</span> <span class="s">&#39;he&#39;</span><span class="p">,</span> <span class="s">&#39;him&#39;</span><span class="p">,</span> <span class="s">&#39;his&#39;</span><span class="p">,</span> <span class="s">&#39;himself&#39;</span><span class="p">,</span> <span class="s">&#39;she&#39;</span><span class="p">,</span> <span class="s">&#39;her&#39;</span><span class="p">,</span> <span class="s">&#39;hers&#39;</span><span class="p">,</span> <span class="s">&#39;herself&#39;</span><span class="p">,</span> <span class="s">&#39;it&#39;</span><span class="p">,</span> <span class="s">&#39;its&#39;</span><span class="p">,</span> <span class="s">&#39;itself&#39;</span><span class="p">,</span> <span class="s">&#39;they&#39;</span><span class="p">,</span> <span class="s">&#39;them&#39;</span><span class="p">,</span> <span class="s">&#39;their&#39;</span><span class="p">,</span> <span class="s">&#39;theirs&#39;</span><span class="p">,</span> <span class="s">&#39;themselves&#39;</span><span class="p">,</span> <span class="s">&#39;what&#39;</span><span class="p">,</span> <span class="s">&#39;which&#39;</span><span class="p">,</span> <span class="s">&#39;who&#39;</span><span class="p">,</span> <span class="s">&#39;whom&#39;</span><span class="p">,</span> <span class="s">&#39;this&#39;</span><span class="p">,</span> <span class="s">&#39;that&#39;</span><span class="p">,</span> <span class="s">&#39;these&#39;</span><span class="p">,</span> <span class="s">&#39;those&#39;</span><span class="p">,</span> <span class="s">&#39;am&#39;</span><span class="p">,</span> <span class="s">&#39;is&#39;</span><span class="p">,</span> <span class="s">&#39;are&#39;</span><span class="p">,</span> <span class="s">&#39;was&#39;</span><span class="p">,</span> <span class="s">&#39;were&#39;</span><span class="p">,</span> <span class="s">&#39;be&#39;</span><span class="p">,</span> <span class="s">&#39;been&#39;</span><span class="p">,</span> <span class="s">&#39;being&#39;</span><span class="p">,</span> <span class="s">&#39;have&#39;</span><span class="p">,</span> <span class="s">&#39;has&#39;</span><span class="p">,</span> <span class="s">&#39;had&#39;</span><span class="p">,</span> <span class="s">&#39;having&#39;</span><span class="p">,</span> <span class="s">&#39;do&#39;</span><span class="p">,</span> <span class="s">&#39;does&#39;</span><span class="p">,</span> <span class="s">&#39;did&#39;</span><span class="p">,</span> <span class="s">&#39;doing&#39;</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;an&#39;</span><span class="p">,</span> <span class="s">&#39;the&#39;</span><span class="p">,</span> <span class="s">&#39;and&#39;</span><span class="p">,</span> <span class="s">&#39;but&#39;</span><span class="p">,</span> <span class="s">&#39;if&#39;</span><span class="p">,</span> <span class="s">&#39;or&#39;</span><span class="p">,</span> <span class="s">&#39;because&#39;</span><span class="p">,</span> <span class="s">&#39;as&#39;</span><span class="p">,</span> <span class="s">&#39;until&#39;</span><span class="p">,</span> <span class="s">&#39;while&#39;</span><span class="p">,</span> <span class="s">&#39;of&#39;</span><span class="p">,</span> <span class="s">&#39;at&#39;</span><span class="p">,</span> <span class="s">&#39;by&#39;</span><span class="p">,</span> <span class="s">&#39;for&#39;</span><span class="p">,</span> <span class="s">&#39;with&#39;</span><span class="p">,</span> <span class="s">&#39;about&#39;</span><span class="p">,</span> <span class="s">&#39;against&#39;</span><span class="p">,</span> <span class="s">&#39;between&#39;</span><span class="p">,</span> <span class="s">&#39;into&#39;</span><span class="p">,</span> <span class="s">&#39;through&#39;</span><span class="p">,</span> <span class="s">&#39;during&#39;</span><span class="p">,</span> <span class="s">&#39;before&#39;</span><span class="p">,</span> <span class="s">&#39;after&#39;</span><span class="p">,</span> <span class="s">&#39;above&#39;</span><span class="p">,</span> <span class="s">&#39;below&#39;</span><span class="p">,</span> <span class="s">&#39;to&#39;</span><span class="p">,</span> <span class="s">&#39;from&#39;</span><span class="p">,</span> <span class="s">&#39;up&#39;</span><span class="p">,</span> <span class="s">&#39;down&#39;</span><span class="p">,</span> <span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="s">&#39;out&#39;</span><span class="p">,</span> <span class="s">&#39;on&#39;</span><span class="p">,</span> <span class="s">&#39;off&#39;</span><span class="p">,</span> <span class="s">&#39;over&#39;</span><span class="p">,</span> <span class="s">&#39;under&#39;</span><span class="p">,</span> <span class="s">&#39;again&#39;</span><span class="p">,</span> <span class="s">&#39;further&#39;</span><span class="p">,</span> <span class="s">&#39;then&#39;</span><span class="p">,</span> <span class="s">&#39;once&#39;</span><span class="p">,</span> <span class="s">&#39;here&#39;</span><span class="p">,</span> <span class="s">&#39;there&#39;</span><span class="p">,</span> <span class="s">&#39;when&#39;</span><span class="p">,</span> <span class="s">&#39;where&#39;</span><span class="p">,</span> <span class="s">&#39;why&#39;</span><span class="p">,</span> <span class="s">&#39;how&#39;</span><span class="p">,</span> <span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="s">&#39;any&#39;</span><span class="p">,</span> <span class="s">&#39;both&#39;</span><span class="p">,</span> <span class="s">&#39;each&#39;</span><span class="p">,</span> <span class="s">&#39;few&#39;</span><span class="p">,</span> <span class="s">&#39;more&#39;</span><span class="p">,</span> <span class="s">&#39;most&#39;</span><span class="p">,</span> <span class="s">&#39;other&#39;</span><span class="p">,</span> <span class="s">&#39;some&#39;</span><span class="p">,</span> <span class="s">&#39;such&#39;</span><span class="p">,</span> <span class="s">&#39;no&#39;</span><span class="p">,</span> <span class="s">&#39;nor&#39;</span><span class="p">,</span> <span class="s">&#39;not&#39;</span><span class="p">,</span> <span class="s">&#39;only&#39;</span><span class="p">,</span> <span class="s">&#39;own&#39;</span><span class="p">,</span> <span class="s">&#39;same&#39;</span><span class="p">,</span> <span class="s">&#39;so&#39;</span><span class="p">,</span> <span class="s">&#39;than&#39;</span><span class="p">,</span> <span class="s">&#39;too&#39;</span><span class="p">,</span> <span class="s">&#39;very&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="s">&#39;can&#39;</span><span class="p">,</span> <span class="s">&#39;will&#39;</span><span class="p">,</span> <span class="s">&#39;just&#39;</span><span class="p">,</span> <span class="s">&#39;don&#39;</span><span class="p">,</span> <span class="s">&#39;should&#39;</span><span class="p">,</span> <span class="s">&#39;now&#39;</span><span class="p">]</span>
-</span><span class='line'>  <span class="n">stoplist</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">&#39;...&#39;</span><span class="p">,</span> <span class="s">&#39;com&#39;</span><span class="p">,</span> <span class="s">&#39;using&#39;</span><span class="p">,</span> <span class="s">u&#39;使用&#39;</span><span class="p">,</span> <span class="s">&#39;blog&#39;</span><span class="p">,</span> <span class="s">u&#39;博客&#39;</span><span class="p">,</span> <span class="s">u&#39;博客园&#39;</span><span class="p">,</span> <span class="s">u&#39;做法&#39;</span><span class="p">,</span> <span class="s">u&#39;论坛&#39;</span><span class="p">,</span> <span class="s">&#39;part&#39;</span><span class="p">,</span> <span class="s">u&#39;部分&#39;</span><span class="p">,</span> <span class="s">u&#39;天下&#39;</span><span class="p">])</span>
-</span><span class='line'>  <span class="n">filtered</span> <span class="o">=</span> <span class="n">extract_segments</span><span class="p">(</span><span class="n">load_bookmarks_data</span><span class="p">())</span>
-</span><span class='line'>  
-</span><span class='line'>  <span class="k">return</span> <span class="n">Counter</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">filtered</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stoplist</span><span class="p">])</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>重新绘制即可获得上文中的图：</p>
-
-<p><img src="/images/2015/11/bookmarks-trending-resized.png" alt="bookmarks trending" /></p>
-
-<p>完整的代码<a href="https://github.com/abruzzi/bookmarks-viz">请参考这里</a>。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/4/">&larr; Older</a>
@@ -3227,6 +3258,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2018/06/real-time-data-visualization/">实时数据的可视化</a>
+      </li>
+    
+      <li class="post">
         <a href="/2018/01/two-types-of-developer/">团队里的两类程序员</a>
       </li>
     
@@ -3240,10 +3275,6 @@
     
       <li class="post">
         <a href="/2017/07/tips-for-newbies/">如何成为一名优秀的程序员？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2017/03/whats-the-thoughtworks-insight-talking-about/">ThoughtWorks洞见讲什么？</a>
       </li>
     
   </ul>
